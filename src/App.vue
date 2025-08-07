@@ -22,7 +22,6 @@ onMounted(async () => {
 
 <template>
   <div>
-    <Navbar></Navbar>
     <PageBuilderTest></PageBuilderTest>
     <Footer></Footer>
   </div>

@@ -4,30 +4,29 @@ const version = __APP_VERSION__
 
 <template>
   <div
-    class="pbx-flex pbx-justify-between pbx-gap-2 pbx-bg-red-100 pbx-py-10 lg:pbx-px-12 pbx-px-4"
+    class="pbx-flex pbx-justify-between pbx-gap-2 lg:pbx-px-12 pbx-mx-2 pbx-py-3 pbx-border-t pbx-border-t-gray-900"
   >
-    <div>
-      <p class="pbx-myPrimaryParagraph">
-        <a
-          href="https://www.npmjs.com/package/@myissue/vue-website-page-builder"
-          target="_blank"
-          class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
-        >
-          Install via npm
-        </a>
-      </p>
-      <p class="pbx-myPrimaryParagraph pbx-mt-3">
-        <a
-          href="https://github.com/myissue-org/vue-website-page-builder"
-          target="_blank"
-          class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
-        >
-          View on GitHub
-        </a>
-      </p>
-    </div>
-    <p class="pbx-myPrimaryParagraph pbx-mt-3">
-      <span class="pbx-text-myPrimaryDarkGrayColor pbx-text-sm">{{ version }}</span>
+    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
+      <a
+        href="https://www.npmjs.com/package/@myissue/vue-website-page-builder"
+        target="_blank"
+        class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
+      >
+        Install via npm
+      </a>
+    </p>
+
+    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
+      <a
+        href="https://github.com/myissue-org/vue-website-page-builder"
+        target="_blank"
+        class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
+      >
+        View on GitHub
+      </a>
+    </p>
+    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
+      <span class="pbx-text-myPrimaryDarkGrayColor">{{ version }}</span>
     </p>
   </div>
 </template>
