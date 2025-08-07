@@ -82,11 +82,12 @@ const openMainSettings = function () {
 const showHTMLSettings = ref(false)
 
 // handle slideover window
-const handleHTMLSettings = function () {
+const closeHTMLSettings = function () {
   showHTMLSettings.value = false
 }
 
-const openHTMLSettings = function () {
+const openHTMLSettings = async function () {
+  await pageBuilderService.generateHtmlFromComponents()
   showHTMLSettings.value = true
 }
 </script>
@@ -219,7 +220,7 @@ const openHTMLSettings = function () {
       maxWidth="5xl"
       :showModalBuilder="showHTMLSettings"
       :title="translate('Selected HTML')"
-      @closeMainModalBuilder="handleHTMLSettings"
+      @closeMainModalBuilder="closeHTMLSettings"
       minHeight=""
       maxHeight=""
     >

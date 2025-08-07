@@ -168,12 +168,12 @@ const convertToComponentObject = function (comp: any): ComponentObject {
           </div>
 
           <div
-            class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
+            class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4 pbx-min-h-[96rem]"
           >
             <div
               v-for="theme in filteredThemes"
               :key="theme.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
+              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
               @click="handleDropTheme(theme.html_code)"
             >
               <div
@@ -209,7 +209,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
             <div
               v-for="helper in componentHelpers"
               :key="helper.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-p-4"
+              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4"
               @click="handleDropComponent(helper)"
             >
               <div
@@ -247,12 +247,12 @@ const convertToComponentObject = function (comp: any): ComponentObject {
             </button>
           </div>
           <div
-            class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4"
+            class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4 pbx-min-h-[96rem]"
           >
             <div
               v-for="comp in filteredComponents"
               :key="comp.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
+              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
               @click="handleDropComponent(convertToComponentObject(comp))"
             >
               <div

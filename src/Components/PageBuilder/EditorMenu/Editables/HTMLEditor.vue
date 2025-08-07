@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import ModalBuilder from '../../../../Components/Modals/ModalBuilder.vue'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -18,7 +18,6 @@ const props = defineProps({
 })
 
 const getElement = computed(() => pageBuilderStateStore.getElement)
-const getComponents = computed(() => pageBuilderStateStore.getComponents)
 
 const elementHTML = computed(() => {
   if (!getElement.value || !(getElement.value instanceof HTMLElement)) {
@@ -32,26 +31,15 @@ const showModalHTMLEditor = ref(false)
 const editableHtml = ref('')
 const editableComponents = ref('')
 
-const handleShowHTMLEditor = () => {
+const handleShowHTMLEditor = async () => {
   showModalHTMLEditor.value = true
 
   if (!props.globalPage) {
     editableHtml.value = elementHTML.value
+    return
   }
 
-  if (props.globalPage) {
-    const compsHTMLString =
-      Array.isArray(getComponents.value) &&
-      getComponents.value
-        .map((comp) => {
-          return comp.html_code
-            .replace(/data-componentid="[^"]*"/g, '') // remove data-componentid
-            .replace(/\s{2,}/g, ' ') // optional: clean up excess spaces
-        })
-        .join('\n')
-
-    editableComponents.value = compsHTMLString
-  }
+  editableComponents.value = await pageBuilderService.generateHtmlFromComponents()
 }
 
 const handleCloseHTMLEditor = () => {

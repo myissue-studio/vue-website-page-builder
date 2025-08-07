@@ -1599,6 +1599,29 @@ export class PageBuilderService {
             }
           }
         }
+      } else if (parentSection) {
+        // If the section is not empty, update its HTML content in the store
+        const componentId = parentSection.getAttribute('data-componentid')
+        if (componentId) {
+          const components = this.pageBuilderStateStore.getComponents
+          if (components) {
+            const componentIndex = components.findIndex(
+              (c: ComponentObject) => c.id === componentId,
+            )
+            if (componentIndex !== -1) {
+              const updatedComponent = {
+                ...components[componentIndex],
+                html_code: parentSection.outerHTML,
+              }
+              const newComponents = [
+                ...components.slice(0, componentIndex),
+                updatedComponent,
+                ...components.slice(componentIndex + 1),
+              ]
+              this.pageBuilderStateStore.setComponents(newComponents)
+            }
+          }
+        }
       }
     }
 
@@ -1888,7 +1911,7 @@ export class PageBuilderService {
    * Syncs the current DOM state of components to the in-memory store.
    * @private
    */
-  private syncDomToStoreOnly() {
+  public syncDomToStoreOnly() {
     const pagebuilder = document.querySelector('#pagebuilder')
     if (!pagebuilder) return
 
@@ -1904,6 +1927,30 @@ export class PageBuilderService {
     })
 
     this.pageBuilderStateStore.setComponents(componentsToSave)
+  }
+
+  public async generateHtmlFromComponents(): Promise<string> {
+    this.syncDomToStoreOnly()
+    await nextTick()
+
+    const components = this.pageBuilderStateStore.getComponents
+
+    if (!Array.isArray(components)) {
+      return ''
+    }
+
+    // Wait for Vue to finish DOM updates before attaching event listeners. This ensure elements exist in the DOM.
+    await nextTick()
+    // Attach event listeners to all editable elements in the Builder
+    await this.addListenersToEditableElements()
+
+    return components
+      .map((comp) => {
+        return comp.html_code
+          .replace(/data-componentid="[^"]*"/g, '') // remove data-componentid
+          .replace(/\s{2,}/g, ' ') // optional: clean up excess spaces
+      })
+      .join('\n')
   }
 
   /**
@@ -2166,6 +2213,15 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setIsRestoring(false)
   }
 
+  public async returnLatestComponents() {
+    this.syncDomToStoreOnly()
+    // Wait for Vue to finish DOM updates before attaching event listeners. This ensure elements exist in the DOM.
+    await nextTick()
+    // Attach event listeners to all editable elements in the Builder
+    await this.addListenersToEditableElements()
+
+    return this.pageBuilderStateStore.getComponents
+  }
   /**
    * Gets the local storage key for the current resource.
    * @returns {string | null} The local storage key.
@@ -2445,14 +2501,11 @@ export class PageBuilderService {
   }
 
   public async addTheme(components: string): Promise<void> {
-    try {
-      if (components) {
-        await this.mountComponentsToDOM(components)
-      }
-      await this.handleAutoSave()
-    } catch (error) {
-      console.error('Error adding component:', error)
+    if (components) {
+      this.validateMountingHTML(components)
+      await this.mountComponentsToDOM(components)
     }
+    await this.handleAutoSave()
   }
 
   /**
