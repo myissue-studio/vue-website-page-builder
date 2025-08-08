@@ -22,7 +22,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <PageBuilderTest></PageBuilderTest>
     <Footer></Footer>
+    <PageBuilderTest></PageBuilderTest>
   </div>
 </template>
