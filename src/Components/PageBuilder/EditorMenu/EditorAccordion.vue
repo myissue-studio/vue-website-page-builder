@@ -4,7 +4,7 @@
     :class="{ '': expanded }"
   >
     <div
-      class="pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-white hover:pbx-bg-myPrimaryLightGrayColor"
+      class="pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-white hover:pbx-bg-myPrimaryLightGrayColor pbx-select-none"
       @click="expanded = !expanded"
     >
       <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-my-0 pbx-py-0">
