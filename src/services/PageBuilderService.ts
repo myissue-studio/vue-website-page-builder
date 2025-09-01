@@ -1579,10 +1579,13 @@ export class PageBuilderService {
 
     // If the element to be deleted is the section itself
     if (element.tagName === 'SECTION') {
-      this.deleteComponentFromDOM()
+      await this.deleteComponentFromDOM()
     } else {
       // If the element is inside a section
       element.remove()
+      // --- Sync DOM to store after DOM mutation ---
+      this.syncDomToStoreOnly()
+
       if (parentSection && this.isSectionEmpty(parentSection)) {
         const componentId = parentSection.getAttribute('data-componentid')
         if (componentId) {
@@ -1596,6 +1599,10 @@ export class PageBuilderService {
               ]
               this.pageBuilderStateStore.setComponents(newComponents)
               parentSection.remove() // Directly remove from DOM
+              // --- Sync DOM to store again after removing section ---
+              this.syncDomToStoreOnly()
+              // Save after removing the section
+              this.saveDomComponentsToLocalStorage()
             }
           }
         }
@@ -1619,13 +1626,19 @@ export class PageBuilderService {
                 ...components.slice(componentIndex + 1),
               ]
               this.pageBuilderStateStore.setComponents(newComponents)
+              // --- Sync DOM to store after updating section ---
+              this.syncDomToStoreOnly()
+              // Save after updating the section
+              this.saveDomComponentsToLocalStorage()
             }
           }
         }
+      } else {
+        // If no parentSection, still sync and save
+        this.syncDomToStoreOnly()
+        this.saveDomComponentsToLocalStorage()
       }
     }
-
-    this.handleAutoSave()
 
     // Clear the selection state.
     this.pageBuilderStateStore.setComponent(null)
@@ -2007,15 +2020,17 @@ export class PageBuilderService {
         const currentComponents = currentData.components || []
         const newComponents = dataToSave.components || []
 
-        const hasChanges = newComponents.some((newComponent, index) => {
-          const currentComponent = currentComponents[index]
-          return (
-            // New component added
-            !currentComponent ||
-            // Component HTML changed
-            currentComponent.html_code !== newComponent.html_code
-          )
-        })
+        const hasChanges =
+          newComponents.length !== currentComponents.length ||
+          newComponents.some((newComponent, index) => {
+            const currentComponent = currentComponents[index]
+            return (
+              // New component added
+              !currentComponent ||
+              // Component HTML changed
+              currentComponent.html_code !== newComponent.html_code
+            )
+          })
 
         // Compare pageSettings
         const hasPageSettingsChanges =

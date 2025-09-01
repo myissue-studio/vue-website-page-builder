@@ -162,7 +162,7 @@ The Page Builder is packed with features:
 - **YouTube Videos**: Integrate video content smoothly.
 - **Download HTML**: Export the entire page as a standalone HTML file.
 - **Global Page Styling**: Instantly define, update, or clear global styles for the main page wrapper at initialization or dynamically at runtime. Gain full control over fonts, colors, backgrounds, and more for a dynamic user experience.
-- **Tailwind Support**: Fully compatible with Tailwind CSS (with automatic class prefixing to avoid conflicts).
+- **Tailwind Support**: Fully compatible with Tailwind CSS (with automatic class prefixing to avoid conflicts). Tailwind installation is not required for the Page Builder to work.
 - **Scoped Styles**: To ensure clean and predictable styling, the builder uses scoped style isolation. There is no risk of style conflicts between the builder and your app.
 - **HTML Editor**: Access and edit raw HTML directly for full customization and developer-level control.
 
@@ -310,6 +310,8 @@ This prevents global styles from leaking into the builder and vice versa, which 
 **How does this affect you?**
 
 When a user adds a component into the page builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
+
+Tailwind installation is not required. The page builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the page builder.
 
 > **Note:**
 > Simply import the builder’s CSS file once in your project. All builder styles are namespaced, so there is no risk of style conflicts.
