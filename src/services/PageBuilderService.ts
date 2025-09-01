@@ -2272,49 +2272,6 @@ export class PageBuilderService {
   }
 
   /**
-   * Exports all CSS used in the builder as a string.
-   * - Includes all inline styles and a list of all classes used.
-   * - If you use Tailwind, classes are your main "CSS".
-   * - If you have custom CSS, you can also include it here.
-   */
-  public exportCssFromPageBuilder(): string {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return ''
-
-    // Collect all inline styles
-    const inlineStyles: string[] = []
-    pagebuilder.querySelectorAll('[style]').forEach((el) => {
-      const selector = el.id
-        ? `#${el.id}`
-        : el.className
-          ? `.${Array.from(el.classList).join('.')}`
-          : el.tagName.toLowerCase()
-      inlineStyles.push(`${selector} { ${el.getAttribute('style')} }`)
-    })
-
-    // Collect all classes used
-    const classSet = new Set<string>()
-    pagebuilder.querySelectorAll('[class]').forEach((el) => {
-      el.className
-        .split(/\s+/)
-        .filter(Boolean)
-        .forEach((cls) => classSet.add(cls))
-    })
-
-    // Optionally, output as a CSS comment block
-    const classesComment =
-      '/* Classes used in this page (for Tailwind or custom CSS):\n' +
-      Array.from(classSet)
-        .sort()
-        .map((cls) => `.${cls}`)
-        .join('\n') +
-      '\n*/'
-
-    // Combine everything
-    return [classesComment, ...inlineStyles].join('\n\n')
-  }
-
-  /**
    * Applies a selected image to the current element.
    * @param {ImageObject} image - The image object to apply.
    * @returns {Promise<void>}
