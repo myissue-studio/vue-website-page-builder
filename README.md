@@ -40,7 +40,6 @@
   - [Publish Button](#publish-button)
   - [Styling the Main Page Builder Container](#styling-the-main-page-builder-container)
   - [Download HTML File](#download-html-file)
-  - [Exporting Used CSS Classes](#exporting-used-css-classes)
   - [Custom Components](#custom-components)
     - [Custom Media Library Component](#custom-media-library-component)
     - [Integrate Unsplash Library](#integrate-unsplash-library)
@@ -716,31 +715,6 @@ const configPageBuilder = {
   // other config options...
 } as const
 ```
-
-## Exporting Used CSS Classes
-
-```ts
-const cssExport = pageBuilderService.exportCssFromPageBuilder()
-console.log(cssExport)
-```
-
-Sample Output:
-
-```
-/* Classes used in this page (for Tailwind or custom CSS):
-.lg:pbx-grid-cols-2
-.lg:pbx-grid-cols-3
-.lg:pbx-px-4
-.lg:pbx-text-4xl
-...
-.pbx-w-full
-.sm:pbx-grid-cols-2
-.sm:pbx-grid-cols-3
-*/
-
-```
-
-You can copy these class names into your tailwind.config.js safelist if you use Tailwind, or use them for debugging and documentation.
 
 ## Custom Components
 
