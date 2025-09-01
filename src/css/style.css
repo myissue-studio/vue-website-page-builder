@@ -383,7 +383,7 @@
 }
 
 /* Use #page-builder-wrapper ID in order for the "select video" button not to apear in production*/
-#page-builder-wrapper #pagebuilder #youtube-video::before {
+#page-builder-wrapper #youtube-video::before {
   content: 'Select Video Element';
   font-family: 'Jost';
   background: #16a34a !important;
