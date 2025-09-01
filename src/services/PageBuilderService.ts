@@ -2007,15 +2007,17 @@ export class PageBuilderService {
         const currentComponents = currentData.components || []
         const newComponents = dataToSave.components || []
 
-        const hasChanges = newComponents.some((newComponent, index) => {
-          const currentComponent = currentComponents[index]
-          return (
-            // New component added
-            !currentComponent ||
-            // Component HTML changed
-            currentComponent.html_code !== newComponent.html_code
-          )
-        })
+        const hasChanges =
+          newComponents.length !== currentComponents.length ||
+          newComponents.some((newComponent, index) => {
+            const currentComponent = currentComponents[index]
+            return (
+              // New component added
+              !currentComponent ||
+              // Component HTML changed
+              currentComponent.html_code !== newComponent.html_code
+            )
+          })
 
         // Compare pageSettings
         const hasPageSettingsChanges =
