@@ -311,6 +311,8 @@ This prevents global styles from leaking into the builder and vice versa, which 
 
 When a user adds a component into the page builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
 
+Tailwind installation is not required. The page builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the page builder.
+
 > **Note:**
 > Simply import the builder’s CSS file once in your project. All builder styles are namespaced, so there is no risk of style conflicts.
 
