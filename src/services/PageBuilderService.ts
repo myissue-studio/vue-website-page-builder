@@ -817,7 +817,6 @@ export class PageBuilderService {
         if (heading.tagName === 'H3') {
           element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
         }
-        // ...add others as needed
       }
     }
   }
