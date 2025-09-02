@@ -402,7 +402,7 @@ const openOptionsMoreOpen = ref(false)
               >
                 <span class="material-symbols-outlined"> control_point_duplicate </span>
               </div>
-              <div class="pbx-text-sm">Duplicate</div>
+              <div class="pbx-text-sm">Duplicate component</div>
             </div>
             <!-- content end -->
           </div>

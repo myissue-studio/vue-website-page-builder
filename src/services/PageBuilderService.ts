@@ -804,18 +804,20 @@ export class PageBuilderService {
     ) {
       const heading = element.children[0] as HTMLElement
 
-      element.classList.forEach((cls) => {
-        if (this.fontSizeRegex.test(cls)) {
-          element.classList.remove(cls)
-        }
-      })
+      // Only add default font size classes if none exist
+      const hasFontSizeClass = Array.from(element.classList).some((cls) =>
+        this.fontSizeRegex.test(cls),
+      )
 
-      // Apply responsive font size classes based on heading type
-      if (heading.tagName === 'H2') {
-        element.classList.add('pbx-text-2xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
-      }
-      if (heading.tagName === 'H3') {
-        element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
+      if (!hasFontSizeClass) {
+        // Apply responsive font size classes based on heading type
+        if (heading.tagName === 'H2') {
+          element.classList.add('pbx-text-2xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
+        }
+        if (heading.tagName === 'H3') {
+          element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
+        }
+        // ...add others as needed
       }
     }
   }
