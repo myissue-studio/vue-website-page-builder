@@ -5,3 +5,20 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
 .mobile-preview-frame {
   container-type: inline-size;
 }
+
+/* popover start */
+.popup-fade-enter-active,
+.popup-fade-leave-active {
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.popup-fade-enter-from,
+.popup-fade-leave-to {
+  transform: scale(0.95);
+  opacity: 0;
+}
+.popup-fade-enter-to,
+.popup-fade-leave-from {
+  transform: scale(1);
+  opacity: 1;
+}
+/* popover end */

@@ -804,18 +804,19 @@ export class PageBuilderService {
     ) {
       const heading = element.children[0] as HTMLElement
 
-      element.classList.forEach((cls) => {
-        if (this.fontSizeRegex.test(cls)) {
-          element.classList.remove(cls)
-        }
-      })
+      // Only add default font size classes if none exist
+      const hasFontSizeClass = Array.from(element.classList).some((cls) =>
+        this.fontSizeRegex.test(cls),
+      )
 
-      // Apply responsive font size classes based on heading type
-      if (heading.tagName === 'H2') {
-        element.classList.add('pbx-text-2xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
-      }
-      if (heading.tagName === 'H3') {
-        element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
+      if (!hasFontSizeClass) {
+        // Apply responsive font size classes based on heading type
+        if (heading.tagName === 'H2') {
+          element.classList.add('pbx-text-2xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
+        }
+        if (heading.tagName === 'H3') {
+          element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
+        }
       }
     }
   }
@@ -1509,6 +1510,49 @@ export class PageBuilderService {
   }
 
   /**
+   * Duplicate the currently selected component from the DOM and the state.
+   * @returns {Promise<void>}
+   */
+  public async duplicateComponent() {
+    // Sync latest DOM changes to the store
+    this.syncDomToStoreOnly()
+    await nextTick()
+
+    const components = this.pageBuilderStateStore.getComponents
+    const selectedComponent = this.getComponent.value
+
+    if (!components || !selectedComponent) return
+
+    // Find the index of the selected component
+    const index = components.findIndex(
+      (component: ComponentObject) => component.id === selectedComponent.id,
+    )
+    if (index === -1) return
+
+    // Clone the component and generate a new id
+    const clonedComponent = this.cloneCompObjForDOMInsertion(components[index])
+
+    // Insert the cloned component right after the selected one
+    const newComponents = [
+      ...components.slice(0, index + 1),
+      clonedComponent,
+      ...components.slice(index + 1),
+    ]
+
+    this.pageBuilderStateStore.setComponents(newComponents)
+
+    // Wait for DOM update and re-attach listeners
+    await nextTick()
+    await this.addListenersToEditableElements()
+
+    // Optionally, select the new duplicated component
+    this.pageBuilderStateStore.setComponent(clonedComponent)
+    this.pageBuilderStateStore.setElement(null)
+
+    // Auto-save after duplication
+    await this.handleAutoSave()
+  }
+  /**
    * Deletes the currently selected component from the DOM and the state.
    * @returns {Promise<void>}
    */
@@ -1521,8 +1565,8 @@ export class PageBuilderService {
     if (!components) return
 
     // Find the index of the component to be deleted.
-    const indexToDelete = components.findIndex(
-      (component: ComponentObject) => component.id === this.getComponent.value?.id,
+    const indexToDelete = components.findIndex((component: ComponentObject) =>
+      this.getComponent.value ? component.id === this.getComponent.value.id : false,
     )
 
     if (indexToDelete === -1) {
@@ -1537,15 +1581,6 @@ export class PageBuilderService {
     ]
 
     this.pageBuilderStateStore.setComponents(newComponents)
-
-    // Remove the component's corresponding section from the DOM.
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (pagebuilder && this.getComponent.value?.id) {
-      const section = pagebuilder.querySelector(
-        `section[data-componentid="${this.getComponent.value.id}"]`,
-      )
-      if (section) section.remove()
-    }
 
     // Wait for the DOM to update before re-attaching event listeners.
     await nextTick()

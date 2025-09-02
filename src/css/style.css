@@ -367,9 +367,12 @@
   min-width: 4rem;
   padding-right: 1rem;
   padding-left: 1rem;
-  height: 2rem;
-  box-shadow: 0 0 0 10px oklch(86.9% 0.005 56.366);
-  background: oklch(86.9% 0.005 56.366);
+  height: 1.5rem;
+  background: #fff; /* white background */
+  /* white outline first, then black border simulated as shadow */
+  box-shadow:
+    0 0 0 10px #fff,
+    /* white outline */ 0 0 0 12px #000; /* black border outside */
 }
 
 /* CSS for content inside page builder # start */
