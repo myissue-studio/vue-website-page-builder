@@ -1521,8 +1521,8 @@ export class PageBuilderService {
     if (!components) return
 
     // Find the index of the component to be deleted.
-    const indexToDelete = components.findIndex(
-      (component: ComponentObject) => component.id === this.getComponent.value?.id,
+    const indexToDelete = components.findIndex((component: ComponentObject) =>
+      this.getComponent.value ? component.id === this.getComponent.value.id : false,
     )
 
     if (indexToDelete === -1) {
@@ -1537,15 +1537,6 @@ export class PageBuilderService {
     ]
 
     this.pageBuilderStateStore.setComponents(newComponents)
-
-    // Remove the component's corresponding section from the DOM.
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (pagebuilder && this.getComponent.value?.id) {
-      const section = pagebuilder.querySelector(
-        `section[data-componentid="${this.getComponent.value.id}"]`,
-      )
-      if (section) section.remove()
-    }
 
     // Wait for the DOM to update before re-attaching event listeners.
     await nextTick()
