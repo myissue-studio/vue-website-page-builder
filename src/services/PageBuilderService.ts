@@ -1509,6 +1509,49 @@ export class PageBuilderService {
   }
 
   /**
+   * Duplicate the currently selected component from the DOM and the state.
+   * @returns {Promise<void>}
+   */
+  public async duplicateComponent() {
+    // Sync latest DOM changes to the store
+    this.syncDomToStoreOnly()
+    await nextTick()
+
+    const components = this.pageBuilderStateStore.getComponents
+    const selectedComponent = this.getComponent.value
+
+    if (!components || !selectedComponent) return
+
+    // Find the index of the selected component
+    const index = components.findIndex(
+      (component: ComponentObject) => component.id === selectedComponent.id,
+    )
+    if (index === -1) return
+
+    // Clone the component and generate a new id
+    const clonedComponent = this.cloneCompObjForDOMInsertion(components[index])
+
+    // Insert the cloned component right after the selected one
+    const newComponents = [
+      ...components.slice(0, index + 1),
+      clonedComponent,
+      ...components.slice(index + 1),
+    ]
+
+    this.pageBuilderStateStore.setComponents(newComponents)
+
+    // Wait for DOM update and re-attach listeners
+    await nextTick()
+    await this.addListenersToEditableElements()
+
+    // Optionally, select the new duplicated component
+    this.pageBuilderStateStore.setComponent(clonedComponent)
+    this.pageBuilderStateStore.setElement(null)
+
+    // Auto-save after duplication
+    await this.handleAutoSave()
+  }
+  /**
    * Deletes the currently selected component from the DOM and the state.
    * @returns {Promise<void>}
    */
