@@ -293,7 +293,6 @@ The Page Builder relies on browser APIs like localStorage and dynamic DOM manipu
 <script setup>
 import { onMounted } from 'vue'
 import { PageBuilder, getPageBuilder } from 'vue-website-page-builder'
-import 'vue-website-page-builder/style.css'
 
 const configPageBuilder = {
   updateOrCreate: {
