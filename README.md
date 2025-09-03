@@ -246,6 +246,9 @@ The Page Builder is implemented as a singleton service, meaning all page-buildin
 
 ### Nuxt Integration
 
+> **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4!  
+> Follow the steps below to get started in your Nuxt project.
+
 To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps
 
 #### 1. Install the Package
