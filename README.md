@@ -20,7 +20,10 @@
   - [Quick Start](#quick-start)
     - [Initializing the Page Builder](#initializing-the-page-builder)
     - [Nuxt 3 Integration](#nuxt-3-integration)
-      - [Create a Nuxt Plugin](#create-a-nuxt-plugin)
+      - [1. Install the Package](#1-install-the-package)
+      - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
+      - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
+      - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
     - [Why Use the Shared Instance? By always accessing the shared instance, you avoid creating](#why-use-the-shared-instance-by-always-accessing-the-shared-instance-you-avoid-creating)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
@@ -241,21 +244,23 @@ app.mount('#app')
 
 ### Nuxt 3 Integration
 
-To use `@myissue/vue-website-page-builder` in a Nuxt 3 project, follow these steps:
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps for a smooth, Laravel-style developer experience.
+
+#### 1. Install the Package
 
 ```bash
 npm install @myissue/vue-website-page-builder
 ```
 
-#### Create a Nuxt Plugin
+#### 2. Create a Nuxt Plugin
 
-Create a file:
+Create a file named:
 
 ```
 plugins/page-builder.client.js
 ```
 
-Add:
+Add the following code:
 
 ```javascript
 import { pageBuilder } from '@myissue/vue-website-page-builder'
@@ -266,15 +271,58 @@ export default defineNuxtPlugin((nuxtApp) => {
 })
 ```
 
-Uusing the component:
+#### 3. Register the Plugin in `nuxt.config.ts`
+
+Make sure Nuxt knows about your new plugin by adding it to your config:
+
+```typescript
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  plugins: ['./plugins/page-builder.client.js'],
+})
+```
+
+#### 4. Using the Page Builder Component
+
+Now you’re ready to use the builder in your pages or components.  
+Just like you’d expect in a Laravel app, everything is clear and explicit—no magic, just productivity.
+
+The Page Builder relies on browser APIs like localStorage and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
 
 ```vue
+<script setup>
+import { onMounted } from 'vue'
+import { PageBuilder, getPageBuilder } from 'vue-website-page-builder'
+import 'vue-website-page-builder/style.css'
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'article',
+  },
+}
+
+onMounted(async () => {
+  const pageBuilderService = getPageBuilder()
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
+</script>
+
 <template>
-  <client-only>
-    <PageBuilder />
-  </client-only>
+  <div>
+    <client-only>
+      <PageBuilder />
+    </client-only>
+  </div>
 </template>
 ```
+
+> **Tip:**  
+> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.  
+> This pattern is robust, explicit, and just works—much like the Laravel way.
+
+---
 
 ### Why Use the Shared Instance? By always accessing the shared instance, you avoid creating
 
