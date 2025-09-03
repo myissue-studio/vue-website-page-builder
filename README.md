@@ -19,7 +19,7 @@
   - [Installation](#installation)
   - [Quick Start](#quick-start)
     - [Initializing the Page Builder](#initializing-the-page-builder)
-    - [Nuxt 3 Integration](#nuxt-3-integration)
+    - [Nuxt Integration](#nuxt-integration)
       - [1. Install the Package](#1-install-the-package)
       - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
       - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
@@ -242,9 +242,9 @@ app.mount('#app')
 > **Note:**
 > The Page Builder is implemented as a singleton service. This ensures that all page-building logic and state are managed by a single, shared instance throughout your application.
 
-### Nuxt 3 Integration
+### Nuxt Integration
 
-To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps for a smooth, Laravel-style developer experience.
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps
 
 #### 1. Install the Package
 
@@ -254,7 +254,7 @@ npm install @myissue/vue-website-page-builder
 
 #### 2. Create a Nuxt Plugin
 
-Create a file named:
+In the root create a file named:
 
 ```
 plugins/page-builder.client.js
@@ -284,15 +284,14 @@ export default defineNuxtConfig({
 
 #### 4. Using the Page Builder Component
 
-Now you’re ready to use the builder in your pages or components.  
-Just like you’d expect in a Laravel app, everything is clear and explicit—no magic, just productivity.
+Now you’re ready to use the builder in your pages or components.
 
 The Page Builder relies on browser APIs like localStorage and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
 
 ```vue
 <script setup>
 import { onMounted } from 'vue'
-import { PageBuilder, getPageBuilder } from 'vue-website-page-builder'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
   updateOrCreate: {
@@ -318,8 +317,7 @@ onMounted(async () => {
 ```
 
 > **Tip:**  
-> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.  
-> This pattern is robust, explicit, and just works—much like the Laravel way.
+> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.
 
 ---
 
