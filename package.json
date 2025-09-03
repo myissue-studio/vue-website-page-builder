@@ -63,7 +63,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only { @}\" --",
+    "build": "npm run type-check && vite build",
     "build:lib": "vue-tsc --declaration --emitDeclarationOnly --outDir dist && vite build --mode lib",
     "preview": "vite preview",
     "build-only": "vite build",
