@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import ModalBuilder from '../../../../Components/Modals/ModalBuilder.vue'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -18,6 +18,7 @@ const props = defineProps({
 })
 
 const getElement = computed(() => pageBuilderStateStore.getElement)
+const getShowModalHTMLEditor = computed(() => pageBuilderStateStore.getShowModalHTMLEditor)
 
 const elementHTML = computed(() => {
   if (!getElement.value || !(getElement.value instanceof HTMLElement)) {
@@ -26,24 +27,26 @@ const elementHTML = computed(() => {
   return getElement.value.outerHTML
 })
 
-const showModalHTMLEditor = ref(false)
-
 const editableHtml = ref('')
 const editableComponents = ref('')
 
-const handleShowHTMLEditor = async () => {
-  showModalHTMLEditor.value = true
+watch(getShowModalHTMLEditor, async (newVal) => {
+  if (newVal) {
+    if (!props.globalPage) {
+      editableHtml.value = elementHTML.value
+      return
+    }
 
-  if (!props.globalPage) {
-    editableHtml.value = elementHTML.value
-    return
+    editableComponents.value = await pageBuilderService.generateHtmlFromComponents()
   }
+})
 
-  editableComponents.value = await pageBuilderService.generateHtmlFromComponents()
+const handleShowHTMLEditor = async () => {
+  pageBuilderStateStore.setShowModalHTMLEditor(true)
 }
 
 const handleCloseHTMLEditor = () => {
-  showModalHTMLEditor.value = false
+  pageBuilderStateStore.setShowModalHTMLEditor(false)
 }
 
 const isLoading = ref(false)
@@ -62,7 +65,7 @@ const handleSaveChangesElement = async () => {
     return
   }
 
-  showModalHTMLEditor.value = false
+  pageBuilderStateStore.setShowModalHTMLEditor(false)
   isLoading.value = false
 }
 
@@ -80,7 +83,7 @@ const handleSaveChangesComponents = async () => {
     return
   }
 
-  showModalHTMLEditor.value = false
+  pageBuilderStateStore.setShowModalHTMLEditor(false)
   isLoading.value = false
 }
 </script>
@@ -101,7 +104,7 @@ const handleSaveChangesComponents = async () => {
   </EditorAccordion>
   <ModalBuilder
     maxWidth="7xl"
-    :showModalBuilder="showModalHTMLEditor"
+    :showModalBuilder="getShowModalHTMLEditor"
     :title="translate('HTML Editor')"
     @closeMainModalBuilder="handleCloseHTMLEditor"
   >
