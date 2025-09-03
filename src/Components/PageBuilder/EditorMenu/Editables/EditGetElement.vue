@@ -25,6 +25,9 @@ const elementTag = computed(() => {
   return getElement.value?.tagName
 })
 
+const canMoveUp = computed(() => pageBuilderService.canMoveUp())
+const canMoveDown = computed(() => pageBuilderService.canMoveDown())
+
 const getShowModalTipTap = computed(() => {
   const result = pageBuilderStateStore.getShowModalTipTap
 
@@ -39,36 +42,36 @@ const getComponent = computed(() => {
 })
 
 // hanlde Tip Tap modal
-const typeModal = ref('')
-const gridColumnModal = ref(Number(1))
-const titleModal = ref('')
-const descriptionModal = ref('')
-const firstButtonModal = ref('')
-const secondButtonModal = ref(null)
-const thirdButtonModal = ref(null)
+const typeModalTipTap = ref('')
+const gridColumnModalTipTap = ref(Number(1))
+const titleModalTipTap = ref('')
+const descriptionModalTipTap = ref('')
+const firstButtonModalTipTap = ref('')
+const secondButtonModalTipTap = ref(null)
+const thirdButtonModalTipTap = ref(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilder = ref(null)
-const secondModalButtonFunctionDynamicModalBuilder = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+const firstModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
+const secondModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
+const thirdModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
 
 const handleModalPreviewTiptap = function () {
   pageBuilderService.toggleTipTapModal(true)
 
-  typeModal.value = 'success'
-  gridColumnModal.value = 2
-  titleModal.value = translate('Manage Content')
-  descriptionModal.value = null
-  firstButtonModal.value = null
-  secondButtonModal.value = null
-  thirdButtonModal.value = 'Save'
+  typeModalTipTap.value = 'success'
+  gridColumnModalTipTap.value = 2
+  titleModalTipTap.value = translate('Manage Content')
+  descriptionModalTipTap.value = null
+  firstButtonModalTipTap.value = null
+  secondButtonModalTipTap.value = null
+  thirdButtonModalTipTap.value = 'Save'
 
   // handle click
 
-  firstModalButtonFunctionDynamicModalBuilder.value = function () {
+  firstModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
     pageBuilderService.toggleTipTapModal(false)
   }
 
-  thirdModalButtonFunctionDynamicModalBuilder.value = function () {
+  thirdModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
     pageBuilderService.toggleTipTapModal(true)
   }
 }
@@ -146,20 +149,20 @@ const handleModalIframeSrc = function () {
   // open modal to true
   showModalIframeSrc.value = true
 
-  typeModal.value = 'success'
-  gridColumnModal.value = 2
-  titleModal.value = 'Add video url'
-  descriptionModal.value = null
-  firstButtonModal.value = translate('Close')
-  secondButtonModal.value = 'Save'
-  thirdButtonModal.value = null
+  typeModalTipTap.value = 'success'
+  gridColumnModalTipTap.value = 2
+  titleModalTipTap.value = 'Add video url'
+  descriptionModalTipTap.value = null
+  firstButtonModalTipTap.value = translate('Close')
+  secondButtonModalTipTap.value = 'Save'
+  thirdButtonModalTipTap.value = null
 
   // handle click
-  firstModalButtonFunctionDynamicModalBuilder.value = function () {
+  firstModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
     showModalIframeSrc.value = false
   }
   // handle click
-  secondModalButtonFunctionDynamicModalBuilder.value = function () {
+  secondModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
     const isNotValidated = validateURL()
     if (isNotValidated) {
       return
@@ -195,22 +198,67 @@ const handleShowHTMLEditor = async () => {
   openOptionsMoreOpen.value = false
   pageBuilderStateStore.setShowModalHTMLEditor(true)
 }
+
+const showModalDeleteComponent = ref(false)
+// use dynamic model
+const typeModal = ref('')
+const gridColumnModal = ref(Number(1))
+const titleModal = ref('')
+const descriptionModal = ref('')
+const firstButtonModal = ref('')
+const secondButtonModal = ref(null)
+const thirdButtonModal = ref(null)
+// set dynamic modal handle functions
+const firstModalButtonFunctionDynamicModalBuilder = ref(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+
+// remove component
+const handleDelete = function () {
+  showModalDeleteComponent.value = true
+  typeModal.value = 'delete'
+  gridColumnModal.value = 2
+  titleModal.value = translate('Remove Component?')
+  descriptionModal.value = translate('Are you sure you want to remove this Component?')
+  firstButtonModal.value = translate('Close')
+  secondButtonModal.value = null
+  thirdButtonModal.value = translate('Delete')
+
+  // handle click
+  firstModalButtonFunctionDynamicModalBuilder.value = function () {
+    showModalDeleteComponent.value = false
+  }
+  //
+  // handle click
+  thirdModalButtonFunctionDynamicModalBuilder.value = async function () {
+    await pageBuilderService.deleteComponentFromDOM()
+
+    showModalDeleteComponent.value = false
+  }
+  // end modal
+}
 </script>
 <template v-if="getElement">
   <div>
     <DynamicModalBuilder
       :showDynamicModalBuilder="showModalIframeSrc"
       maxWidth="2xl"
-      :type="typeModal"
-      :gridColumnAmount="gridColumnModal"
-      :title="titleModal"
-      :description="descriptionModal"
-      :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal"
-      :thirdButtonText="thirdButtonModal"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonFunctionDynamicModalBuilder"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonFunctionDynamicModalBuilder"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
+      :type="typeModalTipTap"
+      :gridColumnAmount="gridColumnModalTipTap"
+      :title="titleModalTipTap"
+      :description="descriptionModalTipTap"
+      :firstButtonText="firstButtonModalTipTap"
+      :secondButtonText="secondButtonModalTipTap"
+      :thirdButtonText="thirdButtonModalTipTap"
+      @firstModalButtonFunctionDynamicModalBuilderTipTap="
+        firstModalButtonFunctionDynamicModalBuilderTipTap
+      "
+      @secondModalButtonFunctionDynamicModalBuilderTipTap="
+        secondModalButtonFunctionDynamicModalBuilderTipTap
+      "
+      @thirdModalButtonFunctionDynamicModalBuilderTipTap="
+        thirdModalButtonFunctionDynamicModalBuilderTipTap
+      "
     >
       <header></header>
       <main>
@@ -242,6 +290,30 @@ const handleShowHTMLEditor = async () => {
       :simpleModal="true"
       :showDynamicModalBuilder="getShowModalTipTap"
       maxWidth="6xl"
+      :type="typeModalTipTap"
+      :gridColumnAmount="gridColumnModalTipTap"
+      :title="titleModalTipTap"
+      :description="descriptionModalTipTap"
+      :firstButtonText="firstButtonModalTipTap"
+      :secondButtonText="secondButtonModalTipTap"
+      :thirdButtonText="thirdButtonModalTipTap"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        firstModalButtonFunctionDynamicModalBuilderTipTap
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        secondModalButtonFunctionDynamicModalBuilderTipTap
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        thirdModalButtonFunctionDynamicModalBuilderTipTap
+      "
+    >
+      <header></header>
+      <main class="pbx-overflow-y-auto">
+        <TipTapInput></TipTapInput>
+      </main>
+    </DynamicModalBuilder>
+    <DynamicModalBuilder
+      :showDynamicModalBuilder="showModalDeleteComponent"
       :type="typeModal"
       :gridColumnAmount="gridColumnModal"
       :title="titleModal"
@@ -254,11 +326,8 @@ const handleShowHTMLEditor = async () => {
       @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
     >
       <header></header>
-      <main class="pbx-overflow-y-auto">
-        <TipTapInput></TipTapInput>
-      </main>
+      <main></main>
     </DynamicModalBuilder>
-
     <MediaLibraryModal
       :open="showMediaLibraryModal"
       :title="titleMedia"
@@ -375,8 +444,64 @@ const handleShowHTMLEditor = async () => {
         <div
           class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[80vh] pbx-mx-4 pbx-px-2"
         >
-          <div class="pbx-flex pbx-flex-col pbx-gap-4">
+          <div class="pbx-flex pbx-flex-col">
             <!-- content start -->
+            <!-- move up and down start -->
+            <div
+              v-if="getElement && getComponent"
+              @click="pageBuilderService.reorderComponent(-1)"
+              :disabled="!canMoveUp"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            >
+              <div
+                class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
+                :class="[
+                  canMoveUp
+                    ? 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer'
+                    : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
+                ]"
+              >
+                <span class="material-symbols-outlined"> move_up </span>
+              </div>
+              <div class="pbx-text-sm">Move up</div>
+            </div>
+            <div
+              v-if="getElement && getComponent"
+              @click="pageBuilderService.reorderComponent(1)"
+              :disabled="!canMoveDown"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            >
+              <div
+                class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
+                :class="[
+                  canMoveDown
+                    ? 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer'
+                    : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
+                ]"
+              >
+                <span class="material-symbols-outlined"> move_down </span>
+              </div>
+              <div class="pbx-text-sm">Move down</div>
+            </div>
+            <!-- move up and down end -->
+
+            <!-- delete component start -->
+
+            <div
+              v-if="getElement && getComponent"
+              @click="handleDelete()"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            >
+              <div
+                class="pbx-h- pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+              >
+                <span class="material-symbols-outlined"> delete_forever </span>
+              </div>
+              <div class="pbx-text-sm">Delete component</div>
+            </div>
+
+            <!-- delete component end -->
+
             <div
               v-if="getElement && getComponent"
               @click="
@@ -385,7 +510,7 @@ const handleShowHTMLEditor = async () => {
                   pageBuilderService.duplicateComponent()
                 }
               "
-              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
             >
               <div
                 class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
@@ -397,7 +522,7 @@ const handleShowHTMLEditor = async () => {
             <div
               v-if="getElement && getComponent"
               @click="handleShowHTMLEditor"
-              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
             >
               <div
                 class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
@@ -406,6 +531,7 @@ const handleShowHTMLEditor = async () => {
               </div>
               <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
             </div>
+
             <!-- content end -->
           </div>
         </div>
