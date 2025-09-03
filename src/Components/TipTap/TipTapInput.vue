@@ -1,5 +1,5 @@
 <script setup>
-import { useEditor, EditorContent } from '@tiptap/vue-3'
+import { useEditor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import Link from '@tiptap/extension-link'
@@ -329,6 +329,7 @@ onMounted(() => {
           </div>
 
           <editor-content
+            v-if="editor"
             id="page-builder-editor"
             :editor="editor"
             class="pbx-p-2 pbx-prounded-lg lg:pbx-min-h-[20rem] lg:pbx-max-h-[30rem] md:pbx-min-h-[20rem] md:pbx-max-h-[20rem] pbx-min-h-[20rem] pbx-max-h-[20rem] pbx-overflow-y-auto"
