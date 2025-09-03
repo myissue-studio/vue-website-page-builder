@@ -21,8 +21,7 @@
     - [Initializing the Page Builder](#initializing-the-page-builder)
     - [Nuxt 3 Integration](#nuxt-3-integration)
       - [Create a Nuxt Plugin](#create-a-nuxt-plugin)
-    - [Why Use the Shared Instance?](#why-use-the-shared-instance)
-    - [Using the Page Builder Component](#using-the-page-builder-component)
+    - [Why Use the Shared Instance? By always accessing the shared instance, you avoid creating](#why-use-the-shared-instance-by-always-accessing-the-shared-instance-you-avoid-creating)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
@@ -267,21 +266,26 @@ export default defineNuxtPlugin((nuxtApp) => {
 })
 ```
 
-### Why Use the Shared Instance?
-
-By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
-
-### Using the Page Builder Component
-
-Ensure the following configuration options are set:
-
-- **`formType` (required):**
-  Indicates whether you are creating or updating a resource. This is used to retrieve the correct content from local storage.
-
-- **`formName` (required):**
-  Specifies the resource type (for example, `article`, `jobPost`, `store`, etc.).
+Uusing the component:
 
 ```vue
+<template>
+  <client-only>
+    <PageBuilder />
+  </client-only>
+</template>
+```
+
+### Why Use the Shared Instance? By always accessing the shared instance, you avoid creating
+
+multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization
+issues, and unpredictable behavior. All components and modules interact with the same centralized
+service, ensuring that updates and state changes are reflected everywhere in your application. ###
+Using the Page Builder Component Ensure the following configuration options are set: - **`formType`
+(required):** Indicates whether you are creating or updating a resource. This is used to retrieve
+the correct content from local storage. - **`formName` (required):** Specifies the resource type
+(for example, `article`, `jobPost`, `store`, etc.). ```vue
+
 <script setup>
 import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 import '@myissue/vue-website-page-builder/style.css'
@@ -302,7 +306,7 @@ console.info('You may inspect this result for message, status, or error:', resul
 <template>
   <PageBuilder />
 </template>
-```
+````
 
 ## Important: CSS Prefixing (`pbx-`)
 
