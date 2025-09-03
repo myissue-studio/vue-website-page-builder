@@ -190,6 +190,11 @@ const handleModalIframeSrc = function () {
 }
 
 const openOptionsMoreOpen = ref(false)
+
+const handleShowHTMLEditor = async () => {
+  openOptionsMoreOpen.value = false
+  pageBuilderStateStore.setShowModalHTMLEditor(true)
+}
 </script>
 <template v-if="getElement">
   <div>
@@ -370,22 +375,7 @@ const openOptionsMoreOpen = ref(false)
         <div
           class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[80vh] pbx-mx-4 pbx-px-2"
         >
-          <div
-            class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-between pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-pl-2"
-          >
-            <span class="pbx-text-black pbx-font-medium">Options</span>
-
-            <!-- Close Modal start -->
-            <div
-              @click="openOptionsMoreOpen = !openOptionsMoreOpen"
-              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-black pbx-text-white pbx-aspect-square hover:pbx-fill-white focus-visible:pbx-ring-0 hover:pbx-outline-3 hover:pbx-outline-offset-2 hover:pbx-outline-black pbx-transition-all pbx-duration-100"
-            >
-              <span class="material-symbols-outlined"> close_small </span>
-            </div>
-            <!-- Close Modal Start -->
-          </div>
-
-          <div class="pbx-flex pbx-flex-col pbx-gap-4 pbx-mt-6">
+          <div class="pbx-flex pbx-flex-col pbx-gap-4">
             <!-- content start -->
             <div
               v-if="getElement && getComponent"
@@ -403,6 +393,18 @@ const openOptionsMoreOpen = ref(false)
                 <span class="material-symbols-outlined"> control_point_duplicate </span>
               </div>
               <div class="pbx-text-sm">Duplicate component</div>
+            </div>
+            <div
+              v-if="getElement && getComponent"
+              @click="handleShowHTMLEditor"
+              class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer"
+            >
+              <div
+                class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
+              >
+                <span class="material-symbols-outlined"> deployed_code </span>
+              </div>
+              <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
             </div>
             <!-- content end -->
           </div>

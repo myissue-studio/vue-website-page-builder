@@ -52,6 +52,7 @@ interface PageBuilderState {
   components: ComponentObject[]
   basePrimaryImage: string | null
   configPageBuilder: PageBuilderConfig | null
+  showModalHTMLEditor: boolean
 
   // Media Library State
   applyImageToSelection: ImageObject
@@ -114,6 +115,7 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     components: [],
     basePrimaryImage: null,
     configPageBuilder: null,
+    showModalHTMLEditor: false,
 
     // Media Library State
     applyImageToSelection: { src: '' },
@@ -259,6 +261,9 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
 
     getPageBuilderConfig(state: PageBuilderState): PageBuilderConfig | null {
       return state.configPageBuilder
+    },
+    getShowModalHTMLEditor(state: PageBuilderState): boolean {
+      return state.showModalHTMLEditor
     },
 
     getApplyImageToSelection(state: PageBuilderState): ImageObject {
@@ -448,6 +453,10 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
 
     setPageBuilderConfig(payload: PageBuilderConfig | null): void {
       this.configPageBuilder = payload
+    },
+
+    setShowModalHTMLEditor(payload: boolean): void {
+      this.showModalHTMLEditor = payload
     },
 
     setApplyImageToSelection(payload: ImageObject): void {
