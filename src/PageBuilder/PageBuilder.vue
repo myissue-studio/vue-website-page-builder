@@ -16,7 +16,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/builderInstance'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 
-let pageBuilderService
+const pageBuilderService = getPageBuilder()
 
 /**
  * Props for PageBuilder component
@@ -373,8 +373,6 @@ function updatePanelPosition() {
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder'))
 
 onMounted(async () => {
-  pageBuilderService = getPageBuilder()
-
   await pageBuilderService.completeBuilderInitialization(undefined, true)
 
   if (userSettings && userSettings.lang) {
