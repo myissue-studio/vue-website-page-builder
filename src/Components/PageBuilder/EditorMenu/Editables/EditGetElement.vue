@@ -250,13 +250,13 @@ const handleDelete = function () {
       :firstButtonText="firstButtonModalTipTap"
       :secondButtonText="secondButtonModalTipTap"
       :thirdButtonText="thirdButtonModalTipTap"
-      @firstModalButtonFunctionDynamicModalBuilderTipTap="
+      @firstModalButtonFunctionDynamicModalBuilder="
         firstModalButtonFunctionDynamicModalBuilderTipTap
       "
-      @secondModalButtonFunctionDynamicModalBuilderTipTap="
+      @secondModalButtonFunctionDynamicModalBuilder="
         secondModalButtonFunctionDynamicModalBuilderTipTap
       "
-      @thirdModalButtonFunctionDynamicModalBuilderTipTap="
+      @thirdModalButtonFunctionDynamicModalBuilder="
         thirdModalButtonFunctionDynamicModalBuilderTipTap
       "
     >

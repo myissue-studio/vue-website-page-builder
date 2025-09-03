@@ -21,7 +21,7 @@
     - [Initializing the Page Builder](#initializing-the-page-builder)
     - [Nuxt 3 Integration](#nuxt-3-integration)
       - [Create a Nuxt Plugin](#create-a-nuxt-plugin)
-      - [Register the Plugin](#register-the-plugin)
+      - [Register the Plugin in nuxt.config.ts](#register-the-plugin-in-nuxtconfigts)
     - [Why Use the Shared Instance?](#why-use-the-shared-instance)
     - [Using the Page Builder Component](#using-the-page-builder-component)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
@@ -247,21 +247,29 @@ To use `@myissue/vue-website-page-builder` in a Nuxt 3 project, follow these ste
 
 #### Create a Nuxt Plugin
 
-```typescript
+Create a file:
+
+```
+app/plugins/page-builder.client.js
+```
+
+Add:
+
+```javascript
 import { defineNuxtPlugin } from '#app'
-import PageBuilder from '@myissue/vue-website-page-builder'
+import { pageBuilder } from '@myissue/vue-website-page-builder'
 import '@myissue/vue-website-page-builder/style.css'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(PageBuilder)
+  nuxtApp.vueApp.use(pageBuilder)
 })
 ```
 
-#### Register the Plugin
+#### Register the Plugin in nuxt.config.ts
 
 ```typescript
 export default defineNuxtConfig({
-  plugins: ['~/plugins/page-builder.client.ts'],
+  plugins: ['~/plugins/page-builder.client.js'],
 })
 ```
 
