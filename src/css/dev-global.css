@@ -22,3 +22,10 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
   opacity: 1;
 }
 /* popover end */
+
+.pbx-theme-cover svg {
+  width: 100%;
+  height: 100%;
+  preserveaspectratio: xMidYMid slice;
+  object-position: top; /* align to top */
+}
