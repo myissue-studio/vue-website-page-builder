@@ -18,7 +18,7 @@ const version = __APP_VERSION__
 
     <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
       <a
-        href="https://github.com/myissue-org/vue-website-page-builder"
+        href="https://github.com/myissue-studio/vue-website-page-builder"
         target="_blank"
         class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
       >

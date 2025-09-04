@@ -409,7 +409,7 @@ const handleDelete = function () {
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
-        <template v-if="getElement">
+        <template v-if="getElement && false">
           <button
             @click="pageBuilderService.deleteElementFromDOM"
             type="button"
@@ -439,7 +439,7 @@ const handleDelete = function () {
     <transition name="popup-fade">
       <div
         v-if="openOptionsMoreOpen"
-        class="pbx-fixed pbx-z-40 pbx-top-10 pbx-right-0 lg:pbx-w-72 md:pbx-w-72 pbx-w-full pbx-select-none"
+        class="pbx-fixed pbx-z-40 pbx-top-10 pbx-right-[-4rem] lg:pbx-w-72 pbx-w-72 pbx-select-none"
       >
         <div
           class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[80vh] pbx-mx-4 pbx-px-2"
