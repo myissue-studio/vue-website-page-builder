@@ -2,7 +2,6 @@
  * @file This file manages the singleton instance of the PageBuilderService.
  * This pattern ensures that there is only one instance of the service throughout the application,
  * providing a single source of truth for the page builder's state and logic.
- * @author Qais Wardag
  */
 
 import { PageBuilderService } from '../services/PageBuilderService'
