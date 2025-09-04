@@ -38,7 +38,7 @@ watch(currentTranslations, async () => {
       image: '/jane_doe.jpg',
     },
     updateOrCreate: {
-      formType: 'update',
+      formType: 'create',
       formName: 'collection',
     },
     pageBuilderLogo: {

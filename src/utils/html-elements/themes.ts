@@ -42,9 +42,37 @@ const component: Themes[] = [
           html_code: `<div id="pagebuilder" class=" style=""><section data-component-title="Header H2"><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-font-medium pbx-text-3xl lg:pbx-text-6xl"><h2>Inceptos himenaeos</h2></div></div></div></section> <section data-component-title="Text"> <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.<br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class=""><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Fringilla lacus nec metus</h3></div></div></div></section> <section data-component-title="Text" class=""> <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.</p><ul><li><p><strong>Blorf nizgat quarnip veloop</strong></p></li><li><p><strong>Dramble froop with lartic spindles</strong></p></li><li><p><strong>Quibber on flemt zarglo dynamics</strong></p></li><li><p><strong>Slooped jarnix under flibble zones</strong></p></li><li><p><strong>Plonk-ready trizzit with garm logic</strong></p><p><br></p></li></ul><p>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class=""><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Conubia nostra inceptos</h3></div></div></div></section> <section data-component-title="Text"> <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. <br><br>Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. <br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section></div>`,
           category: 'Article',
           cover_image: `
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-                        <path fill="#4e4e50" d="M32 4H0V0h32v4zM20 12H0V8h20v4zM32 24H0v-4h32v4zM24 32H0v-4h24v4zM32 30a2.001 2.001 0 0 1-4.004 0A2.001 2.001 0 0 1 32 30z"/>
-                      </svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384.06 297.89">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #556177;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="0" y="0" width="384.06" height="8.8" rx="4.4" ry="4.4"/>
+  <g>
+    <rect class="cls-1" x="0" y="47.7" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+    <rect class="cls-1" x="0" y="63.34" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+    <rect class="cls-1" x="0" y="79.95" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+    <rect class="cls-1" x="0" y="95.29" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+  </g>
+  <g>
+    <rect class="cls-1" x="0" y="222.51" width="154.21" height="8.8" rx="4.4" ry="4.4"/>
+    <g>
+      <rect class="cls-1" x="0" y="243.28" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+      <rect class="cls-1" x="0" y="258.92" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+      <rect class="cls-1" x="0" y="275.53" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+      <rect class="cls-1" x="0" y="290.87" width="306.56" height="7.02" rx="3.51" ry="3.51"/>
+    </g>
+  </g>
+  <g>
+    <rect class="cls-1" x="0" y="141.22" width="237.91" height="5.45" rx="2.72" ry="2.72"/>
+    <rect class="cls-1" x="0" y="153.36" width="237.91" height="5.45" rx="2.72" ry="2.72"/>
+    <rect class="cls-1" x="0" y="166.24" width="237.91" height="5.45" rx="2.72" ry="2.72"/>
+    <rect class="cls-1" x="0" y="178.15" width="237.91" height="5.45" rx="2.72" ry="2.72"/>
+  </g>
+</svg>
 					`,
         },
         {
@@ -52,19 +80,67 @@ const component: Themes[] = [
           html_code: `<section data-component-title="Single Image"> <div class="md:pbx-pt-12 md:pbx-pb-12 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-1 lg:pbx-grid-cols-1"> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"></div></div></div></div> </section> <section data-component-title="Header H2" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-font-medium pbx-text-3xl lg:pbx-text-6xl"><h2>Inceptos himenaeos</h2></div></div></div></section> <section data-component-title="Text" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.<br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class="" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Fringilla lacus nec metus</h3></div></div></div></section> <section data-component-title="Text" class="" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.</p><ul><li><p><strong>Blorf nizgat quarnip veloop</strong></p></li><li><p><strong>Dramble froop with lartic spindles</strong></p></li><li><p><strong>Quibber on flemt zarglo dynamics</strong></p></li><li><p><strong>Slooped jarnix under flibble zones</strong></p></li><li><p><strong>Plonk-ready trizzit with garm logic</strong></p><p><br></p></li></ul><p>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class="" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Conubia nostra inceptos</h3></div></div></div></section> <section data-component-title="Text" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. <br><br>Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. <br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Three Square Images"> <div class="md:pbx-pt-12 md:pbx-pb-12 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-3 lg:pbx-grid-cols-3"> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"></div></div> </div></div> </section>`,
           category: 'Article',
           cover_image: `
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="206.893 39.489 110.693 141.8873" width="110.693px" height="141.887px">
-                        <g transform="matrix(1, 0, 0, 1, 0, 2.842170943040401e-14)">
-                          <g id="article" style="" transform="matrix(1.62105, 0, 0, 1.62105, -98.141953, -52.42038)">
-                            <path fill="#4e4e50" d="M 238.331 116.22 L 206.331 116.22 L 206.331 112.22 L 238.331 112.22 L 238.331 116.22 Z M 226.331 124.22 L 206.331 124.22 L 206.331 120.22 L 226.331 120.22 L 226.331 124.22 Z M 238.331 136.22 L 206.331 136.22 L 206.331 132.22 L 238.331 132.22 L 238.331 136.22 Z M 230.331 144.22 L 206.331 144.22 L 206.331 140.22 L 230.331 140.22 L 230.331 144.22 Z M 238.331 142.22 C 238.331 143.762 236.663 144.725 235.328 143.954 C 234.708 143.597 234.327 142.936 234.327 142.22 C 234.327 140.679 235.995 139.716 237.33 140.487 C 237.949 140.844 238.331 141.505 238.331 142.22 Z" style="stroke-width: 1;"/>
-                          </g>
-                        </g>
-                        <g transform="matrix(1, 0, 0, 1, 0, 2.842170943040401e-14)">
-                          <rect class="bg" width="110.693" height="83.02" style="fill: rgb(56, 65, 82); stroke-width: 1;" x="206.893" y="39.489"/>
-                          <polygon class="fg" points="242.868 89.308 256.705 72.703 270.543 89.308" style="fill: rgb(113, 128, 150); stroke-width: 1;"/>
-                          <polygon class="fg" points="267.776 89.308 274.694 81.005 281.614 89.308" style="fill: rgb(113, 128, 150); stroke-width: 1;"/>
-                          <circle class="fg" cx="274.694" cy="74.995" r="2.303" style="fill: rgb(113, 128, 150); stroke-width: 1;"/>
-                        </g>
-                      </svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 173.53 366.71">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #394152;
+      }
+
+      .cls-2 {
+        fill: #718096;
+      }
+
+      .cls-3 {
+        fill: #556177;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect class="cls-3" x="0" y="154.81" width="173.07" height="3.96" rx="1.98" ry="1.98"/>
+    <g>
+      <rect class="cls-3" x="0" y="176.31" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="183.36" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="190.84" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="197.75" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+    </g>
+    <g>
+      <rect class="cls-3" x="0" y="255.08" width="69.49" height="3.96" rx="1.98" ry="1.98"/>
+      <g>
+        <rect class="cls-3" x="0" y="264.44" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="271.49" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="278.97" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="285.89" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      </g>
+    </g>
+    <g>
+      <rect class="cls-3" x="0" y="218.45" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="223.92" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="229.73" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="235.09" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+    </g>
+  </g>
+  <g>
+    <rect class="cls-1" x="0" width="173.06" height="129.8"/>
+    <polygon class="cls-2" points="56.24 77.89 77.88 51.93 99.51 77.89 56.24 77.89"/>
+    <polygon class="cls-2" points="95.19 77.89 106 64.91 116.82 77.89 95.19 77.89"/>
+    <circle class="cls-2" cx="106" cy="55.51" r="3.6"/>
+  </g>
+  <g>
+    <rect class="cls-1" x=".45" y="314.07" width="52.64" height="52.64"/>
+    <rect class="cls-1" x="61.13" y="314.07" width="52.64" height="52.64"/>
+    <rect class="cls-1" x="120.89" y="314.07" width="52.64" height="52.64"/>
+    <polygon class="cls-2" points="8.46 348.24 21.54 332.54 34.62 348.24 8.46 348.24"/>
+    <polygon class="cls-2" points="32.01 348.24 38.55 340.39 45.08 348.24 32.01 348.24"/>
+    <circle class="cls-2" cx="38.55" cy="334.72" r="2.18"/>
+    <polygon class="cls-2" points="69.14 348.24 82.21 332.54 95.29 348.24 69.14 348.24"/>
+    <polygon class="cls-2" points="92.68 348.24 99.22 340.39 105.76 348.24 92.68 348.24"/>
+    <circle class="cls-2" cx="99.22" cy="334.72" r="2.18"/>
+    <polygon class="cls-2" points="128.89 348.24 141.97 332.54 155.05 348.24 128.89 348.24"/>
+    <polygon class="cls-2" points="152.43 348.24 158.97 340.39 165.51 348.24 152.43 348.24"/>
+    <circle class="cls-2" cx="158.97" cy="334.72" r="2.18"/>
+  </g>
+</svg>
 					`,
         },
         {
@@ -72,9 +148,138 @@ const component: Themes[] = [
           html_code: `<section data-component-title="Header H2" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-font-medium pbx-text-3xl lg:pbx-text-6xl"><h2>Eaque, iste dolor cupiditate blanditiis ratione</h2></div></div></div></section> <section data-component-title="Stats Split with image" > <div class="md:pbx-pt-12 md:pbx-pb-12 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-2"> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square "src="${getPlaceholderImageDataUrl()}" alt="provider"> </div> <div> <div class=""> <p class="pbx-font-semibold">Our track record</p> </div> <div class="pbx-font-medium pbx-text-2xl lg:pbx-text-4xl"><p>Trusted by thousands of creators worldwide</p></div> <div><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p></div> <div class="pbx-mt-16 pbx-grid pbx-max-w-xl pbx-grid-cols-1 pbx-gap-8 sm:pbx-mt-20 sm:pbx-grid-cols-2 xl:pbx-mt-16"> <div class="pbx-flex pbx-flex-col pbx-gap-y-3 pbx-border-l pbx-border-gray-900/10 pbx-pl-6"> <div><p>Creators on the platform</p></div> <div class="pbx-font-medium pbx-text-lg lg:pbx-text-2xl"><p>8,000+</p></div> </div> <div class="pbx-flex pbx-flex-col pbx-gap-y-3 pbx-border-l pbx-border-gray-900/10 pbx-pl-6"> <div> <p class="pbx-text-sm/6 pbx-text-gray-600">Flat platform fee</p> </div> <div class="pbx-font-medium pbx-text-lg lg:pbx-text-2xl"><p>3%</p></div> </div> <div class="pbx-flex pbx-flex-col pbx-gap-y-3 pbx-border-l pbx-border-gray-900/10 pbx-pl-6"> <div> <p class="pbx-text-sm/6 pbx-text-gray-600">Uptime guarantee</p> </div> <div class="pbx-text-lg lg:pbx-text-2xl pbx-font-medium"><p>99.9%</p></div> </div> <div class="pbx-flex pbx-flex-col pbx-gap-y-3 pbx-border-l pbx-border-gray-900/10 pbx-pl-6"> <div> <p class="pbx-text-sm/6 pbx-text-gray-600">Paid out to creators</p> </div> <div class="pbx-text-lg lg:pbx-text-2xl pbx-font-medium"><p>$70M</p></div> </div> </div> </div></div> </div></div> </section> <section data-component-title="Header H3" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Layouts and visual.</h3></div></div></div></section> <section data-component-title="Text" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione. Dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione. Cadipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p></div> </div> </div> </section> <section data-component-title="Four Square Images With Text" > <div class="md:pbx-pt-12 md:pbx-pb-12 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-2 sm:pbx-grid-cols-2 lg:pbx-grid-cols-4"> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"> <div class="pbx-break-words pbx-py-2"><p>Layouts and visual.</p><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"> <div class="pbx-break-words pbx-py-2"><p>Layouts and visual.</p><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"> <div class="pbx-break-words pbx-py-2"><p>Layouts and visual.</p><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}" alt="provider"><div class="pbx-break-words pbx-py-2"><p>Layouts and visual.</p><p>Start customizing by editing this default text directly in the editor.</p></div> </div> </div> </div> </div> </section>`,
           category: 'Marketing',
           cover_image: `
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-                        <path fill="#4e4e50" d="M32 4H0V0h32v4zM20 12H0V8h20v4zM32 24H0v-4h32v4zM24 32H0v-4h24v4zM32 30a2.001 2.001 0 0 1-4.004 0A2.001 2.001 0 0 1 32 30z"/>
-                      </svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 173.22 206.05">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #394152;
+      }
+
+      .cls-2 {
+        fill: #718096;
+      }
+
+      .cls-3 {
+        fill: #556177;
+      }
+
+      .cls-4 {
+        fill: #3a4152;
+      }
+    </style>
+  </defs>
+  <rect class="cls-3" x="0" y="0" width="173.07" height="3.96" rx="1.98" ry="1.98"/>
+  <g>
+    <rect class="cls-3" x="0" y="112.5" width="69.49" height="3.96" rx="1.98" ry="1.98"/>
+    <g>
+      <rect class="cls-3" x="0" y="121.86" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="128.91" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="136.39" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="143.31" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+    </g>
+  </g>
+  <g>
+    <g>
+      <rect class="cls-1" y="24.82" width="89.11" height="66.83"/>
+      <polygon class="cls-2" points="28.96 64.92 40.1 51.55 51.24 64.92 28.96 64.92"/>
+      <polygon class="cls-2" points="49.01 64.92 54.58 58.24 60.15 64.92 49.01 64.92"/>
+      <circle class="cls-2" cx="54.58" cy="53.4" r="1.85"/>
+    </g>
+    <g>
+      <rect class="cls-3" x="94.48" y="24.82" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="30.28" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="36.09" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="41.46" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+    </g>
+    <g>
+      <rect class="cls-3" x="94.48" y="61.06" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="66.53" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="72.34" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="94.48" y="77.71" width="78.6" height="2.46" rx="1.23" ry="1.23"/>
+    </g>
+  </g>
+  <g>
+    <rect class="cls-4" x="0" y="167.33" width="38.72" height="38.72"/>
+    <rect class="cls-4" x="44.64" y="167.33" width="38.72" height="38.72"/>
+    <rect class="cls-4" x="88.59" y="167.33" width="38.72" height="38.72"/>
+    <rect class="cls-4" x="134.49" y="167.33" width="38.72" height="38.72"/>
+    <polygon class="cls-2" points="5.89 192.46 15.51 180.91 25.14 192.46 5.89 192.46"/>
+    <polygon class="cls-2" points="23.21 192.46 28.02 186.69 32.83 192.46 23.21 192.46"/>
+    <circle class="cls-2" cx="28.02" cy="182.51" r="1.6"/>
+    <polygon class="cls-2" points="50.53 192.46 60.15 180.91 69.77 192.46 50.53 192.46"/>
+    <polygon class="cls-2" points="67.85 192.46 72.65 186.69 77.47 192.46 67.85 192.46"/>
+    <circle class="cls-2" cx="72.65" cy="182.51" r="1.6"/>
+    <polygon class="cls-2" points="94.48 192.46 104.1 180.91 113.73 192.46 94.48 192.46"/>
+    <polygon class="cls-2" points="111.8 192.46 116.61 186.69 121.42 192.46 111.8 192.46"/>
+    <circle class="cls-2" cx="116.61" cy="182.51" r="1.6"/>
+    <polygon class="cls-2" points="140.38 192.46 150 180.91 159.62 192.46 140.38 192.46"/>
+    <polygon class="cls-2" points="157.7 192.46 162.5 186.69 167.32 192.46 157.7 192.46"/>
+    <circle class="cls-2" cx="162.5" cy="182.51" r="1.6"/>
+  </g>
+</svg>
+					`,
+        },
+        {
+          title: 'Job Post',
+          html_code: `<section data-component-title="Header H2" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-font-medium pbx-text-3xl lg:pbx-text-6xl"><h2>Inceptos himenaeos</h2></div></div></div></section> <section data-component-title="Text" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.<br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class="" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Fringilla lacus nec metus</h3></div></div></div></section> <section data-component-title="Text" class="" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra.</p><ul><li><p><strong>Blorf nizgat quarnip veloop</strong></p></li><li><p><strong>Dramble froop with lartic spindles</strong></p></li><li><p><strong>Quibber on flemt zarglo dynamics</strong></p></li><li><p><strong>Slooped jarnix under flibble zones</strong></p></li><li><p><strong>Plonk-ready trizzit with garm logic</strong></p><p><br></p></li></ul><p>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Header H3" class="" ><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words pbx-text-1xl lg:pbx-text-3xl pbx-font-medium"><h3>Conubia nostra inceptos</h3></div></div></div></section> <section data-component-title="Text" > <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div><p>Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. <br><br>Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos. <br><br>Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p></div> </div> </div> </section> <section data-component-title="Three Square Images" > <div class="md:pbx-pt-12 md:pbx-pb-12 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-3 lg:pbx-grid-cols-3"> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}"" alt="provider"> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}"" alt="provider"> </div> <div class="pbx-flex-1 pbx-py-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square " src="${getPlaceholderImageDataUrl()}"" alt="provider"></div></div> </div></div> </section>`,
+          category: 'Article',
+          cover_image: `
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 173.53 211.89">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #394152;
+      }
+
+      .cls-2 {
+        fill: #718096;
+      }
+
+      .cls-3 {
+        fill: #556177;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect class="cls-3" x="0" y="0" width="173.07" height="3.96" rx="1.98" ry="1.98"/>
+    <g>
+      <rect class="cls-3" x="0" y="21.5" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="28.54" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="36.03" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      <rect class="cls-3" x="0" y="42.94" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+    </g>
+    <g>
+      <rect class="cls-3" x="0" y="100.27" width="69.49" height="3.96" rx="1.98" ry="1.98"/>
+      <g>
+        <rect class="cls-3" x="0" y="109.63" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="116.68" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="124.16" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+        <rect class="cls-3" x="0" y="131.08" width="138.15" height="3.16" rx="1.58" ry="1.58"/>
+      </g>
+    </g>
+    <g>
+      <rect class="cls-3" x="0" y="63.64" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="69.11" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="74.91" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+      <rect class="cls-3" x="0" y="80.28" width="107.21" height="2.46" rx="1.23" ry="1.23"/>
+    </g>
+  </g>
+  <g>
+    <rect class="cls-1" x=".45" y="159.26" width="52.64" height="52.64"/>
+    <rect class="cls-1" x="61.13" y="159.26" width="52.64" height="52.64"/>
+    <rect class="cls-1" x="120.89" y="159.26" width="52.64" height="52.64"/>
+    <polygon class="cls-2" points="8.46 193.42 21.54 177.73 34.62 193.42 8.46 193.42"/>
+    <polygon class="cls-2" points="32.01 193.42 38.55 185.58 45.08 193.42 32.01 193.42"/>
+    <circle class="cls-2" cx="38.55" cy="179.9" r="2.18"/>
+    <polygon class="cls-2" points="69.14 193.42 82.21 177.73 95.29 193.42 69.14 193.42"/>
+    <polygon class="cls-2" points="92.68 193.42 99.22 185.58 105.76 193.42 92.68 193.42"/>
+    <circle class="cls-2" cx="99.22" cy="179.9" r="2.18"/>
+    <polygon class="cls-2" points="128.89 193.42 141.97 177.73 155.05 193.42 128.89 193.42"/>
+    <polygon class="cls-2" points="152.43 193.42 158.97 185.58 165.51 193.42 152.43 193.42"/>
+    <circle class="cls-2" cx="158.97" cy="179.9" r="2.18"/>
+  </g>
+</svg>
 					`,
         },
       ],

@@ -167,30 +167,32 @@ const convertToComponentObject = function (comp: any): ComponentObject {
             </button>
           </div>
 
-          <div
-            class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4 pbx-min-h-[96rem]"
-          >
+          <div class="pbx-min-h-[96rem]">
             <div
-              v-for="theme in filteredThemes"
-              :key="theme.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
-              @click="handleDropTheme(theme.html_code)"
+              class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4"
             >
               <div
-                class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 lg:pbx-py-10 pbx-py-8 pbx-px-2"
+                v-for="theme in filteredThemes"
+                :key="theme.title"
+                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-[30rem]"
+                @click="handleDropTheme(theme.html_code)"
               >
-                <!-- Use SVG preview instead of external images -->
                 <div
-                  class="pbx-max-h-72 pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center"
-                  v-html="theme.cover_image"
-                ></div>
-              </div>
-              <div class="pbx-p-3">
-                <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
-                  {{ translate(theme.title) }}
-                </h4>
-                <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
-                  {{ translate('Click to add theme') }}
+                  class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
+                >
+                  <!-- Use SVG preview instead of external images -->
+                  <div
+                    class="pbx-w-64 pbx-h-96 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
+                    v-html="theme.cover_image"
+                  ></div>
+                </div>
+                <div class="pbx-p-3">
+                  <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
+                    {{ translate(theme.title) }}
+                  </h4>
+                  <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
+                    {{ translate('Click to add theme') }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,30 +248,32 @@ const convertToComponentObject = function (comp: any): ComponentObject {
               {{ translate(category) }}
             </button>
           </div>
-          <div
-            class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4 pbx-min-h-[96rem]"
-          >
+          <div class="pbx-min-h-[96rem]">
             <div
-              v-for="comp in filteredComponents"
-              :key="comp.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
-              @click="handleDropComponent(convertToComponentObject(comp))"
+              class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4"
             >
               <div
-                class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 lg:pbx-py-10 pbx-py-8 pbx-px-2"
+                v-for="comp in filteredComponents"
+                :key="comp.title"
+                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
+                @click="handleDropComponent(convertToComponentObject(comp))"
               >
-                <!-- Use SVG preview instead of external images -->
                 <div
-                  class="pbx-max-h-72 pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center"
-                  v-html="comp.cover_image"
-                ></div>
-              </div>
-              <div class="pbx-p-3">
-                <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
-                  {{ translate(comp.title) }}
-                </h4>
-                <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
-                  {{ translate('Click to add component') }}
+                  class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
+                >
+                  <!-- Use SVG preview instead of external images -->
+                  <div
+                    class="pbx-w-64 pbx-h-64 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
+                    v-html="comp.cover_image"
+                  ></div>
+                </div>
+                <div class="pbx-p-3">
+                  <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
+                    {{ translate(comp.title) }}
+                  </h4>
+                  <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
+                    {{ translate('Click to add component') }}
+                  </div>
                 </div>
               </div>
             </div>
