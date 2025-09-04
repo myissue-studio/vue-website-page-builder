@@ -409,7 +409,7 @@ const handleDelete = function () {
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
-        <template v-if="getElement">
+        <template v-if="getElement && false">
           <button
             @click="pageBuilderService.deleteElementFromDOM"
             type="button"
