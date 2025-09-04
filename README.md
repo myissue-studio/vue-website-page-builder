@@ -876,13 +876,13 @@ If you have any questions or if you're looking for customization, feel free to c
 
 Encountered a bug, have suggestions, or need a new feature? Create a GitHub issue:
 
-- [Submit an Issue](https://github.com/myissue-org/vue-website-page-builder/issues)
+- [Submit an Issue](https://github.com/myissue-studio/vue-website-page-builder/issues)
 
 ## Feedback
 
 Feedback, suggestions or any issues you encounter while using this app. Feel free to reach out.
 
-- [Submit your testimonial here](https://github.com/myissue-org/vue-website-page-builder/issues)
+- [Submit your testimonial here](https://github.com/myissue-studio/vue-website-page-builder/issues)
 
 ## Support the Project
 
