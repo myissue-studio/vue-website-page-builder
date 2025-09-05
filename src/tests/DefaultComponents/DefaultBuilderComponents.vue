@@ -23,7 +23,9 @@ const isLoading = ref(false)
 
 const selectedThemeSelection = ref('Components')
 
-const componentOrThemes = ['Components', 'Themes']
+const componentOrThemes = computed(() => {
+  return ['Components', 'Themes']
+})
 const selectedCategory = ref('All')
 
 const categories = computed(() => {
