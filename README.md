@@ -26,8 +26,9 @@
     - [5. Why Initialize the Page Builder with `onMounted` in Nuxt?](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
   - [Vue Integration](#vue-integration)
     - [1. Install the Package](#1-install-the-package-1)
-    - [2. Import and use the Page Builder plugin](#2-import-and-use-the-page-builder-plugin)
+    - [2. Import and use the Page Builder Plugin](#2-import-and-use-the-page-builder-plugin)
     - [3. Using the Page Builder Component](#3-using-the-page-builder-component)
+    - [4. Initialize Page Builder with `onMounted` Troubleshooting](#4-initialize-page-builder-with-onmounted-troubleshooting)
   - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
@@ -256,10 +257,10 @@ export default defineNuxtPlugin((nuxtApp) => {
 
 ### 3. Register the Plugin in `nuxt.config.ts`
 
-Make sure Nuxt knows about your new plugin by adding it to your config:
+Make sure Nuxt knows about your new Plugin by adding it to your config:
 
-> **Note:** If your plugin is inside the `/plugins` folder, Nuxt will auto-register it.  
-> Adding it to `nuxt.config.ts` is optional, but can be useful for clarity.
+> **Note:** If your Plugin is inside the `/plugins` folder, Nuxt will auto-register it.  
+> Adding it to `nuxt.config.ts` is optional, but improves clarity.
 
 ```typescript
 export default defineNuxtConfig({
@@ -322,9 +323,9 @@ To use `@myissue/vue-website-page-builder` in your Vue project, follow these ste
 npm install @myissue/vue-website-page-builder
 ```
 
-### 2. Import and use the Page Builder plugin
+### 2. Import and use the Page Builder Plugin
 
-Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
+Import the `pageBuilder` Plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
 
 Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
 
@@ -365,6 +366,31 @@ console.info('You may inspect this result for message, status, or error:', resul
 <template>
   <PageBuilder />
 </template>
+```
+
+### 4. Initialize Page Builder with `onMounted` Troubleshooting
+
+If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
+
+```vue
+<script setup>
+import { onMounted } from 'vue'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'article',
+  },
+}
+
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const pageBuilderService = getPageBuilder()
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
+</script>
 ```
 
 ## Why Use the Shared Instance?
@@ -600,9 +626,9 @@ yourForm.content = storedComponents
 
 ### Resetting the Builder After Successful Resource Creation or Update
 
-After successfully creating or updating a resource (such as a post, article, or listing) using the Page Builder, it is important to clear the DOM and the builder’s draft state, as well as remove the corresponding local storage entry. This ensures that old drafts do not appear the next time the builder is opened for a new or existing resource.
+After successfully creating or updating a resource (such as a post, article, or listing) using the Page Builder, it is important to clear the `DOM` and the builder’s draft state, as well as remove the corresponding local storage entry. This ensures that old drafts do not appear the next time the builder is opened for a new or existing resource.
 
-You can reset the Page Builder’s live DOM, builder state, and clear the draft with:
+You can reset the Page Builder’s live `DOM`, builder state, and clear the draft with:
 
 ```typescript
 await pageBuilderService.handleFormSubmission()
@@ -864,7 +890,7 @@ onMounted(async () => {
 
 ## Page Builder Architecture
 
-The Page Builder is designed as a modular, state-driven editor for dynamic page content. Its architecture separates configuration, state management, and DOM interaction, ensuring flexibility and maintainability.
+The Page Builder is designed as a modular, state-driven editor for dynamic page content. Its architecture separates configuration, state management, and `DOM` interaction, ensuring flexibility and maintainability.
 
 ### How the Page Builder Works
 
@@ -872,7 +898,7 @@ The Page Builder is designed to be easy to use and flexible for any web project.
 
 - **Configuration First:**
   When you start the builder, you pass in your configuration (such as what type of page you’re building, user info, branding, and any existing content).
-  The builder saves this configuration immediately—even if the editing interface (DOM) isn’t loaded yet. This means you can safely set up the builder in advance, and it will be ready as soon as the editor appears on the page.
+  The builder saves this configuration immediately—even if the editing interface `DOM` isn’t loaded yet. This means you can safely set up the builder in advance, and it will be ready as soon as the editor appears on the page.
 
 - **Loading Content:**
   If you have existing content (like a published page), the builder loads it so you can continue editing. If not, you start with a blank page.
