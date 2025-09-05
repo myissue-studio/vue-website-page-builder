@@ -18,17 +18,16 @@
   - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-  - [Nuxt Setup Integration](#nuxt-setup-integration)
+  - [Nuxt Integration](#nuxt-integration)
     - [1. Install the Package](#1-install-the-package)
     - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
     - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
     - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
     - [5. Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
-  - [Vue Setup Integration](#vue-setup-integration)
+  - [Vue Integration](#vue-integration)
     - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
     - [2. Using the Page Builder Component](#2-using-the-page-builder-component)
-    - [3. Initialize Page Builder with `onMounted` Troubleshooting](#3-initialize-page-builder-with-onmounted-troubleshooting)
-    - [Why Use the Shared Instance?](#why-use-the-shared-instance)
+  - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
@@ -51,7 +50,7 @@
     - [Custom Layout Builder Component](#custom-layout-builder-component)
   - [Troubleshooting](#troubleshooting)
     - [1. Fonts or Icons Not Displaying](#1-fonts-or-icons-not-displaying)
-    - [2. Initialize Page Builder with `onMounted`](#2-initialize-page-builder-with-onmounted)
+    - [2. Initialize Page Builder with `onMounted` Troubleshooting](#2-initialize-page-builder-with-onmounted-troubleshooting)
   - [Page Builder Architecture](#page-builder-architecture)
     - [How the Page Builder Works](#how-the-page-builder-works)
   - [Contributing](#contributing)
@@ -221,7 +220,7 @@ npm install @myissue/vue-website-page-builder
 Get up and running with the Vue Website Page Builder in just a few minutes.  
 This section walks you through the essential steps—from installation to rendering your first page—so you can start building beautiful, dynamic content right away.
 
-## Nuxt Setup Integration
+## Nuxt Integration
 
 > **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
@@ -312,7 +311,7 @@ onMounted(async () => {
 
 In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
 
-## Vue Setup Integration
+## Vue Integration
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
@@ -361,32 +360,7 @@ console.info('You may inspect this result for message, status, or error:', resul
 </template>
 ```
 
-### 3. Initialize Page Builder with `onMounted` Troubleshooting
-
-If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
-
-```vue
-<script setup>
-import { onMounted } from 'vue'
-import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
-
-const configPageBuilder = {
-  updateOrCreate: {
-    formType: 'create',
-    formName: 'article',
-  },
-}
-
-// Initialize the page builder with `onMounted`
-onMounted(async () => {
-  const pageBuilderService = getPageBuilder()
-  const result = await pageBuilderService.startBuilder(configPageBuilder)
-  console.info('You may inspect this result for message, status, or error:', result)
-})
-</script>
-```
-
-### Why Use the Shared Instance?
+## Why Use the Shared Instance?
 
 By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
 
@@ -856,7 +830,7 @@ If fonts or Material Icons are not displaying correctly, verify that:
 import '@myissue/vue-website-page-builder/style.css'
 ```
 
-### 2. Initialize Page Builder with `onMounted`
+### 2. Initialize Page Builder with `onMounted` Troubleshooting
 
 If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
 
