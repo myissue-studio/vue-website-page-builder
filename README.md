@@ -18,16 +18,16 @@
   - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-    - [Nuxt Setup Integration](#nuxt-setup-integration)
-      - [1. Install the Package](#1-install-the-package)
-      - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
-      - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
-      - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
-      - [5. Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
-    - [Vue Setup Integration](#vue-setup-integration)
-      - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
-      - [2. Using the Page Builder Component](#2-using-the-page-builder-component)
-      - [3. Optional: Initialize Page Builder with `onMounted` Troubleshooting](#3-optional-initialize-page-builder-with-onmounted-troubleshooting)
+  - [Nuxt Setup Integration](#nuxt-setup-integration)
+    - [1. Install the Package](#1-install-the-package)
+    - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
+    - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
+    - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
+    - [5. Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
+  - [Vue Setup Integration](#vue-setup-integration)
+    - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
+    - [2. Using the Page Builder Component](#2-using-the-page-builder-component)
+    - [3. Initialize Page Builder with `onMounted` Troubleshooting](#3-initialize-page-builder-with-onmounted-troubleshooting)
     - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
@@ -210,7 +210,7 @@ bun install
 
 ## Installation
 
-The web builder for stunning pages. Enable users to design and publish modern pages at any scale.
+The web builder for stunning pages. Enables users to design and publish modern pages at any scale.
 
 ```bash
 npm install @myissue/vue-website-page-builder
@@ -221,20 +221,20 @@ npm install @myissue/vue-website-page-builder
 Get up and running with the Vue Website Page Builder in just a few minutes.  
 This section walks you through the essential steps—from installation to rendering your first page—so you can start building beautiful, dynamic content right away.
 
-### Nuxt Setup Integration
+## Nuxt Setup Integration
 
 > **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
 
 To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps:
 
-#### 1. Install the Package
+### 1. Install the Package
 
 ```bash
 npm install @myissue/vue-website-page-builder
 ```
 
-#### 2. Create a Nuxt Plugin
+### 2. Create a Nuxt Plugin
 
 In the root, create a file named:
 
@@ -254,7 +254,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 })
 ```
 
-#### 3. Register the Plugin in `nuxt.config.ts`
+### 3. Register the Plugin in `nuxt.config.ts`
 
 Make sure Nuxt knows about your new plugin by adding it to your config:
 
@@ -268,7 +268,7 @@ export default defineNuxtConfig({
 })
 ```
 
-#### 4. Using the Page Builder Component
+### 4. Using the Page Builder Component
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
@@ -308,15 +308,15 @@ onMounted(async () => {
 > **Tip:**  
 > By initializing the builder inside `onMounted`, you ensure everything is ready and avoid hydration errors.
 
-#### 5. Why initialize the page builder with `onMounted` in Nuxt
+### 5. Why initialize the page builder with `onMounted` in Nuxt
 
 In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
 
-### Vue Setup Integration
+## Vue Setup Integration
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
-#### 1. Import and use the Page Builder plugin
+### 1. Import and use the Page Builder plugin
 
 Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
 
@@ -333,7 +333,7 @@ app.use(pageBuilder)
 app.mount('#app')
 ```
 
-#### 2. Using the Page Builder Component
+### 2. Using the Page Builder Component
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
@@ -361,7 +361,7 @@ console.info('You may inspect this result for message, status, or error:', resul
 </template>
 ```
 
-#### 3. Optional: Initialize Page Builder with `onMounted` Troubleshooting
+### 3. Initialize Page Builder with `onMounted` Troubleshooting
 
 If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
 
