@@ -309,40 +309,57 @@ In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on t
 
 ### Initializing the Page Builder in Vue
 
-To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps
+To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
-- **Use the Page Builder plugin** in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
-- **Access the shared builder instance** anywhere in your application using the `getPageBuilder()` composable.
+1. **Import and use the Page Builder plugin**  
+   Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
 
-> **Note:**
-> You only need to import the CSS file once. If you have already imported it in your app entry, you do not need to import it again in individual components.
+   Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
 
-- **Import the CSS file once** in your `main.js`, `main.ts`, or root component to ensure proper styling and automatic icon loading.
+   ```typescript
+   import { createApp } from 'vue'
+   import App from './App.vue'
+   import { pageBuilder } from '@myissue/vue-website-page-builder'
+   import '@myissue/vue-website-page-builder/style.css'
 
-```typescript
-import { createApp } from 'vue'
-import App from './App.vue'
-import { pageBuilder } from '@myissue/vue-website-page-builder'
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
+   const app = createApp(App)
+   app.use(pageBuilder)
+   app.mount('#app')
+   ```
 
-// Use the Page Builder plugin
-const app = createApp(App)
-app.use(pageBuilder)
-app.mount('#app')
+2. **Access the shared builder instance**  
+   Anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
+
+```vue
+<script setup>
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'article',
+  },
+}
+
+const pageBuilderService = getPageBuilder()
+const result = await pageBuilderService.startBuilder(configPageBuilder)
+
+console.info('You may inspect this result for message, status, or error:', result)
+</script>
+
+<template>
+  <PageBuilder />
+</template>
 ```
 
-The Page Builder is implemented as a singleton service, meaning all page-building logic and state are managed by a single shared instance across your app — even if you use `<PageBuilder />` in multiple places.
+> **Note:**  
+> The Page Builder is implemented as a singleton service. All page-building logic and state are managed by a single shared instance, even if you use `<PageBuilder />` in multiple places.
 
 ### Why Use the Shared Instance?
 
-By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized
-service, ensuring that updates and state changes are reflected everywhere in your application. ###
-Using the Page Builder Component Ensure the following configuration options are set: - **`formType`
-(required):** Indicates whether you are creating or updating a resource. This is used to retrieve
-the correct content from local storage. - **`formName` (required):** Specifies the resource type
-(for example, `article`, `jobPost`, `store`, etc.). ```vue
+By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
 
+```vue
 <script setup>
 import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 // Import the Page Builder styles once in your application entry, not in individual components.
@@ -364,7 +381,7 @@ console.info('You may inspect this result for message, status, or error:', resul
 <template>
   <PageBuilder />
 </template>
-````
+```
 
 ## Important: CSS Prefixing (`pbx-`)
 
