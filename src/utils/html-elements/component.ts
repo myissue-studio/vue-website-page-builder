@@ -508,6 +508,14 @@ const component: Components[] = [
                       </svg>
                     `,
         },
+        {
+          title: 'Image & Left CTA',
+          html_code: `<section><div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-2"> <img class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="provider"/> <div class="pbx-mx-auto pbx-px-6 pbx-py-24 pbx-sm:py-32 pbx-lg:px-8"> <div class="pbx-break-words pbx-text-2xl lg:pbx-text-4xl pbx-font-medium"> <h2>Boost your productivity. Start using our app today.</h2> </div> <div class="pbx-pt-12 pbx-pb-4"> <p> Incididunt sint fugiat pariatur cupidatat consectetur sit cillum anim id veniam aliqua proident excepteur commodo do ea. </p> </div> <div class="pbx-font-semibold pbx-py-4"> <p> <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" >Learn more</a > </p> </div> </div> </div></section>`,
+          category: 'Call To Action',
+          cover_image: `
+ 
+                    `,
+        },
       ],
     },
   },
