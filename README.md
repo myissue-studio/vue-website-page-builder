@@ -18,14 +18,14 @@
   - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-    - [Initializing the Page Builder](#initializing-the-page-builder)
     - [Nuxt Integration](#nuxt-integration)
       - [1. Install the Package](#1-install-the-package)
       - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
       - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
       - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
-      - [Why initialize the page builder with `onMounted`](#why-initialize-the-page-builder-with-onmounted)
-    - [Why Use the Shared Instance? By always accessing the shared instance, you avoid creating](#why-use-the-shared-instance-by-always-accessing-the-shared-instance-you-avoid-creating)
+      - [5 Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
+    - [Initializing the Page Builder in Vue](#initializing-the-page-builder-in-vue)
+    - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
@@ -217,33 +217,6 @@ npm install @myissue/vue-website-page-builder
 Get up and running with the Vue Website Page Builder in just a few minutes.
 This section walks you through the essential steps—from installation to rendering your first page—so you can start building beautiful, dynamic content right away.
 
-### Initializing the Page Builder
-
-To get started with the Page Builder, follow these steps:
-
-- **Use the Page Builder plugin** in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
-- **Access the shared builder instance** anywhere in your application using the `getPageBuilder()` composable.
-
-> **Note:**
-> You only need to import the CSS file once. If you have already imported it in your app entry, you do not need to import it again in individual components.
-
-- **Import the CSS file once** in your `main.js`, `main.ts`, or root component to ensure proper styling and automatic icon loading.
-
-```typescript
-import { createApp } from 'vue'
-import App from './App.vue'
-import { pageBuilder } from '@myissue/vue-website-page-builder'
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
-
-// Use the Page Builder plugin
-const app = createApp(App)
-app.use(pageBuilder)
-app.mount('#app')
-```
-
-The Page Builder is implemented as a singleton service, meaning all page-building logic and state are managed by a single shared instance across your app — even if you use `<PageBuilder />` in multiple places.
-
 ### Nuxt Integration
 
 > **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.
@@ -330,14 +303,40 @@ onMounted(async () => {
 > **Tip:**  
 > By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.
 
-#### Why initialize the page builder with `onMounted`
+#### 5 Why initialize the page builder with `onMounted` in Nuxt
 
 In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (DOM, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
 
-### Why Use the Shared Instance? By always accessing the shared instance, you avoid creating
+### Initializing the Page Builder in Vue
 
-multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization
-issues, and unpredictable behavior. All components and modules interact with the same centralized
+To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps
+
+- **Use the Page Builder plugin** in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
+- **Access the shared builder instance** anywhere in your application using the `getPageBuilder()` composable.
+
+> **Note:**
+> You only need to import the CSS file once. If you have already imported it in your app entry, you do not need to import it again in individual components.
+
+- **Import the CSS file once** in your `main.js`, `main.ts`, or root component to ensure proper styling and automatic icon loading.
+
+```typescript
+import { createApp } from 'vue'
+import App from './App.vue'
+import { pageBuilder } from '@myissue/vue-website-page-builder'
+// Import the Page Builder styles once in your application entry, not in individual components.
+import '@myissue/vue-website-page-builder/style.css'
+
+// Use the Page Builder plugin
+const app = createApp(App)
+app.use(pageBuilder)
+app.mount('#app')
+```
+
+The Page Builder is implemented as a singleton service, meaning all page-building logic and state are managed by a single shared instance across your app — even if you use `<PageBuilder />` in multiple places.
+
+### Why Use the Shared Instance?
+
+By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized
 service, ensuring that updates and state changes are reflected everywhere in your application. ###
 Using the Page Builder Component Ensure the following configuration options are set: - **`formType`
 (required):** Indicates whether you are creating or updating a resource. This is used to retrieve
