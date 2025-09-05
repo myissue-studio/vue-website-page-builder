@@ -64,7 +64,7 @@
 
 ## Demo
 
-A Vue 3 page builder component with drag-and-drop functionality for creating dynamic web pages.
+A Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
 
 Create and enhance digital experiences with Vue on any backend.
 
@@ -244,7 +244,7 @@ plugins/page-builder.client.js
 
 Add the following code:
 
-```typescript
+```javascript
 import { pageBuilder } from '@myissue/vue-website-page-builder'
 // Import the Page Builder styles once in your application entry, not in individual components.
 import '@myissue/vue-website-page-builder/style.css'
@@ -288,7 +288,7 @@ const configPageBuilder = {
   },
 }
 
-// Initialize the page builder with `onMounted`
+// Initialize the Page Builder with `onMounted`
 onMounted(async () => {
   const pageBuilderService = getPageBuilder()
   const result = await pageBuilderService.startBuilder(configPageBuilder)
@@ -310,7 +310,7 @@ onMounted(async () => {
 
 ### 5. Why Initialize the Page Builder with `onMounted` in Nuxt?
 
-In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this pattern.
+In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the Page Builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this pattern.
 
 ## Vue Integration
 
@@ -328,7 +328,7 @@ Import the `pageBuilder` plugin and register it in your application entry point 
 
 Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
 
-```typescript
+```javascript
 import { createApp } from 'vue'
 import App from './App.vue'
 import { pageBuilder } from '@myissue/vue-website-page-builder'
@@ -381,9 +381,9 @@ This prevents global styles from leaking into the builder and vice versa, which 
 
 **How does this affect you?**
 
-When a user adds a component into the page builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
+When a user adds a component into the Page Builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
 
-Tailwind installation is not required. The page builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the page builder.
+Tailwind installation is not required. The Page Builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the Page Builder.
 
 > **Note:**
 > Simply import the builder’s CSS file once in your project. All builder styles are namespaced, so there is no risk of style conflicts.
@@ -420,7 +420,7 @@ import { ref } from 'vue'
 // Import the Page Builder styles once in your application entry, not in individual components.
 import '@myissue/vue-website-page-builder/style.css'
 
-const rawHtml = ref('<p>This is content from the page builder.</p>')
+const rawHtml = ref('<p>This is content from the Page Builder.</p>')
 </script>
 
 <template>
@@ -853,7 +853,7 @@ const configPageBuilder = {
   },
 }
 
-// Initialize the page builder with `onMounted`
+// Initialize the Page Builder with `onMounted`
 onMounted(async () => {
   const pageBuilderService = getPageBuilder()
   const result = await pageBuilderService.startBuilder(configPageBuilder)
