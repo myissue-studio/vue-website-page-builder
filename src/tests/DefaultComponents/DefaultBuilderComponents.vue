@@ -23,7 +23,9 @@ const isLoading = ref(false)
 
 const selectedThemeSelection = ref('Components')
 
-const componentOrThemes = ['Components', 'Themes']
+const componentOrThemes = computed(() => {
+  return ['Components', 'Themes']
+})
 const selectedCategory = ref('All')
 
 const categories = computed(() => {
@@ -56,10 +58,18 @@ const filteredThemes = computed(() => {
 const { closeAddComponentModal } = usePageBuilderModal()
 
 // Super simple component addition with professional modal closing!
-const handleDropTheme = async function (components: string) {
+const handleDropTheme = async function (themeHtml: string) {
   isLoading.value = true
 
-  await pageBuilderService.addTheme(components)
+  // Translate all occurrences of hardcoded strings in the theme HTML
+  const translatedThemeHtml = themeHtml
+    .replace(/Layouts and visual\./g, translate('Layouts and visual.'))
+    .replace(
+      /Start customizing by editing this default text directly in the editor\./g,
+      translate('Start customizing by editing this default text directly in the editor.'),
+    )
+
+  await pageBuilderService.addTheme(translatedThemeHtml)
   closeAddComponentModal()
   isLoading.value = false
 }
