@@ -38,7 +38,7 @@ watch(currentTranslations, async () => {
       image: '/jane_doe.jpg',
     },
     updateOrCreate: {
-      formType: 'create',
+      formType: 'update',
       formName: 'collection',
     },
     pageBuilderLogo: {
@@ -70,6 +70,9 @@ watch(currentTranslations, async () => {
 
 <template>
   <div class="pbx-bg-white">
+    <!-- test compos here: start -->
+
+    <!-- test compos here: end -->
     <div class="lg:pbx-p-2">
       <!--   :CustomBuilderComponents="DemoBuilderComponentsTest" -->
       <PageBuilder

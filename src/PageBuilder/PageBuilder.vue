@@ -984,10 +984,6 @@ onMounted(async () => {
   outline-offset: -4px !important;
 }
 
-#pagebuilder a {
-  cursor: default;
-}
-
 /* sortable */
 
 .sortable-ghost {
