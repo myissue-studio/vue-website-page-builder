@@ -23,7 +23,7 @@
     - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
     - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
     - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
-    - [5. Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
+    - [5. Why Initialize the Page Builder with `onMounted` in Nuxt?](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
   - [Vue Integration](#vue-integration)
     - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
     - [2. Using the Page Builder Component](#2-using-the-page-builder-component)
@@ -237,13 +237,13 @@ npm install @myissue/vue-website-page-builder
 
 In the root, create a file named:
 
-```
+```plaintext
 plugins/page-builder.client.js
 ```
 
 Add the following code:
 
-```javascript
+```typescript
 import { pageBuilder } from '@myissue/vue-website-page-builder'
 // Import the Page Builder styles once in your application entry, not in individual components.
 import '@myissue/vue-website-page-builder/style.css'
@@ -271,9 +271,9 @@ export default defineNuxtConfig({
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
-You are ready to use the Page Builder in your Nuxt pages or components.
+The Page Builder relies on browser APIs like `localStorage` and dynamic `DOM` manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
 
-The Page Builder relies on browser APIs like `localStorage` and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
+You’re now ready to use the Page Builder in your Nuxt pages or components with the `getPageBuilder()` composable.
 
 ```vue
 <script setup>
@@ -307,9 +307,9 @@ onMounted(async () => {
 > **Tip:**  
 > By initializing the builder inside `onMounted`, you ensure everything is ready and avoid hydration errors.
 
-### 5. Why initialize the page builder with `onMounted` in Nuxt
+### 5. Why Initialize the Page Builder with `onMounted` in Nuxt?
 
-In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
+In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this pattern.
 
 ## Vue Integration
 
@@ -317,7 +317,7 @@ To use `@myissue/vue-website-page-builder` in your Vue project, follow these ste
 
 ### 1. Import and use the Page Builder plugin
 
-Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
+Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
 
 Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
 
@@ -336,7 +336,7 @@ app.mount('#app')
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
-You are ready to use the Page Builder in your Vue pages or components.
+You’re now ready to use the Page Builder in your Vue pages or components with the `getPageBuilder()` composable.
 
 ```vue
 <script setup>
