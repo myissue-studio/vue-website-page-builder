@@ -463,7 +463,9 @@ const handleDelete = function () {
               >
                 <span class="material-symbols-outlined"> move_up </span>
               </div>
-              <div class="pbx-text-sm">Move up</div>
+              <div class="pbx-text-sm">
+                {{ translate('Move up') }}
+              </div>
             </div>
             <div
               v-if="getElement && getComponent"
@@ -481,7 +483,9 @@ const handleDelete = function () {
               >
                 <span class="material-symbols-outlined"> move_down </span>
               </div>
-              <div class="pbx-text-sm">Move down</div>
+              <div class="pbx-text-sm">
+                {{ translate('Move down') }}
+              </div>
             </div>
             <!-- move up and down end -->
 
@@ -497,7 +501,9 @@ const handleDelete = function () {
               >
                 <span class="material-symbols-outlined"> delete_forever </span>
               </div>
-              <div class="pbx-text-sm">Delete component</div>
+              <div class="pbx-text-sm">
+                {{ translate('Delete component') }}
+              </div>
             </div>
 
             <!-- delete component end -->
@@ -517,7 +523,9 @@ const handleDelete = function () {
               >
                 <span class="material-symbols-outlined"> control_point_duplicate </span>
               </div>
-              <div class="pbx-text-sm">Duplicate component</div>
+              <div class="pbx-text-sm">
+                {{ translate('Duplicate component') }}
+              </div>
             </div>
             <div
               v-if="getElement && getComponent"
