@@ -70,9 +70,6 @@ watch(currentTranslations, async () => {
 
 <template>
   <div class="pbx-bg-white">
-    <!-- test compos here: start -->
-
-    <!-- test compos here: end -->
     <div class="lg:pbx-p-2">
       <!--   :CustomBuilderComponents="DemoBuilderComponentsTest" -->
       <PageBuilder

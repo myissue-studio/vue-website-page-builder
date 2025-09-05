@@ -18,14 +18,18 @@
   - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-    - [Initializing the Page Builder](#initializing-the-page-builder)
-    - [Nuxt Integration](#nuxt-integration)
-      - [1. Install the Package](#1-install-the-package)
-      - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
-      - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
-      - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
-      - [Why initialize the page builder with `onMounted`](#why-initialize-the-page-builder-with-onmounted)
-    - [Why Use the Shared Instance? By always accessing the shared instance, you avoid creating](#why-use-the-shared-instance-by-always-accessing-the-shared-instance-you-avoid-creating)
+  - [Nuxt Integration](#nuxt-integration)
+    - [1. Install the Package](#1-install-the-package)
+    - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
+    - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
+    - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
+    - [5. Why Initialize the Page Builder with `onMounted` in Nuxt?](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
+  - [Vue Integration](#vue-integration)
+    - [1. Install the Package](#1-install-the-package-1)
+    - [2. Import and use the Page Builder Plugin](#2-import-and-use-the-page-builder-plugin)
+    - [3. Using the Page Builder Component](#3-using-the-page-builder-component)
+    - [4. Initialize Page Builder with `onMounted` Troubleshooting](#4-initialize-page-builder-with-onmounted-troubleshooting)
+  - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
@@ -47,7 +51,8 @@
     - [Integrate Unsplash Library](#integrate-unsplash-library)
     - [Custom Layout Builder Component](#custom-layout-builder-component)
   - [Troubleshooting](#troubleshooting)
-    - [Fonts or Icons Not Displaying](#fonts-or-icons-not-displaying)
+    - [1. Fonts or Icons Not Displaying](#1-fonts-or-icons-not-displaying)
+    - [2. Initialize Page Builder with `onMounted` Troubleshooting](#2-initialize-page-builder-with-onmounted-troubleshooting)
   - [Page Builder Architecture](#page-builder-architecture)
     - [How the Page Builder Works](#how-the-page-builder-works)
   - [Contributing](#contributing)
@@ -60,7 +65,7 @@
 
 ## Demo
 
-A Vue 3 page builder component with drag-and-drop functionality for creating dynamic web pages.
+A Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
 
 Create and enhance digital experiences with Vue on any backend.
 
@@ -206,7 +211,7 @@ bun install
 
 ## Installation
 
-The web builder for stunning pages. Enable users to design and publish modern pages at any scale.
+The web builder for stunning pages. Enables users to design and publish modern pages at any scale.
 
 ```bash
 npm install @myissue/vue-website-page-builder
@@ -214,54 +219,27 @@ npm install @myissue/vue-website-page-builder
 
 ## Quick Start
 
-Get up and running with the Vue Website Page Builder in just a few minutes.
+Get up and running with the Vue Website Page Builder in just a few minutes.  
 This section walks you through the essential steps—from installation to rendering your first page—so you can start building beautiful, dynamic content right away.
 
-### Initializing the Page Builder
+## Nuxt Integration
 
-To get started with the Page Builder, follow these steps:
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 or Nuxt 4 project, follow these steps:
 
-- **Use the Page Builder plugin** in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
-- **Access the shared builder instance** anywhere in your application using the `getPageBuilder()` composable.
-
-> **Note:**
-> You only need to import the CSS file once. If you have already imported it in your app entry, you do not need to import it again in individual components.
-
-- **Import the CSS file once** in your `main.js`, `main.ts`, or root component to ensure proper styling and automatic icon loading.
-
-```typescript
-import { createApp } from 'vue'
-import App from './App.vue'
-import { pageBuilder } from '@myissue/vue-website-page-builder'
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
-
-// Use the Page Builder plugin
-const app = createApp(App)
-app.use(pageBuilder)
-app.mount('#app')
-```
-
-The Page Builder is implemented as a singleton service, meaning all page-building logic and state are managed by a single shared instance across your app — even if you use `<PageBuilder />` in multiple places.
-
-### Nuxt Integration
-
-> **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.
+> **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
 
-To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps
-
-#### 1. Install the Package
+### 1. Install the Package
 
 ```bash
 npm install @myissue/vue-website-page-builder
 ```
 
-#### 2. Create a Nuxt Plugin
+### 2. Create a Nuxt Plugin
 
-In the root create a file named:
+In the root, create a file named:
 
-```
+```plaintext
 plugins/page-builder.client.js
 ```
 
@@ -277,12 +255,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 })
 ```
 
-#### 3. Register the Plugin in `nuxt.config.ts`
+### 3. Register the Plugin in `nuxt.config.ts`
 
-Make sure Nuxt knows about your new plugin by adding it to your config:
+Make sure Nuxt knows about your new Plugin by adding it to your config:
 
-> **Note:** If your plugin is inside the `/plugins` folder, Nuxt will auto-register it.  
-> Adding it to `nuxt.config.ts` is optional, but can be useful for clarity.
+> **Note:** If your Plugin is inside the `/plugins` folder, Nuxt will auto-register it.  
+> Adding it to `nuxt.config.ts` is optional, but improves clarity.
 
 ```typescript
 export default defineNuxtConfig({
@@ -291,11 +269,13 @@ export default defineNuxtConfig({
 })
 ```
 
-#### 4. Using the Page Builder Component
+### 4. Using the Page Builder Component
 
-Now you’re ready to use the builder in your pages or components.
+Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
-The Page Builder relies on browser APIs like localStorage and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
+The Page Builder relies on browser APIs like `localStorage` and dynamic `DOM` manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
+
+You’re now ready to use the Page Builder in your Nuxt pages or components with the `getPageBuilder()` composable.
 
 ```vue
 <script setup>
@@ -309,8 +289,7 @@ const configPageBuilder = {
   },
 }
 
-// Initialize the page builder with `onMounted`
-// The Page Builder depends on the browser (DOM, `window`, `localStorage`, etc.)
+// Initialize the Page Builder with `onMounted`
 onMounted(async () => {
   const pageBuilderService = getPageBuilder()
   const result = await pageBuilderService.startBuilder(configPageBuilder)
@@ -328,26 +307,48 @@ onMounted(async () => {
 ```
 
 > **Tip:**  
-> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.
+> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid hydration errors.
 
-#### Why initialize the page builder with `onMounted`
+### 5. Why Initialize the Page Builder with `onMounted` in Nuxt?
 
-In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (DOM, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
+In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the Page Builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this pattern.
 
-### Why Use the Shared Instance? By always accessing the shared instance, you avoid creating
+## Vue Integration
 
-multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization
-issues, and unpredictable behavior. All components and modules interact with the same centralized
-service, ensuring that updates and state changes are reflected everywhere in your application. ###
-Using the Page Builder Component Ensure the following configuration options are set: - **`formType`
-(required):** Indicates whether you are creating or updating a resource. This is used to retrieve
-the correct content from local storage. - **`formName` (required):** Specifies the resource type
-(for example, `article`, `jobPost`, `store`, etc.). ```vue
+To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
+### 1. Install the Package
+
+```bash
+npm install @myissue/vue-website-page-builder
+```
+
+### 2. Import and use the Page Builder Plugin
+
+Import the `pageBuilder` Plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
+
+Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
+
+```javascript
+import { createApp } from 'vue'
+import App from './App.vue'
+import { pageBuilder } from '@myissue/vue-website-page-builder'
+import '@myissue/vue-website-page-builder/style.css'
+
+const app = createApp(App)
+app.use(pageBuilder)
+app.mount('#app')
+```
+
+### 3. Using the Page Builder Component
+
+Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
+
+You’re now ready to use the Page Builder in your Vue pages or components with the `getPageBuilder()` composable.
+
+```vue
 <script setup>
 import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
 
 const configPageBuilder = {
   updateOrCreate: {
@@ -365,7 +366,39 @@ console.info('You may inspect this result for message, status, or error:', resul
 <template>
   <PageBuilder />
 </template>
-````
+```
+
+### 4. Initialize Page Builder with `onMounted` Troubleshooting
+
+If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
+
+```vue
+<script setup>
+import { onMounted } from 'vue'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'article',
+  },
+}
+
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const pageBuilderService = getPageBuilder()
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
+</script>
+```
+
+## Why Use the Shared Instance?
+
+By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
+
+> **Note:**  
+> The Page Builder is implemented as a singleton service. All page-building logic and state are managed by a single shared instance, even if you use `<PageBuilder />` in multiple places.
 
 ## Important: CSS Prefixing (`pbx-`)
 
@@ -374,9 +407,9 @@ This prevents global styles from leaking into the builder and vice versa, which 
 
 **How does this affect you?**
 
-When a user adds a component into the page builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
+When a user adds a component into the Page Builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
 
-Tailwind installation is not required. The page builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the page builder.
+Tailwind installation is not required. The Page Builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the Page Builder.
 
 > **Note:**
 > Simply import the builder’s CSS file once in your project. All builder styles are namespaced, so there is no risk of style conflicts.
@@ -413,7 +446,7 @@ import { ref } from 'vue'
 // Import the Page Builder styles once in your application entry, not in individual components.
 import '@myissue/vue-website-page-builder/style.css'
 
-const rawHtml = ref('<p>This is content from the page builder.</p>')
+const rawHtml = ref('<p>This is content from the Page Builder.</p>')
 </script>
 
 <template>
@@ -593,9 +626,9 @@ yourForm.content = storedComponents
 
 ### Resetting the Builder After Successful Resource Creation or Update
 
-After successfully creating or updating a resource (such as a post, article, or listing) using the Page Builder, it is important to clear the DOM and the builder’s draft state, as well as remove the corresponding local storage entry. This ensures that old drafts do not appear the next time the builder is opened for a new or existing resource.
+After successfully creating or updating a resource (such as a post, article, or listing) using the Page Builder, it is important to clear the `DOM` and the builder’s draft state, as well as remove the corresponding local storage entry. This ensures that old drafts do not appear the next time the builder is opened for a new or existing resource.
 
-You can reset the Page Builder’s live DOM, builder state, and clear the draft with:
+You can reset the Page Builder’s live `DOM`, builder state, and clear the draft with:
 
 ```typescript
 await pageBuilderService.handleFormSubmission()
@@ -819,7 +852,7 @@ Learn how to create and integrate your own components step by step.
 
 ## Troubleshooting
 
-### Fonts or Icons Not Displaying
+### 1. Fonts or Icons Not Displaying
 
 If fonts or Material Icons are not displaying correctly, verify that:
 
@@ -830,9 +863,34 @@ If fonts or Material Icons are not displaying correctly, verify that:
 import '@myissue/vue-website-page-builder/style.css'
 ```
 
+### 2. Initialize Page Builder with `onMounted` Troubleshooting
+
+If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
+
+```vue
+<script setup>
+import { onMounted } from 'vue'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'article',
+  },
+}
+
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const pageBuilderService = getPageBuilder()
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
+</script>
+```
+
 ## Page Builder Architecture
 
-The Page Builder is designed as a modular, state-driven editor for dynamic page content. Its architecture separates configuration, state management, and DOM interaction, ensuring flexibility and maintainability.
+The Page Builder is designed as a modular, state-driven editor for dynamic page content. Its architecture separates configuration, state management, and `DOM` interaction, ensuring flexibility and maintainability.
 
 ### How the Page Builder Works
 
@@ -840,7 +898,7 @@ The Page Builder is designed to be easy to use and flexible for any web project.
 
 - **Configuration First:**
   When you start the builder, you pass in your configuration (such as what type of page you’re building, user info, branding, and any existing content).
-  The builder saves this configuration immediately—even if the editing interface (DOM) isn’t loaded yet. This means you can safely set up the builder in advance, and it will be ready as soon as the editor appears on the page.
+  The builder saves this configuration immediately—even if the editing interface `DOM` isn’t loaded yet. This means you can safely set up the builder in advance, and it will be ready as soon as the editor appears on the page.
 
 - **Loading Content:**
   If you have existing content (like a published page), the builder loads it so you can continue editing. If not, you start with a blank page.
