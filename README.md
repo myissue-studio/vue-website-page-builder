@@ -25,8 +25,9 @@
     - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
     - [5. Why Initialize the Page Builder with `onMounted` in Nuxt?](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
   - [Vue Integration](#vue-integration)
-    - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
-    - [2. Using the Page Builder Component](#2-using-the-page-builder-component)
+    - [1. Install the Package](#1-install-the-package-1)
+    - [2. Import and use the Page Builder plugin](#2-import-and-use-the-page-builder-plugin)
+    - [3. Using the Page Builder Component](#3-using-the-page-builder-component)
   - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
@@ -225,7 +226,7 @@ This section walks you through the essential steps—from installation to render
 > **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
 
-To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps:
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 or Nuxt 4 project, follow these steps:
 
 ### 1. Install the Package
 
@@ -315,7 +316,13 @@ In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on t
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
-### 1. Import and use the Page Builder plugin
+### 1. Install the Package
+
+```bash
+npm install @myissue/vue-website-page-builder
+```
+
+### 2. Import and use the Page Builder plugin
 
 Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
 
@@ -332,7 +339,7 @@ app.use(pageBuilder)
 app.mount('#app')
 ```
 
-### 2. Using the Page Builder Component
+### 3. Using the Page Builder Component
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
