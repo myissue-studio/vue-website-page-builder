@@ -23,8 +23,10 @@
       - [2. Create a Nuxt Plugin](#2-create-a-nuxt-plugin)
       - [3. Register the Plugin in `nuxt.config.ts`](#3-register-the-plugin-in-nuxtconfigts)
       - [4. Using the Page Builder Component](#4-using-the-page-builder-component)
-      - [5 Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
+      - [5. Why initialize the page builder with `onMounted` in Nuxt](#5-why-initialize-the-page-builder-with-onmounted-in-nuxt)
     - [Initializing the Page Builder in Vue](#initializing-the-page-builder-in-vue)
+      - [1. Import and use the Page Builder plugin](#1-import-and-use-the-page-builder-plugin)
+      - [2. Access the shared builder instance](#2-access-the-shared-builder-instance)
     - [Why Use the Shared Instance?](#why-use-the-shared-instance)
   - [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
@@ -214,15 +216,15 @@ npm install @myissue/vue-website-page-builder
 
 ## Quick Start
 
-Get up and running with the Vue Website Page Builder in just a few minutes.
+Get up and running with the Vue Website Page Builder in just a few minutes.  
 This section walks you through the essential steps—from installation to rendering your first page—so you can start building beautiful, dynamic content right away.
 
 ### Nuxt Integration
 
-> **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.
+> **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
 
-To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 project, follow these steps:
 
 #### 1. Install the Package
 
@@ -232,7 +234,7 @@ npm install @myissue/vue-website-page-builder
 
 #### 2. Create a Nuxt Plugin
 
-In the root create a file named:
+In the root, create a file named:
 
 ```
 plugins/page-builder.client.js
@@ -268,7 +270,7 @@ export default defineNuxtConfig({
 
 Now you’re ready to use the builder in your pages or components.
 
-The Page Builder relies on browser APIs like localStorage and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
+The Page Builder relies on browser APIs like `localStorage` and dynamic DOM manipulation, which are only available on the client side. Wrapping it in `<client-only>` ensures it is rendered exclusively in the browser, preventing SSR errors and guaranteeing a smooth editing experience.
 
 ```vue
 <script setup>
@@ -283,7 +285,6 @@ const configPageBuilder = {
 }
 
 // Initialize the page builder with `onMounted`
-// The Page Builder depends on the browser (DOM, `window`, `localStorage`, etc.)
 onMounted(async () => {
   const pageBuilderService = getPageBuilder()
   const result = await pageBuilderService.startBuilder(configPageBuilder)
@@ -301,34 +302,36 @@ onMounted(async () => {
 ```
 
 > **Tip:**  
-> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid those pesky hydration errors.
+> By initializing the builder inside `onMounted`, you ensure everything is ready and avoid hydration errors.
 
-#### 5 Why initialize the page builder with `onMounted` in Nuxt
+#### 5. Why initialize the page builder with `onMounted` in Nuxt
 
-In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (DOM, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
+In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the page builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this same pattern.
 
 ### Initializing the Page Builder in Vue
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
-1. **Import and use the Page Builder plugin**  
-   Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
+#### 1. Import and use the Page Builder plugin
 
-   Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
+Import the `pageBuilder` plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up the shared builder instance for your entire app.
 
-   ```typescript
-   import { createApp } from 'vue'
-   import App from './App.vue'
-   import { pageBuilder } from '@myissue/vue-website-page-builder'
-   import '@myissue/vue-website-page-builder/style.css'
+Import the CSS file once in your `main.js`, `main.ts`, or root component. This ensures proper styling and automatic icon loading. You do **not** need to import it in individual components.
 
-   const app = createApp(App)
-   app.use(pageBuilder)
-   app.mount('#app')
-   ```
+```typescript
+import { createApp } from 'vue'
+import App from './App.vue'
+import { pageBuilder } from '@myissue/vue-website-page-builder'
+import '@myissue/vue-website-page-builder/style.css'
 
-2. **Access the shared builder instance**  
-   Anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
+const app = createApp(App)
+app.use(pageBuilder)
+app.mount('#app')
+```
+
+#### 2. Access the shared builder instance
+
+Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
 ```vue
 <script setup>
