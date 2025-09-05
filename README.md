@@ -224,10 +224,10 @@ This section walks you through the essential steps—from installation to render
 
 ## Nuxt Integration
 
+To use `@myissue/vue-website-page-builder` in your Nuxt 3 or Nuxt 4 project, follow these steps:
+
 > **🎉 Great news:** The Page Builder now works with Nuxt 3 and Nuxt 4.  
 > Follow the steps below to get started in your Nuxt project.
-
-To use `@myissue/vue-website-page-builder` in your Nuxt 3 or Nuxt 4 project, follow these steps:
 
 ### 1. Install the Package
 
