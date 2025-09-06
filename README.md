@@ -67,14 +67,14 @@
 
 A Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
 
-Create and enhance digital experiences with Vue on any backend.
-
-Experience the power and simplicity of the Vue Website Page Builder in action.
 Try the live demo to explore real-time visual updates and smooth content management.
+<br>
+[Play around with the Page Builder](https://mybuilder.dev)
+
+Create and enhance digital experiences with Vue on any backend.
+Experience the power and simplicity of the Vue Website Page Builder in action.
 
 <img style="width: 100%;" src="./public/home/for_read_me/vue3_page_builder_myissue.gif" alt="Vue Website Page Builder - the editor" />
-
-[Play around with the Page Builder](https://mybuilder.dev)
 
 ## Overview
 
