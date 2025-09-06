@@ -61,11 +61,31 @@ watch(
 
         <ListboxButton
           v-if="!globalPageLayout"
-          class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-200 pbx-aspect-square hover:pbx-bg-gray-100 hover:pbx-fill-white focus-visible:pbx-ring-0 pbx-text-myPrimaryDarkGrayColor"
+          class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-border-none pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
         >
           <div class="pbx-flex pbx-flex-col">
             <div class="pbx-flex pbx-gap-2 pbx-items-center">
+              <span>
+                <svg
+                  fill="currentColor"
+                  height="25"
+                  viewBox="0 0 22 22"
+                  width="26"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="css-1eqh1o5"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M4 11l8-8 8 8-8 8-8-8zm8-5.172L17.172 11H6.828L12 5.828z"
+                    fill-rule="evenodd"
+                  ></path>
+                  <path
+                    d="M3.5 13s-2 2.757-2 4.054c0 1.075.895 1.946 2 1.946s2-.871 2-1.946c0-1.297-2-4.054-2-4.054z"
+                  ></path>
+                </svg>
+              </span>
               <span
+                v-if="false"
                 class="material-symbols-outlined"
                 style="text-shadow: rgb(0 0 0 / 10%) 1.5px 1.5px 0px"
                 :class="`pbx-text-${backgroundColor?.replace('pbx-bg-', '')}`"
