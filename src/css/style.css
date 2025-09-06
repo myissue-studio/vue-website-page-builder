@@ -372,7 +372,7 @@
   /* white outline first, then black border simulated as shadow */
   box-shadow:
     0 0 0 10px #fff,
-    /* white outline */ 0 0 0 12px #000; /* black border outside */
+    /* white outline */ 0 0 0 12px #f8f8f8; /* black border outside */
 }
 
 /* CSS for content inside page builder # start */
