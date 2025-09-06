@@ -344,11 +344,18 @@ function updatePanelPosition() {
     const selectedRect = selected.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
 
-    const left =
+    let left =
       selectedRect.left -
       containerRect.left +
       selectedRect.width / 2 -
       editToolbarElement.offsetWidth / 2
+
+    // Add margin so toolbar is never flush with the left edge
+    const margin = 20 // px
+    left = Math.max(
+      margin,
+      Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
+    )
 
     const GAP = 20 // px
     const proposedTop =
@@ -366,7 +373,7 @@ function updatePanelPosition() {
     editToolbarElement.classList.add('is-visible')
   } else {
     editToolbarElement.classList.remove('is-visible')
-    editToolbarElement.removeAttribute('style') // Ensure all styles are removed
+    editToolbarElement.removeAttribute('style')
   }
 }
 
@@ -871,7 +878,7 @@ onMounted(async () => {
       >
         <div
           id="pbxEditToolbar"
-          class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-full pbx-px-4 pbx-h-0"
+          class="pbx-z-50 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-full pbx-px-4 pbx-h-0"
         >
           <template v-if="getElement">
             <EditGetElement></EditGetElement>
