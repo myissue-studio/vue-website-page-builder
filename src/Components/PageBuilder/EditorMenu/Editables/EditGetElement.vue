@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue'
+import { ref, computed, inject } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
