@@ -512,7 +512,7 @@ const handleDelete = function () {
               class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
             >
               <div
-                class="pbx-h- pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+                class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
               >
                 <span class="material-symbols-outlined"> delete_forever </span>
               </div>
