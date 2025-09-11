@@ -365,8 +365,8 @@
   pointer-events: auto;
   transform: translateY(0) scale(1);
   min-width: 4rem;
-  padding-right: 1rem;
-  padding-left: 1rem;
+  padding-right: 2px;
+  padding-left: 2px;
   height: 1.5rem;
   background: #fff; /* white background */
   /* white outline first, then black border simulated as shadow */
