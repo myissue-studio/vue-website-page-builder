@@ -75,6 +75,10 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
+    "@tiptap/extension-link": "^3.4.2",
+    "@tiptap/extension-text-align": "^3.4.2",
+    "@tiptap/starter-kit": "^3.4.2",
+    "@tiptap/vue-3": "^3.4.2",
     "pinia": "^2.1.7",
     "uuid": "^9.0.0",
     "vue": "^3.5.13"

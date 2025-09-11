@@ -2,11 +2,12 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
-import Link from '@tiptap/extension-link'
 import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
+import TextAlign from '@tiptap/extension-text-align'
+
 const pageBuilderService = getPageBuilder()
 
 const { translate } = useTranslations()
@@ -58,9 +59,14 @@ watch(getElement, (newVal) => {
 const editor = useEditor({
   content: '',
   extensions: [
-    StarterKit,
-    Link.configure({
-      openOnClick: false,
+    StarterKit.configure({
+      // Configure Link here if needed
+      link: {
+        openOnClick: false,
+      },
+    }),
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
     }),
   ],
   editorProps: {
@@ -253,6 +259,22 @@ onMounted(() => {
                 >
                   <span class="material-symbols-outlined"> keyboard_return </span>
                   <span>{{ translate('Line break') }}</span>
+                </button>
+              </div>
+
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="editor.chain().focus().setTextAlign('center').run()"
+                  type="button"
+                  class="pbx-myPrimaryTag pbx-cursor-pointer"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive({
+                      textAlign: 'center',
+                    }),
+                  }"
+                >
+                  <span class="material-symbols-outlined"> format_align_center </span>
+                  <span>{{ translate('Center') }}</span>
                 </button>
               </div>
 
