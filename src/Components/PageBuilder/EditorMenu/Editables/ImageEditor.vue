@@ -39,7 +39,7 @@ const handleAddImage = function () {
   titleMedia.value = translate('Media Library')
   descriptionMedia.value = null
   firstButtonMedia.value = translate('Close')
-  secondButtonMedia.value = translate(' Select image')
+  secondButtonMedia.value = translate('Select image')
 
   // handle click
   firstMediaButtonFunction.value = function () {
