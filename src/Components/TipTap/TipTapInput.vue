@@ -317,14 +317,16 @@ onMounted(() => {
               <!-- Left Align -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
-                  @click="editor.chain().focus().setTextAlign('left').run()"
+                  @click="
+                    editor.isActive({ textAlign: 'left' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('left').run()
+                  "
                   type="button"
                   class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
                     'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                      editor.isActive({
-                        textAlign: 'left',
-                      }),
+                      editor.isActive({ textAlign: 'left' }),
                   }"
                 >
                   <span class="material-symbols-outlined"> format_align_left </span>
@@ -334,14 +336,16 @@ onMounted(() => {
               <!-- Center Align -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
-                  @click="editor.chain().focus().setTextAlign('center').run()"
+                  @click="
+                    editor.isActive({ textAlign: 'center' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('center').run()
+                  "
                   type="button"
                   class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
                     'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                      editor.isActive({
-                        textAlign: 'center',
-                      }),
+                      editor.isActive({ textAlign: 'center' }),
                   }"
                 >
                   <span class="material-symbols-outlined"> format_align_center </span>
@@ -351,14 +355,16 @@ onMounted(() => {
               <!-- Right Align -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
-                  @click="editor.chain().focus().setTextAlign('right').run()"
+                  @click="
+                    editor.isActive({ textAlign: 'right' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('right').run()
+                  "
                   type="button"
                   class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
                     'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                      editor.isActive({
-                        textAlign: 'right',
-                      }),
+                      editor.isActive({ textAlign: 'right' }),
                   }"
                 >
                   <span class="material-symbols-outlined"> format_align_right </span>
