@@ -1,6 +1,6 @@
 {
   "name": "@myissue/vue-website-page-builder",
-  "version": "3.4.38",
+  "version": "3.4.39",
   "description": "Vue 3 page builder component with drag & drop functionality.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
@@ -75,13 +75,6 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
-    "@tiptap/extension-bold": "^2.14.0",
-    "@tiptap/extension-heading": "^2.14.0",
-    "@tiptap/extension-link": "^2.14.0",
-    "@tiptap/extension-list-item": "^2.14.0",
-    "@tiptap/pm": "^2.1.10",
-    "@tiptap/starter-kit": "^2.14.0",
-    "@tiptap/vue-3": "^2.14.0",
     "pinia": "^2.1.7",
     "uuid": "^9.0.0",
     "vue": "^3.5.13"
