@@ -2,11 +2,12 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
-import Link from '@tiptap/extension-link'
 import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
+import TextAlign from '@tiptap/extension-text-align'
+
 const pageBuilderService = getPageBuilder()
 
 const { translate } = useTranslations()
@@ -58,9 +59,14 @@ watch(getElement, (newVal) => {
 const editor = useEditor({
   content: '',
   extensions: [
-    StarterKit,
-    Link.configure({
-      openOnClick: false,
+    StarterKit.configure({
+      // Configure Link here if needed
+      link: {
+        openOnClick: false,
+      },
+    }),
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
     }),
   ],
   editorProps: {
@@ -229,7 +235,7 @@ onMounted(() => {
             <div>
               <div>
                 <div
-                  class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-p-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm"
+                  class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-rounded-full"
                 >
                   <button
                     @click="pageBuilderService.toggleTipTapModal(false)"
@@ -243,72 +249,125 @@ onMounted(() => {
               </div>
             </div>
             <div
-              class="pbx-flex pbx-items-center pbx-p-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm"
+              class="pbx-flex pbx-items-center pbx-p-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-divide-x pbx-divide-gray-300"
             >
-              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
-                <button
-                  @click="editor.chain().focus().setHardBreak().run()"
-                  type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
-                >
-                  <span class="material-symbols-outlined"> keyboard_return </span>
-                  <span>{{ translate('Line break') }}</span>
-                </button>
-              </div>
-
+              <!-- Bold -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
                   @click="editor.chain().focus().toggleBold().run()"
                   type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
-                  :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive('bold') }"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('bold'),
+                  }"
                 >
                   <span class="material-symbols-outlined"> format_bold </span>
-                  <span>{{ translate('Bold') }}</span>
                 </button>
               </div>
 
+              <!-- Link -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
                   @click="handleURL"
                   type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
-                  :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive('link') }"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('link'),
+                  }"
                 >
                   <span class="material-symbols-outlined"> link </span>
-                  <span>{{ translate('Link') }}</span>
                 </button>
               </div>
 
+              <!-- H2 -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
                   @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
                   type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
-                    'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive('heading', {
-                      level: 2,
-                    }),
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('heading', {
+                        level: 2,
+                      }),
                   }"
                 >
-                  <span class="material-symbols-outlined"> titlecase </span>
-                  <span>{{ translate('Header 2') }}</span>
+                  <div class="pbx-font-semibold pbx-text-sm">H2</div>
                 </button>
               </div>
-
+              <!-- H3 -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
                   @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
                   type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
-                    'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive('heading', {
-                      level: 3,
-                    }),
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('heading', {
+                        level: 3,
+                      }),
                   }"
                 >
-                  <span class="material-symbols-outlined"> titlecase </span>
-                  <span>{{ translate('Header 3') }}</span>
+                  <div class="pbx-font-semibold pbx-text-sm">H3</div>
+                </button>
+              </div>
+
+              <!-- Left Align -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="
+                    editor.isActive({ textAlign: 'left' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('left').run()
+                  "
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive({ textAlign: 'left' }),
+                  }"
+                >
+                  <span class="material-symbols-outlined"> format_align_left </span>
+                </button>
+              </div>
+
+              <!-- Center Align -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="
+                    editor.isActive({ textAlign: 'center' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('center').run()
+                  "
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive({ textAlign: 'center' }),
+                  }"
+                >
+                  <span class="material-symbols-outlined"> format_align_center </span>
+                </button>
+              </div>
+
+              <!-- Right Align -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="
+                    editor.isActive({ textAlign: 'right' })
+                      ? editor.chain().focus().unsetTextAlign().run()
+                      : editor.chain().focus().setTextAlign('right').run()
+                  "
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive({ textAlign: 'right' }),
+                  }"
+                >
+                  <span class="material-symbols-outlined"> format_align_right </span>
                 </button>
               </div>
 
@@ -316,13 +375,13 @@ onMounted(() => {
                 <button
                   @click="editor.chain().focus().toggleBulletList().run()"
                   type="button"
-                  class="pbx-myPrimaryTag pbx-cursor-pointer"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                   :class="{
-                    'pbx-bg-myPrimaryLinkColor pbx-text-white': editor.isActive('bulletList'),
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('bulletList'),
                   }"
                 >
-                  <span class="material-symbols-outlined"> list </span>
-                  <span>{{ translate('List') }}</span>
+                  <span class="material-symbols-outlined"> format_list_bulleted </span>
                 </button>
               </div>
             </div>
