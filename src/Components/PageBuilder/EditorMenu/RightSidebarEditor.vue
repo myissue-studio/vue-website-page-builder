@@ -13,7 +13,6 @@ import BackgroundColorEditor from './Editables/BackgroundColorEditor.vue'
 import TextColorEditor from './Editables/TextColorEditor.vue'
 import Borders from './Editables/Borders.vue'
 import LinkEditor from './Editables/LinkEditor.vue'
-import TipTap from '../../TipTap/TipTap.vue'
 import EditGetElement from './Editables/EditGetElement.vue'
 import HTMLEditor from './Editables/HTMLEditor.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
@@ -190,6 +189,10 @@ const handleCloseGlobalPageStyles = async function () {
   showModalGlobalPageStyles.value = false
   isLoadingPageStyles.value = false
 }
+
+const handleGlobalHtmlMode = function () {
+  pageBuilderStateStore.setToggleGlobalHtmlMode()
+}
 </script>
 
 <template>
@@ -220,13 +223,6 @@ const handleCloseGlobalPageStyles = async function () {
         <article class="pbx-mb-1">
           <ImageEditor> </ImageEditor>
         </article>
-        <article class="pbx-mb-1">
-          <TipTap></TipTap>
-        </article>
-        <article class="pbx-my-1">
-          <Typography></Typography>
-        </article>
-
         <article class="pbx-my-1">
           <OpacityEditor> </OpacityEditor>
         </article>
@@ -247,9 +243,6 @@ const handleCloseGlobalPageStyles = async function () {
         </article>
         <article class="pbx-my-1">
           <StyleEditor></StyleEditor>
-        </article>
-        <article class="pbx-my-1">
-          <HTMLEditor></HTMLEditor>
         </article>
       </div>
 
@@ -358,7 +351,7 @@ const handleCloseGlobalPageStyles = async function () {
               <StyleEditor></StyleEditor>
             </article>
             <article class="pbx-my-1">
-              <HTMLEditor :globalPage="true"></HTMLEditor>
+              <HTMLEditor @click="handleGlobalHtmlMode"></HTMLEditor>
             </article>
           </div>
         </div>

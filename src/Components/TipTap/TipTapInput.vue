@@ -7,6 +7,7 @@ import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
+import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 
 const pageBuilderService = getPageBuilder()
 
@@ -179,6 +180,12 @@ const setEnteretURL = function () {
     .run()
 }
 
+const showTypography = ref(false)
+
+const toggleShowTypography = function () {
+  showTypography.value = !showTypography.value
+}
+
 onBeforeMount(() => {
   editor.value?.destroy()
 })
@@ -230,7 +237,7 @@ onMounted(() => {
       <div v-if="pageBuilderService.isSelectedElementValidText() && editor">
         <div class="pbx-relative pbx-rounded-lg">
           <div
-            class="pbx-flex pbx-justify-between pbx-myPrimaryGap pbx-items-center pbx-pb-2 pbx-mb-2 pbx-px-4 pbx-overflow-x-auto pbx-border-0 pbx-border-b pbx-border-solid pbx-border-gray-200"
+            class="pbx-flex pbx-justify-between pbx-myPrimaryGap pbx-items-center pbx-pb-2 pbx-mb-2 pbx-pl-4 pbx-pr-4 pbx-border-0 pbx-border-b pbx-border-solid pbx-border-gray-200"
           >
             <div>
               <div>
@@ -384,6 +391,37 @@ onMounted(() => {
                   <span class="material-symbols-outlined"> format_list_bulleted </span>
                 </button>
               </div>
+
+              <!-- Toggle showTypography start -->
+              <div
+                class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-relative pbx-mr-4"
+              >
+                <button
+                  @click="toggleShowTypography"
+                  type="button"
+                  class="pbx-h-10 pbx-px-2 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-font-medium"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      showTypography,
+                  }"
+                >
+                  {{ translate('Font Appearance') }}
+                </button>
+
+                <transition name="popup-fade">
+                  <div
+                    v-if="showTypography"
+                    class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-44 pbx-w-72 pbx-select-none pbx-min-h-92"
+                  >
+                    <div
+                      class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+                    >
+                      <TypographyForTipTap></TypographyForTipTap>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+              <!-- Toggle showTypography end -->
             </div>
           </div>
 
