@@ -2558,6 +2558,53 @@ export class PageBuilderService {
     await this.handleAutoSave()
   }
 
+  public async analyzeSEO() {
+    const getComponents = await this.returnLatestComponents()
+
+    if (!getComponents || !Array.isArray(getComponents) || getComponents.length === 0) {
+      return {
+        score: 0,
+        checks: [],
+      }
+    }
+
+    // Concatenate all html_code strings into a single HTML document
+    const fullHtml = getComponents
+      .map((component: ComponentObject) => component.html_code)
+      .filter((html: string) => html && html.trim() !== '') // Filter out any empty/invalid codes
+      .join('\n') // Join with newlines to preserve section structure
+
+    if (!fullHtml) {
+      return {
+        score: 0,
+        checks: [],
+      }
+    }
+
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(fullHtml, 'text/html')
+
+    const checks = []
+
+    // 2. Paragraph length
+    const paragraphs = [...doc.querySelectorAll('p')].map((p) => p.textContent.trim())
+    const totalWords = paragraphs.join(' ').split(/\s+/).length
+    checks.push({
+      check: 'At least 300 words of content',
+      passed: totalWords >= 300,
+      details: `Found ${totalWords} words`,
+    })
+
+    // Score = % of passed checks
+    const passedCount = checks.filter((c) => c.passed).length
+    const score = Math.round((passedCount / checks.length) * 100)
+
+    return {
+      score,
+      checks,
+    }
+  }
+
   /**
    * Adds a new component to the page builder.
    * @param {ComponentObject} componentObject - The component to add.

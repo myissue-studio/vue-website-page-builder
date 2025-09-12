@@ -69,10 +69,26 @@ const handleMainSettings = function () {
 const openMainSettings = function () {
   showMainSettings.value = true
 }
+
+const seoResult = ref(null)
+const showSEO = ref(false)
+
+const handleSEO = async function () {
+  showSEO.value = !showSEO.value
+
+  if (showSEO.value) {
+    seoResult.value = await pageBuilderService.analyzeSEO()
+    console.log('data eeer:', seoResult.value)
+  }
+}
+
+const closeSEO = function () {
+  showSEO.value = false
+}
 </script>
 
 <template>
-  <div>
+  <div class="pbx-select-none">
     <div class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-myPrimaryGap">
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
         <div
@@ -85,8 +101,73 @@ const openMainSettings = function () {
 
       <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
 
-      <!-- HTML Settings Start -->
+      <!-- SEO Start -->
+      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center pbx-relative">
+        <div
+          @click="handleSEO"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+        >
+          <div class="pbx-font-semibold pbx-text-sm">SEO</div>
+        </div>
 
+        <transition name="popup-fade">
+          <div
+            v-if="showSEO"
+            class="pbx-top-0 pbx-left-full pbx-ml-2 pbx-absolute pbx-z-40 pbx-min-h-50 lg:pbx-w-[60rem] pbx-w-[40rem] pbx-select-none pbx-min-h-92"
+          >
+            <div
+              class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+            >
+              <div
+                class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-between pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-pl-2"
+              >
+                <span class="pbx-text-black pbx-font-medium">SEO</span>
+
+                <!-- Close Modal start -->
+                <div
+                  @click="closeSEO"
+                  class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-black pbx-text-white pbx-aspect-square pbx-hover:fill-white pbx-focus-visible:ring-0 pbx-hover:outline-3 pbx-hover:outline-offset-2 pbx-hover:outline-black pbx-transition-all pbx-duration-100"
+                >
+                  <span class="material-symbols-outlined"> close </span>
+                </div>
+                <!-- Close Modal end -->
+              </div>
+
+              <div>
+                <!-- score start -->
+                <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
+                  <div
+                    class="pbx-lg:pbx-text-base pbx-text-sm pbx-font-semibold pbx-text-center pbx-min-h-14 pbx-flex pbx-justify-center pbx-items-center"
+                  >
+                    <!-- score animation start -->
+                    <template v-if="seoResult">
+                      <div
+                        class="pbx-my-4 pbx-p-8 pbx-border pbx-border-red-100 pbx-rounded-full pbx-aspect-square pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-bg-gray-100"
+                      >
+                        <div>
+                          <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
+                            seoResult.score
+                          }}</span>
+                          <span class="pbx-text-xl">%</span>
+                        </div>
+                      </div>
+                      <!-- score animation end -->
+                    </template>
+                    <!--v-if-->
+                  </div>
+                </div>
+                <!-- score end -->
+                <div>
+                  {{ JSON.stringify(seoResult) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+      <!-- SEO End -->
+
+      <!-- HTML Settings Start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
         <div
           @click="openHTMLSettings"
@@ -95,7 +176,6 @@ const openMainSettings = function () {
           <span class="material-symbols-outlined"> deployed_code </span>
         </div>
       </div>
-
       <!-- HTML Settings End -->
 
       <!-- settings start -->
