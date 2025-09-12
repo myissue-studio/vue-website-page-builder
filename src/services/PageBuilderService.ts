@@ -2588,7 +2588,19 @@ export class PageBuilderService {
 
     const checks: SEOCheck[] = []
 
-    // 1. Individual heading checks (H2-H6)
+    // Paragraph length
+    const paragraphs = [...doc.querySelectorAll('p')].map((p) => p.textContent?.trim() ?? '')
+    const totalWords = paragraphs
+      .join(' ')
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length
+    checks.push({
+      check: 'At least 300 words of content',
+      passed: totalWords >= 300,
+      details: `Found ${totalWords} words`,
+    })
+
+    // Individual heading checks (H2-H6)
     const h2Count = doc.querySelectorAll('h2').length
     checks.push({
       check: 'Has at least one H2',
@@ -2622,18 +2634,6 @@ export class PageBuilderService {
       check: 'Has at least one H6',
       passed: h6Count > 0,
       details: `Found ${h6Count} H6 headings`,
-    })
-
-    // 2. Paragraph length
-    const paragraphs = [...doc.querySelectorAll('p')].map((p) => p.textContent?.trim() ?? '')
-    const totalWords = paragraphs
-      .join(' ')
-      .split(/\s+/)
-      .filter((word) => word.length > 0).length
-    checks.push({
-      check: 'At least 300 words of content',
-      passed: totalWords >= 300,
-      details: `Found ${totalWords} words`,
     })
 
     // Score = % of passed checks
