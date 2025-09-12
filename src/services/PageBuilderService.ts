@@ -5,6 +5,8 @@ import type {
   ImageObject,
   PageBuilderConfig,
   PageSettings,
+  SEOCheck,
+  SEOSummary,
   StartBuilderResult,
 } from '../types'
 import type { usePageBuilderStateStore } from '../stores/page-builder-state'
@@ -2556,6 +2558,92 @@ export class PageBuilderService {
       await this.mountComponentsToDOM(components)
     }
     await this.handleAutoSave()
+  }
+
+  public async analyzeSEO(): Promise<SEOSummary> {
+    const getComponents = await this.returnLatestComponents()
+
+    if (!getComponents || !Array.isArray(getComponents) || getComponents.length === 0) {
+      return {
+        score: 0,
+        checks: [],
+      }
+    }
+
+    // Concatenate all html_code strings into a single HTML document
+    const fullHtml = getComponents
+      .map((component: ComponentObject) => component.html_code)
+      .filter((html: string) => html && html.trim() !== '') // Filter out any empty/invalid codes
+      .join('\n') // Join with newlines to preserve section structure
+
+    if (!fullHtml) {
+      return {
+        score: 0,
+        checks: [],
+      }
+    }
+
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(fullHtml, 'text/html')
+
+    const checks: SEOCheck[] = []
+
+    // 1. Individual heading checks (H2-H6)
+    const h2Count = doc.querySelectorAll('h2').length
+    checks.push({
+      check: 'Has at least one H2',
+      passed: h2Count > 0,
+      details: `Found ${h2Count} H2 headings`,
+    })
+
+    const h3Count = doc.querySelectorAll('h3').length
+    checks.push({
+      check: 'Has at least one H3',
+      passed: h3Count > 0,
+      details: `Found ${h3Count} H3 headings`,
+    })
+
+    const h4Count = doc.querySelectorAll('h4').length
+    checks.push({
+      check: 'Has at least one H4',
+      passed: h4Count > 0,
+      details: `Found ${h4Count} H4 headings`,
+    })
+
+    const h5Count = doc.querySelectorAll('h5').length
+    checks.push({
+      check: 'Has at least one H5',
+      passed: h5Count > 0,
+      details: `Found ${h5Count} H5 headings`,
+    })
+
+    const h6Count = doc.querySelectorAll('h6').length
+    checks.push({
+      check: 'Has at least one H6',
+      passed: h6Count > 0,
+      details: `Found ${h6Count} H6 headings`,
+    })
+
+    // 2. Paragraph length
+    const paragraphs = [...doc.querySelectorAll('p')].map((p) => p.textContent?.trim() ?? '')
+    const totalWords = paragraphs
+      .join(' ')
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length
+    checks.push({
+      check: 'At least 300 words of content',
+      passed: totalWords >= 300,
+      details: `Found ${totalWords} words`,
+    })
+
+    // Score = % of passed checks
+    const passedCount = checks.filter((c) => c.passed).length
+    const score = Math.round((passedCount / checks.length) * 100)
+
+    return {
+      score,
+      checks,
+    }
   }
 
   /**

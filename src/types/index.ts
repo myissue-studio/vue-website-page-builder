@@ -9,6 +9,17 @@ export interface PageBuilderState {
 
 // Central type definitions for the Vue Page Builder project
 
+export interface SEOCheck {
+  check: string
+  passed: boolean
+  details: string
+}
+
+export interface SEOSummary {
+  score: number
+  checks: SEOCheck[]
+}
+
 // Component and Image interfaces
 export interface ComponentObject {
   id: string | number | null

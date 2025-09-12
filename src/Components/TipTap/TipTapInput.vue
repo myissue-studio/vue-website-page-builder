@@ -321,6 +321,57 @@ onMounted(() => {
                 </button>
               </div>
 
+              <!-- H4 -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('heading', {
+                        level: 4,
+                      }),
+                  }"
+                >
+                  <div class="pbx-font-semibold pbx-text-sm">H4</div>
+                </button>
+              </div>
+
+              <!-- H5 -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('heading', {
+                        level: 5,
+                      }),
+                  }"
+                >
+                  <div class="pbx-font-semibold pbx-text-sm">H5</div>
+                </button>
+              </div>
+
+              <!-- H6 -->
+              <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+                <button
+                  @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      editor.isActive('heading', {
+                        level: 6,
+                      }),
+                  }"
+                >
+                  <div class="pbx-font-semibold pbx-text-sm">H6</div>
+                </button>
+              </div>
+
               <!-- Left Align -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button

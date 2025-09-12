@@ -859,7 +859,22 @@ onMounted(async () => {
                 <span
                   class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
                 >
-                  <span class="pbx-myMediumIcon material-symbols-outlined"> visibility </span>
+                  <span>
+                    <svg
+                      fill="currentColor"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      width="22"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="css-gy660l"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
+                        fill-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </span>
                 </span>
               </div>
             </div>
@@ -879,7 +894,19 @@ onMounted(async () => {
                 <span
                   class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
                 >
-                  <span class="material-symbols-outlined"> phone_iphone </span>
+                  <svg
+                    fill="currentColor"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    width="22"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="css-gy660l"
+                  >
+                    <path d="M14 16H8v2h6v-2z"></path>
+                    <path
+                      d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
+                    ></path>
+                  </svg>
                 </span>
               </div>
             </div>
@@ -1103,9 +1130,31 @@ onMounted(async () => {
               v-if="!getMenuRight"
               @click="pageBuilderStateStore.setMenuRight(true)"
               type="button"
-              class="pbx-mySecondaryButton pbx-px-2 pbx-text-xs"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <span> {{ translate('Styles') }} </span>
+              <span>
+                <svg
+                  fill="currentColor"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  width="22"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="css-l0u10b"
+                >
+                  <g clip-path="url(#prefix__clip0_1645_485)">
+                    <path
+                      clip-rule="evenodd"
+                      d="M19.871 1.81a2.768 2.768 0 00-3.914 0l-3.543 3.544-2.5-2.5L0 12.768l8.914 8.914 9.914-9.914-2.5-2.5 3.543-3.543a2.768 2.768 0 000-3.914zm-2.5 1.415a.768.768 0 011.086 1.086L13.5 9.268l2.5 2.5-1.086 1.086-6.086-6.086 1.086-1.086 2.5 2.5 4.957-4.957zM7.414 8.182l-4.586 4.586 1.086 1.086 3.293-3.293 1.414 1.414-3.293 3.293 1.086 1.086 3.293-3.293 1.414 1.414-3.293 3.293 1.086 1.086 4.586-4.586-6.086-6.086z"
+                      fill-rule="evenodd"
+                    ></path>
+                  </g>
+                  <defs>
+                    <clipPath id="prefix__clip0_1645_485">
+                      <path d="M0 0h22v22H0z" fill="#fff"></path>
+                    </clipPath>
+                  </defs>
+                </svg>
+              </span>
             </button>
           </div>
         </div>
