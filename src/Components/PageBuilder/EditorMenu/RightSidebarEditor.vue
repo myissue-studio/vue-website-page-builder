@@ -13,7 +13,6 @@ import BackgroundColorEditor from './Editables/BackgroundColorEditor.vue'
 import TextColorEditor from './Editables/TextColorEditor.vue'
 import Borders from './Editables/Borders.vue'
 import LinkEditor from './Editables/LinkEditor.vue'
-import TipTap from '../../TipTap/TipTap.vue'
 import EditGetElement from './Editables/EditGetElement.vue'
 import HTMLEditor from './Editables/HTMLEditor.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
@@ -219,9 +218,6 @@ const handleCloseGlobalPageStyles = async function () {
       <div v-show="getElement && pageBuilderService.isEditableElement(getElement)">
         <article class="pbx-mb-1">
           <ImageEditor> </ImageEditor>
-        </article>
-        <article class="pbx-mb-1">
-          <TipTap></TipTap>
         </article>
         <article class="pbx-my-1">
           <Typography></Typography>
