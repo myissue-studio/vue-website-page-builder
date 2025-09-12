@@ -1034,7 +1034,7 @@ onMounted(async () => {
               }
             "
           >
-            <ComponentTopMenu v-if="getElement"></ComponentTopMenu>
+            <ComponentTopMenu></ComponentTopMenu>
           </div>
         </div>
       </div>
