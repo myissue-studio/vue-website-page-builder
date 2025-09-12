@@ -7,6 +7,7 @@ import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
+import Typography from '../PageBuilder/EditorMenu/Editables/Typography.vue'
 
 const pageBuilderService = getPageBuilder()
 
@@ -179,6 +180,12 @@ const setEnteretURL = function () {
     .run()
 }
 
+const showTypography = ref(false)
+
+const toggleShowTypography = function () {
+  showTypography.value = !showTypography.value
+}
+
 onBeforeMount(() => {
   editor.value?.destroy()
 })
@@ -251,6 +258,23 @@ onMounted(() => {
             <div
               class="pbx-flex pbx-items-center pbx-p-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-divide-x pbx-divide-gray-300"
             >
+              <!-- Toggle showTypography start -->
+              <div
+                class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-relative"
+              >
+                <button
+                  @click="toggleShowTypography"
+                  type="button"
+                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                >
+                  Font styles
+                </button>
+              </div>
+
+              <!-- Typography  end-->
+              <!-- Toggle showTypography end -->
+
+              <!-- Toggle showTypography end -->
               <!-- Bold -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
@@ -396,5 +420,18 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <!-- Typography  start-->
+    <transition name="popup-fade">
+      <div
+        v-if="showTypography"
+        class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-72 pbx-select-none pbx-min-h-96"
+      >
+        <div
+          class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[80vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+        >
+          <Typography></Typography>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
