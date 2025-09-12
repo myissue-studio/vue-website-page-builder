@@ -89,17 +89,6 @@ const closeSEO = function () {
 <template>
   <div>
     <div class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-myPrimaryGap">
-      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-        <div
-          @click="handleDeleteComponentsFromDOM"
-          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-        >
-          <span class="material-symbols-outlined"> delete_forever </span>
-        </div>
-      </div>
-
-      <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
-
       <!-- SEO Start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center pbx-relative">
         <div
@@ -211,6 +200,17 @@ const closeSEO = function () {
         </transition>
       </div>
       <!-- SEO End -->
+
+      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
+        <div
+          @click="handleDeleteComponentsFromDOM"
+          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+        >
+          <span class="material-symbols-outlined"> delete_forever </span>
+        </div>
+      </div>
+
+      <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
 
       <!-- HTML Settings Start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
