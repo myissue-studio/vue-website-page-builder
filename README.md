@@ -34,8 +34,8 @@
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
   - [Comprehensive Language Support in the Page Builder](#comprehensive-language-support-in-the-page-builder)
-      - [Default language](#default-language)
-      - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
+    - [Default language](#default-language)
+    - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
   - [Local Storage \& Auto-Save](#local-storage--auto-save)
   - [Retrieving the Latest HTML Content for Form Submission](#retrieving-the-latest-html-content-for-form-submission)
     - [Resetting the Builder After Successful Resource Creation or Update](#resetting-the-builder-after-successful-resource-creation-or-update)
@@ -72,7 +72,7 @@ Try the live demo to explore real-time visual updates and smooth content managem
 [Play around with the Page Builder](https://mybuilder.dev)
 
 Create and enhance digital experiences with Vue on any backend.
-Experience the power and simplicity of the Vue Website Page Builder in action.
+Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.
 
 <img style="width: 100%;" src="./public/home/for_read_me/vue3_page_builder_myissue.gif" alt="Vue Website Page Builder - the editor" />
 
@@ -164,6 +164,7 @@ The Page Builder is packed with features:
 - **Responsive Editing**: Ensure your site looks great on all devices.
 - **Text Editing**: Edit text content live and in real-time.
 - **Font Customization**: Choose the perfect fonts to match your style.
+- **SEO Score Checker**: Analyze your content live while editing for SEO optimization, including keyword density, readability, heading structure, and overall score to boost search rankings.
 - **Undo & Redo**: Experiment confidently with the ability to revert changes.
 - **Global Styles**: Global styles for fonts, designs, and colors.
 - **YouTube Videos**: Integrate video content smoothly.
