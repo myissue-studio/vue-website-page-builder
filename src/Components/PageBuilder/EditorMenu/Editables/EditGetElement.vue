@@ -195,6 +195,7 @@ const handleModalIframeSrc = function () {
 const openOptionsMoreOpen = ref(false)
 
 const handleShowHTMLEditor = async () => {
+  pageBuilderStateStore.setToggleGlobalHtmlMode(false)
   openOptionsMoreOpen.value = false
   pageBuilderStateStore.setShowModalHTMLEditor(true)
 }

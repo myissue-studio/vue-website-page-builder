@@ -171,8 +171,8 @@ const handleDownloadHTML = function () {
 const showModalGlobalPageStyles = ref(null)
 
 const handleUpdatePageStyles = async function () {
+  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   showModalGlobalPageStyles.value = true
-
   await pageBuilderService.globalPageStyles()
 }
 
@@ -188,10 +188,6 @@ const handleCloseGlobalPageStyles = async function () {
 
   showModalGlobalPageStyles.value = false
   isLoadingPageStyles.value = false
-}
-
-const handleGlobalHtmlMode = function () {
-  pageBuilderStateStore.setToggleGlobalHtmlMode()
 }
 </script>
 
@@ -351,7 +347,7 @@ const handleGlobalHtmlMode = function () {
               <StyleEditor></StyleEditor>
             </article>
             <article class="pbx-my-1">
-              <HTMLEditor @click="handleGlobalHtmlMode"></HTMLEditor>
+              <HTMLEditor></HTMLEditor>
             </article>
           </div>
         </div>
