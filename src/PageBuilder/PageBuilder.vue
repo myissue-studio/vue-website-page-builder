@@ -859,7 +859,22 @@ onMounted(async () => {
                 <span
                   class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
                 >
-                  <span class="pbx-myMediumIcon material-symbols-outlined"> visibility </span>
+                  <span>
+                    <svg
+                      fill="currentColor"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      width="22"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="css-gy660l"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
+                        fill-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </span>
                 </span>
               </div>
             </div>
@@ -879,7 +894,19 @@ onMounted(async () => {
                 <span
                   class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
                 >
-                  <span class="material-symbols-outlined"> phone_iphone </span>
+                  <svg
+                    fill="currentColor"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    width="22"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="css-gy660l"
+                  >
+                    <path d="M14 16H8v2h6v-2z"></path>
+                    <path
+                      d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
+                    ></path>
+                  </svg>
                 </span>
               </div>
             </div>
