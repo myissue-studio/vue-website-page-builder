@@ -7,8 +7,12 @@ import { delay } from '../../../../composables/delay'
 import PageBuilderSettings from '../../Settings/PageBuilderSettings.vue'
 import ModalBuilder from '../../../../Components/Modals/ModalBuilder.vue'
 import AdvancedPageBuilderSettings from '../../Settings/AdvancedPageBuilderSettings.vue'
+import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 
 const { translate } = useTranslations()
+
+// Use shared store instance
+const pageBuilderStateStore = sharedPageBuilderStore
 
 const pageBuilderService = getPageBuilder()
 
@@ -54,12 +58,23 @@ const handleDeleteComponentsFromDOM = function () {
 
 const showHTMLSettings = ref(false)
 
-const closeHTMLSettings = function () {
-  showHTMLSettings.value = false
-}
 const openHTMLSettings = async function () {
-  await pageBuilderService.generateHtmlFromComponents()
   showHTMLSettings.value = true
+  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
+  await pageBuilderService.globalPageStyles()
+
+  await pageBuilderService.generateHtmlFromComponents()
+}
+
+const closeHTMLSettings = async function () {
+  await pageBuilderService.handleManualSave()
+
+  // Remove global highlight if present
+  const pagebuilder = document.querySelector('#pagebuilder')
+  if (pagebuilder) {
+    pagebuilder.removeAttribute('data-global-selected')
+  }
+  showHTMLSettings.value = false
 }
 const showMainSettings = ref(false)
 

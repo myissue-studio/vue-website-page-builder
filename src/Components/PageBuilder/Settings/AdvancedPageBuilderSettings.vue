@@ -2,6 +2,21 @@
 import { ref, computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import { useTranslations } from '../../../composables/useTranslations'
+import Typography from '../EditorMenu/Editables/Typography.vue'
+import ClassEditor from '../EditorMenu/Editables/ClassEditor.vue'
+import StyleEditor from '../EditorMenu/Editables/StyleEditor.vue'
+import ImageEditor from '../EditorMenu/Editables/ImageEditor.vue'
+import OpacityEditor from '../EditorMenu/Editables/OpacityEditor.vue'
+import Padding from '../EditorMenu/Editables/Padding.vue'
+import Margin from '../EditorMenu/Editables/Margin.vue'
+import BorderRadius from '../EditorMenu/Editables/BorderRadius.vue'
+import BackgroundColorEditor from '../EditorMenu/Editables/BackgroundColorEditor.vue'
+import TextColorEditor from '../EditorMenu/Editables/TextColorEditor.vue'
+import Borders from '../EditorMenu/Editables/Borders.vue'
+import LinkEditor from '../EditorMenu/Editables/LinkEditor.vue'
+import EditGetElement from '../EditorMenu/Editables/EditGetElement.vue'
+import HTMLEditor from '../EditorMenu/Editables/HTMLEditor.vue'
+import { extractCleanHTMLFromPageBuilder } from '../../../composables/extractCleanHTMLFromPageBuilder'
 
 const { translate } = useTranslations()
 
@@ -105,6 +120,103 @@ function prettifyHtml(html) {
   return result
 }
 
+const generateHTML = function (filename, HTML) {
+  // Extract existing styles from the page
+  const existingStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map((style) => {
+      if (style.tagName === 'STYLE') {
+        return style.outerHTML // Inline styles
+      } else if (style.tagName === 'LINK') {
+        return `<link rel="stylesheet" href="${style.href}">` // External stylesheets
+      }
+      return ''
+    })
+    .join('\n')
+
+  // Add your custom CSS
+  const customCSS = `
+      <style>
+        #pagebuilder blockquote,
+        #pagebuilder dl,
+        #pagebuilder dd,
+        #pagebuilder pre,
+        #pagebuilder hr,
+        #pagebuilder figure,
+        #pagebuilder p,
+        #pagebuilder h1,
+        #pagebuilder h2,
+        #pagebuilder h3,
+        #pagebuilder h4,
+        #pagebuilder h5,
+        #pagebuilder h6,
+        #pagebuilder ul,
+        #pagebuilder ol,
+        #pagebuilder li {
+          margin: 0;
+          padding: 0; /* Often useful for ul/ol too */
+        }
+      </style>
+    `
+
+  // Combine existing styles and custom CSS
+  const css = `${existingStyles}\n${customCSS}`
+
+  // Generate the full HTML
+  const fullHTML = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Downloaded HTML</title>
+            ${css}
+        </head>
+        <body>
+            <div id="pagebuilder" class="pbx-font-sans pbx-text-black">
+                ${HTML}
+            </div>
+        </body>
+        </html>
+    `
+
+  // Create and trigger the download
+  const element = document.createElement('a')
+  element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(fullHTML))
+  element.setAttribute('download', filename)
+
+  element.style.display = 'none'
+  document.body.appendChild(element)
+
+  element.click()
+
+  document.body.removeChild(element)
+}
+
+const handleDownloadHTML = function () {
+  const pagebuilder = document.getElementById('pagebuilder')
+  if (!pagebuilder) {
+    return
+  }
+
+  // Extract clean HTML
+  let html = extractCleanHTMLFromPageBuilder(pagebuilder)
+
+  // Create a temporary DOM element to manipulate the HTML
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = html
+
+  // Remove 'hovered' and 'selected' attributes
+  tempDiv.querySelectorAll('[hovered], [selected]').forEach((el) => {
+    el.removeAttribute('hovered')
+    el.removeAttribute('selected')
+  })
+
+  // Get the cleaned HTML back
+  html = tempDiv.innerHTML
+
+  generateHTML('downloaded_html.html', html)
+}
+
 const selectedTab = ref('globalPageStyles')
 
 function selectTab(tab) {
@@ -115,34 +227,106 @@ function selectTab(tab) {
 <template>
   <div>
     <!-- tabbar start -->
-    <div class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2">
-      <button
-        @click="selectTab('globalPageStyles')"
-        :class="[
-          'pbx-mySecondaryButton pbx-text-xs pbx-px-4',
-          selectedTab === 'globalPageStyles'
-            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white  hover:pbx-bg-myPrimaryLinkColor'
-            : 'hover:pbx-text-black',
-        ]"
-      >
-        {{ translate('Global Page Styles') }}
-      </button>
-      <button
-        @click="selectTab('viewHTMLConfig')"
-        :class="[
-          'pbx-mySecondaryButton pbx-text-xs pbx-px-4',
-          selectedTab === 'viewHTMLConfig'
-            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white  hover:pbx-bg-myPrimaryLinkColor'
-            : 'hover:pbx-text-black',
-        ]"
-      >
-        {{ translate('Selected HTML') }}
-      </button>
+    <div class="pbx-mb-4 pbx-flex pbx-justify-between pbx-items-center pbx-gap-2">
+      <div class="pbx-flex pbx-justify-center pbx-items-center pbx-gap-2">
+        <button
+          @click="selectTab('globalPageStyles')"
+          :class="[
+            'pbx-mySecondaryButton pbx-text-xs pbx-px-4',
+            selectedTab === 'globalPageStyles'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white  hover:pbx-bg-myPrimaryLinkColor'
+              : 'hover:pbx-text-black',
+          ]"
+        >
+          {{ translate('Global Page Styles') }}
+        </button>
+        <button
+          @click="selectTab('download')"
+          :class="[
+            'pbx-mySecondaryButton pbx-text-xs pbx-px-4',
+            selectedTab === 'download'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white  hover:pbx-bg-myPrimaryLinkColor'
+              : 'hover:pbx-text-black',
+          ]"
+        >
+          {{ translate('Download HTML') }}
+        </button>
+      </div>
+      <div>
+        <button
+          @click="selectTab('viewHTMLConfig')"
+          :class="[
+            'pbx-mySecondaryButton pbx-text-xs pbx-px-4',
+            selectedTab === 'viewHTMLConfig'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white  hover:pbx-bg-myPrimaryLinkColor'
+              : 'hover:pbx-text-black',
+          ]"
+        >
+          {{ translate('Selected HTML') }}
+        </button>
+      </div>
     </div>
     <!-- tabbar end -->
 
     <!-- globalPageStyles start -->
-    <div v-if="selectedTab === 'globalPageStyles'">hiiii</div>
+    <div v-if="selectedTab === 'download'">
+      <div v-if="Array.isArray(getComponents) && getComponents.length >= 1">
+        <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
+          {{
+            translate(
+              'Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.',
+            )
+          }}
+        </p>
+        <hr />
+        <div class="pbx-my-2 pbx-py-2">
+          <button @click="handleDownloadHTML" type="button" class="pbx-myPrimaryButton">
+            {{ translate('Download HTML file') }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div v-if="selectedTab === 'globalPageStyles'">
+      <div>
+        <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
+          {{
+            translate(
+              'Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.',
+            )
+          }}
+        </p>
+        <article class="pbx-my-1">
+          <Typography></Typography>
+        </article>
+        <article class="pbx-my-1">
+          <TextColorEditor :globalPageLayout="true"></TextColorEditor>
+        </article>
+        <article class="pbx-my-1">
+          <BackgroundColorEditor :globalPageLayout="true"></BackgroundColorEditor>
+        </article>
+        <article class="pbx-my-1">
+          <Padding> </Padding>
+        </article>
+        <article class="pbx-my-1">
+          <Margin> </Margin>
+        </article>
+        <article class="pbx-my-1">
+          <BorderRadius></BorderRadius>
+        </article>
+        <article class="pbx-my-1">
+          <Borders></Borders>
+        </article>
+        <article class="pbx-my-1">
+          <ClassEditor></ClassEditor>
+        </article>
+        <article class="pbx-my-1">
+          <StyleEditor></StyleEditor>
+        </article>
+        <article class="pbx-my-1">
+          <HTMLEditor></HTMLEditor>
+        </article>
+      </div>
+    </div>
     <!-- globalPageStyles end -->
     <!-- viewHTMLConfig start -->
     <div v-if="selectedTab === 'viewHTMLConfig'">
