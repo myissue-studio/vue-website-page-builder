@@ -7,8 +7,12 @@ import { delay } from '../../../../composables/delay'
 import PageBuilderSettings from '../../Settings/PageBuilderSettings.vue'
 import ModalBuilder from '../../../../Components/Modals/ModalBuilder.vue'
 import AdvancedPageBuilderSettings from '../../Settings/AdvancedPageBuilderSettings.vue'
+import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 
 const { translate } = useTranslations()
+
+// Use shared store instance
+const pageBuilderStateStore = sharedPageBuilderStore
 
 const pageBuilderService = getPageBuilder()
 
@@ -54,12 +58,23 @@ const handleDeleteComponentsFromDOM = function () {
 
 const showHTMLSettings = ref(false)
 
-const closeHTMLSettings = function () {
-  showHTMLSettings.value = false
-}
 const openHTMLSettings = async function () {
-  await pageBuilderService.generateHtmlFromComponents()
   showHTMLSettings.value = true
+  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
+  await pageBuilderService.globalPageStyles()
+
+  await pageBuilderService.generateHtmlFromComponents()
+}
+
+const closeHTMLSettings = async function () {
+  await pageBuilderService.handleManualSave()
+
+  // Remove global highlight if present
+  const pagebuilder = document.querySelector('#pagebuilder')
+  if (pagebuilder) {
+    pagebuilder.removeAttribute('data-global-selected')
+  }
+  showHTMLSettings.value = false
 }
 const showMainSettings = ref(false)
 
@@ -89,22 +104,13 @@ const closeSEO = function () {
 <template>
   <div>
     <div class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-myPrimaryGap">
-      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-        <div
-          @click="handleDeleteComponentsFromDOM"
-          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-        >
-          <span class="material-symbols-outlined"> delete_forever </span>
-        </div>
-      </div>
-
-      <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
-
       <!-- SEO Start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center pbx-relative">
         <div
           @click="handleSEO"
+          pbx-bg-myPrimaryLinkColor
           class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+          :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': showSEO }"
         >
           <div class="pbx-font-semibold pbx-text-sm">SEO</div>
         </div>
@@ -112,10 +118,10 @@ const closeSEO = function () {
         <transition name="popup-fade">
           <div
             v-if="showSEO"
-            class="pbx-top-0 pbx-left-full pbx-ml-2 pbx-absolute pbx-z-40 pbx-min-h-50 lg:pbx-w-[50rem] pbx-w-[40rem] pbx-min-h-92"
+            class="pbx-top-0 pbx-left-full pbx-ml-2 pbx-absolute pbx-z-40 lg:pbx-w-[35rem] pbx-w-[30rem]"
           >
             <div
-              class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+              class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-min-h-[35rem] pbx-max-h-[35rem] pbx-mx-4 pbx-pl-2 pbx-pr-4"
             >
               <div
                 class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-between pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-pl-2"
@@ -162,7 +168,7 @@ const closeSEO = function () {
                   class="pbx-w-full"
                 >
                   <h3 class="pbx-text-xl pbx-font-semibold pbx-mb-4 pbx-text-center">
-                    SEO Check Results
+                    {{ translate('SEO Check Results') }}
                   </h3>
                   <ul class="pbx-space-y-4">
                     <li
@@ -175,7 +181,7 @@ const closeSEO = function () {
                       <div class="pbx-flex-shrink-0 pbx-mt-1">
                         <template v-if="check.passed">
                           <div
-                            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+                            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryLinkColor pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-white hover:pbx-text-white"
                           >
                             <span class="material-symbols-outlined"> check </span>
                           </div>
@@ -211,6 +217,17 @@ const closeSEO = function () {
         </transition>
       </div>
       <!-- SEO End -->
+
+      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
+        <div
+          @click="handleDeleteComponentsFromDOM"
+          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+        >
+          <span class="material-symbols-outlined"> delete_forever </span>
+        </div>
+      </div>
+
+      <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
 
       <!-- HTML Settings Start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
