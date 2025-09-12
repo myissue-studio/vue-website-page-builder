@@ -244,9 +244,6 @@ const handleGlobalHtmlMode = function () {
         <article class="pbx-my-1">
           <StyleEditor></StyleEditor>
         </article>
-        <article class="pbx-my-1">
-          <HTMLEditor></HTMLEditor>
-        </article>
       </div>
 
       <!-- Global Page Styles -->
