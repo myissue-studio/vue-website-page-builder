@@ -48,6 +48,36 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
+    html_code: `<section><div class="relative py-4"><div class="mx-auto max-w-7xl lg:px-4 px-2"><div class="break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
+    id: null,
+    title: 'Header H4',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_h3
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="relative py-4"><div class="mx-auto max-w-7xl lg:px-4 px-2"><div class="break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
+    id: null,
+    title: 'Header H5',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_h3
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="relative py-4"><div class="mx-auto max-w-7xl lg:px-4 px-2"><div class="break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
+    id: null,
+    title: 'Header H6',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_h3
+    </span>
+    `,
+  },
+  {
     html_code: `
     <section>
     <div class="py-4">

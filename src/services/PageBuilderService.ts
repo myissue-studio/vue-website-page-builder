@@ -6,6 +6,7 @@ import type {
   PageBuilderConfig,
   PageSettings,
   SEOCheck,
+  SEOSummary,
   StartBuilderResult,
 } from '../types'
 import type { usePageBuilderStateStore } from '../stores/page-builder-state'

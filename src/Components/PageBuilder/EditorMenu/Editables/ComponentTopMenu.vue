@@ -78,7 +78,6 @@ const handleSEO = async function () {
 
   if (showSEO.value) {
     seoResult.value = await pageBuilderService.analyzeSEO()
-    console.log('data eeer:', seoResult.value)
   }
 }
 
