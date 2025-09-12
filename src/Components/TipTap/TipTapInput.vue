@@ -7,7 +7,7 @@ import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
-import Typography from '../PageBuilder/EditorMenu/Editables/Typography.vue'
+import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 
 const pageBuilderService = getPageBuilder()
 
@@ -416,7 +416,7 @@ onMounted(() => {
                     <div
                       class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
                     >
-                      <Typography></Typography>
+                      <TypographyForTipTap></TypographyForTipTap>
                     </div>
                   </div>
                 </transition>
