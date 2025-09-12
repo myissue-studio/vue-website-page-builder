@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import Navbar from './Components/Homepage/Navbar.vue'
 import PageBuilderTest from './tests/PageBuilderTest.vue'
 import Footer from './Components/Homepage/Footer.vue'
 import { useTranslations } from './composables/useTranslations'
