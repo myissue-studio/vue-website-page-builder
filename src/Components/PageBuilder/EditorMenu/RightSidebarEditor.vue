@@ -189,6 +189,10 @@ const handleCloseGlobalPageStyles = async function () {
   showModalGlobalPageStyles.value = false
   isLoadingPageStyles.value = false
 }
+
+const handleGlobalHtmlMode = function () {
+  pageBuilderStateStore.setToggleGlobalHtmlMode()
+}
 </script>
 
 <template>
@@ -350,7 +354,7 @@ const handleCloseGlobalPageStyles = async function () {
               <StyleEditor></StyleEditor>
             </article>
             <article class="pbx-my-1">
-              <HTMLEditor :globalPage="true"></HTMLEditor>
+              <HTMLEditor @click="handleGlobalHtmlMode"></HTMLEditor>
             </article>
           </div>
         </div>
