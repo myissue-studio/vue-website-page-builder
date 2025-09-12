@@ -237,7 +237,7 @@ onMounted(() => {
       <div v-if="pageBuilderService.isSelectedElementValidText() && editor">
         <div class="pbx-relative pbx-rounded-lg">
           <div
-            class="pbx-flex pbx-justify-between pbx-myPrimaryGap pbx-items-center pbx-pb-2 pbx-mb-2 pbx-px-4 pbx-overflow-x-auto pbx-border-0 pbx-border-b pbx-border-solid pbx-border-gray-200"
+            class="pbx-flex pbx-justify-between pbx-myPrimaryGap pbx-items-center pbx-pb-2 pbx-mb-2 pbx-pl-4 pbx-pr-4 pbx-border-0 pbx-border-b pbx-border-solid pbx-border-gray-200"
           >
             <div>
               <div>
@@ -258,23 +258,6 @@ onMounted(() => {
             <div
               class="pbx-flex pbx-items-center pbx-p-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-divide-x pbx-divide-gray-300"
             >
-              <!-- Toggle showTypography start -->
-              <div
-                class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-relative"
-              >
-                <button
-                  @click="toggleShowTypography"
-                  type="button"
-                  class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
-                >
-                  Font styles
-                </button>
-              </div>
-
-              <!-- Typography  end-->
-              <!-- Toggle showTypography end -->
-
-              <!-- Toggle showTypography end -->
               <!-- Bold -->
               <div class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
                 <button
@@ -408,6 +391,37 @@ onMounted(() => {
                   <span class="material-symbols-outlined"> format_list_bulleted </span>
                 </button>
               </div>
+
+              <!-- Toggle showTypography start -->
+              <div
+                class="pbx-px-2 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max pbx-relative pbx-mr-4"
+              >
+                <button
+                  @click="toggleShowTypography"
+                  type="button"
+                  class="pbx-h-10 pbx-px-2 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-font-medium"
+                  :class="{
+                    'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                      showTypography,
+                  }"
+                >
+                  {{ translate('Font Appearance') }}
+                </button>
+
+                <transition name="popup-fade">
+                  <div
+                    v-if="showTypography"
+                    class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-44 pbx-w-72 pbx-select-none pbx-min-h-92"
+                  >
+                    <div
+                      class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+                    >
+                      <Typography></Typography>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+              <!-- Toggle showTypography end -->
             </div>
           </div>
 
@@ -420,18 +434,5 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <!-- Typography  start-->
-    <transition name="popup-fade">
-      <div
-        v-if="showTypography"
-        class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-72 pbx-select-none pbx-min-h-96"
-      >
-        <div
-          class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[80vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
-        >
-          <Typography></Typography>
-        </div>
-      </div>
-    </transition>
   </div>
 </template>

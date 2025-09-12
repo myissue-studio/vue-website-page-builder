@@ -220,10 +220,6 @@ const handleCloseGlobalPageStyles = async function () {
           <ImageEditor> </ImageEditor>
         </article>
         <article class="pbx-my-1">
-          <Typography></Typography>
-        </article>
-
-        <article class="pbx-my-1">
           <OpacityEditor> </OpacityEditor>
         </article>
         <article class="pbx-my-1">
