@@ -83,6 +83,8 @@ const openMainSettings = function () {
         </div>
       </div>
 
+      <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
+
       <!-- HTML Settings Start -->
 
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
