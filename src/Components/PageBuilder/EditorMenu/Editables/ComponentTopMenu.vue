@@ -127,7 +127,7 @@ const closeSEO = function () {
             ></div>
             <!-- Popup: stays next to the SEO button, not centered -->
             <div
-              class="pbx-top-0 pbx-left-0 pbx-ml-2 pbx-absolute pbx-z-40 lg:pbx-w-[35rem] pbx-w-[30rem]"
+              class="pbx-top-0 pbx-left-0 pbx-ml-2 pbx-absolute pbx-z-40 lg:pbx-w-[35rem] pbx-w-[25rem]"
               @click.stop
             >
               <div
