@@ -29,3 +29,13 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
   preserveaspectratio: xMidYMid slice;
   object-position: top; /* align to top */
 }
+
+/* Safari + Chrome + Edge */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
