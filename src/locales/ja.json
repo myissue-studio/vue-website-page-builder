@@ -191,5 +191,8 @@
   "Continue Where I Left Off": "中断したところから続行",
   "HTML Editor": "HTMLエディター",
   "Gain full control over components by editing the raw HTML.": "生のHTMLを編集してコンポーネントを完全に制御。",
-  "Large Screens Only": "大型スクリーンのみ"
+  "Large Screens Only": "大型スクリーンのみ",
+  "Left Positioned Button": "左寄せのボタン",
+  "Centered Button": "中央揃えのボタン",
+  "Right Positioned Button": "右寄せのボタン"
 }
