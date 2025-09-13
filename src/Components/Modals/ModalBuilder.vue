@@ -55,7 +55,7 @@ const maxWidthClass = computed(() => {
 
 <template>
   <teleport to="body">
-    <div class="pbx-font-sans">
+    <div id="pbx-modal" class="pbx-font-sans">
       <!-- Modal -->
       <div
         v-if="showModalBuilder"

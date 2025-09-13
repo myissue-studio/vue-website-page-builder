@@ -235,9 +235,9 @@ onMounted(() => {
 
     <div class="pbx-blockease-linear pbx-duration-200 pbx-block pbx-ease-linear">
       <div v-if="pageBuilderService.isSelectedElementValidText() && editor">
-        <div class="pbx-relative pbx-rounded-lg">
+        <div class="pbx-relative pbx-rounded-lg pbx-px-2">
           <div
-            class="pbx-flex pbx-flex-wrap pbx-items-center pbx-p-1 pbx-border-solid pbx-p-1 pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-mb-4"
+            class="pbx-flex pbx-flex-wrap pbx-items-center pbx-border-solid pbx-p-1 pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-mb-4"
           >
             <!-- Save -->
             <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-mr-6">
@@ -459,12 +459,12 @@ onMounted(() => {
 
             <!-- Toggle showTypography start -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5 pbx-relative pbx-mr-4"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5 pbx-relative"
             >
               <button
                 @click="toggleShowTypography"
                 type="button"
-                class="pbx-h-10 pbx-px-2 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-font-medium"
+                class="pbx-h-10 pbx-px-12 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-font-medium"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     showTypography,
@@ -476,10 +476,10 @@ onMounted(() => {
               <transition name="popup-fade">
                 <div
                   v-if="showTypography"
-                  class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-44 pbx-w-72 pbx-select-none pbx-min-h-92"
+                  class="pbx-top-full pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-72 pbx-select-none"
                 >
                   <div
-                    class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+                    class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-mx-4 pbx-pl-2 pbx-pr-4"
                   >
                     <TypographyForTipTap></TypographyForTipTap>
                   </div>
