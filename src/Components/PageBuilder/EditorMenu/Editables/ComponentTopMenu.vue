@@ -147,7 +147,7 @@ const closeSEO = function () {
               </div>
 
               <div>
-                <!-- score start -->
+                <!-- score indicator start -->
                 <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
                   <div
                     class="pbx-lg:pbx-text-base pbx-text-sm pbx-font-semibold pbx-text-center pbx-min-h-14 pbx-flex pbx-justify-center pbx-items-center"
@@ -157,14 +157,16 @@ const closeSEO = function () {
                       <div
                         class="pbx-relative pbx-my-4 pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center pbx-w-36 pbx-h-36"
                         :style="{
-                          background: `conic-gradient(#50C878	 ${seoResult.score}%, #e5e7eb 0)`,
+                          background: `conic-gradient(${
+                            seoResult.score < 50 ? '#ef4444' : '#50C878'
+                          } ${seoResult.score}%, #e5e7eb 0)`,
                         }"
                       >
                         <!-- Inner circle -->
                         <div
                           class="pbx-bg-gray-100 pbx-rounded-full pbx-w-32 pbx-h-32 pbx-flex pbx-items-center pbx-justify-center"
                         >
-                          <div>
+                          <div class="text-center">
                             <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
                               seoResult.score
                             }}</span>
@@ -175,8 +177,8 @@ const closeSEO = function () {
                     </template>
                   </div>
                 </div>
+                <!-- score indicator end -->
 
-                <!-- score end -->
                 <!-- Checks start -->
                 <div
                   v-if="seoResult && seoResult.checks && seoResult.checks.length"
