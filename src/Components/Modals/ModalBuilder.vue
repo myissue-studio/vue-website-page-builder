@@ -37,18 +37,18 @@ const handleClose = () => {
 
 const maxWidthClass = computed(() => {
   return {
-    sm: 'md:pbx-max-w-sm',
-    md: 'md:pbx-max-w-md',
-    lg: 'md:pbx-max-w-lg',
-    xl: 'md:pbx-max-w-xl',
-    '2xl': 'md:pbx-max-w-2xl',
-    '3xl': 'md:pbx-max-w-3xl',
-    '4xl': 'md:pbx-max-w-4xl',
-    '5xl': 'md:pbx-max-w-5xl',
-    '6xl': 'md:pbx-max-w-6xl',
-    '7xl': 'md:pbx-max-w-7xl',
-    full: 'md:pbx-max-w-full', // 100% width
-    screen: 'md:w-screen sm:pbx-max-w-none', // truly full screen
+    sm: 'md:pbx-max-w-sm pbx-w-screen',
+    md: 'md:pbx-max-w-md pbx-w-screen',
+    lg: 'md:pbx-max-w-lg pbx-w-screen',
+    xl: 'md:pbx-max-w-xl pbx-w-screen',
+    '2xl': 'md:pbx-max-w-2xl pbx-w-screen',
+    '3xl': 'md:pbx-max-w-3xl pbx-w-screen',
+    '4xl': 'md:pbx-max-w-4xl pbx-w-screen',
+    '5xl': 'md:pbx-max-w-5xl pbx-w-screen',
+    '6xl': 'md:pbx-max-w-6xl pbx-w-screen',
+    '7xl': 'md:pbx-max-w-7xl pbx-w-screen',
+    full: 'md:pbx-max-w-full pbx-w-screen', // 100% width
+    screen: 'md:pbx-w-screen pbx-w-screen pbx-max-w-none', // truly full screen
   }[props.maxWidth]
 })
 </script>
