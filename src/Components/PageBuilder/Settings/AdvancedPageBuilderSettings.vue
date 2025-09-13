@@ -227,7 +227,9 @@ function selectTab(tab) {
 <template>
   <div>
     <!-- tabbar start -->
-    <div class="pbx-mb-4 pbx-flex pbx-justify-between pbx-items-center pbx-gap-2">
+    <div
+      class="pbx-mb-4 pbx-flex pbx-justify-start pbx-items-center pbx-gap-2 pbx-border-b pbx-border-solid pbx-border-gray-200 pbx-pb-4"
+    >
       <div class="pbx-flex pbx-justify-center pbx-items-center pbx-gap-2">
         <button
           @click="selectTab('globalPageStyles')"
@@ -238,7 +240,32 @@ function selectTab(tab) {
               : 'hover:pbx-text-black',
           ]"
         >
-          {{ translate('Global Page Styles') }}
+          <span>
+            <svg
+              fill="currentColor"
+              height="22"
+              viewBox="0 0 22 22"
+              width="22"
+              xmlns="http://www.w3.org/2000/svg"
+              class="css-l0u10b"
+            >
+              <g clip-path="url(#prefix__clip0_1645_485)">
+                <path
+                  clip-rule="evenodd"
+                  d="M19.871 1.81a2.768 2.768 0 00-3.914 0l-3.543 3.544-2.5-2.5L0 12.768l8.914 8.914 9.914-9.914-2.5-2.5 3.543-3.543a2.768 2.768 0 000-3.914zm-2.5 1.415a.768.768 0 011.086 1.086L13.5 9.268l2.5 2.5-1.086 1.086-6.086-6.086 1.086-1.086 2.5 2.5 4.957-4.957zM7.414 8.182l-4.586 4.586 1.086 1.086 3.293-3.293 1.414 1.414-3.293 3.293 1.086 1.086 3.293-3.293 1.414 1.414-3.293 3.293 1.086 1.086 4.586-4.586-6.086-6.086z"
+                  fill-rule="evenodd"
+                ></path>
+              </g>
+              <defs>
+                <clipPath id="prefix__clip0_1645_485">
+                  <path d="M0 0h22v22H0z" fill="#fff"></path>
+                </clipPath>
+              </defs>
+            </svg>
+          </span>
+          <span>
+            {{ translate('Global Page Styles') }}
+          </span>
         </button>
         <button
           @click="selectTab('download')"
@@ -249,7 +276,10 @@ function selectTab(tab) {
               : 'hover:pbx-text-black',
           ]"
         >
-          {{ translate('Download HTML') }}
+          <span class="material-symbols-outlined"> download_2 </span>
+          <span>
+            {{ translate('Download HTML') }}
+          </span>
         </button>
       </div>
       <div>
@@ -262,7 +292,10 @@ function selectTab(tab) {
               : 'hover:pbx-text-black',
           ]"
         >
-          {{ translate('Selected HTML') }}
+          <span class="material-symbols-outlined"> deployed_code </span>
+          <span>
+            {{ translate('Selected HTML') }}
+          </span>
         </button>
       </div>
     </div>
@@ -270,7 +303,10 @@ function selectTab(tab) {
 
     <!-- globalPageStyles start -->
     <div v-if="selectedTab === 'download'">
-      <div v-if="Array.isArray(getComponents) && getComponents.length >= 1">
+      <div
+        v-if="Array.isArray(getComponents) && getComponents.length >= 1"
+        class="pbx-min-h-[50rem]"
+      >
         <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
           {{
             translate(
@@ -281,7 +317,10 @@ function selectTab(tab) {
         <hr />
         <div class="pbx-my-2 pbx-py-2">
           <button @click="handleDownloadHTML" type="button" class="pbx-myPrimaryButton">
-            {{ translate('Download HTML file') }}
+            <span class="material-symbols-outlined"> download_2 </span>
+            <span>
+              {{ translate('Download HTML file') }}
+            </span>
           </button>
         </div>
       </div>

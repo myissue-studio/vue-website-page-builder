@@ -191,5 +191,8 @@
   "Continue Where I Left Off": "从中断处继续",
   "HTML Editor": "HTML编辑器",
   "Gain full control over components by editing the raw HTML.": "通过编辑原始HTML获得对组件的完全控制。",
-  "Large Screens Only": "仅限大屏幕"
+  "Large Screens Only": "仅限大屏幕",
+  "Left Positioned Button": "左侧按钮",
+  "Centered Button": "居中按钮",
+  "Right Positioned Button": "右侧按钮"
 }

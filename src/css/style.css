@@ -382,11 +382,6 @@
   min-height: fit-content;
 }
 
-#pagebuilder a {
-  color: inherit;
-  text-decoration: none;
-}
-
 /* Use #page-builder-wrapper ID in order for the "select video" button not to apear in production*/
 #page-builder-wrapper #youtube-video::before {
   content: 'Select Video Element';
@@ -423,28 +418,21 @@
   cursor: pointer;
 }
 
+#pagebuilder a {
+  color: inherit;
+  text-decoration: none;
+}
+
 #page-builder-editor a,
 #pagebuilder a {
   text-decoration: underline;
 }
 
-#page-builder-editor #linktree p,
-#pagebuilder #linktree p {
-  width: 100%;
-}
-
-#page-builder-editor #linktree a,
-#pagebuilder #linktree a {
-  @apply pbx-py-4 pbx-px-2 pbx-block pbx-w-full;
-}
-
-#page-builder-editor #linktree a,
-#pagebuilder #linktree a {
-  text-decoration: none;
-  font-weight: 500;
-  color: inherit !important;
-  width: 100%;
+#linktree a {
+  text-decoration: none !important;
   cursor: pointer;
+  display: block;
+  padding: 18px 14px;
 }
 
 .pbx-reorder-highlight {

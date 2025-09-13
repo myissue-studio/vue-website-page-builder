@@ -191,5 +191,8 @@
   "Continue Where I Left Off": "تابع من حيث توقفت",
   "HTML Editor": "محرر HTML",
   "Gain full control over components by editing the raw HTML.": "احصل على تحكم كامل بالمكونات من خلال تحرير HTML الخام.",
-  "Large Screens Only": "الشاشات الكبيرة فقط"
+  "Large Screens Only": "الشاشات الكبيرة فقط",
+  "Left Positioned Button": "زر في جهة اليسار",
+  "Centered Button": "زر في المنتصف",
+  "Right Positioned Button": "زر في جهة اليمين"
 }

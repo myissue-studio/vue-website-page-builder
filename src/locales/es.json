@@ -191,5 +191,8 @@
   "Continue Where I Left Off": "Continuar donde lo dejé",
   "HTML Editor": "Editor HTML",
   "Gain full control over components by editing the raw HTML.": "Obtén control total sobre los componentes editando el HTML sin formato.",
-  "Large Screens Only": "Solo pantallas grandes"
+  "Large Screens Only": "Solo pantallas grandes",
+  "Left Positioned Button": "Botón posicionado a la izquierda",
+  "Centered Button": "Botón centrado",
+  "Right Positioned Button": "Botón posicionado a la derecha"
 }

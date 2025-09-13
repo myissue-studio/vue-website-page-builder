@@ -191,5 +191,8 @@
   "Continue Where I Left Off": "Продолжить с того места, где остановился",
   "HTML Editor": "HTML-редактор",
   "Gain full control over components by editing the raw HTML.": "Получите полный контроль над компонентами, редактируя чистый HTML.",
-  "Large Screens Only": "Только большие экраны"
+  "Large Screens Only": "Только большие экраны",
+  "Left Positioned Button": "Кнопка слева",
+  "Centered Button": "Кнопка по центру",
+  "Right Positioned Button": "Кнопка справа"
 }
