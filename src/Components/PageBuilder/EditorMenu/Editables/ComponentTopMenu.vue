@@ -152,23 +152,30 @@ const closeSEO = function () {
                   <div
                     class="pbx-lg:pbx-text-base pbx-text-sm pbx-font-semibold pbx-text-center pbx-min-h-14 pbx-flex pbx-justify-center pbx-items-center"
                   >
-                    <!-- score animation start -->
                     <template v-if="seoResult">
+                      <!-- Outer ring -->
                       <div
-                        class="pbx-my-4 pbx-p-8 pbx-border pbx-border-red-100 pbx-rounded-full pbx-aspect-square pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-bg-gray-100"
+                        class="pbx-relative pbx-my-4 pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center pbx-w-36 pbx-h-36"
+                        :style="{
+                          background: `conic-gradient(#50C878	 ${seoResult.score}%, #e5e7eb 0)`,
+                        }"
                       >
-                        <div>
-                          <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
-                            seoResult.score
-                          }}</span>
-                          <span class="pbx-text-xl">%</span>
+                        <!-- Inner circle -->
+                        <div
+                          class="pbx-bg-gray-100 pbx-rounded-full pbx-w-32 pbx-h-32 pbx-flex pbx-items-center pbx-justify-center"
+                        >
+                          <div>
+                            <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
+                              seoResult.score
+                            }}</span>
+                            <span class="pbx-text-xl">%</span>
+                          </div>
                         </div>
                       </div>
-                      <!-- score animation end -->
                     </template>
-                    <!--v-if-->
                   </div>
                 </div>
+
                 <!-- score end -->
                 <!-- Checks start -->
                 <div
@@ -182,8 +189,8 @@ const closeSEO = function () {
                     <li
                       v-for="(check, index) in seoResult.checks"
                       :key="index"
-                      class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-shadow-sm pbx-border"
-                      :class="check.passed ? 'pbx-border-green-200' : 'pbx-border-red-200'"
+                      class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-shadow-sm pbx-border-2"
+                      :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
                     >
                       <!-- Status indicator -->
                       <div class="pbx-flex-shrink-0 pbx-mt-1">
