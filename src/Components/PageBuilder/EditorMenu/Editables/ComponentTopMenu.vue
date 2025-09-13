@@ -1,6 +1,6 @@
 <script setup>
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { delay } from '../../../../composables/delay'
@@ -15,6 +15,10 @@ const { translate } = useTranslations()
 const pageBuilderStateStore = sharedPageBuilderStore
 
 const pageBuilderService = getPageBuilder()
+
+const getElement = computed(() => {
+  return pageBuilderStateStore.getElement
+})
 
 const isDeletingLayout = ref(false)
 const showModalDeleteAllComponents = ref(false)
@@ -84,6 +88,10 @@ const handleMainSettings = function () {
 const openMainSettings = function () {
   showMainSettings.value = true
 }
+
+watch(getElement, (_) => {
+  showSEO.value = false
+})
 
 const seoResult = ref(null)
 const showSEO = ref(false)
