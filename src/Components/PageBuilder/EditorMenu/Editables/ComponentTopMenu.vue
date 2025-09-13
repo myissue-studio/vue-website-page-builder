@@ -131,7 +131,7 @@ const closeSEO = function () {
               @click.stop
             >
               <div
-                class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-min-h-[35rem] pbx-max-h-[35rem] pbx-mx-4 pbx-pl-2 pbx-pr-4"
+                class="lg:pbx-mr-10 pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-min-h-[35rem] pbx-max-h-[35rem] pbx-mx-4 pbx-pl-2 pbx-pr-4"
               >
                 <div
                   class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-between pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-pl-2"
@@ -148,90 +148,92 @@ const closeSEO = function () {
                   <!-- Close Modal end -->
                 </div>
 
-                <div>
-                  <!-- score indicator start -->
-                  <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
-                    <div
-                      class="pbx-lg:pbx-text-base pbx-text-sm pbx-font-semibold pbx-text-center pbx-min-h-14 pbx-flex pbx-justify-center pbx-items-center"
-                    >
-                      <template v-if="seoResult">
-                        <!-- Outer ring -->
-                        <div
-                          class="pbx-relative pbx-my-4 pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center pbx-w-36 pbx-h-36"
-                          :style="{
-                            background: `conic-gradient(${
-                              seoResult.score < 50 ? '#ef4444' : '#50C878'
-                            } ${seoResult.score}%, #e5e7eb 0)`,
-                          }"
-                        >
-                          <!-- Inner circle -->
+                <div class="pbx-overflow-y-auto">
+                  <div>
+                    <!-- score indicator start -->
+                    <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
+                      <div
+                        class="pbx-lg:pbx-text-base pbx-text-sm pbx-font-semibold pbx-text-center pbx-min-h-14 pbx-flex pbx-justify-center pbx-items-center"
+                      >
+                        <template v-if="seoResult">
+                          <!-- Outer ring -->
                           <div
-                            class="pbx-bg-gray-100 pbx-rounded-full pbx-w-32 pbx-h-32 pbx-flex pbx-items-center pbx-justify-center"
+                            class="pbx-relative pbx-my-4 pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center pbx-w-36 pbx-h-36"
+                            :style="{
+                              background: `conic-gradient(${
+                                seoResult.score < 50 ? '#ef4444' : '#50C878'
+                              } ${seoResult.score}%, #e5e7eb 0)`,
+                            }"
                           >
-                            <div class="text-center">
-                              <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
-                                seoResult.score
-                              }}</span>
-                              <span class="pbx-text-xl">%</span>
+                            <!-- Inner circle -->
+                            <div
+                              class="pbx-bg-gray-100 pbx-rounded-full pbx-w-32 pbx-h-32 pbx-flex pbx-items-center pbx-justify-center"
+                            >
+                              <div class="text-center">
+                                <span class="pbx-lg:pbx-text-7xl pbx-text-5xl">{{
+                                  seoResult.score
+                                }}</span>
+                                <span class="pbx-text-xl">%</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </template>
+                        </template>
+                      </div>
                     </div>
-                  </div>
-                  <!-- score indicator end -->
+                    <!-- score indicator end -->
 
-                  <!-- Checks start -->
-                  <div
-                    v-if="seoResult && seoResult.checks && seoResult.checks.length"
-                    class="pbx-w-full"
-                  >
-                    <h3 class="pbx-text-xl pbx-font-semibold pbx-mb-4 pbx-text-center">
-                      {{ translate('SEO Check Results') }}
-                    </h3>
-                    <ul class="pbx-space-y-4">
-                      <li
-                        v-for="(check, index) in seoResult.checks"
-                        :key="index"
-                        class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-shadow-sm pbx-border-2"
-                        :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
-                      >
-                        <!-- Status indicator -->
-                        <div class="pbx-flex-shrink-0 pbx-mt-1">
-                          <template v-if="check.passed">
-                            <div
-                              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryLinkColor pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-white hover:pbx-text-white"
+                    <!-- Checks start -->
+                    <div
+                      v-if="seoResult && seoResult.checks && seoResult.checks.length"
+                      class="pbx-w-full"
+                    >
+                      <h3 class="pbx-text-xl pbx-font-semibold pbx-mb-4 pbx-text-center">
+                        {{ translate('SEO Check Results') }}
+                      </h3>
+                      <ul class="pbx-space-y-4">
+                        <li
+                          v-for="(check, index) in seoResult.checks"
+                          :key="index"
+                          class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-shadow-sm pbx-border-2"
+                          :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
+                        >
+                          <!-- Status indicator -->
+                          <div class="pbx-flex-shrink-0 pbx-mt-1">
+                            <template v-if="check.passed">
+                              <div
+                                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryLinkColor pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-white hover:pbx-text-white"
+                              >
+                                <span class="material-symbols-outlined"> check </span>
+                              </div>
+                            </template>
+                            <template v-if="!check.passed">
+                              <div
+                                class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryErrorColor pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-white"
+                              >
+                                <span class="material-symbols-outlined">
+                                  check_indeterminate_small
+                                </span>
+                              </div>
+                            </template>
+                          </div>
+                          <!-- Check details -->
+                          <div class="pbx-flex-1">
+                            <p
+                              class="pbx-text-lg pbx-font-medium"
+                              :class="check.passed ? 'pbx-text-green-700' : 'pbx-text-red-700'"
                             >
-                              <span class="material-symbols-outlined"> check </span>
-                            </div>
-                          </template>
-                          <template v-if="!check.passed">
-                            <div
-                              class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryErrorColor pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-white"
-                            >
-                              <span class="material-symbols-outlined">
-                                check_indeterminate_small
-                              </span>
-                            </div>
-                          </template>
-                        </div>
-                        <!-- Check details -->
-                        <div class="pbx-flex-1">
-                          <p
-                            class="pbx-text-lg pbx-font-medium"
-                            :class="check.passed ? 'pbx-text-green-700' : 'pbx-text-red-700'"
-                          >
-                            {{ check.check }}
-                          </p>
-                          <p class="pbx-text-sm pbx-text-gray-600">{{ check.details }}</p>
-                        </div>
-                      </li>
-                    </ul>
+                              {{ check.check }}
+                            </p>
+                            <p class="pbx-text-sm pbx-text-gray-600">{{ check.details }}</p>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div v-else class="pbx-text-gray-500 pbx-text-center">
+                      No SEO checks available.
+                    </div>
+                    <!-- Checks end -->
                   </div>
-                  <div v-else class="pbx-text-gray-500 pbx-text-center">
-                    No SEO checks available.
-                  </div>
-                  <!-- Checks end -->
                 </div>
               </div>
             </div>

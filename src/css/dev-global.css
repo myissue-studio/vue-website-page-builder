@@ -30,6 +30,7 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
   object-position: top; /* align to top */
 }
 
+/* hide scrollbar */
 /* Safari + Chrome + Edge */
 ::-webkit-scrollbar {
   display: none;
@@ -39,3 +40,5 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
 * {
   scrollbar-width: none;
 }
+
+/* hide scrollbar */

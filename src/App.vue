@@ -20,7 +20,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div id="pbx-app">
     <Footer></Footer>
     <PageBuilderTest></PageBuilderTest>
   </div>
