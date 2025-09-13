@@ -26,19 +26,27 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
 .pbx-theme-cover svg {
   width: 100%;
   height: 100%;
-  preserveaspectratio: xMidYMid slice;
   object-position: top; /* align to top */
 }
 
-/* hide scrollbar */
-/* Safari + Chrome + Edge */
 ::-webkit-scrollbar {
-  display: none;
+  height: 2px; /* horizontal scrollbar height */
 }
 
-/* Firefox */
-* {
-  scrollbar-width: none;
+::-webkit-scrollbar-track {
+  background: transparent; /* or a color */
 }
 
-/* hide scrollbar */
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar {
+  width: 8px; /* vertical */
+  height: 8px; /* horizontal */
+}

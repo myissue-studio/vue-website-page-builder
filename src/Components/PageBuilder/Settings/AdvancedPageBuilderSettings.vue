@@ -302,11 +302,8 @@ function selectTab(tab) {
     <!-- tabbar end -->
 
     <!-- globalPageStyles start -->
-    <div v-if="selectedTab === 'download'">
-      <div
-        v-if="Array.isArray(getComponents) && getComponents.length >= 1"
-        class="pbx-min-h-[50rem]"
-      >
+    <div v-if="selectedTab === 'download'" class="pbx-min-h-[50rem]">
+      <div v-if="Array.isArray(getComponents) && getComponents.length >= 1">
         <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
           {{
             translate(
@@ -325,7 +322,7 @@ function selectTab(tab) {
         </div>
       </div>
     </div>
-    <div v-if="selectedTab === 'globalPageStyles'">
+    <div v-if="selectedTab === 'globalPageStyles'" class="pbx-min-h-[50rem]">
       <div>
         <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
           {{
@@ -368,7 +365,7 @@ function selectTab(tab) {
     </div>
     <!-- globalPageStyles end -->
     <!-- viewHTMLConfig start -->
-    <div v-if="selectedTab === 'viewHTMLConfig'">
+    <div v-if="selectedTab === 'viewHTMLConfig'" class="pbx-min-h-[50rem]">
       <div
         class="pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
       >
