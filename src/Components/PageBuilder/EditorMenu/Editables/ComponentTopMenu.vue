@@ -57,16 +57,22 @@ const handleDeleteComponentsFromDOM = function () {
 }
 
 const showHTMLSettings = ref(false)
+const isLoading = ref(false)
 
 const openHTMLSettings = async function () {
   showHTMLSettings.value = true
+  isLoading.value = true
+  await delay(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
 
   await pageBuilderService.generateHtmlFromComponents()
+  isLoading.value = false
 }
 
 const closeHTMLSettings = async function () {
+  isLoading.value = true
+  await delay(200)
   await pageBuilderService.handleManualSave()
 
   // Remove global highlight if present
@@ -75,6 +81,7 @@ const closeHTMLSettings = async function () {
     pagebuilder.removeAttribute('data-global-selected')
   }
   showHTMLSettings.value = false
+  isLoading.value = false
 }
 const showMainSettings = ref(false)
 
@@ -320,7 +327,7 @@ const closeSEO = function () {
       minHeight=""
       maxHeight=""
     >
-      <AdvancedPageBuilderSettings> </AdvancedPageBuilderSettings>
+      <AdvancedPageBuilderSettings :isLoading="isLoading"> </AdvancedPageBuilderSettings>
     </ModalBuilder>
 
     <ModalBuilder
