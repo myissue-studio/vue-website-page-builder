@@ -312,7 +312,7 @@ function selectTab(tab) {
 
       <!-- loading spinner start -->
       <div v-if="isLoading">
-        <div class="pbx-flex pbx-items-top pbx-justify-center pbx-mt-4 pbx-min-h-[50rem]">
+        <div class="pbx-flex pbx-items-top pbx-justify-center pbx-mt-4 pbx-min-h-screen">
           <div
             class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
           >
@@ -326,7 +326,7 @@ function selectTab(tab) {
       <!-- loading spinner end -->
       <!-- globalPageStyles start -->
       <div v-if="!isLoading">
-        <div v-if="selectedTab === 'download'" class="pbx-min-h-[50rem]">
+        <div v-if="selectedTab === 'download'" class="pbx-min-h-screen">
           <div v-if="Array.isArray(getComponents) && getComponents.length >= 1">
             <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
               {{
@@ -346,7 +346,7 @@ function selectTab(tab) {
             </div>
           </div>
         </div>
-        <div v-if="selectedTab === 'globalPageStyles'" class="pbx-min-h-[50rem]">
+        <div v-if="selectedTab === 'globalPageStyles'" class="pbx-min-h-screen">
           <div>
             <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
               {{
@@ -389,7 +389,7 @@ function selectTab(tab) {
         </div>
         <!-- globalPageStyles end -->
         <!-- viewHTMLConfig start -->
-        <div v-if="selectedTab === 'viewHTMLConfig'" class="pbx-min-h-[50rem]">
+        <div v-if="selectedTab === 'viewHTMLConfig'" class="pbx-min-h-screen">
           <div
             class="pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
           >
