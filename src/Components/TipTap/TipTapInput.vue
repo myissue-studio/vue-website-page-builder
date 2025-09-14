@@ -251,11 +251,11 @@ onMounted(() => {
             </div>
             <!-- Bold -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleBold().run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('bold'),
@@ -267,11 +267,11 @@ onMounted(() => {
 
             <!-- Link -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="handleURL"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('link'),
@@ -283,11 +283,11 @@ onMounted(() => {
 
             <!-- H2 -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('heading', {
@@ -300,11 +300,11 @@ onMounted(() => {
             </div>
             <!-- H3 -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('heading', {
@@ -318,11 +318,11 @@ onMounted(() => {
 
             <!-- H4 -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('heading', {
@@ -336,11 +336,11 @@ onMounted(() => {
 
             <!-- H5 -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('heading', {
@@ -354,11 +354,11 @@ onMounted(() => {
 
             <!-- H6 -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('heading', {
@@ -372,7 +372,7 @@ onMounted(() => {
 
             <!-- Left Align -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="
@@ -380,7 +380,7 @@ onMounted(() => {
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('left').run()
                 "
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive({ textAlign: 'left' }),
@@ -392,7 +392,7 @@ onMounted(() => {
 
             <!-- Center Align -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="
@@ -400,7 +400,7 @@ onMounted(() => {
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('center').run()
                 "
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive({ textAlign: 'center' }),
@@ -412,7 +412,7 @@ onMounted(() => {
 
             <!-- Right Align -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="
@@ -420,7 +420,7 @@ onMounted(() => {
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('right').run()
                 "
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive({ textAlign: 'right' }),
@@ -431,11 +431,11 @@ onMounted(() => {
             </div>
 
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-select-none"
             >
               <div
                 @click="editor.chain().focus().toggleBulletList().run()"
-                class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
                     editor.isActive('bulletList'),
@@ -447,7 +447,7 @@ onMounted(() => {
 
             <!-- Toggle showTypography start -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5 pbx-relative"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-relative pbx-select-none"
             >
               <div
                 @click="toggleShowTypography"
