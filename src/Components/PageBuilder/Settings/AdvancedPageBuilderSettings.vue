@@ -237,7 +237,7 @@ function selectTab(tab) {
     <div>
       <!-- tabbar start -->
       <div
-        class="pbx-mb-4 pbx-flex pbx-justify-start pbx-items-center pbx-gap-2 pbx-border-b pbx-border-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-x-auto"
+        class="pbx-mb-4 pbx-flex pbx-justify-start pbx-items-center pbx-gap-2 pbx-border-b border-b-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-x-auto"
       >
         <div class="pbx-flex pbx-justify-center pbx-items-center pbx-gap-2">
           <button
@@ -328,7 +328,7 @@ function selectTab(tab) {
       <div v-if="!isLoading">
         <div v-if="selectedTab === 'download'" class="pbx-min-h-screen">
           <div v-if="Array.isArray(getComponents) && getComponents.length >= 1">
-            <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
+            <p class="pbx-myPrimaryParagraph pbx-mt-6 pbx-mb-10">
               {{
                 translate(
                   'Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.',
@@ -348,7 +348,7 @@ function selectTab(tab) {
         </div>
         <div v-if="selectedTab === 'globalPageStyles'" class="pbx-min-h-screen">
           <div>
-            <p class="pbx-myPrimaryParagraph pbx-mt-12 pbx-mb-8">
+            <p class="pbx-myPrimaryParagraph pbx-mt-6 pbx-mb-10">
               {{
                 translate(
                   'Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.',
@@ -390,20 +390,20 @@ function selectTab(tab) {
         <!-- globalPageStyles end -->
         <!-- viewHTMLConfig start -->
         <div v-if="selectedTab === 'viewHTMLConfig'" class="pbx-min-h-screen">
+          <p class="pbx-myPrimaryParagraph pbx-mt-6 pbx-mb-10">
+            {{
+              translate(
+                'Overview of Selected Element, Component, and Components. This section provides real-time updates based on your HTML selection.',
+              )
+            }}
+          </p>
+
           <div
             class="pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
           >
             <div
               class="pbx-flex pbx-items-left pbx-flex-col pbx-myPrimaryGap pbx-border-myPrimaryMediumGrayColor"
             >
-              <p class="pbx-myPrimaryParagraph">
-                {{
-                  translate(
-                    'Overview of Selected Element, Component, and Components. This section provides real-time updates based on your HTML selection.',
-                  )
-                }}
-              </p>
-
               <!-- Types - start -->
               <div>
                 <h4 class="pbx-myPrimaryParagraph pbx-text-xs pbx-pb-2">

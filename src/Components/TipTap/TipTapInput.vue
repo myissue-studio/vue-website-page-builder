@@ -241,22 +241,20 @@ onMounted(() => {
           >
             <!-- Save -->
             <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-mr-6">
-              <button
+              <div
                 @click="pageBuilderService.toggleTipTapModal(false)"
-                type="button"
                 class="pbx-myPrimaryTag pbx-cursor-pointer"
               >
                 <span class="material-symbols-outlined"> save </span>
                 <span>{{ translate('Save') }}</span>
-              </button>
+              </div>
             </div>
             <!-- Bold -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleBold().run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -264,16 +262,15 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> format_bold </span>
-              </button>
+              </div>
             </div>
 
             <!-- Link -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="handleURL"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -281,16 +278,15 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> link </span>
-              </button>
+              </div>
             </div>
 
             <!-- H2 -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -300,15 +296,14 @@ onMounted(() => {
                 }"
               >
                 <div class="pbx-font-semibold pbx-text-sm">H2</div>
-              </button>
+              </div>
             </div>
             <!-- H3 -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -318,16 +313,15 @@ onMounted(() => {
                 }"
               >
                 <div class="pbx-font-semibold pbx-text-sm">H3</div>
-              </button>
+              </div>
             </div>
 
             <!-- H4 -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -337,16 +331,15 @@ onMounted(() => {
                 }"
               >
                 <div class="pbx-font-semibold pbx-text-sm">H4</div>
-              </button>
+              </div>
             </div>
 
             <!-- H5 -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -356,16 +349,15 @@ onMounted(() => {
                 }"
               >
                 <div class="pbx-font-semibold pbx-text-sm">H5</div>
-              </button>
+              </div>
             </div>
 
             <!-- H6 -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -375,20 +367,19 @@ onMounted(() => {
                 }"
               >
                 <div class="pbx-font-semibold pbx-text-sm">H6</div>
-              </button>
+              </div>
             </div>
 
             <!-- Left Align -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="
                   editor.isActive({ textAlign: 'left' })
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('left').run()
                 "
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -396,20 +387,19 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> format_align_left </span>
-              </button>
+              </div>
             </div>
 
             <!-- Center Align -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="
                   editor.isActive({ textAlign: 'center' })
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('center').run()
                 "
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -417,20 +407,19 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> format_align_center </span>
-              </button>
+              </div>
             </div>
 
             <!-- Right Align -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="
                   editor.isActive({ textAlign: 'right' })
                     ? editor.chain().focus().unsetTextAlign().run()
                     : editor.chain().focus().setTextAlign('right').run()
                 "
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -438,15 +427,14 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> format_align_right </span>
-              </button>
+              </div>
             </div>
 
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5"
             >
-              <button
+              <div
                 @click="editor.chain().focus().toggleBulletList().run()"
-                type="button"
                 class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -454,16 +442,15 @@ onMounted(() => {
                 }"
               >
                 <span class="material-symbols-outlined"> format_list_bulleted </span>
-              </button>
+              </div>
             </div>
 
             <!-- Toggle showTypography start -->
             <div
               class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border pbxborder-gray-100 pbx-my-0.5 pbx-mx-0.5 pbx-relative"
             >
-              <button
+              <div
                 @click="toggleShowTypography"
-                type="button"
                 class="pbx-h-10 pbx-px-12 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-font-medium"
                 :class="{
                   'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
@@ -471,7 +458,7 @@ onMounted(() => {
                 }"
               >
                 {{ translate('Font Appearance') }}
-              </button>
+              </div>
 
               <transition name="popup-fade">
                 <div

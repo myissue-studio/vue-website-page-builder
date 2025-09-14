@@ -142,7 +142,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
     </template>
     <div v-if="!isLoading">
       <div
-        class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b pbx-border-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
+        class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b border-b-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
       >
         <button
           v-for="category in componentOrThemes"
@@ -180,7 +180,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
         <div class="pbx-mb-8">
           <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Themes') }}</h3>
           <div
-            class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b pbx-border-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
+            class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b border-b-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
           >
             <button
               v-for="category in themeCategories"
@@ -264,7 +264,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
         <div class="pbx-px-2" v-if="customMediaComponent">
           <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Layout Components') }}</h3>
           <div
-            class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b pbx-border-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
+            class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-b border-b-solid pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
           >
             <button
               v-for="category in categories"
