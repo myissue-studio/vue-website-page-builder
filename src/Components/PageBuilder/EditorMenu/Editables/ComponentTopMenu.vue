@@ -201,7 +201,7 @@ const closeSEO = function () {
                         <li
                           v-for="(check, index) in seoResult.checks"
                           :key="index"
-                          class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-shadow-sm pbx-border-2"
+                          class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-border-solid pbx-border-2"
                           :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
                         >
                           <!-- Status indicator -->
