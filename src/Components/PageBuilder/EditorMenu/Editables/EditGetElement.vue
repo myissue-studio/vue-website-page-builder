@@ -379,7 +379,7 @@ const handleDelete = function () {
                   viewBox="0 0 22 22"
                   width="22"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="css-1eqh1o5"
+                  style="display: block"
                 >
                   <path
                     clip-rule="evenodd"
