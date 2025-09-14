@@ -352,13 +352,12 @@ const handleDelete = function () {
       >
         <template v-if="pageBuilderService.ElOrFirstChildIsIframe()">
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
-            <button
+            <div
               @click="handleModalIframeSrc"
-              type="button"
               class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
             >
               <span class="material-symbols-outlined"> play_circle </span>
-            </button>
+            </div>
           </div>
         </template>
 
@@ -369,9 +368,8 @@ const handleDelete = function () {
           "
         >
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
-            <button
+            <div
               @click="handleModalPreviewTiptap"
-              type="button"
               class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
             >
               <span>
@@ -390,7 +388,7 @@ const handleDelete = function () {
                   ></path>
                 </svg>
               </span>
-            </button>
+            </div>
           </div>
           <TextColorEditor></TextColorEditor>
         </template>
@@ -404,13 +402,12 @@ const handleDelete = function () {
           "
         >
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
-            <button
+            <div
               @click="handleAddImage"
-              type="button"
               class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
             >
               <span class="material-symbols-outlined"> add_photo_alternate </span>
-            </button>
+            </div>
           </div>
         </template>
 
@@ -426,13 +423,12 @@ const handleDelete = function () {
         </template>
 
         <template v-if="getElement && false">
-          <button
+          <div
             @click="pageBuilderService.deleteElementFromDOM"
-            type="button"
             class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
           >
             <span class="material-symbols-outlined"> delete </span>
-          </button>
+          </div>
         </template>
 
         <div
