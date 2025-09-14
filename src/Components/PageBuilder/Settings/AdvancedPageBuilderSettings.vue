@@ -335,7 +335,6 @@ function selectTab(tab) {
                 )
               }}
             </p>
-            <hr />
             <div class="pbx-my-2 pbx-py-2">
               <button @click="handleDownloadHTML" type="button" class="pbx-myPrimaryButton">
                 <span class="material-symbols-outlined"> download_2 </span>
