@@ -34,7 +34,7 @@ const version = __APP_VERSION__
       class="pbx-myPrimaryParagraph lg:pbx-text-base pbx-text-xs lg:pbx-font-semibold pbx-font-medium pbx-border-b pbx-border-gray-400"
     >
       <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSd-0aBo4kNjTi9_7HFrMHmMJV93lrrnl6fc67AT7cFWcqZLOQ/viewform"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSeGgtmskw4T7o2Q50C6UCh3EidVbYDhrTXNUMsd6EykpzGTOQ/viewform"
         target="_blank"
         class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
       >
