@@ -463,7 +463,7 @@ onMounted(() => {
               <transition name="popup-fade">
                 <div
                   v-if="showTypography"
-                  class="pbx-top-full pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-72 pbx-select-none"
+                  class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-60 pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2"
                 >
                   <div
                     class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-pl-2 pbx-pr-4"
