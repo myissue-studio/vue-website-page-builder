@@ -6,7 +6,9 @@ const version = __APP_VERSION__
   <div
     class="pbx-flex pbx-justify-between pbx-gap-2 lg:pbx-px-12 pbx-mx-2 pbx-py-3 pbx-border-t pbx-border-t-gray-900"
   >
-    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
+    <p
+      class="pbx-myPrimaryParagraph lg:pbx-text-base pbx-text-xs lg:pbx-font-semibold pbx-font-medium pbx-border-b pbx-border-gray-400"
+    >
       <a
         href="https://www.npmjs.com/package/@myissue/vue-website-page-builder"
         target="_blank"
@@ -16,7 +18,9 @@ const version = __APP_VERSION__
       </a>
     </p>
 
-    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
+    <p
+      class="pbx-myPrimaryParagraph lg:pbx-text-base pbx-text-xs lg:pbx-font-semibold pbx-font-medium pbx-border-b pbx-border-gray-400"
+    >
       <a
         href="https://github.com/myissue-studio/vue-website-page-builder"
         target="_blank"
@@ -25,8 +29,23 @@ const version = __APP_VERSION__
         View on GitHub
       </a>
     </p>
-    <p class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-underline">
-      <span class="pbx-text-myPrimaryDarkGrayColor">{{ version }}</span>
+
+    <p
+      class="pbx-myPrimaryParagraph lg:pbx-text-base pbx-text-xs lg:pbx-font-semibold pbx-font-medium pbx-border-b pbx-border-gray-400"
+    >
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSeGgtmskw4T7o2Q50C6UCh3EidVbYDhrTXNUMsd6EykpzGTOQ/viewform"
+        target="_blank"
+        class="pbx-myPrimaryLink pbx-text-myPrimaryDarkGrayColor"
+      >
+        Contact us
+      </a>
+    </p>
+
+    <p
+      class="pbx-myPrimaryParagraph lg:pbx-text-base pbx-text-xs lg:pbx-font-semibold pbx-font-medium pbx-border-b pbx-border-gray-400"
+    >
+      <span class="pbx-text-myPrimaryDarkGrayColor">v{{ version }}</span>
     </p>
   </div>
 </template>
