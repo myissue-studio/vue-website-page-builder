@@ -447,7 +447,7 @@ onMounted(() => {
 
             <!-- Toggle showTypography start -->
             <div
-              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-relative pbx-select-none"
+              class="pbx-py-1 pbx-px-1 pbx-flex pbx-items-center pbx-gap-2 pbx-border-solid pbx-border pbx-border-gray-300 pbx-my-0.5 pbx-mx-0.5 pbx-relative pbx-select-none pbx-relative"
             >
               <div
                 @click="toggleShowTypography"
@@ -463,13 +463,9 @@ onMounted(() => {
               <transition name="popup-fade">
                 <div
                   v-if="showTypography"
-                  class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-60 pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2"
+                  class="pbx-top-10 pbx-absolute pbx-z-40 pbx-left-1/2 pbx-transform pbx--translate-x-1/2 pbx-w-60 pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200"
                 >
-                  <div
-                    class="pbx-rounded-3xl pbx-border pbx-border-gray-100 pbx-bg-white pbx-shadow-lg pbx-pt-4 pbx-pb-4 pbx-flex pbx-flex-col pbx-overflow-y-auto pbx-max-h-[50vh] pbx-pl-2 pbx-pr-4"
-                  >
-                    <TypographyForTipTap></TypographyForTipTap>
-                  </div>
+                  <TypographyForTipTap></TypographyForTipTap>
                 </div>
               </transition>
             </div>
