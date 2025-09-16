@@ -28,9 +28,3 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
   height: 100%;
   object-position: top; /* align to top */
 }
-
-hr {
-  border: none; /* remove default border */
-  border-top: 1px solid oklch(92.8% 0.006 264.531); /* match Tailwind border-gray-200 */
-  margin: 1rem 0; /* optional spacing */
-}

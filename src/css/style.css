@@ -583,3 +583,32 @@
   font-weight: inherit;
 }
 /* Page Builder Reset Default Browser Styles End*/
+
+#pagebuilder hr,
+#pbx-modal hr {
+  border: none; /* remove default border */
+  border-top: 1px solid oklch(92.8% 0.006 264.531); /* match Tailwind border-gray-200 */
+  margin: 1rem 0; /* optional spacing */
+}
+
+::-webkit-scrollbar {
+  height: 2px; /* horizontal scrollbar height */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* or a color */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar {
+  width: 8px; /* vertical */
+  height: 8px; /* horizontal */
+}
