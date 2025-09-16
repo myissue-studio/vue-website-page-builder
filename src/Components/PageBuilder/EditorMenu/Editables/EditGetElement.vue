@@ -347,14 +347,14 @@ const handleDelete = function () {
         <span class="pbx-lowercase">&lt;{{ elementTag }}&gt;</span>
       </p>
       <div
-        class="pbx-flex pbx-items-center pbx-justify-center pbx-border-solid"
+        class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2"
         :class="{ '': getElement }"
       >
         <template v-if="pageBuilderService.ElOrFirstChildIsIframe()">
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleModalIframeSrc"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
             >
               <span class="material-symbols-outlined"> play_circle </span>
             </div>
@@ -370,7 +370,7 @@ const handleDelete = function () {
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleModalPreviewTiptap"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
             >
               <span>
                 <svg
@@ -404,7 +404,7 @@ const handleDelete = function () {
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleAddImage"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
             >
               <span class="material-symbols-outlined"> add_photo_alternate </span>
             </div>
@@ -425,7 +425,7 @@ const handleDelete = function () {
         <template v-if="getElement && false">
           <div
             @click="pageBuilderService.deleteElementFromDOM"
-            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
           >
             <span class="material-symbols-outlined"> delete </span>
           </div>
@@ -433,14 +433,14 @@ const handleDelete = function () {
 
         <div
           v-if="getElement && getComponent"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
           @click="openOptionsMoreOpen = !openOptionsMoreOpen"
         >
           <span class="material-symbols-outlined"> more_horiz </span>
         </div>
         <div
           v-if="getElement && getComponent"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border-0 pbx-border-solid pbx-border-x pbx-border-gray-300"
           @click="pageBuilderService.clearHtmlSelection()"
         >
           <span class="material-symbols-outlined"> close_small</span>
@@ -452,7 +452,7 @@ const handleDelete = function () {
   <transition name="popup-fade">
     <div
       v-if="openOptionsMoreOpen"
-      class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-48"
+      class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-56"
     >
       <div>
         <div class="pbx-flex pbx-flex-col">
