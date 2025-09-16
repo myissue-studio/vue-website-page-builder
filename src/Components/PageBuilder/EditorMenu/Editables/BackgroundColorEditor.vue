@@ -62,7 +62,7 @@ watch(
         <ListboxButton
           v-if="!globalPageLayout"
           as="div"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
         >
           <div class="pbx-flex pbx-flex-col">
             <div class="pbx-flex pbx-gap-2 pbx-items-center">
