@@ -125,7 +125,7 @@ const closeSEO = function () {
         <transition name="popup-fade">
           <div
             v-if="showSEO"
-            class="pbx-top-0 pbx-left-full pbx-ml-2 pbx-absolute pbx-z-40 lg:pbx-w-[35rem] pbx-w-[30rem]"
+            class="pbx-top-0 pbx-left-full pbx-absolute pbx-z-40 lg:pbx-w-[35rem] pbx-w-[30rem]"
           >
             <!-- Overlay: covers the whole screen, closes popup on click -->
             <div
