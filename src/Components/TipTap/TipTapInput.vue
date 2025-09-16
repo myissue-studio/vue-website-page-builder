@@ -237,13 +237,13 @@ onMounted(() => {
       <div v-if="pageBuilderService.isSelectedElementValidText() && editor">
         <div class="pbx-rounded-lg pbx-px-2">
           <div
-            class="pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-2 pbx-border-solid pbx-px-4 pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-mb-4 pbx-py-4"
+            class="pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-2 pbx-border-solid pbx-px-4 pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-mb-4 pbx-py-2"
           >
             <!-- Save -->
 
             <div
               @click="pageBuilderService.toggleTipTapModal(false)"
-              class="pbx-myPrimaryButton pbx-mr-4"
+              class="pbx-myPrimaryButton pbx-mr-4 pbx-min-h-2"
             >
               <span class="material-symbols-outlined"> save </span>
               <span>{{ translate('Save') }}</span>
