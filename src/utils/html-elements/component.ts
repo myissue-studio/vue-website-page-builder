@@ -489,7 +489,7 @@ const component: Components[] = [
         },
         {
           title: 'Simple Centered CTA',
-          html_code: `<section> <div class="pbx-relative pbx-py-4"> <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-text-center pbx-px-6 pbx-py-24 pbx-sm:py-32 pbx-lg:px-8"> <div class="pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium"> <h2>Start customizing by editing this default text directly in the editor.</h2> </div> <div class="pbx-pt-12 pbx-pb-4"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-font-semibold pbx-py-4"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </section>`,
+          html_code: `<section><div class="pbx-relative pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-text-center pbx-px-6 pbx-py-24 pbx-sm:py-32 pbx-lg:px-8"> <div class="pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium"> <h2>Start customizing by editing this default text directly in the editor.</h2> </div> <div class="pbx-pt-12 pbx-pb-4"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-font-semibold pbx-py-4"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div>  </section>`,
           category: 'Call To Action',
           cover_image: `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 277.5 67.89">
