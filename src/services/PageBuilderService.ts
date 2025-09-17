@@ -371,6 +371,19 @@ export class PageBuilderService {
 
     if (config && Object.keys(config).length !== 0 && config.constructor === Object) {
       this.ensureUpdateOrCreateConfig(config)
+
+      // Ensure resourceData.title is a non-empty string
+      if (
+        !config.resourceData ||
+        typeof config.resourceData.title !== 'string' ||
+        !config.resourceData.title.trim()
+      ) {
+        if (!config.resourceData || typeof config.resourceData !== 'object') {
+          config.resourceData = { title: 'Default Post' }
+        } else {
+          config.resourceData.title = 'Default Post'
+        }
+      }
     }
 
     this.ensureLanguage(config)
