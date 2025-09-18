@@ -1,11 +1,11 @@
 [
   {
-    "html_code": "<section data-component-title=\"Header H2\"><div class=\"pbx-relative pbx-py-4\"><div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium\"><h2>{{ translate('Demo Content') }}</h2></div></div></div></section>",
+    "html_code": "<section data-component-title=\"Header H2\"><div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-mx-auto pbx-max-w-7xl\"><div class=\"pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium\"><h2>{{ translate('Demo Content') }}</h2></div></div></div></section>",
     "id": "ba0e9774-3779-467c-9c9f-5c95dd47fa6d",
     "title": "Header H2"
   },
   {
-    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"pbx-relative pbx-py-4\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\">\n    <div><p>{{ translate('Demo Description') }}</p></div>\n    </div>\n    </div>\n    </section>",
+    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl\">\n    <div><p>{{ translate('Demo Description') }}</p></div>\n    </div>\n    </div>\n    </section>",
     "id": "d9fe6bdb-60df-45e4-bed5-1a6f8edf28e5",
     "title": "Text"
   },
@@ -15,12 +15,12 @@
     "title": "Three Vertical Images"
   },
   {
-    "html_code": "<section data-component-title=\"Header H3\"><div class=\"pbx-relative pbx-py-4\"><div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-break-words pbx-mt-6 pbx-font-medium pbx-text-2xl lg:pbx-text-4xl\"><h3>{{ translate('Demo Title') }}</h3></div></div></div></section>",
+    "html_code": "<section data-component-title=\"Header H3\"><div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-mx-auto pbx-max-w-7xl\"><div class=\"pbx-break-words pbx-mt-6 pbx-font-medium pbx-text-2xl lg:pbx-text-4xl\"><h3>{{ translate('Demo Title') }}</h3></div></div></div></section>",
     "id": "cd7e27ac-b152-4714-a5f7-5ad660f183bf",
     "title": "Header H3"
   },
   {
-    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"pbx-relative pbx-py-4\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\">\n    <div><p>{{ translate('Demo Description Two') }}</p></div>\n    </div>\n    </div>\n    </section>",
+    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl\">\n    <div><p>{{ translate('Demo Description Two') }}</p></div>\n    </div>\n    </div>\n    </section>",
     "id": "b1e75d09-0e72-4c61-a207-a97277cbbfed",
     "title": "Text"
   },
@@ -30,12 +30,12 @@
     "title": "Two Vertical Images"
   },
   {
-    "html_code": "<section data-component-title=\"Header H3\"><div class=\"pbx-relative pbx-py-4\"><div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-break-words pbx-mt-6 pbx-font-medium pbx-text-2xl lg:pbx-text-4xl\"><h3>{{ translate('Demo Title Two') }}</h3></div></div></div></section>",
+    "html_code": "<section data-component-title=\"Header H3\"><div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-mx-auto pbx-max-w-7xl\"><div class=\"pbx-break-words pbx-mt-6 pbx-font-medium pbx-text-2xl lg:pbx-text-4xl\"><h3>{{ translate('Demo Title Two') }}</h3></div></div></div></section>",
     "id": "f164929b-4460-4b17-9933-119b47e8bbef",
     "title": "Header H3"
   },
   {
-    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"pbx-relative pbx-py-4\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\">\n    <div class=\"\"><p>{{ translate('Demo Description Three') }}</p></div>\n    </div>\n    </div>\n    </section>",
+    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl\">\n    <div class=\"\"><p>{{ translate('Demo Description Three') }}</p></div>\n    </div>\n    </div>\n    </section>",
     "id": "fa721207-2444-4892-9de3-5260d576a34b",
     "title": "Text"
   },
@@ -45,12 +45,12 @@
     "title": "YouTube Video"
   },
   {
-    "html_code": "<section data-component-title=\"Header H3\"><div class=\"pbx-relative pbx-py-4\"><div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-break-words pbx-text-2xl lg:pbx-text-4xl pbx-font-medium\"><h3>{{ translate('Demo Title Three') }}</h3></div></div></div></section>",
+    "html_code": "<section data-component-title=\"Header H3\"><div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\"><div class=\"pbx-mx-auto pbx-max-w-7xl\"><div class=\"pbx-break-words pbx-text-2xl lg:pbx-text-4xl pbx-font-medium\"><h3>{{ translate('Demo Title Three') }}</h3></div></div></div></section>",
     "id": "de2208e1-5b65-4302-8ffb-b9beb7d192d7",
     "title": "Header H3"
   },
   {
-    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"pbx-relative pbx-py-4\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2\">\n    <div><p>{{ translate('Demo Description Four') }}</p><p></p></div>\n    </div>\n    </div>\n    </section>",
+    "html_code": "<section data-component-title=\"Text\">\n    <div class=\"md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2\">\n    <div class=\"pbx-mx-auto pbx-max-w-7xl\">\n    <div><p>{{ translate('Demo Description Four') }}</p><p></p></div>\n    </div>\n    </div>\n    </section>",
     "id": "e9a5c794-5972-473d-8181-af4345cbaabe",
     "title": "Text"
   },
