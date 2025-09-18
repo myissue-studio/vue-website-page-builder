@@ -9,8 +9,8 @@ const componentHelpers: ComponentHelper[] = [
   {
     html_code: `
     <section>
-    <div class="pbx-relative pbx-py-4">
-    <div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2">
+    <div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2">
+    <div class="pbx-mx-auto pbx-max-w-7xl">
     <div>
     <p>
     Start customizing by editing this default text directly in the editor.
@@ -28,7 +28,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
+    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
     id: null,
     title: 'Header H2',
     icon: `
@@ -38,7 +38,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words"><h3>Layouts and visual.</h3></div></div></div></section>`,
+    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h3>Layouts and visual.</h3></div></div></div></section>`,
     id: null,
     title: 'Header H3',
     icon: `
@@ -48,7 +48,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
+    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
     id: null,
     title: 'Header H4',
     icon: `
@@ -58,7 +58,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
+    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
     id: null,
     title: 'Header H5',
     icon: `
@@ -68,7 +68,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-relative pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl lg:pbx-px-4 pbx-px-2"><div class="pbx-break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
+    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
     id: null,
     title: 'Header H6',
     icon: `
