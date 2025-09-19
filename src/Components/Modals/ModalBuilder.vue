@@ -72,7 +72,7 @@ const maxWidthClass = computed(() => {
         ></div>
 
         <div
-          class="pbx-relative pbx-inline-block pbx-bg-white pbx-rounded-xl pbx-text-left pbx-shadow-xl pbx-transform pbx-transition-all pbx-max-w-[96vh] lg:pbx-max-h-[98vh] pbx-max-h-[85vh] pbx-overflow-y-auto pbx-w-full"
+          class="pbx-relative pbx-inline-block pbx-bg-white pbx-rounded-3xl pbx-text-left pbx-shadow-xl pbx-transform pbx-transition-all pbx-max-w-[96vh] lg:pbx-max-h-[98vh] pbx-max-h-[85vh] pbx-overflow-y-auto pbx-w-full"
           :class="[
             maxWidthClass ? maxWidthClass : '',
             minHeight ? minHeight : '',
