@@ -609,7 +609,7 @@ onMounted(async () => {
         >
           <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
             <div
-              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex sm:pbx-flex-row pbx-flex-col pbx-myPrimaryGap sm:pbx-w-5/6 pbx-w-full"
+              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
             >
               <template v-if="!isLoading">
                 <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
@@ -653,7 +653,7 @@ onMounted(async () => {
         >
           <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
             <div
-              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex sm:pbx-flex-row pbx-flex-col pbx-myPrimaryGap sm:pbx-w-5/6 pbx-w-full"
+              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
             >
               <template v-if="!isLoading">
                 <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
