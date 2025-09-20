@@ -117,7 +117,7 @@ const thirdButtonBuilder = function () {
             'sm:pbx-grid-cols-2': gridColumnAmount === 2,
             'sm:pbx-grid-cols-3': gridColumnAmount === 3,
           }"
-          class="sm:pbx-items-end sm:pbx-justify-end pbx-flex sm:pbx-flex-row pbx-flex-col pbx-myPrimaryGap sm:pbx-w-5/6 pbx-w-full"
+          class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
         >
           <button
             v-if="firstButtonText"

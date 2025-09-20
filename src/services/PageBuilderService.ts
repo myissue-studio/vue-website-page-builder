@@ -832,6 +832,15 @@ export class PageBuilderService {
         if (heading.tagName === 'H3') {
           element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
         }
+        if (heading.tagName === 'H4') {
+          element.classList.add('pbx-text-1xl', 'lg:pbx-text-2xl', 'pbx-font-medium')
+        }
+        if (heading.tagName === 'H5') {
+          element.classList.add('pbx-text-base', 'lg:pbx-text-xl', 'pbx-font-medium')
+        }
+        if (heading.tagName === 'H6') {
+          element.classList.add('pbx-text-base', 'lg:pbx-text-base', 'pbx-font-medium')
+        }
       }
     }
   }
