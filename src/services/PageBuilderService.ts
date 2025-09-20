@@ -760,7 +760,7 @@ export class PageBuilderService {
       'pbx-text-6xl': 'pbx-text-3xl',
       'pbx-text-5xl': 'pbx-text-3xl',
       'pbx-text-4xl': 'pbx-text-2xl',
-      'pbx-text-3xl': 'pbx-text-1xl',
+      'pbx-text-3xl': 'pbx-text-xl',
       'pbx-text-2xl': 'pbx-text-lg',
       'pbx-text-xl': 'pbx-text-base',
       'pbx-text-lg': 'pbx-text-sm',
@@ -827,16 +827,16 @@ export class PageBuilderService {
       if (!hasFontSizeClass) {
         // Apply responsive font size classes based on heading type
         if (heading.tagName === 'H2') {
-          element.classList.add('pbx-text-2xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
+          element.classList.add('pbx-text-3xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
         }
         if (heading.tagName === 'H3') {
-          element.classList.add('pbx-text-1xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
+          element.classList.add('pbx-text-2xl', 'lg:pbx-text-3xl', 'pbx-font-medium')
         }
         if (heading.tagName === 'H4') {
-          element.classList.add('pbx-text-1xl', 'lg:pbx-text-2xl', 'pbx-font-medium')
+          element.classList.add('pbx-text-xl', 'lg:pbx-text-2xl', 'pbx-font-medium')
         }
         if (heading.tagName === 'H5') {
-          element.classList.add('pbx-text-base', 'lg:pbx-text-xl', 'pbx-font-medium')
+          element.classList.add('pbx-text-lg', 'lg:pbx-text-xl', 'pbx-font-medium')
         }
         if (heading.tagName === 'H6') {
           element.classList.add('pbx-text-base', 'lg:pbx-text-base', 'pbx-font-medium')
