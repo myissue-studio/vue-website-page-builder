@@ -328,29 +328,7 @@ const component: Components[] = [
                       </svg>
                     `,
         },
-        {
-          title: 'Stats Split with Image',
-          html_code: `<section> <div class="md:pbx-pt-16 md:pbx-pb-16 pbx-pt-6 pbx-pb-6 lg:pbx-px-4 pbx-px-2" > <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="lg:pbx-mx-0 "> <div class="pbx-font-semibold pbx-text-indigo-400"> <p>Layouts and visual.</p> </div> <div class="pbx-mt-2 pbx-text-pretty pbx-tracking-tight pbx-text-2xl lg:pbx-text-4xl pbx-font-medium" > <h1>Layouts and visual.</h1> </div> <div class="pbx-mt-10 pbx-grid  pbx-grid-cols-1 pbx-gap-8    lg:pbx-grid-cols-2" > <div> <div> <p> Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. </p> </div> <div class="pbx-mt-8"> <p> Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. </p> </div> </div> <div> <div> <p> Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. </p> </div> <div class="pbx-mt-8"> <p> Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. </p> </div> </div> </div> <div class="pbx-mt-16 pbx-grid pbx-grid-cols-1 pbx-gap-x-8 pbx-gap-y-12 sm:pbx-mt-20 sm:pbx-grid-cols-2 sm:pbx-gap-y-16 lg:pbx-mt-28 lg:pbx-grid-cols-4" > <div class="pbx-flex pbx-flex-col-reverse pbx-gap-y-3 pbx-border-l pbx-border-white/20 pbx-pl-6" > <div class=""><p>Layouts and visual.</p></div> <div class="pbx-text-3xl pbx-font-semibold pbx-tracking-tight"> <p>2021</p> </div> </div> <div class="pbx-flex pbx-flex-col-reverse pbx-gap-y-3 pbx-border-l pbx-border-white/20 pbx-pl-6" > <div class=""><p>Layouts and visual.</p></div> <div class="pbx-text-3xl pbx-font-semibold pbx-tracking-tight "> <p>37</p> </div> </div> <div class="pbx-flex pbx-flex-col-reverse pbx-gap-y-3 pbx-border-l pbx-border-white/20 pbx-pl-6" > <div class=""><p>Layouts and visual.</p></div> <div class="pbx-text-3xl pbx-font-semibold pbx-tracking-tight "> <p>12</p> </div> </div> <div class="pbx-flex pbx-flex-col-reverse pbx-gap-y-3 pbx-border-l pbx-border-white/20 pbx-pl-6" > <div class=""><p>Layouts and visual.</p></div> <div class="pbx-text-3xl pbx-font-semibold pbx-tracking-tight "> <p>$25M</p> </div> </div> </div> </div> </div> </div> </section>`,
-          category: 'Marketing',
-          cover_image: `
-                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 369.55 129.8">
-                      <g>
-                        <rect fill="#394152" width="173.06" height="129.8"/>
-                        <polygon fill="#718096" points="56.24 77.89 77.88 51.93 99.51 77.89 56.24 77.89"/>
-                        <polygon fill="#718096" points="95.19 77.89 106 64.91 116.82 77.89 95.19 77.89"/>
-                        <circle fill="#718096" cx="106" cy="55.51" r="3.6"/>
-                      </g>
-                      <rect fill="#394152" x="196.48" y="26.58" width="173.07" height="4.91"/>
-                      <rect fill="#394152" x="196.48" y="13.3" width="173.07" height="4.91"/>
-                      <rect fill="#394152" x="196.48" y="0" width="173.07" height="4.91"/>
-                      <rect fill="#394152" x="196.48" y="39.87" width="173.07" height="4.91"/>
-                      <rect fill="#394152" x="196.48" y="65.78" width="24.01" height="4.91"/>
-                      <rect fill="#394152" x="286.48" y="65.78" width="24.01" height="4.91"/>
-                      <rect fill="#394152" x="196.48" y="91.26" width="24.01" height="4.91"/>
-                      <rect fill="#394152" x="286.48" y="91.26" width="24.01" height="4.91"/>
-                    </svg>
-                    `,
-        },
+
         {
           title: 'Stats Stepped',
           html_code: `<section> <div class="md:pbx-pt-16 md:pbx-pb-16 pbx-pt-6 pbx-pb-6 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="lg:pbx-mx-0"> <div class="pbx-text-2xl lg:pbx-text-4xl pbx-font-medium"> <h2>Start customizing by editing this default text directly in the editor.</h2> </div> <div> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> </div> <div class="pbx-flex pbx-justify-between lg:pbx-items-center pbx-gap-4 pbx-mt-12 lg:pbx-flex-row pbx-flex-col" > <div class="pbx-text-2xl pbx-font-semibold"><p>250k</p></div> <div class="pbx-text-2xl pbx-font-semibold"><p>$8.9</p></div> <div class="pbx-text-2xl pbx-font-semibold"><p>401k</p></div> </div> </div> </div> </section>`,
