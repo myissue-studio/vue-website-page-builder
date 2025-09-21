@@ -278,11 +278,11 @@ onMounted(async () => {
         </div>
 
         <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6">
-          <div class="pbx-w-9/12 pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
+          <div class="md:pbx-w-9/12 pbx-w-6/12 pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
             <div v-if="getUnsplashImages && getUnsplashImages.results">
               <div
                 v-if="!getIsLoading"
-                class="pbx-grid lg:pbx-grid-cols-6 md:pbx-grid-cols-4 sm:pbx-grid-cols-4 pbx-grid-cols-3 pbx-gap-2"
+                class="pbx-grid lg:pbx-grid-cols-6 md:pbx-grid-cols-4 sm:pbx-grid-cols-4 pbx-grid-cols-1 pbx-gap-2"
               >
                 <div
                   v-for="image in getUnsplashImages.results"
@@ -324,7 +324,7 @@ onMounted(async () => {
             </div>
           </div>
           <!-- Sidebar # start -->
-          <aside class="pbx-w-3/12 pbx-overflow-y-auto">
+          <aside class="md:pbx-w-3/12 pbx-w-6/12 pbx-overflow-y-auto">
             <template v-if="getIsLoadingImage">
               <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mt-4">
                 <div
