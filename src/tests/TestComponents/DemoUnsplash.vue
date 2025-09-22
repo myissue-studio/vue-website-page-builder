@@ -168,7 +168,7 @@ onMounted(async () => {
               }
             "
             type="submit"
-            class="pbx-myPrimaryTag pbx-break-keep pbx-mr-4"
+            class="pbx-myPrimarySearchButton"
           >
             {{ translate('Search') }}
           </button>
