@@ -51,7 +51,7 @@ provide('closeMediaLibraryModal', closeMediaLibraryModal)
     maxWidth="6xl"
   >
     <!-- Show only custom media component if provided -->
-    <div v-if="customMediaComponent" class="pbx-w-full">
+    <div v-if="customMediaComponent" class="pbx-w-full pbx-min-h-screen">
       <component :is="customMediaComponent" />
     </div>
     <div v-else>

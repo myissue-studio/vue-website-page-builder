@@ -12,7 +12,7 @@ const getPageBuilderConfig = computed(() => {
 
 <template>
   <div>
-    <div class="pbx-flex pbx-items-center pbx-justify-center">
+    <div class="pbx-flex pbx-items-center pbx-justify-center pbx-ml-2">
       <div class="pbx-mr-2">
         <!-- User No image Start-->
         <div
@@ -33,11 +33,6 @@ const getPageBuilderConfig = computed(() => {
               typeof getPageBuilderConfig.userForPageBuilder.name === 'string' &&
               getPageBuilderConfig.userForPageBuilder.name[0]
             }}
-          </div>
-          <div
-            class="pbx-hidden pbx-text-xs pbx-d lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
-          >
-            {{ getPageBuilderConfig.userForPageBuilder.name }}
           </div>
         </div>
 
@@ -63,11 +58,6 @@ const getPageBuilderConfig = computed(() => {
               :src="`${getPageBuilderConfig.userForPageBuilder.image}`"
               class="pbx-block pbx-inset-0 pbx-object-top pbx-d pbx-min-d pbx-max-d lg:pbx-w-8 lg:pbx-h-8 lg:pbx-min-w-8 lg:pbx-max-w-8 pbx-w-8 pbx-h-8 pbx-min-w-8 pbx-max-w-8 pbx-object-cover pbx-rounded-full"
             />
-          </div>
-          <div
-            class="pbx-hidden pbx-text-xs pbx-d lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
-          >
-            {{ getPageBuilderConfig.userForPageBuilder.name }}
           </div>
         </div>
       </div>

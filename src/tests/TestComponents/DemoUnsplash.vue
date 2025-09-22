@@ -177,7 +177,7 @@ onMounted(async () => {
       <div class="pbx-mt-2">
         <div
           v-if="getUnsplashImages && getUnsplashImages.results"
-          class="pbx-flex lg:pbx-justify-between pbx-justify-end pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2 pbx-mb-1 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm"
+          class="pbx-flex lg:pbx-justify-between pbx-justify-end pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2 pbx-mb-3 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm"
         >
           <div class="lg:pbx-flex pbx-hidden pbx-justify-left pbx-items-center pbx-gap-2">
             <button
