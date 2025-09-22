@@ -34,15 +34,6 @@ const getPageBuilderConfig = computed(() => {
               getPageBuilderConfig.userForPageBuilder.name[0]
             }}
           </div>
-          <div
-            class="pbx-hidden pbx-text-xs pbx-pl-1 lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
-          >
-            {{
-              getPageBuilderConfig.userForPageBuilder.name
-                ? getPageBuilderConfig.userForPageBuilder.name.charAt(0).toUpperCase()
-                : ''
-            }}
-          </div>
         </div>
 
         <!-- User No image End -->
@@ -67,15 +58,6 @@ const getPageBuilderConfig = computed(() => {
               :src="`${getPageBuilderConfig.userForPageBuilder.image}`"
               class="pbx-block pbx-inset-0 pbx-object-top pbx-d pbx-min-d pbx-max-d lg:pbx-w-8 lg:pbx-h-8 lg:pbx-min-w-8 lg:pbx-max-w-8 pbx-w-8 pbx-h-8 pbx-min-w-8 pbx-max-w-8 pbx-object-cover pbx-rounded-full"
             />
-          </div>
-          <div
-            class="pbx-hidden pbx-text-xs pbx-pl-1 lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
-          >
-            {{
-              getPageBuilderConfig.userForPageBuilder.name
-                ? getPageBuilderConfig.userForPageBuilder.name.charAt(0).toUpperCase()
-                : ''
-            }}
           </div>
         </div>
       </div>
