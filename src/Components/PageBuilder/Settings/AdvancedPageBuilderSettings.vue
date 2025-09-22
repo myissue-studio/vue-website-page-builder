@@ -354,36 +354,50 @@ function selectTab(tab) {
                 )
               }}
             </p>
-            <article class="pbx-my-1">
-              <Typography></Typography>
-            </article>
-            <article class="pbx-my-1">
-              <TextColorEditor :globalPageLayout="true"></TextColorEditor>
-            </article>
-            <article class="pbx-my-1">
-              <BackgroundColorEditor :globalPageLayout="true"></BackgroundColorEditor>
-            </article>
-            <article class="pbx-my-1">
-              <Padding> </Padding>
-            </article>
-            <article class="pbx-my-1">
-              <Margin> </Margin>
-            </article>
-            <article class="pbx-my-1">
-              <BorderRadius></BorderRadius>
-            </article>
-            <article class="pbx-my-1">
-              <Borders></Borders>
-            </article>
-            <article class="pbx-my-1">
-              <ClassEditor></ClassEditor>
-            </article>
-            <article class="pbx-my-1">
-              <StyleEditor></StyleEditor>
-            </article>
-            <article class="pbx-my-1">
-              <HTMLEditor></HTMLEditor>
-            </article>
+            <div
+              class="lg:pbx-grid lg:pbx-grid-cols-2 lg:pbx-gap-4 pbx-bg-gray-100 pbx-rounded-2xl pbx-py-4 pbx-mb-12 pbx-px-4"
+            >
+              <article class="pbx-my-1 lg:pbx-col-span-2">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Typography</p>
+                <Typography></Typography>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Text color</p>
+                <TextColorEditor :globalPageLayout="true"></TextColorEditor>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Background color</p>
+                <BackgroundColorEditor :globalPageLayout="true"></BackgroundColorEditor>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Padding</p>
+                <Padding> </Padding>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Margin</p>
+                <Margin> </Margin>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Border radius</p>
+                <BorderRadius></BorderRadius>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Border style</p>
+                <Borders></Borders>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">CSS</p>
+                <ClassEditor></ClassEditor>
+              </article>
+              <article class="pbx-my-1">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">Inline style</p>
+                <StyleEditor></StyleEditor>
+              </article>
+              <article class="pbx-my-1 lg:pbx-col-span-2">
+                <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2">HTML editor</p>
+                <HTMLEditor></HTMLEditor>
+              </article>
+            </div>
           </div>
         </div>
         <!-- globalPageStyles end -->
