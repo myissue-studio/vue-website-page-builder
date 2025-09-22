@@ -12,7 +12,7 @@ const getPageBuilderConfig = computed(() => {
 
 <template>
   <div>
-    <div class="pbx-flex pbx-items-center pbx-justify-center">
+    <div class="pbx-flex pbx-items-center pbx-justify-center pbx-ml-2">
       <div class="pbx-mr-2">
         <!-- User No image Start-->
         <div
