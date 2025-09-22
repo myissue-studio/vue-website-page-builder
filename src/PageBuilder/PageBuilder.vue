@@ -586,105 +586,6 @@ onMounted(async () => {
       <main></main>
     </DynamicModalBuilder>
 
-    <ModalBuilder
-      maxWidth="7xl"
-      :showModalBuilder="getShowModalHTMLEditor"
-      :title="translate('HTML Editor')"
-      @closeMainModalBuilder="handleCloseHTMLEditor"
-    >
-      <template v-if="!getToggleGlobalHtmlMode">
-        <textarea
-          id="html-editor"
-          v-model="editableHtml"
-          class="pbx-h-full pbx-font-sans pbx-bg-gray-900 pbx-text-white pbx-w-full"
-          style="overflow: auto; min-height: 400px"
-        ></textarea>
-        <div class="pbx-flex pbx-justify-end pbx-min-h-6">
-          <p v-if="errSaveComponents" class="pbx-myPrimaryParagraphError">
-            Error: {{ errSaveComponents }}
-          </p>
-        </div>
-        <div
-          class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-end"
-        >
-          <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
-            <div
-              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
-            >
-              <template v-if="!isLoading">
-                <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
-                  {{ translate('Close') }}
-                </button>
-                <button @click="handleSaveChangesElement" type="button" class="pbx-myPrimaryButton">
-                  {{ translate('Save') }}
-                </button>
-              </template>
-              <template v-if="isLoading">
-                <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
-                  <div
-                    class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-                  >
-                    <span
-                      class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-                      >Loading...</span
-                    >
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <template v-if="getToggleGlobalHtmlMode">
-        <textarea
-          id="html-editor"
-          v-model="editableComponents"
-          class="pbx-h-full pbx-font-sans pbx-bg-gray-900 pbx-text-white pbx-w-full"
-          style="overflow: auto; min-height: 400px"
-        ></textarea>
-        <div class="pbx-flex pbx-justify-end pbx-min-h-6">
-          <p v-if="errSaveComponents" class="pbx-myPrimaryParagraphError">
-            Error: {{ errSaveComponents }}
-          </p>
-        </div>
-        <div
-          class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-end"
-        >
-          <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
-            <div
-              class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
-            >
-              <template v-if="!isLoading">
-                <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
-                  {{ translate('Close') }}
-                </button>
-                <button
-                  @click="handleSaveChangesComponents"
-                  type="button"
-                  class="pbx-myPrimaryButton"
-                >
-                  {{ translate('Save') }}
-                </button>
-              </template>
-              <template v-if="isLoading">
-                <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
-                  <div
-                    class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-                  >
-                    <span
-                      class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-                      >Loading...</span
-                    >
-                  </div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-      </template>
-    </ModalBuilder>
-
     <div
       id="pagebuilder-navbar"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-2 pbx-font-sans pbx-min-h-20"
@@ -1191,6 +1092,104 @@ onMounted(async () => {
     </div>
     <!-- Footer End -->
   </div>
+  <ModalBuilder
+    maxWidth="7xl"
+    :showModalBuilder="getShowModalHTMLEditor"
+    :title="translate('HTML Editor')"
+    @closeMainModalBuilder="handleCloseHTMLEditor"
+  >
+    <template v-if="!getToggleGlobalHtmlMode">
+      <textarea
+        id="html-editor"
+        v-model="editableHtml"
+        class="pbx-h-full pbx-font-sans pbx-bg-gray-900 pbx-text-white pbx-w-full"
+        style="overflow: auto; min-height: 400px"
+      ></textarea>
+      <div class="pbx-flex pbx-justify-end pbx-min-h-6">
+        <p v-if="errSaveComponents" class="pbx-myPrimaryParagraphError">
+          Error: {{ errSaveComponents }}
+        </p>
+      </div>
+      <div
+        class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-end"
+      >
+        <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
+          <div
+            class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
+          >
+            <template v-if="!isLoading">
+              <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
+                {{ translate('Close') }}
+              </button>
+              <button @click="handleSaveChangesElement" type="button" class="pbx-myPrimaryButton">
+                {{ translate('Save') }}
+              </button>
+            </template>
+            <template v-if="isLoading">
+              <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
+                <div
+                  class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
+                >
+                  <span
+                    class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
+                    >Loading...</span
+                  >
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template v-if="getToggleGlobalHtmlMode">
+      <textarea
+        id="html-editor"
+        v-model="editableComponents"
+        class="pbx-h-full pbx-font-sans pbx-bg-gray-900 pbx-text-white pbx-w-full"
+        style="overflow: auto; min-height: 400px"
+      ></textarea>
+      <div class="pbx-flex pbx-justify-end pbx-min-h-6">
+        <p v-if="errSaveComponents" class="pbx-myPrimaryParagraphError">
+          Error: {{ errSaveComponents }}
+        </p>
+      </div>
+      <div
+        class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-end"
+      >
+        <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
+          <div
+            class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
+          >
+            <template v-if="!isLoading">
+              <button @click="handleCloseHTMLEditor" type="button" class="pbx-mySecondaryButton">
+                {{ translate('Close') }}
+              </button>
+              <button
+                @click="handleSaveChangesComponents"
+                type="button"
+                class="pbx-myPrimaryButton"
+              >
+                {{ translate('Save') }}
+              </button>
+            </template>
+            <template v-if="isLoading">
+              <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
+                <div
+                  class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
+                >
+                  <span
+                    class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
+                    >Loading...</span
+                  >
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ModalBuilder>
 </template>
 
 <style>

@@ -261,7 +261,7 @@
   }
 
   .pbx-myPrimarySearchButton {
-    @apply pbx-rounded-r-full pbx-text-sm lg:pbx-pl-8 lg:pbx-pr-10 pbx-pl-4 pbx-pr-4 pbx-text-center pbx-border-l pbx-border-gray-300 pbx-font-medium hover:pbx-bg-gray-200;
+    @apply pbx-myPrimaryButton pbx-m-1;
   }
 
   /*
