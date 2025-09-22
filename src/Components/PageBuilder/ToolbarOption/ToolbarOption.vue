@@ -35,9 +35,13 @@ const getPageBuilderConfig = computed(() => {
             }}
           </div>
           <div
-            class="pbx-hidden pbx-text-xs pbx-d lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
+            class="pbx-hidden pbx-text-xs pbx-pl-1 lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
           >
-            {{ getPageBuilderConfig.userForPageBuilder.name }}
+            {{
+              getPageBuilderConfig.userForPageBuilder.name
+                ? getPageBuilderConfig.userForPageBuilder.name.charAt(0).toUpperCase()
+                : ''
+            }}
           </div>
         </div>
 
@@ -65,9 +69,13 @@ const getPageBuilderConfig = computed(() => {
             />
           </div>
           <div
-            class="pbx-hidden pbx-text-xs pbx-d lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
+            class="pbx-hidden pbx-text-xs pbx-pl-1 lg:pbx-flex pbx-items-center pbx-font-normal pbx-w-max pbx-break-keep"
           >
-            {{ getPageBuilderConfig.userForPageBuilder.name }}
+            {{
+              getPageBuilderConfig.userForPageBuilder.name
+                ? getPageBuilderConfig.userForPageBuilder.name.charAt(0).toUpperCase()
+                : ''
+            }}
           </div>
         </div>
       </div>
