@@ -506,39 +506,7 @@ const handleDelete = function () {
           </div>
           <!-- move up and down end -->
 
-          <!-- add componenet above start -->
-          <div
-            v-if="getElement && getComponent"
-            @click="pageBuilderService.reorderComponent(-1)"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full"
-          >
-            <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
-            >
-              <span class="material-symbols-outlined"> add_row_above </span>
-            </div>
-            <div class="pbx-text-sm">
-              {{ translate('Add Component Above') }}
-            </div>
-          </div>
-          <div
-            v-if="getElement && getComponent"
-            @click="pageBuilderService.reorderComponent(1)"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full"
-          >
-            <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor"
-            >
-              <span class="material-symbols-outlined"> add_row_below </span>
-            </div>
-            <div class="pbx-text-sm">
-              {{ translate('Add Component Below') }}
-            </div>
-          </div>
-          <!-- add componenet below end -->
-
           <!-- delete component start -->
-
           <div
             v-if="getElement && getComponent"
             @click="handleDelete()"
