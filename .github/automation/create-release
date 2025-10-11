@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e # Exit on any error
+
+# Check for GitHub token
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "Error: GITHUB_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Set path variables
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Read the version number from package.json
+VERSION=$(jq -r '.version' "$REPO_ROOT/package.json")
+if [ -z "$VERSION" ]; then
+    echo "Error: Version number in package.json is empty"
+    exit 1
+fi
+
+# Validate version format
+if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: Invalid version format in package.json. Expected x.y.z"
+    exit 1
+fi
+
+# Check if release notes exist
+if [ ! -s "$SCRIPT_DIR/RELEASE_NOTES.md" ]; then
+    echo "Error: RELEASE_NOTES.md file is missing or empty"
+    exit 1
+fi
+
+# Get the latest tag, if it exists
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+# Create temporary release notes
+TEMP_RELEASE_NOTES=$(mktemp)
+trap 'rm -f "$TEMP_RELEASE_NOTES"' EXIT
+
+# Copy release notes
+cat "$SCRIPT_DIR/RELEASE_NOTES.md" > "$TEMP_RELEASE_NOTES"
+
+# Add commit history if we have a previous tag
+if [ ! -z "$LATEST_TAG" ]; then
+    echo -e "\n## Commits since $LATEST_TAG\n" >> "$TEMP_RELEASE_NOTES"
+    git log "$LATEST_TAG"..HEAD --pretty=format:"* %s (%h)" >> "$TEMP_RELEASE_NOTES"
+fi
+
+# Create and push tag
+git tag -a "v$VERSION" -m "Release v$VERSION"
+git push origin "v$VERSION"
+
+# Create GitHub release
+gh release create "v$VERSION" \
+    --title "Release v$VERSION" \
+    --notes-file "$TEMP_RELEASE_NOTES"
+
+echo "Successfully created release v$VERSION"
