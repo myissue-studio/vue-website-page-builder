@@ -507,7 +507,6 @@ const handleDelete = function () {
           <!-- move up and down end -->
 
           <!-- delete component start -->
-
           <div
             v-if="getElement && getComponent"
             @click="handleDelete()"

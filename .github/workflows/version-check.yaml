@@ -1,0 +1,36 @@
+name: Version Check
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  validate-version-increase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout main branch
+        run: git fetch origin main:main
+
+      - name: Validate version bump
+        run: |
+          PR_VERSION=$(jq -r '.version' package.json)
+          MAIN_VERSION=$(git show main:package.json | jq -r '.version')
+          echo "Versions: $MAIN_VERSION → $PR_VERSION"
+
+          [ "$PR_VERSION" = "$MAIN_VERSION" ] && {
+            echo "❌ Version not updated! Please bump from $MAIN_VERSION"
+            exit 1
+          }
+
+          echo -e "$MAIN_VERSION\n$PR_VERSION" | sort -V | tail -1 | grep -q "^$PR_VERSION$" || {
+            echo "❌ New version ($PR_VERSION) must be higher than $MAIN_VERSION"
+            exit 1
+          }
+
+          echo "✅ Version bumped correctly"
