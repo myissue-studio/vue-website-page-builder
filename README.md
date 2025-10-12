@@ -65,7 +65,7 @@
 
 ## Demo
 
-A Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
+Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
 
 Try the live demo to explore real-time visual updates and smooth content management.
 <br>
