@@ -37,6 +37,7 @@ export type AvailableLanguage =
   | 'de'
   | 'ar'
   | 'hi'
+  | 'da'
 
 export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'en',
@@ -49,6 +50,7 @@ export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'de',
   'ar',
   'hi',
+  'da',
 ]
 
 export class PageBuilderService {
@@ -305,7 +307,19 @@ export class PageBuilderService {
   private ensureLanguage(config: PageBuilderConfig): void {
     // Set default language config if missing, empty, or language missing/empty
     const defaultLang = 'en'
-    const defaultEnable = ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi'] as const
+    const defaultEnable = [
+      'en',
+      'zh-Hans',
+      'fr',
+      'ja',
+      'ru',
+      'es',
+      'pt',
+      'de',
+      'ar',
+      'hi',
+      'da',
+    ] as const
 
     let needsDefault = false
     const userSettings = config.userSettings

@@ -239,9 +239,9 @@ export interface PageBuilderConfig {
   userSettings?: {
     theme?: 'light' | 'dark' | 'auto'
     language?: {
-      default: 'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi'
+      default: 'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da'
       enable?: ReadonlyArray<
-        'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi'
+        'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da'
       >
     }
 

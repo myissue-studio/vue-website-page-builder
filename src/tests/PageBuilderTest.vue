@@ -51,8 +51,8 @@ watch(currentTranslations, async () => {
     userSettings: {
       theme: 'light',
       language: {
-        default: 'en',
-        enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi'],
+        default: 'da',
+        enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da'],
         disableLanguageDropDown: false,
       },
       autoSave: true,
