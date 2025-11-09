@@ -335,6 +335,7 @@ You’re now ready to use the Page Builder in your Vue pages or components with 
 
 ```vue
 <script setup>
+import { onMounted } from 'vue'
 import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
@@ -344,10 +345,12 @@ const configPageBuilder = {
   },
 }
 
-const pageBuilderService = getPageBuilder()
-const result = await pageBuilderService.startBuilder(configPageBuilder)
-
-console.info('You may inspect this result for message, status, or error:', result)
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const pageBuilderService = getPageBuilder()
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
 </script>
 
 <template>
@@ -467,6 +470,7 @@ Your `configPageBuilder` object can include:
 
 ```vue
 <script setup>
+import { onMounted } from 'vue'
 import { getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
@@ -493,11 +497,12 @@ const configPageBuilder = {
   },
 }
 
-// Retrieve Page Builder service instance
 const pageBuilderService = getPageBuilder()
-const result = await pageBuilderService.startBuilder(configPageBuilder)
 
-console.info('You may inspect this result for message, status, or error:', result)
+onMounted(async () => {
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
 </script>
 
 <template>
@@ -593,6 +598,7 @@ Call this logic when you need to submit or save the builder’s output—for exa
 
 ```vue
 <script setup>
+import { onMounted } from 'vue'
 import { getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
@@ -602,12 +608,19 @@ const configPageBuilder = {
   },
 }
 
-// Retrieve Page Builder service instance
 const pageBuilderService = getPageBuilder()
-await pageBuilderService.startBuilder(configPageBuilder)
 
-const storedComponents = pageBuilderService.getSavedPageHtml()
-yourForm.content = storedComponents
+onMounted(async () => {
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
+
+const getComponents = function () {
+  const storedComponents = pageBuilderService.getSavedPageHtml()
+  yourForm.content = storedComponents
+}
+
+// Call getComponents when needed.
 </script>
 ```
 
@@ -644,6 +657,7 @@ If you have previously saved or published HTML content (for example, from your d
 
    ```vue
    <script setup>
+   import { onMounted } from 'vue'
    import { getPageBuilder } from '@myissue/vue-website-page-builder'
 
    // Retrieve the Page Builder service instance
@@ -662,10 +676,13 @@ If you have previously saved or published HTML content (for example, from your d
      pageSettings: pageSettings,
    }
 
-   // Start the builder with both config and components
-   const result = await pageBuilderService.startBuilder(configPageBuilder, components)
+   const pageBuilderService = getPageBuilder()
 
-   console.info('You may inspect this result for message, status, or error:', result)
+   // Initialize the Page Builder with `onMounted`
+   onMounted(async () => {
+     const result = await pageBuilderService.startBuilder(configPageBuilder)
+     console.info('You may inspect this result for message, status, or error:', result)
+   })
    </script>
 
    <template>
@@ -693,6 +710,7 @@ If a draft is found, users are prompted to either continue where they left off o
 
 ```vue
 <script setup>
+import { onMounted } from 'vue'
 import { getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
@@ -702,9 +720,13 @@ const configPageBuilder = {
   },
 }
 
-const result = await pageBuilderService.startBuilder(configPageBuilder)
+const pageBuilderService = getPageBuilder()
 
-console.info('You may inspect this result for message, status, or error:', result)
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
 </script>
 
 <template>
