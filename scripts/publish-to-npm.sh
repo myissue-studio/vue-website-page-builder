@@ -32,19 +32,7 @@ if [[ ! $confirm =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-# Run tests before publishing
-echo ""
-echo "Running tests..."
-npm test
-
-# Build the package (if you have a build step)
-if grep -q "\"build\"" "$REPO_ROOT/package.json"; then
-    echo ""
-    echo "Building package..."
-    npm run build
-fi
-
-# Publish to npm
+# Publish to npm (prepublishOnly will run build:lib automatically)
 echo ""
 echo "Publishing to npm..."
 npm publish --access public
