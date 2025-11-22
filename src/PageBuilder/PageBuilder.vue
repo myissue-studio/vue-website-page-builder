@@ -993,9 +993,7 @@ onMounted(async () => {
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
           <!-- Insert button at the top -->
           <div id="nolocalstorage">
-            <div
-              class="pbx-flex pbx-justify-center hover:pbx-border-b hover:pbx-border-gray-200 pbx-w-full pbx-my-6 pbx-py-2"
-            >
+            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
               <div
                 @click="handleInsertButtonClick(0)"
                 class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
@@ -1015,9 +1013,7 @@ onMounted(async () => {
             ></div>
             <!-- Insert button between components -->
             <div id="nolocalstorage">
-              <div
-                class="pbx-flex pbx-justify-center hover:pbx-border-b hover:pbx-border-gray-200 pbx-w-full pbx-my-6 pbx-py-2"
-              >
+              <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
                   class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
