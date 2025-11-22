@@ -2705,7 +2705,6 @@ export class PageBuilderService {
         typeof placeCompAtLocation === 'number' &&
         placeCompAtLocation >= 0
       ) {
-        console.log('1111:')
         this.syncDomToStoreOnly()
         await nextTick()
         const components = this.pageBuilderStateStore.getComponents || []
@@ -2716,7 +2715,6 @@ export class PageBuilderService {
         ]
         this.pageBuilderStateStore.setComponents(newComponents)
       } else {
-        console.log('2222:')
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
           componentArrayAddMethod: this.getComponentArrayAddMethod.value
@@ -2729,7 +2727,6 @@ export class PageBuilderService {
       // scroll to inserted position
       if (pageBuilderWrapper) {
         if (this.getComponentArrayAddMethod.value === 'push') {
-          console.log('3333:')
           pageBuilderWrapper.scrollTo({
             top: pageBuilderWrapper.scrollHeight + 50,
             behavior: 'smooth',
@@ -2739,7 +2736,6 @@ export class PageBuilderService {
           this.getComponentArrayAddMethod.value === 'insert' &&
           typeof placeCompAtLocation === 'number'
         ) {
-          console.log('4444:')
           this.saveDomComponentsToLocalStorage()
           await nextTick()
           // Scroll to the inserted component
@@ -2754,7 +2750,6 @@ export class PageBuilderService {
       await nextTick()
       await this.addListenersToEditableElements()
       await this.handleAutoSave()
-      console.log('kooomer deeen heeer.:')
     } catch (error) {
       console.error('Error adding component:', error)
     } finally {
