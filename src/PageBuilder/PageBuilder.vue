@@ -999,7 +999,6 @@ onMounted(async () => {
                 class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
-                  <span class="material-symbols-outlined">add</span>
                   <span>Add section</span>
                 </div>
               </div>
@@ -1019,7 +1018,6 @@ onMounted(async () => {
                   class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
-                    <span class="material-symbols-outlined">add</span>
                     <span>Add section</span>
                   </div>
                 </div>
