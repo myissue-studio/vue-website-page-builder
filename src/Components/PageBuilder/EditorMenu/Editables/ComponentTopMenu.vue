@@ -128,7 +128,7 @@ const closeSEO = function () {
           title="SEO"
           :showSidebarPanel="showSEO"
           @closeSidebarPanel="closeSEO"
-          position="right"
+          position="left"
         >
           <!-- score indicator start -->
           <div class="pbx-overflow-y-auto">
