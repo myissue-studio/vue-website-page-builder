@@ -38,6 +38,7 @@ export type AvailableLanguage =
   | 'ar'
   | 'hi'
   | 'da'
+  | 'it'
 
 export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'en',
@@ -51,6 +52,7 @@ export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'ar',
   'hi',
   'da',
+  'it',
 ]
 
 export class PageBuilderService {
