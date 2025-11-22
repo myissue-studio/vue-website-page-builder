@@ -992,14 +992,20 @@ onMounted(async () => {
 
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
           <!-- Insert button at the top -->
-          <div id="nolocalstorage" class="pbx-flex pbx-justify-center pbx-my-2">
-            <button
-              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-              @click="handleInsertButtonClick(0)"
-              title="Add component here"
+          <div id="nolocalstorage">
+            <div
+              class="pbx-flex pbx-justify-center hover:pbx-border-b hover:pbx-border-gray-200 pbx-w-full pbx-my-6 pbx-py-2"
             >
-              <span class="material-symbols-outlined">add</span>
-            </button>
+              <div
+                @click="handleInsertButtonClick(0)"
+                class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
+                  <span class="material-symbols-outlined">add</span>
+                  <span>Add section</span>
+                </div>
+              </div>
+            </div>
           </div>
           <template v-for="(component, idx) in getComponents" :key="component.id">
             <div
@@ -1008,14 +1014,20 @@ onMounted(async () => {
               @mouseup="handleSelectComponent(component)"
             ></div>
             <!-- Insert button between components -->
-            <div id="nolocalstorage" class="pbx-flex pbx-justify-center pbx-my-2">
-              <button
-                class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-                @click="handleInsertButtonClick(idx + 1)"
-                title="Add component here"
+            <div id="nolocalstorage">
+              <div
+                class="pbx-flex pbx-justify-center hover:pbx-border-b hover:pbx-border-gray-200 pbx-w-full pbx-my-6 pbx-py-2"
               >
-                <span class="material-symbols-outlined">add</span>
-              </button>
+                <div
+                  @click="handleInsertButtonClick(idx + 1)"
+                  class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
+                    <span class="material-symbols-outlined">add</span>
+                    <span>Add section</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </template>
         </div>
