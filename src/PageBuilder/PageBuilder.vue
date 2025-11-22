@@ -992,7 +992,7 @@ onMounted(async () => {
 
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
           <!-- Insert button at the top -->
-          <div class="pbx-flex pbx-justify-center pbx-my-2">
+          <div id="nolocalstorage" class="pbx-flex pbx-justify-center pbx-my-2">
             <button
               class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               @click="handleInsertButtonClick(0)"
@@ -1008,7 +1008,7 @@ onMounted(async () => {
               @mouseup="handleSelectComponent(component)"
             ></div>
             <!-- Insert button between components -->
-            <div class="pbx-flex pbx-justify-center pbx-my-2">
+            <div id="nolocalstorage" class="pbx-flex pbx-justify-center pbx-my-2">
               <button
                 class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
                 @click="handleInsertButtonClick(idx + 1)"
