@@ -996,7 +996,7 @@ onMounted(async () => {
             <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
               <div
                 @click="handleInsertButtonClick(0)"
-                class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
                   <span class="material-symbols-outlined">add</span>
@@ -1016,7 +1016,7 @@ onMounted(async () => {
               <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
-                  class="pbx-h-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
                     <span class="material-symbols-outlined">add</span>
