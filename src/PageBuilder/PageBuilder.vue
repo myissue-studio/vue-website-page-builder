@@ -150,7 +150,7 @@ const titleModalAddComponent = ref('')
 const firstButtonTextSearchComponents = ref('')
 const firstModalButtonSearchComponentsFunction = ref(null)
 
-const handleAddComponent = async function () {
+const toggleAddComponentModal = async function () {
   await pageBuilderService.clearHtmlSelection()
 
   //
@@ -164,6 +164,12 @@ const handleAddComponent = async function () {
   }
 
   // end modal
+}
+
+const handleInsertButtonClick = function (id) {
+  pageBuilderStateStore.setAddComponentAddIndex(id)
+  pageBuilderStateStore.setComponentArrayAddMethod('insert')
+  toggleAddComponentModal()
 }
 
 const getElement = computed(() => {
@@ -728,7 +734,7 @@ onMounted(async () => {
             @click="
               () => {
                 pageBuilderStateStore.setComponentArrayAddMethod('unshift')
-                handleAddComponent()
+                toggleAddComponentModal()
               }
             "
           >
@@ -947,7 +953,7 @@ onMounted(async () => {
               @click="
                 () => {
                   pageBuilderStateStore.setComponentArrayAddMethod('unshift')
-                  handleAddComponent()
+                  toggleAddComponentModal()
                 }
               "
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
@@ -985,12 +991,32 @@ onMounted(async () => {
         <!-- Element Popover toolbar end -->
 
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
-          <template v-for="component in getComponents" :key="component.id">
+          <!-- Insert button at the top -->
+          <div class="pbx-flex pbx-justify-center pbx-my-2">
+            <button
+              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              @click="handleInsertButtonClick(0)"
+              title="Add component here"
+            >
+              <span class="material-symbols-outlined">add</span>
+            </button>
+          </div>
+          <template v-for="(component, idx) in getComponents" :key="component.id">
             <div
               v-if="component.html_code"
               v-html="component.html_code"
               @mouseup="handleSelectComponent(component)"
             ></div>
+            <!-- Insert button between components -->
+            <div class="pbx-flex pbx-justify-center pbx-my-2">
+              <button
+                class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-200 pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+                @click="handleInsertButtonClick(idx + 1)"
+                title="Add component here"
+              >
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
           </template>
         </div>
       </main>
@@ -1072,7 +1098,7 @@ onMounted(async () => {
         @click="
           () => {
             pageBuilderStateStore.setComponentArrayAddMethod('push')
-            handleAddComponent()
+            toggleAddComponentModal()
           }
         "
         class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-cursor-pointer"

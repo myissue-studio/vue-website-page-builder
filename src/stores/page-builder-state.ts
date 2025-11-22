@@ -69,6 +69,7 @@ interface PageBuilderState {
   currentLanguage: string | null
   historyIndex: number
   historyLength: number
+  addComponentAddIndex: number | null
 }
 
 export const usePageBuilderStateStore = defineStore('pageBuilderState', {
@@ -133,6 +134,7 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     currentLanguage: null,
     historyIndex: -1,
     historyLength: 0,
+    addComponentAddIndex: null,
   }),
   getters: {
     // Core Page Builder Getters
@@ -289,6 +291,7 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     getCurrentLanguage: (state: PageBuilderState): string | null => state.currentLanguage,
     getHistoryIndex: (state: PageBuilderState): number => state.historyIndex,
     getHistoryLength: (state: PageBuilderState): number => state.historyLength,
+    getAddComponentAddIndex: (state) => state.addComponentAddIndex,
   },
   actions: {
     setComponentArrayAddMethod(payload: string | null): void {
@@ -501,6 +504,9 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     setHistoryLength(payload: number): void {
       this.historyLength = payload
+    },
+    setAddComponentAddIndex(payload: number | null): void {
+      this.addComponentAddIndex = payload
     },
   },
 })
