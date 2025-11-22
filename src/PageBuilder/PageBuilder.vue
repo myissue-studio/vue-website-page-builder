@@ -993,13 +993,16 @@ onMounted(async () => {
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
           <!-- Insert button at the top -->
           <div id="nolocalstorage">
-            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
+            <div
+              @click="handleInsertButtonClick(0)"
+              class="pbx-flex pbx-justify-center pbx-w-full pbx-py-2 pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
+            >
               <div
-                @click="handleInsertButtonClick(0)"
-                class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                id="addsection"
+                class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
-                  <span>Add section</span>
+                  <span class="material-symbols-outlined"> add </span>
                 </div>
               </div>
             </div>
@@ -1012,13 +1015,16 @@ onMounted(async () => {
             ></div>
             <!-- Insert button between components -->
             <div id="nolocalstorage">
-              <div class="pbx-flex pbx-justify-center pbx-w-full pbx-my-6 pbx-py-2">
+              <div
+                @click="handleInsertButtonClick(idx + 1)"
+                class="pbx-flex pbx-justify-center pbx-w-full pbx-py-2 pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
+              >
                 <div
-                  @click="handleInsertButtonClick(idx + 1)"
-                  class="pbx-h-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  id="addsection"
+                  class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900"
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2">
-                    <span>Add section</span>
+                    <span class="material-symbols-outlined"> add </span>
                   </div>
                 </div>
               </div>
@@ -1225,6 +1231,20 @@ onMounted(async () => {
 </template>
 
 <style>
+#pagebuilder #nolocalstorage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#pagebuilder #addsection {
+  display: none;
+}
+#pagebuilder #nolocalstorage:hover #addsection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #pagebuilder [element] {
   outline: rgba(255, 255, 255, 0) dashed 4px !important;
   outline-offset: -4px !important;
