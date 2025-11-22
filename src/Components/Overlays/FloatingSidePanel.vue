@@ -41,7 +41,7 @@ const handleClose = () => {
       <!-- Right-aligned Modal -->
 
       <div
-        class="pbx-fixed pbx-top-0 pbx-rounded-3xl pbx-py-2 pbx-px-2 pbx-border pbx-border-gray-200 border-gray-500 pbx-max-h-[80vh] lg:pbx-min-h-[98%] pbx-min-h-[80vh] lg:pbx-min-w-96 lg:pbx-w-96 pbx-w-[96%] pbx-overflow-y-auto pbx-z-50 pbx-bg-white lg:pbx-mt-2 pbx-mt-2"
+        class="pbx-fixed pbx-top-0 pbx-rounded-3xl pbx-py-2 pbx-px-2 pbx-border pbx-border-gray-200 pbx-max-h-[80vh] lg:pbx-min-h-[98%] pbx-min-h-[80vh] lg:pbx-min-w-96 lg:pbx-w-96 pbx-w-[96%] pbx-overflow-y-auto pbx-z-50 pbx-bg-white lg:pbx-mt-2 pbx-mt-2"
         :class="[
           position === 'left' ? 'pbx-left-0 pbx-ml-[1%]' : '',
           position === 'right' ? 'pbx-right-0 pbx-mr-[1%]' : '',
@@ -50,7 +50,7 @@ const handleClose = () => {
       >
         <!-- Close -->
         <div
-          class="pbx-flex pbx-gap-2 pbx-justify-between pbx-items-center pbx-py-2 pbx-px-2 pbx-mb-2 pbx-border-b border-gray-600 pbx-border-gray-300"
+          class="pbx-flex pbx-gap-2 pbx-justify-between pbx-items-center pbx-py-2 pbx-px-2 pbx-mb-2 pbx-border-b pbx-border-gray-200"
         >
           <span class="pbx-myQuaternaryHeader pbx-my-0 pbx-py-0 pbx-text-black">{{ title }}</span>
           <span @click="handleClose">
