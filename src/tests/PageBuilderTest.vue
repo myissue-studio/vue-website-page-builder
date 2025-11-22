@@ -52,7 +52,7 @@ watch(currentTranslations, async () => {
       theme: 'light',
       language: {
         default: 'da',
-        enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da'],
+        enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da', 'it'],
         disableLanguageDropDown: false,
       },
       autoSave: true,

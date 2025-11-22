@@ -239,9 +239,21 @@ export interface PageBuilderConfig {
   userSettings?: {
     theme?: 'light' | 'dark' | 'auto'
     language?: {
-      default: 'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'it'
+      default:
+        | 'en'
+        | 'zh-Hans'
+        | 'fr'
+        | 'ja'
+        | 'ru'
+        | 'es'
+        | 'pt'
+        | 'de'
+        | 'ar'
+        | 'hi'
+        | 'da'
+        | 'it'
       enable?: ReadonlyArray<
-        'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'id' 
+        'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'it'
       >
     }
 

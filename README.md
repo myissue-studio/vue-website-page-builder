@@ -527,6 +527,7 @@ The Page Builder offers robust multilingual support, enabling you to reach a glo
 | Arabic               | ar      |
 | Hindi                | hi      |
 | Danish               | da      |
+| Italian              | it      |
 
 #### Default language
 
