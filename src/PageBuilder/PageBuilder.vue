@@ -998,7 +998,7 @@ onMounted(async () => {
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span
-                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base"
+                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
                   >
                     Add Page Content
                   </span>
@@ -1018,7 +1018,9 @@ onMounted(async () => {
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
-                  <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
+                  <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4 pbx-font-sans">
+                    Add element
+                  </span>
                 </div>
               </div>
             </div>
@@ -1044,7 +1046,9 @@ onMounted(async () => {
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
-                    <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
+                    <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4 pbx-font-sans">
+                      Add element
+                    </span>
                   </div>
                 </div>
               </div>
