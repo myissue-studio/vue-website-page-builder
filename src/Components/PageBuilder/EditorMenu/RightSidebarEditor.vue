@@ -100,6 +100,15 @@ function onScroll() {
         <article class="pbx-my-1">
           <StyleEditor></StyleEditor>
         </article>
+        <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-my-6"></div>
+        <button
+          type="button"
+          class="pbx-my-1 pbx-border pbx-border-gray-900 pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-black pbx-text-white hover:pbx-bg-myPrimaryLightGrayColor hover:pbx-text-black pbx-select-none pbx-w-full"
+        >
+          <p class="pbx-font-medium pbx-my-0 pbx-py-0">
+            {{ translate('Global Page Styles') }}
+          </p>
+        </button>
       </div>
     </div>
   </div>
