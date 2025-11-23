@@ -11,6 +11,9 @@ import BorderRadius from './Editables/BorderRadius.vue'
 import Borders from './Editables/Borders.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
 import { useTranslations } from '../../../composables/useTranslations'
+import ModalBuilder from '../../Modals/ModalBuilder.vue'
+import AdvancedPageBuilderSettings from '../Settings/AdvancedPageBuilderSettings.vue'
+import { delay } from '../../../composables/delay'
 
 const { translate } = useTranslations()
 
@@ -49,6 +52,34 @@ function onScroll() {
   if (scrollContainer.value) {
     lastScrollTop = scrollContainer.value.scrollTop
   }
+}
+
+const showHTMLSettings = ref(false)
+const isLoading = ref(false)
+
+const openHTMLSettings = async function () {
+  showHTMLSettings.value = true
+  isLoading.value = true
+  await delay(200)
+  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
+  await pageBuilderService.globalPageStyles()
+
+  await pageBuilderService.generateHtmlFromComponents()
+  isLoading.value = false
+}
+
+const closeHTMLSettings = async function () {
+  isLoading.value = true
+  await delay(200)
+  await pageBuilderService.handleManualSave()
+
+  // Remove global highlight if present
+  const pagebuilder = document.querySelector('#pagebuilder')
+  if (pagebuilder) {
+    pagebuilder.removeAttribute('data-global-selected')
+  }
+  showHTMLSettings.value = false
+  isLoading.value = false
 }
 </script>
 
@@ -101,15 +132,27 @@ function onScroll() {
           <StyleEditor></StyleEditor>
         </article>
         <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-my-6"></div>
-        <button
-          type="button"
-          class="pbx-my-1 pbx-border pbx-border-gray-900 pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-black pbx-text-white hover:pbx-bg-myPrimaryLightGrayColor hover:pbx-text-black pbx-select-none pbx-w-full"
-        >
-          <p class="pbx-font-medium pbx-my-0 pbx-py-0">
-            {{ translate('Global Page Styles') }}
-          </p>
-        </button>
       </div>
+
+      <button
+        @click="openHTMLSettings"
+        type="button"
+        class="pbx-my-1 pbx-border pbx-border-gray-900 pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-black pbx-text-white hover:pbx-bg-myPrimaryLightGrayColor hover:pbx-text-black pbx-select-none pbx-w-full"
+      >
+        <p class="pbx-font-medium pbx-my-0 pbx-py-0">
+          {{ translate('Global Page Styles') }}
+        </p>
+      </button>
     </div>
   </div>
+  <ModalBuilder
+    maxWidth="5xl"
+    :showModalBuilder="showHTMLSettings"
+    :title="translate('Selected HTML')"
+    @closeMainModalBuilder="closeHTMLSettings"
+    minHeight=""
+    maxHeight=""
+  >
+    <AdvancedPageBuilderSettings :isLoading="isLoading"> </AdvancedPageBuilderSettings>
+  </ModalBuilder>
 </template>
