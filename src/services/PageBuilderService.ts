@@ -2690,6 +2690,8 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async addComponent(componentObject: ComponentObject): Promise<void> {
+    const placeCompAtLocation = this.pageBuilderStateStore.getAddComponentAddIndex ?? 0
+
     try {
       const clonedComponent = this.cloneCompObjForDOMInsertion({
         html_code: componentObject.html_code,
@@ -2697,33 +2699,61 @@ export class PageBuilderService {
         title: componentObject.title,
       })
 
-      this.pageBuilderStateStore.setPushComponents({
-        component: clonedComponent,
-        componentArrayAddMethod: this.getComponentArrayAddMethod.value
-          ? this.getComponentArrayAddMethod.value
-          : 'push',
-      })
+      // Support insert at index
+      if (
+        this.getComponentArrayAddMethod.value === 'insert' &&
+        typeof placeCompAtLocation === 'number' &&
+        placeCompAtLocation >= 0
+      ) {
+        this.syncDomToStoreOnly()
+        await nextTick()
+        const components = this.pageBuilderStateStore.getComponents || []
+        const newComponents = [
+          ...components.slice(0, placeCompAtLocation),
+          clonedComponent,
+          ...components.slice(placeCompAtLocation),
+        ]
+        this.pageBuilderStateStore.setComponents(newComponents)
+      } else {
+        this.pageBuilderStateStore.setPushComponents({
+          component: clonedComponent,
+          componentArrayAddMethod: this.getComponentArrayAddMethod.value
+            ? this.getComponentArrayAddMethod.value
+            : 'push',
+        })
+      }
 
       const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
-      //  scoll to top or bottom
+      // scroll to inserted position
       if (pageBuilderWrapper) {
-        // push to bottom
         if (this.getComponentArrayAddMethod.value === 'push') {
           pageBuilderWrapper.scrollTo({
             top: pageBuilderWrapper.scrollHeight + 50,
             behavior: 'smooth',
           })
         }
+        if (
+          this.getComponentArrayAddMethod.value === 'insert' &&
+          typeof placeCompAtLocation === 'number'
+        ) {
+          this.saveDomComponentsToLocalStorage()
+          await nextTick()
+          // Scroll to the inserted component
+          const sections = pageBuilderWrapper.querySelectorAll('section[data-componentid]')
+          const targetSection = sections[placeCompAtLocation]
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }
       }
 
-      // Wait for Vue to finish DOM updates before attaching event listeners. This ensure elements exist in the DOM.
       await nextTick()
-      // Attach event listeners to all editable elements in the Builder
       await this.addListenersToEditableElements()
-
       await this.handleAutoSave()
     } catch (error) {
       console.error('Error adding component:', error)
+    } finally {
+      this.pageBuilderStateStore.setAddComponentAddIndex(null)
     }
   }
 

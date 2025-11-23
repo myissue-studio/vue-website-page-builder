@@ -12,6 +12,11 @@ export function extractCleanHTMLFromPageBuilder(
   const clone = pagebuilder.cloneNode(true) as HTMLElement
   clone.removeAttribute('id')
 
+  // Remove all elements with id="nolocalstorage"
+  clone.querySelectorAll<HTMLElement>('[id="nolocalstorage"]').forEach((el) => {
+    el.remove()
+  })
+
   // Remove custom attributes
   const elementsWithAttrs = clone.querySelectorAll<HTMLElement>(
     '[data-componentid], [data-component-title], #page-builder-editor-editable-area',

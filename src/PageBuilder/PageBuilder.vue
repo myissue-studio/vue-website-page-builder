@@ -150,7 +150,7 @@ const titleModalAddComponent = ref('')
 const firstButtonTextSearchComponents = ref('')
 const firstModalButtonSearchComponentsFunction = ref(null)
 
-const handleAddComponent = async function () {
+const toggleAddComponentModal = async function () {
   await pageBuilderService.clearHtmlSelection()
 
   //
@@ -164,6 +164,12 @@ const handleAddComponent = async function () {
   }
 
   // end modal
+}
+
+const handleInsertButtonClick = function (id) {
+  pageBuilderStateStore.setAddComponentAddIndex(id)
+  pageBuilderStateStore.setComponentArrayAddMethod('insert')
+  toggleAddComponentModal()
 }
 
 const getElement = computed(() => {
@@ -728,20 +734,15 @@ onMounted(async () => {
             @click="
               () => {
                 pageBuilderStateStore.setComponentArrayAddMethod('unshift')
-                handleAddComponent()
+                toggleAddComponentModal()
               }
             "
           >
             <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-gray-200">
-              <span class="lg:pbx-block pbx-hidden">
-                <div class="pbx-whitespace-nowrap pbx-cursor-pointer">
-                  {{ translate('Add new Components') }}
-                </div>
-              </span>
               <span
                 class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
               >
-                <span class="pbx-myMediumIcon material-symbols-outlined"> interests </span>
+                <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
               </span>
             </div>
           </div>
@@ -947,12 +948,12 @@ onMounted(async () => {
               @click="
                 () => {
                   pageBuilderStateStore.setComponentArrayAddMethod('unshift')
-                  handleAddComponent()
+                  toggleAddComponentModal()
                 }
               "
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <span class="pbx-myMediumIcon material-symbols-outlined"> interests </span>
+              <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
             </button>
           </div>
           <div
@@ -985,12 +986,69 @@ onMounted(async () => {
         <!-- Element Popover toolbar end -->
 
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
-          <template v-for="component in getComponents" :key="component.id">
+          <!-- Insert button when empty of componenets -->
+          <div
+            v-if="Array.isArray(getComponents) && getComponents.length === 0"
+            id="nolocalstorage"
+          >
+            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center">
+              <div
+                @click="handleInsertButtonClick(0)"
+                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <span
+                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base"
+                  >
+                    Add Page Content
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Insert button at the top -->
+          <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
+            <div
+              class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
+            >
+              <div
+                @click="handleInsertButtonClick(0)"
+                id="addsection"
+                class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <span class="material-symbols-outlined"> add </span>
+                  <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <template v-for="(component, idx) in getComponents" :key="component.id">
             <div
               v-if="component.html_code"
               v-html="component.html_code"
               @mouseup="handleSelectComponent(component)"
             ></div>
+            <!-- Insert button between components -->
+            <div
+              v-if="Array.isArray(getComponents) && getComponents.length != 0"
+              id="nolocalstorage"
+            >
+              <div
+                class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
+              >
+                <div
+                  @click="handleInsertButtonClick(idx + 1)"
+                  id="addsection"
+                  class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-2">
+                    <span class="material-symbols-outlined"> add </span>
+                    <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </template>
         </div>
       </main>
@@ -1062,35 +1120,6 @@ onMounted(async () => {
       </transition>
     </div>
     <!-- Page Builder Main End -->
-
-    <!-- Footer Start -->
-    <div
-      id="pagebuilder-footer"
-      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-border-t pbx-border-t-gray-200 pbx-border-solid pbx-bg-myPrimaryLightGrayColor pbx-py-4"
-    >
-      <div
-        @click="
-          () => {
-            pageBuilderStateStore.setComponentArrayAddMethod('push')
-            handleAddComponent()
-          }
-        "
-        class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-cursor-pointer"
-      >
-        <span class="lg:pbx-block pbx-hidden">
-          <div class="pbx-whitespace-nowrap">{{ translate('Add to the bottom') }}</div>
-        </span>
-        <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-          <button
-            type="button"
-            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-          >
-            <span class="pbx-myMediumIcon material-symbols-outlined"> interests </span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Footer End -->
   </div>
   <ModalBuilder
     maxWidth="7xl"
@@ -1193,6 +1222,20 @@ onMounted(async () => {
 </template>
 
 <style>
+#pagebuilder #nolocalstorage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#pagebuilder #addsection {
+  display: none;
+}
+#pagebuilder #nolocalstorage:hover #addsection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #pagebuilder [element] {
   outline: rgba(255, 255, 255, 0) dashed 4px !important;
   outline-offset: -4px !important;
@@ -1204,7 +1247,6 @@ onMounted(async () => {
 
 #pagebuilder [selected] {
   position: relative;
-
   outline: rgb(185, 16, 16) dashed 4px !important;
   outline-offset: -4px !important;
 }
