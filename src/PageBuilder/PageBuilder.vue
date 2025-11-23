@@ -995,7 +995,7 @@ onMounted(async () => {
           <div id="nolocalstorage">
             <div
               @click="handleInsertButtonClick(0)"
-              class="pbx-flex pbx-justify-center pbx-w-full pbx-py-2 pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
+              class="pbx-flex pbx-justify-center pbx-w-full pbx-h-12 pbx-items-center pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
             >
               <div
                 id="addsection"
@@ -1017,7 +1017,7 @@ onMounted(async () => {
             <div id="nolocalstorage">
               <div
                 @click="handleInsertButtonClick(idx + 1)"
-                class="pbx-flex pbx-justify-center pbx-w-full pbx-py-2 pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
+                class="pbx-flex pbx-justify-center pbx-w-full pbx-h-12 pbx-items-center pbx-relative hover:pbx-bg-gray-200 pbx-cursor-pointer"
               >
                 <div
                   id="addsection"
