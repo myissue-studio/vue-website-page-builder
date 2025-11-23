@@ -989,12 +989,12 @@ onMounted(async () => {
           <!-- Insert button at the top -->
           <div id="nolocalstorage">
             <div
-              @click="handleInsertButtonClick(0)"
-              class="pbx-flex pbx-justify-center pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600 pbx-cursor-pointer"
+              class="pbx-flex pbx-justify-start pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600"
             >
               <div
+                @click="handleInsertButtonClick(0)"
                 id="addsection"
-                class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900"
+                class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
@@ -1011,12 +1011,12 @@ onMounted(async () => {
             <!-- Insert button between components -->
             <div id="nolocalstorage">
               <div
-                @click="handleInsertButtonClick(idx + 1)"
-                class="pbx-flex pbx-justify-center pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600 pbx-cursor-pointer"
+                class="pbx-flex pbx-justify-start pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600"
               >
                 <div
+                  @click="handleInsertButtonClick(idx + 1)"
                   id="addsection"
-                  class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900"
+                  class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
@@ -1201,7 +1201,6 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
 }
 #pagebuilder #addsection {
   display: none;
@@ -1210,7 +1209,6 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
 }
 
 #pagebuilder [element] {
