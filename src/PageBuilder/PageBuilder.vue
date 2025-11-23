@@ -986,10 +986,30 @@ onMounted(async () => {
         <!-- Element Popover toolbar end -->
 
         <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
+          <!-- Insert button when empty of componenets -->
+          <div
+            v-if="Array.isArray(getComponents) && getComponents.length === 0"
+            id="nolocalstorage"
+          >
+            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center">
+              <div
+                @click="handleInsertButtonClick(0)"
+                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <span
+                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base"
+                  >
+                    Add Page Content
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- Insert button at the top -->
-          <div id="nolocalstorage">
+          <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
             <div
-              class="pbx-flex pbx-justify-start pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600"
+              class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
             >
               <div
                 @click="handleInsertButtonClick(0)"
@@ -998,6 +1018,7 @@ onMounted(async () => {
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
+                  <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
                 </div>
               </div>
             </div>
@@ -1009,9 +1030,12 @@ onMounted(async () => {
               @mouseup="handleSelectComponent(component)"
             ></div>
             <!-- Insert button between components -->
-            <div id="nolocalstorage">
+            <div
+              v-if="Array.isArray(getComponents) && getComponents.length != 0"
+              id="nolocalstorage"
+            >
               <div
-                class="pbx-flex pbx-justify-start pbx-w-full pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-green-600"
+                class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
               >
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
@@ -1020,6 +1044,7 @@ onMounted(async () => {
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
+                    <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4"> Add element </span>
                   </div>
                 </div>
               </div>
