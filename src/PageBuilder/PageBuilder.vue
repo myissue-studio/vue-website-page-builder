@@ -1000,7 +1000,7 @@ onMounted(async () => {
                   <span
                     class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
                   >
-                    Add Page Content
+                    {{ translate('Add new Components') }}
                   </span>
                 </div>
               </div>
