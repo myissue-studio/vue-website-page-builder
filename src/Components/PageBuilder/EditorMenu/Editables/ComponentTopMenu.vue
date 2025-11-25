@@ -6,14 +6,9 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { delay } from '../../../../composables/delay'
 import PageBuilderSettings from '../../Settings/PageBuilderSettings.vue'
 import ModalBuilder from '../../../../Components/Modals/ModalBuilder.vue'
-import AdvancedPageBuilderSettings from '../../Settings/AdvancedPageBuilderSettings.vue'
-import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import FloatingSidePanel from '../../../../Components/Overlays/FloatingSidePanel.vue'
 
 const { translate } = useTranslations()
-
-// Use shared store instance
-const pageBuilderStateStore = sharedPageBuilderStore
 
 const pageBuilderService = getPageBuilder()
 
@@ -57,33 +52,6 @@ const handleDeleteComponentsFromDOM = function () {
   }
 }
 
-const showHTMLSettings = ref(false)
-const isLoading = ref(false)
-
-const openHTMLSettings = async function () {
-  showHTMLSettings.value = true
-  isLoading.value = true
-  await delay(200)
-  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
-  await pageBuilderService.globalPageStyles()
-
-  await pageBuilderService.generateHtmlFromComponents()
-  isLoading.value = false
-}
-
-const closeHTMLSettings = async function () {
-  isLoading.value = true
-  await delay(200)
-  await pageBuilderService.handleManualSave()
-
-  // Remove global highlight if present
-  const pagebuilder = document.querySelector('#pagebuilder')
-  if (pagebuilder) {
-    pagebuilder.removeAttribute('data-global-selected')
-  }
-  showHTMLSettings.value = false
-  isLoading.value = false
-}
 const showMainSettings = ref(false)
 
 const handleMainSettings = function () {
@@ -238,17 +206,6 @@ const closeSEO = function () {
 
       <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
 
-      <!-- HTML Settings Start -->
-      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-        <div
-          @click="openHTMLSettings"
-          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-        >
-          <span class="material-symbols-outlined"> deployed_code </span>
-        </div>
-      </div>
-      <!-- HTML Settings End -->
-
       <!-- settings start -->
       <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
         <div
@@ -296,17 +253,6 @@ const closeSEO = function () {
       <header></header>
       <main></main>
     </DynamicModalBuilder>
-
-    <ModalBuilder
-      maxWidth="5xl"
-      :showModalBuilder="showHTMLSettings"
-      :title="translate('Selected HTML')"
-      @closeMainModalBuilder="closeHTMLSettings"
-      minHeight=""
-      maxHeight=""
-    >
-      <AdvancedPageBuilderSettings :isLoading="isLoading"> </AdvancedPageBuilderSettings>
-    </ModalBuilder>
 
     <ModalBuilder
       maxWidth="5xl"
