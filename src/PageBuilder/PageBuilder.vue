@@ -1009,18 +1009,15 @@ onMounted(async () => {
           <!-- Insert button at the top -->
           <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
             <div
-              class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
+              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-black pbx-rounded-r-full pbx-z-10"
             >
               <div
                 @click="handleInsertButtonClick(0)"
                 id="addsection"
-                class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                class="pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
-                  <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4 pbx-font-sans">
-                    Add element
-                  </span>
                 </div>
               </div>
             </div>
@@ -1037,18 +1034,15 @@ onMounted(async () => {
               id="nolocalstorage"
             >
               <div
-                class="pbx-flex pbx-justify-start pbx-w-2/3 pbx-left-0 pbx-h-12 pbx-absolute pbx-items-center hover:pbx-bg-gray-600 hover:pbx-border pbx-rounded-r-full pbx-z-10"
+                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-black pbx-rounded-r-full pbx-z-10"
               >
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
                   id="addsection"
-                  class="pbx-h-8 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  class="pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
-                    <span class="lg:pbx-block pbx-hidden lg:pbx-pr-4 pbx-font-sans">
-                      Add element
-                    </span>
                   </div>
                 </div>
               </div>
@@ -1232,7 +1226,7 @@ onMounted(async () => {
   align-items: center;
 }
 #pagebuilder #addsection {
-  display: none;
+  /* display: none; */
 }
 #pagebuilder #nolocalstorage:hover #addsection {
   display: flex;
