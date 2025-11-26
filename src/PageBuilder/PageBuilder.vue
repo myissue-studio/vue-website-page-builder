@@ -744,6 +744,9 @@ onMounted(async () => {
               >
                 <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
               </span>
+              <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden"
+                >Add element</span
+              >
             </div>
           </div>
           <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mr-2">
