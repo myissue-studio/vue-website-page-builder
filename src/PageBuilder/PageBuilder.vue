@@ -61,7 +61,47 @@ provide('CustomBuilderComponents', props.CustomBuilderComponents)
 
 const emit = defineEmits(['handleClosePageBuilder', 'handlePublishPageBuilder'])
 
-const closePageBuilder = function () {
+const gridColumnModalCloseNoSave = ref(Number(1))
+const typeModalloseNoSave = ref('')
+const showModalCloseNoSave = ref(false)
+const titleModalCloseNoSave = ref('')
+const descriptionModalCloseNoSave = ref('')
+const firstButtonCloseNoSave = ref('')
+const secondButtonCloseNoSave = ref(null)
+const thirdButtonCloseNoSave = ref(null)
+const firstModalButtonCloseNoSaveFunction = ref(null)
+const secondModalButtonCloseNoSaveFunction = ref(null)
+const thirdModalButtonCloseNoSaveFunction = ref(null)
+
+const closePageBuilder = async function () {
+  typeModalloseNoSave.value = 'warning'
+  showModalCloseNoSave.value = true
+
+  titleModalCloseNoSave.value = translate('Continue Your Work?')
+  descriptionModalCloseNoSave.value = translate(
+    'Are you sure you want to close the Page Builder? All unsaved changes will be lost.',
+  )
+  firstButtonCloseNoSave.value = null
+  secondButtonCloseNoSave.value = translate('Close Page Builder')
+  thirdButtonCloseNoSave.value = null
+
+  firstModalButtonCloseNoSaveFunction.value = async function () {
+    showModalCloseNoSave.value = false
+  }
+
+  secondModalButtonCloseNoSaveFunction.value = function () {
+    acceptClosePageBuilder()
+  }
+
+  thirdModalButtonCloseNoSaveFunction.value = async function () {
+    //
+  }
+
+  // end modal
+}
+
+const acceptClosePageBuilder = function () {
+  showModalCloseNoSave.value = false
   emit('handleClosePageBuilder')
 }
 const closePublish = async function () {
@@ -538,6 +578,24 @@ onMounted(async () => {
       :CustomBuilderComponents="props.CustomBuilderComponents"
       @firstModalButtonSearchComponentsFunction="firstModalButtonSearchComponentsFunction"
     ></BuilderComponents>
+
+    <DynamicModalBuilder
+      :showDynamicModalBuilder="showModalCloseNoSave"
+      :isLoading="false"
+      :type="typeModalloseNoSave"
+      :gridColumnAmount="gridColumnModalCloseNoSave"
+      :title="titleModalCloseNoSave"
+      :description="descriptionModalCloseNoSave"
+      :firstButtonText="firstButtonCloseNoSave"
+      :secondButtonText="secondButtonCloseNoSave"
+      :thirdButtonText="thirdButtonCloseNoSave"
+      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonCloseNoSaveFunction"
+      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonCloseNoSaveFunction"
+      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonCloseNoSaveFunction"
+    >
+      <header></header>
+      <main></main>
+    </DynamicModalBuilder>
 
     <ModalBuilder
       :title="titleBuilderDesktop"
