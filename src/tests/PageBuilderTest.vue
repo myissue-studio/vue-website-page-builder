@@ -75,7 +75,7 @@ watch(currentTranslations, async () => {
       <PageBuilder
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
         :showPublishButton="true"
-        :showCloseButton="true"
+        :showCloseButton="false"
         @handlePublishPageBuilder="publishPageBuilder"
       ></PageBuilder>
     </div>
