@@ -2699,7 +2699,8 @@ export class PageBuilderService {
         title: componentObject.title,
       })
 
-      // Support insert at index
+      let insertedIndex = placeCompAtLocation
+
       if (
         this.getComponentArrayAddMethod.value === 'insert' &&
         typeof placeCompAtLocation === 'number' &&
@@ -2714,6 +2715,7 @@ export class PageBuilderService {
           ...components.slice(placeCompAtLocation),
         ]
         this.pageBuilderStateStore.setComponents(newComponents)
+        insertedIndex = placeCompAtLocation
       } else {
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
@@ -2724,7 +2726,6 @@ export class PageBuilderService {
       }
 
       const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
-      // scroll to inserted position
       if (pageBuilderWrapper) {
         if (this.getComponentArrayAddMethod.value === 'push') {
           pageBuilderWrapper.scrollTo({
@@ -2734,15 +2735,23 @@ export class PageBuilderService {
         }
         if (
           this.getComponentArrayAddMethod.value === 'insert' &&
-          typeof placeCompAtLocation === 'number'
+          typeof insertedIndex === 'number'
         ) {
           this.saveDomComponentsToLocalStorage()
           await nextTick()
-          // Scroll to the inserted component
+          // Wait for DOM update after setting components
+          await nextTick()
           const sections = pageBuilderWrapper.querySelectorAll('section[data-componentid]')
-          const targetSection = sections[placeCompAtLocation]
-          if (targetSection) {
-            targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          if (sections.length > 0) {
+            // Clamp index to valid range
+            const index = Math.max(0, Math.min(insertedIndex, sections.length - 1))
+            const targetSection = sections[index]
+            if (targetSection) {
+              ;(targetSection as HTMLElement).scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              })
+            }
           }
         }
       }
