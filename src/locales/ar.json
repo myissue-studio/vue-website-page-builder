@@ -194,5 +194,7 @@
   "Large Screens Only": "الشاشات الكبيرة فقط",
   "Left Positioned Button": "زر في جهة اليسار",
   "Centered Button": "زر في المنتصف",
-  "Right Positioned Button": "زر في جهة اليمين"
+  "Right Positioned Button": "زر في جهة اليمين",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "هل أنت متأكد أنك تريد إغلاق منشئ الصفحات؟ سيتم فقدان جميع التغييرات غير المحفوظة.",
+  "Close Page Builder": "نعم، أغلق منشئ الصفحات"
 }

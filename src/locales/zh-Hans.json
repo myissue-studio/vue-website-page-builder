@@ -194,5 +194,7 @@
   "Large Screens Only": "仅限大屏幕",
   "Left Positioned Button": "左侧按钮",
   "Centered Button": "居中按钮",
-  "Right Positioned Button": "右侧按钮"
+  "Right Positioned Button": "右侧按钮",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "您确定要关闭页面构建器吗？所有未保存的更改将会丢失。",
+  "Close Page Builder": "是的，关闭页面构建器"
 }

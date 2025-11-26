@@ -194,5 +194,7 @@
   "Large Screens Only": "Solo per Schermi Grandi",
   "Left Positioned Button": "Pulsante Posizionato a Sinistra",
   "Centered Button": "Pulsante Centrato",
-  "Right Positioned Button": "Pulsante Posizionato a Destra"
+  "Right Positioned Button": "Pulsante Posizionato a Destra",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "Sei sicuro di voler chiudere il Page Builder? Tutte le modifiche non salvate andranno perse.",
+  "Close Page Builder": "Sì, chiudi Page Builder"
 }

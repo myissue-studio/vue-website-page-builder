@@ -194,5 +194,7 @@
   "Large Screens Only": "Только большие экраны",
   "Left Positioned Button": "Кнопка слева",
   "Centered Button": "Кнопка по центру",
-  "Right Positioned Button": "Кнопка справа"
+  "Right Positioned Button": "Кнопка справа",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "Вы уверены, что хотите закрыть Page Builder? Все несохранённые изменения будут потеряны.",
+  "Close Page Builder": "Да, закрыть Page Builder"
 }
