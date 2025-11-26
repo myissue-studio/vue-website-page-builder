@@ -194,5 +194,7 @@
   "Large Screens Only": "大型スクリーンのみ",
   "Left Positioned Button": "左寄せのボタン",
   "Centered Button": "中央揃えのボタン",
-  "Right Positioned Button": "右寄せのボタン"
+  "Right Positioned Button": "右寄せのボタン",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "ページビルダーを閉じてもよろしいですか？保存されていない変更はすべて失われます。",
+  "Close Page Builder": "はい、ページビルダーを閉じる"
 }

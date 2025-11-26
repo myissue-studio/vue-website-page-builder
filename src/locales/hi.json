@@ -194,5 +194,7 @@
   "Large Screens Only": "केवल बड़ी स्क्रीन",
   "Left Positioned Button": "बाईं ओर का बटन",
   "Centered Button": "केंद्रित बटन",
-  "Right Positioned Button": "दाईं ओर का बटन"
+  "Right Positioned Button": "दाईं ओर का बटन",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "क्या आप वाकई Page Builder बंद करना चाहते हैं? सभी असहेजित परिवर्तन खो जाएंगे।",
+  "Close Page Builder": "हाँ, Page Builder बंद करें"
 }

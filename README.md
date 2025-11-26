@@ -32,16 +32,16 @@
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
   - [Comprehensive Language Support in the Page Builder](#comprehensive-language-support-in-the-page-builder)
-      - [Default language](#default-language)
-      - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
+    - [Default language](#default-language)
+    - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
   - [Local Storage \& Auto-Save](#local-storage--auto-save)
   - [Retrieving the Latest HTML Content for Form Submission](#retrieving-the-latest-html-content-for-form-submission)
     - [Resetting the Builder After Successful Resource Creation or Update](#resetting-the-builder-after-successful-resource-creation-or-update)
   - [Loading Existing Content or Components into the Page Builder](#loading-existing-content-or-components-into-the-page-builder)
     - [Restoring Full Page Content (Global Styles \& Components)](#restoring-full-page-content-global-styles--components)
   - [Automatic Draft Recovery](#automatic-draft-recovery)
-  - [Embedding Page Builder in a Modal or Dialog](#embedding-page-builder-in-a-modal-or-dialog)
-  - [Publish Button](#publish-button)
+  - [Close Page Builder Without Saving in a Modal or Dialog](#close-page-builder-without-saving-in-a-modal-or-dialog)
+  - [Publish Changes Using the Save Button](#publish-changes-using-the-save-button)
   - [Styling the Main Page Builder Container](#styling-the-main-page-builder-container)
   - [Download HTML File](#download-html-file)
   - [Custom Components](#custom-components)
@@ -471,7 +471,7 @@ Your `configPageBuilder` object can include:
 ```vue
 <script setup>
 import { onMounted } from 'vue'
-import { getPageBuilder } from '@myissue/vue-website-page-builder'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
   updateOrCreate: {
@@ -660,7 +660,7 @@ If you have previously saved or published HTML content (for example, from your d
    ```vue
    <script setup>
    import { onMounted } from 'vue'
-   import { getPageBuilder } from '@myissue/vue-website-page-builder'
+   import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
    // Retrieve the Page Builder service instance
    const pageBuilderService = getPageBuilder()
@@ -713,7 +713,7 @@ If a draft is found, users are prompted to either continue where they left off o
 ```vue
 <script setup>
 import { onMounted } from 'vue'
-import { getPageBuilder } from '@myissue/vue-website-page-builder'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const configPageBuilder = {
   updateOrCreate: {
@@ -736,20 +736,35 @@ onMounted(async () => {
 </template>
 ```
 
-## Embedding Page Builder in a Modal or Dialog
+## Close Page Builder Without Saving in a Modal or Dialog
 
 You can easily use the Page Builder inside a modal or dialog.
-To allow users to close the modal from inside the builder, use the `showCloseButton` prop and listen for the `@handleClosePageBuilder` event:
+To close the page builder without saving, or to allow users to close the modal from inside the builder, use the `showCloseButton` prop and listen for the `@handleClosePageBuilder` event:
 
 ```vue
 <script setup>
-import { ref } from 'vue'
-import { PageBuilder } from '@myissue/vue-website-page-builder'
+import { onMounted, ref } from 'vue'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'update',
+    formName: 'article',
+  },
+}
 const showModal = ref(true)
+
 function closePageBuilder() {
   showModal.value = false
 }
+
+const pageBuilderService = getPageBuilder()
+
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
 </script>
 
 <template>
@@ -759,7 +774,7 @@ function closePageBuilder() {
 </template>
 ```
 
-## Publish Button
+## Publish Changes Using the Save Button
 
 To allow users to use the Publish button from inside the builder, use the `showPublishButton` prop and listen for the `@handlePublishPageBuilder` event.
 
@@ -768,7 +783,8 @@ To allow users to use the Publish button from inside the builder, use the `showP
 
 ```vue
 <script setup>
-import { getPageBuilder, PageBuilder } from '@myissue/vue-website-page-builder'
+import { onMounted } from 'vue'
+import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 
 const pageBuilderService = getPageBuilder()
 
@@ -778,6 +794,14 @@ const handlePublish = () => {
   // Submit, publish, or process the content as needed
   // e.g., send latestHtml to your API or update your form
 }
+
+const pageBuilderService = getPageBuilder()
+
+// Initialize the Page Builder with `onMounted`
+onMounted(async () => {
+  const result = await pageBuilderService.startBuilder(configPageBuilder)
+  console.info('You may inspect this result for message, status, or error:', result)
+})
 </script>
 
 <template>

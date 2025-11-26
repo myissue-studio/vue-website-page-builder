@@ -194,5 +194,7 @@
   "Large Screens Only": "Solo pantallas grandes",
   "Left Positioned Button": "Botón posicionado a la izquierda",
   "Centered Button": "Botón centrado",
-  "Right Positioned Button": "Botón posicionado a la derecha"
+  "Right Positioned Button": "Botón posicionado a la derecha",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "¿Está seguro de que desea cerrar el Page Builder? Todos los cambios no guardados se perderán.",
+  "Close Page Builder": "Sí, cerrar Page Builder"
 }

@@ -194,5 +194,7 @@
   "Large Screens Only": "Kun Store Skærme",
   "Left Positioned Button": "Venstrestillet Knap",
   "Centered Button": "Centreret Knap",
-  "Right Positioned Button": "Højrestillet Knap"
+  "Right Positioned Button": "Højrestillet Knap",
+  "Are you sure you want to close the Page Builder? All unsaved changes will be lost.": "Er du sikker på, at du vil lukke sidebyggeren? Alle ikke-gemte ændringer vil gå tabt.",
+  "Close Page Builder": "Ja, luk sidebyggeren"
 }

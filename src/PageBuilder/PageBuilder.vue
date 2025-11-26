@@ -61,7 +61,47 @@ provide('CustomBuilderComponents', props.CustomBuilderComponents)
 
 const emit = defineEmits(['handleClosePageBuilder', 'handlePublishPageBuilder'])
 
-const closePageBuilder = function () {
+const gridColumnModalCloseNoSave = ref(Number(1))
+const typeModalloseNoSave = ref('')
+const showModalCloseNoSave = ref(false)
+const titleModalCloseNoSave = ref('')
+const descriptionModalCloseNoSave = ref('')
+const firstButtonCloseNoSave = ref('')
+const secondButtonCloseNoSave = ref(null)
+const thirdButtonCloseNoSave = ref(null)
+const firstModalButtonCloseNoSaveFunction = ref(null)
+const secondModalButtonCloseNoSaveFunction = ref(null)
+const thirdModalButtonCloseNoSaveFunction = ref(null)
+
+const closePageBuilder = async function () {
+  typeModalloseNoSave.value = 'warning'
+  showModalCloseNoSave.value = true
+
+  titleModalCloseNoSave.value = translate('Continue Your Work?')
+  descriptionModalCloseNoSave.value = translate(
+    'Are you sure you want to close the Page Builder? All unsaved changes will be lost.',
+  )
+  firstButtonCloseNoSave.value = null
+  secondButtonCloseNoSave.value = translate('Close Page Builder')
+  thirdButtonCloseNoSave.value = null
+
+  firstModalButtonCloseNoSaveFunction.value = async function () {
+    showModalCloseNoSave.value = false
+  }
+
+  secondModalButtonCloseNoSaveFunction.value = function () {
+    acceptClosePageBuilder()
+  }
+
+  thirdModalButtonCloseNoSaveFunction.value = async function () {
+    //
+  }
+
+  // end modal
+}
+
+const acceptClosePageBuilder = function () {
+  showModalCloseNoSave.value = false
   emit('handleClosePageBuilder')
 }
 const closePublish = async function () {
@@ -539,6 +579,24 @@ onMounted(async () => {
       @firstModalButtonSearchComponentsFunction="firstModalButtonSearchComponentsFunction"
     ></BuilderComponents>
 
+    <DynamicModalBuilder
+      :showDynamicModalBuilder="showModalCloseNoSave"
+      :isLoading="false"
+      :type="typeModalloseNoSave"
+      :gridColumnAmount="gridColumnModalCloseNoSave"
+      :title="titleModalCloseNoSave"
+      :description="descriptionModalCloseNoSave"
+      :firstButtonText="firstButtonCloseNoSave"
+      :secondButtonText="secondButtonCloseNoSave"
+      :thirdButtonText="thirdButtonCloseNoSave"
+      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonCloseNoSaveFunction"
+      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonCloseNoSaveFunction"
+      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonCloseNoSaveFunction"
+    >
+      <header></header>
+      <main></main>
+    </DynamicModalBuilder>
+
     <ModalBuilder
       :title="titleBuilderDesktop"
       :showModalBuilder="openPageBuilderPreviewModal"
@@ -744,6 +802,9 @@ onMounted(async () => {
               >
                 <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
               </span>
+              <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden"
+                >Add element</span
+              >
             </div>
           </div>
           <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mr-2">
@@ -1009,7 +1070,7 @@ onMounted(async () => {
           <!-- Insert button at the top -->
           <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
             <div
-              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-transparent pbx-rounded-r-full pbx-z-10"
+              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
             >
               <div
                 @click="handleInsertButtonClick(0)"
@@ -1018,6 +1079,7 @@ onMounted(async () => {
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
+                  <span class="lg:pbx-block pbx-hidden">Add</span>
                 </div>
               </div>
             </div>
@@ -1034,7 +1096,7 @@ onMounted(async () => {
               id="nolocalstorage"
             >
               <div
-                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-transparent pbx-rounded-r-full pbx-z-10"
+                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
               >
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
@@ -1043,6 +1105,7 @@ onMounted(async () => {
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
+                    <span class="lg:pbx-block pbx-hidden">Add</span>
                   </div>
                 </div>
               </div>
