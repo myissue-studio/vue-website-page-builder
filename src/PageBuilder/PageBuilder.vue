@@ -1012,7 +1012,7 @@ onMounted(async () => {
           <!-- Insert button at the top -->
           <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
             <div
-              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-transparent pbx-rounded-r-full pbx-z-10"
+              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
             >
               <div
                 @click="handleInsertButtonClick(0)"
@@ -1021,6 +1021,7 @@ onMounted(async () => {
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined"> add </span>
+                  <span class="lg:pbx-block pbx-hidden">Add</span>
                 </div>
               </div>
             </div>
@@ -1037,7 +1038,7 @@ onMounted(async () => {
               id="nolocalstorage"
             >
               <div
-                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border-2 pbx-border-transparent hover:pbx-border-2 hover:pbx-border-dashed hover:pbx-border-transparent pbx-rounded-r-full pbx-z-10"
+                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
               >
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
@@ -1046,6 +1047,7 @@ onMounted(async () => {
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span class="material-symbols-outlined"> add </span>
+                    <span class="lg:pbx-block pbx-hidden">Add</span>
                   </div>
                 </div>
               </div>
