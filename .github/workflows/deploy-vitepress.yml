@@ -31,12 +31,12 @@ jobs:
 
       - name: Add .nojekyll file
         run: |
-          if [ -d dist ]; then
-            touch dist/.nojekyll
+          if [ -d .vitepress/dist ]; then
+            touch .vitepress/dist/.nojekyll
           fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dist
+          publish_dir: .vitepress/dist
