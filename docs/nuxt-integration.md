@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 })
 ```
 
-## Register the Plugin in `nuxt.config.ts`
+## Register the Plugin
 
 Make sure Nuxt knows about your new Plugin by adding it to your config:
 
@@ -39,7 +39,7 @@ export default defineNuxtConfig({
 })
 ```
 
-## Using the Page Builder Component
+## Using Page Builder
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
@@ -79,6 +79,6 @@ onMounted(async () => {
 > **Tip:**  
 > By initializing the builder inside `onMounted`, you ensure everything is ready and avoid hydration errors.
 
-## Why Initialize the Page Builder with `onMounted` in Nuxt?
+## Why `onMounted` in Nuxt?
 
 In a Server-Side Rendering (SSR) framework like Nuxt, any code that depends on the browser (`DOM`, `window`, `localStorage`, etc.) should only run on the client. Using `onMounted` ensures the Page Builder initializes safely after the component is mounted, avoiding SSR errors. Many popular packages follow this pattern.

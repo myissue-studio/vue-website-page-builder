@@ -2,7 +2,7 @@
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:
 
-## Import and use the Page Builder Plugin
+## Import
 
 Import the `pageBuilder` Plugin and register it in your application entry point (e.g., `main.ts` or `main.js`). This sets up a single, shared Page Builder instance for your entire app.
 
@@ -19,7 +19,7 @@ app.use(pageBuilder)
 app.mount('#app')
 ```
 
-## Using the Page Builder Component
+## Use
 
 Now anywhere in your application, use the `getPageBuilder()` composable to interact with the Page Builder’s shared instance.
 
@@ -50,7 +50,7 @@ onMounted(async () => {
 </template>
 ```
 
-## Initialize Page Builder with `onMounted` Troubleshooting
+## Initialize Page Builder
 
 If you encounter issues with the component not fully mounting, you can initialize the Page Builder inside Vue's `onMounted` lifecycle hook. This ensures it runs safely after the component is mounted.
 
