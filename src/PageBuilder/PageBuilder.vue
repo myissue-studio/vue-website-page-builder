@@ -802,9 +802,9 @@ onMounted(async () => {
               >
                 <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
               </span>
-              <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden"
-                >Add element</span
-              >
+              <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+                {{ translate('Add') }}
+              </span>
             </div>
           </div>
           <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mr-2">
@@ -1003,20 +1003,6 @@ onMounted(async () => {
         class="pbx-w-16 pbx-pt-7 pbx-pb-2 pbx-bg-myPrimaryLightGrayColor pbx-rounded-r-2xl pbx-shadow-sm"
       >
         <div class="pbx-mx-2 pbx-flex pbx-flex-col pbx-myPrimaryGap pbx-items-stretch">
-          <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-            <button
-              type="button"
-              @click="
-                () => {
-                  pageBuilderStateStore.setComponentArrayAddMethod('unshift')
-                  toggleAddComponentModal()
-                }
-              "
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-            >
-              <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
-            </button>
-          </div>
           <div
             @click.self="
               async () => {
@@ -1077,9 +1063,9 @@ onMounted(async () => {
                 id="addsection"
                 class="pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
-                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                <div class="pbx-flex pbx-items-center pbx-gap-1">
                   <span class="material-symbols-outlined"> add </span>
-                  <span class="lg:pbx-block pbx-hidden">Add</span>
+                  <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                 </div>
               </div>
             </div>
@@ -1103,9 +1089,9 @@ onMounted(async () => {
                   id="addsection"
                   class="pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
-                  <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <div class="pbx-flex pbx-items-center pbx-gap-1">
                     <span class="material-symbols-outlined"> add </span>
-                    <span class="lg:pbx-block pbx-hidden">Add</span>
+                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                   </div>
                 </div>
               </div>
