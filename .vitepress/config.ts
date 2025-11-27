@@ -39,6 +39,8 @@ export default defineConfig({
           { text: 'Rendering HTML Output', link: '/rendering-html-output' },
           { text: 'Publish Changes', link: '/publish-changes' },
           { text: 'Use in Modal', link: '/use-in-modal' },
+          { text: 'Styling', link: '/styling' },
+          { text: 'Troubleshooting', link: '/troubleshooting' },
         ],
       },
     ],
