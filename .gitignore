@@ -30,3 +30,6 @@ LOCAL_DEVELOPMENT.md
 /public/js/app.js
 new_release/
 /missing-translations.txt
+
+.vitepress/dist
+.vitepress/cache
