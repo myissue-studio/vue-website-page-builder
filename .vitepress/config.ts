@@ -37,6 +37,8 @@ export default defineConfig({
           { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
           { text: 'Restoring Previously Content', link: '/restoring-previously-content' },
           { text: 'Rendering HTML Output', link: '/rendering-html-output' },
+          { text: 'Publish Changes', link: '/publish-changes' },
+          { text: 'Use in Modal', link: '/use-in-modal' },
         ],
       },
     ],

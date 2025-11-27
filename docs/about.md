@@ -120,3 +120,63 @@ yarn install
 # bun
 bun install
 ```
+
+## Page Builder Architecture
+
+The Page Builder is designed as a modular, state-driven editor for dynamic page content. Its architecture separates configuration, state management, and `DOM` interaction, ensuring flexibility and maintainability.
+
+## How the Page Builder Works
+
+The Page Builder is designed to be easy to use and flexible for any web project. Here’s how it works behind the scenes:
+
+- **Configuration First:**
+  When you start the builder, you pass in your configuration (such as what type of page you’re building, user info, branding, and any existing content).
+  The builder saves this configuration immediately—even if the editing interface `DOM` isn’t loaded yet. This means you can safely set up the builder in advance, and it will be ready as soon as the editor appears on the page.
+
+- **Loading Content:**
+  If you have existing content (like a published page), the builder loads it so you can continue editing. If not, you start with a blank page.
+
+- **Editing Experience:**
+  As you add, move, or edit components (like text, images, or sections), the builder keeps everything in sync—both in the app’s memory and in your browser’s local storage. This means your work is always saved, even if you close the browser.
+
+**In short:**
+The Page Builder handles all the technical details of editing, saving, and loading pages, so your users can focus on creating great content—without worrying about losing their work or dealing with a complicated setup.
+
+## Contributing
+
+1. Fork the repository.
+2. Create your feature branch.
+3. Make your changes.
+4. Build and test locally.
+5. Submit a pull request.
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability, please send us a message.
+
+## Customization
+
+If you have any questions or if you're looking for customization, feel free to connect with our developer.
+
+- [Email](mailto:qais.wardag@outlook.com)
+- [LinkedIn](https://www.linkedin.com/in/qaiswardag)
+
+## Report Issues
+
+Encountered a bug, have suggestions, or need a new feature? Create a GitHub issue:
+
+- [Submit an Issue](https://github.com/myissue-studio/vue-website-page-builder/issues)
+
+## Feedback
+
+Feedback, suggestions or any issues you encounter while using this app. Feel free to reach out.
+
+- [Submit your testimonial here](https://github.com/myissue-studio/vue-website-page-builder/issues)
+
+## Support the Project
+
+We would greatly appreciate it if you could star the GitHub repository. Starring the project helps to boost its visibility.
+
+## License
+
+[MIT License](./LICENSE)
