@@ -1,7 +1,6 @@
 # Free Click & Drop Page Builder
 
 - [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
-	- [Demo](#demo)
 	- [Overview](#overview)
 	- [Get Started in Minutes](#get-started-in-minutes)
 	- [About](#about)
@@ -45,19 +44,6 @@
 	- [Feedback](#feedback)
 	- [Support the Project](#support-the-project)
 	- [License](#license)
-
-## Demo
-
-Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
-
-Try the live demo to explore real-time visual updates and smooth content management.
-<br>
-[Play around with the Page Builder](https://mybuilder.dev)
-
-Create and enhance digital experiences with Vue on any backend.
-Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.
-
-<img style="width: 100%;" src="./public/home/for_read_me/vue3_page_builder_myissue.gif" alt="Vue Website Page Builder - the editor" />
 
 ## Overview
 
