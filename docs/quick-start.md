@@ -1,12 +1,7 @@
 # Free Click & Drop Page Builder
 
 - [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
-	- [Why Use the Shared Instance?](#why-use-the-shared-instance)
-	- [Important: CSS Prefixing (`pbx-`)](#important-css-prefixing-pbx-)
-	- [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
-	- [Local Storage \& Auto-Save](#local-storage--auto-save)
 	- [Retrieving the Latest HTML Content for Form Submission](#retrieving-the-latest-html-content-for-form-submission)
-		- [Resetting the Builder After Successful Resource Creation or Update](#resetting-the-builder-after-successful-resource-creation-or-update)
 	- [Loading Existing Content or Components into the Page Builder](#loading-existing-content-or-components-into-the-page-builder)
 		- [Restoring Full Page Content (Global Styles \& Components)](#restoring-full-page-content-global-styles--components)
 	- [Close Page Builder Without Saving in a Modal or Dialog](#close-page-builder-without-saving-in-a-modal-or-dialog)
@@ -31,77 +26,6 @@
 	- [License](#license)
 
 ---
-
-## Why Use the Shared Instance?
-
-By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
-
-> **Note:**  
-> The Page Builder is implemented as a singleton service. All page-building logic and state are managed by a single shared instance, even if you use `<PageBuilder />` in multiple places.
-
-## Important: CSS Prefixing (`pbx-`)
-
-All CSS classes generated or processed by the Page Builder—including Tailwind utilities and your custom classes—are automatically prefixed with `pbx-`. This ensures the builder’s styles never conflict with your app’s existing CSS or Tailwind setup.
-This prevents global styles from leaking into the builder and vice versa, which is crucial for embedding the builder into larger apps or white-label environments.
-
-**How does this affect you?**
-
-When a user adds a component into the Page Builder, all classes from that component are automatically prefixed with `pbx-` (e.g., `pbx-button`, `pbx-container`) to ensure style isolation and avoid conflicts.
-
-Tailwind installation is not required. The Page Builder ships with prefixed utility classes to ensure there are no naming conflicts. If you wish to use Tailwind in your own application, you may install and configure it as usual without interfering with the Page Builder.
-
-> **Note:**
-> Simply import the builder’s CSS file once in your project. All builder styles are namespaced, so there is no risk of style conflicts.
-
-## Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)
-
-You can use the Page Builder to generate HTML and render it in any frontend framework, such as React, Nuxt, or even server-side apps.
-
-To ensure your content is styled correctly, simply install the Page Builder package in your target project and import its CSS file. All builder and Tailwind-prefixed styles will be applied automatically.
-
-```typescript
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
-```
-
-This will apply all necessary styles to any HTML output from the builder, even if you render it with `dangerouslySetInnerHTML`, `v-html`, or similar methods.
-
-**Example (React):**
-
-```jsx
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
-
-function MyPage({ html }) {
-  return <div dangerouslySetInnerHTML={{ __html: html }} />
-}
-```
-
-**Example (Nuxt/Vue):**
-
-```vue
-<script setup>
-import { ref } from 'vue'
-// Import the Page Builder styles once in your application entry, not in individual components.
-import '@myissue/vue-website-page-builder/style.css'
-
-const rawHtml = ref('<p>This is content from the Page Builder.</p>')
-</script>
-
-<template>
-  <div v-html="rawHtml"></div>
-</template>
-```
-
-> **Note:**
-> You do not need to import any Vue components if you only want to render the HTML. Just import the CSS file.
-
-## Local Storage & Auto-Save
-
-The Page Builder automatically saves all changes to the browser’s local storage. Every time you add, edit, or delete a component, your progress is preserved—even if you close the browser or navigate away.
-
-- **Auto-Save:** Changes are periodically saved as you work.
-- **Manual Save:** Clicking the Save button also stores the current state.
 
 ## Retrieving the Latest HTML Content for Form Submission
 
@@ -149,18 +73,6 @@ const getComponents = function () {
 // Call getComponents when needed.
 </script>
 ```
-
-### Resetting the Builder After Successful Resource Creation or Update
-
-After successfully creating or updating a resource (such as a post, article, or listing) using the Page Builder, it is important to clear the `DOM` and the builder’s draft state, as well as remove the corresponding local storage entry. This ensures that old drafts do not appear the next time the builder is opened for a new or existing resource.
-
-You can reset the Page Builder’s live `DOM`, builder state, and clear the draft with:
-
-```typescript
-await pageBuilderService.handleFormSubmission()
-```
-
-Always call this method after a successful post or resource update to ensure users start with a fresh builder the next time they create or edit a resource.
 
 ## Loading Existing Content or Components into the Page Builder
 

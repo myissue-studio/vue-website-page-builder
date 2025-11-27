@@ -26,6 +26,7 @@ export default defineConfig({
         items: [
           { text: 'Demo', link: '/demo' },
           { text: 'About', link: '/about' },
+          { text: 'Information', link: '/information' },
           { text: 'Quick Start', link: '/quick-start' },
           { text: 'Installation', link: '/installation' },
           { text: 'Nuxt Integration', link: '/nuxt-integration' },
@@ -33,6 +34,8 @@ export default defineConfig({
           { text: 'Providing Configuration', link: '/providing-configuration' },
           { text: 'Language Support', link: '/language-support' },
           { text: 'Automatic Draft Recovery', link: '/automatic-draft-recovery' },
+          { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
+          { text: 'Rendering HTML Output', link: '/rendering-html-output' },
         ],
       },
     ],
