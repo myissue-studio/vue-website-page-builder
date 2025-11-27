@@ -16,6 +16,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Getting Started', link: '/getting-started' },
       { text: 'Demo', link: 'https://mybuilder.dev' },
     ],
 
@@ -23,8 +24,11 @@ export default defineConfig({
       {
         text: 'Guide',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' },
+          { text: 'Getting Started', link: '/getting-started' },
+          { text: 'Quick Start', link: '/quick-start' },
+          { text: 'Installation', link: '/installation' },
+          { text: 'Nuxt Integration', link: '/nuxt-integration' },
+          { text: 'Vue Integration', link: '/vue-integration' },
         ],
       },
     ],
