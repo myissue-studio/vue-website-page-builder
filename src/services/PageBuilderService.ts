@@ -497,7 +497,6 @@ export class PageBuilderService {
       }
 
       // Return messages, validation info if present etc.
-      console.log('oki:', this.pageBuilderStateStore.getPageBuilderConfig)
       return result
     } catch (err) {
       console.error('Not able to start the Page Builder', err)
