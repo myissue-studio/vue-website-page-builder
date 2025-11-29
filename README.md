@@ -6,6 +6,7 @@
 
 - [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
   - [Demo](#demo)
+  - [Guide](#guide)
   - [Overview](#overview)
   - [Get Started in Minutes](#get-started-in-minutes)
   - [About](#about)
@@ -32,8 +33,8 @@
   - [Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)](#rendering-html-output-in-other-frameworks-react-nuxt-etc)
   - [Providing Configuration to the Page Builder](#providing-configuration-to-the-page-builder)
   - [Comprehensive Language Support in the Page Builder](#comprehensive-language-support-in-the-page-builder)
-    - [Default language](#default-language)
-    - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
+      - [Default language](#default-language)
+      - [Disabling the Language Dropdown](#disabling-the-language-dropdown)
   - [Local Storage \& Auto-Save](#local-storage--auto-save)
   - [Retrieving the Latest HTML Content for Form Submission](#retrieving-the-latest-html-content-for-form-submission)
     - [Resetting the Builder After Successful Resource Creation or Update](#resetting-the-builder-after-successful-resource-creation-or-update)
@@ -73,6 +74,10 @@ Create and enhance digital experiences with Vue on any backend.
 Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.
 
 <img style="width: 100%;" src="./public/home/for_read_me/vue3_page_builder_myissue.gif" alt="Vue Website Page Builder - the editor" />
+
+## Guide
+
+[Guide](https://myissue-studio.github.io/vue-website-page-builder/)
 
 ## Overview
 
