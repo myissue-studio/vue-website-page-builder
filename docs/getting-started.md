@@ -1,7 +1,7 @@
 - [Custom Components](#custom-components)
-  - [Custom Media Library Component](#custom-media-library-component)
+  - [Custom Media Library](#custom-media-library)
   - [Integrate Unsplash Library](#integrate-unsplash-library)
-  - [Custom Layout Builder Component](#custom-layout-builder-component)
+  - [Custom Layout Builder](#custom-layout-builder)
 
 ---
 
@@ -26,7 +26,7 @@ const configPageBuilder = {
 
 If you want to use your own components—whether custom-designed or tailored to your application's needs—you can inject them directly into the builder.
 
-## Custom Media Library Component
+## Custom Media Library
 
 By default, the Page Builder does not include a built-in media library.
 
@@ -46,7 +46,7 @@ A code example is provided so you can copy-paste to get started.
 See the full step-by-step guide and working demo code here:
 📚 **[Unsplash Integration Guide](./UNSPLASH_INTEGRATION.md)**
 
-## Custom Layout Builder Component
+## Custom Layout Builder
 
 The Page Builder comes with a growing collection of built-in components, including both layout and helper components. These defaults are continuously improved and expanded.
 

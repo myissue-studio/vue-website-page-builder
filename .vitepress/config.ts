@@ -25,7 +25,6 @@ export default defineConfig({
         text: 'Guide',
         items: [
           { text: 'Demo', link: '/demo' },
-          { text: 'About', link: '/about' },
           { text: 'Information', link: '/information' },
           { text: 'Getting Started', link: '/getting-started' },
           { text: 'Installation', link: '/installation' },
@@ -40,6 +39,9 @@ export default defineConfig({
           { text: 'Publish Changes', link: '/publish-changes' },
           { text: 'Use in Modal', link: '/use-in-modal' },
           { text: 'Styling', link: '/styling' },
+          { text: 'Custom Media Library', link: '/custom-media-library' },
+          { text: 'Unsplash Integration', link: '/unsplash' },
+          { text: 'Custom HTML Builder Elements', link: '/custom-html-builder-elements' },
           { text: 'Troubleshooting', link: '/troubleshooting' },
         ],
       },

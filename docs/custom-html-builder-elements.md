@@ -1,14 +1,6 @@
-# Custom Components Setup Guide- [Custom Components Setup Guide](#custom-components-setup-guide)
-
-- [Custom Components Setup Guide- Custom Components Setup Guide](#custom-components-setup-guide--custom-components-setup-guide)
-  - [Quick Setup](#quick-setup)
-  - [Custom Media Library Component](#custom-media-library-component)
-    - [You have full control over your media library UI](#you-have-full-control-over-your-media-library-ui)
-  - [Custom Layout Builder Component](#custom-layout-builder-component)
-    - [How Should the Components Array Look?](#how-should-the-components-array-look)
-  - [Benefits of this Approach](#benefits-of-this-approach)
-
 This guide will walk you through creating custom components that can be injected into the Vue Website Page Builder.
+
+## Custom Layout Builder
 
 ## Quick Setup
 
@@ -18,58 +10,8 @@ Begin by creating a `ComponentsPageBuilder` folder in your project to organize y
 your-project/
 ├── src/
 │   └── ComponentsPageBuilder/
-│       ├── YourMediaLibraryComponent.vue
 │       ├── YourCustomBuilderComponents.vue
-│       └── README.md (optional)
 ```
-
-## Custom Media Library Component
-
-By default, the Page Builder does not include a built-in media library.
-
-This is intentional—without a custom media library, layout components that rely on images (such as Image Blocks, Hero Sections, and similar) are disabled by default. Only helper components like containers, headings, text, and buttons are available in this state.
-
-To enable image-related components in the builder, you must inject your own media library by passing it to the Page Builder via the `:CustomMediaLibraryComponent` prop:
-
-- Create a `ComponentsPageBuilder` folder in your project for your media library component.
-- Pass your custom component to the builder using the `:CustomMediaLibraryComponent` prop.
-
-### You have full control over your media library UI
-
-You are free to design your media library however you wish.  
-Use any UI, API, or logic for browsing, searching, and selecting images.
-
-**The only requirement:**  
-When the user selects an image and clicks "Use Image" (or similar), you must run the following code to update the builder:
-
-```vue
-<script setup>
-import { getPageBuilder, usePageBuilderModal } from '@myissue/vue-website-page-builder'
-import YourMediaLibraryComponent from './ComponentsPageBuilder/YourMediaLibraryComponent.vue'
-
-// Retrieve Page Builder service instance
-const pageBuilderService = getPageBuilder()
-const { closeMediaLibraryModal } = usePageBuilderModal()
-
-const applySelectedImage = async function (imageURL) {
-  // Update the builder's HTML image block with the new image
-  await pageBuilderService.applySelectedImage({
-    src: imageURL,
-  })
-
-  // Close the Page Builder media library modal
-  closeMediaLibraryModal()
-}
-</script>
-
-<template>
-  <div>
-    <PageBuilder :CustomMediaLibraryComponent="YourMediaLibraryComponent" />
-  </div>
-</template>
-```
-
-## Custom Layout Builder Component
 
 If you want to use your own components—whether custom-designed or tailored to your application's needs—you can inject them directly into the builder.
 
@@ -107,7 +49,7 @@ const injectComponentToBuilder = async function (componentObject) {
 </template>
 ```
 
-### How Should the Components Array Look?
+## How Should the Components Array Look?
 
 Each custom component you inject must be represented as an object with the following structure.  
 The Page Builder relies on a `<section></section>` wrapper to correctly render each component and attach event listeners.

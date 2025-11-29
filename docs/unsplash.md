@@ -1,3 +1,8 @@
+## Integrate Unsplash Library
+
+Easily add Unsplash image search to your media library modal—just like in the demo!
+A code example is provided so you can copy-paste to get started.
+
 # Unsplash Integration Guide
 
 This guide shows you how to add Unsplash image search to your custom media library modal in the Vue Website Page Builder.
