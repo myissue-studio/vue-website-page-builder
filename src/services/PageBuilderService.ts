@@ -402,6 +402,23 @@ export class PageBuilderService {
       }
     }
 
+    // Ensure autoSave is true if not provided (but do not override false)
+    if (
+      !config.userSettings ||
+      typeof config.userSettings !== 'object' ||
+      !('autoSave' in config.userSettings)
+    ) {
+      const updatedConfig = {
+        ...config,
+        userSettings: {
+          ...(typeof config.userSettings === 'object' ? config.userSettings : {}),
+          autoSave: config.userSettings?.autoSave === false ? false : true,
+        },
+      }
+
+      this.pageBuilderStateStore.setPageBuilderConfig(updatedConfig)
+    }
+
     this.ensureLanguage(config)
   }
 

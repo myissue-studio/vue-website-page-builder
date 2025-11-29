@@ -40,7 +40,10 @@ const configPageBuilder = {
   },
   userSettings: {
     theme: 'light',
-    language: 'en',
+    language: {
+      default: 'en',
+      enable: ['en', 'zh-Hans', 'fr'],
+    },
     autoSave: true,
   },
   settings: {
