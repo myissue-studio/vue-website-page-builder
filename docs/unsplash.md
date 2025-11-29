@@ -23,9 +23,6 @@ Inject your media library component easily to tailor the builder to your applica
 </template>
 ```
 
-📚 **[Custom Components Setup Guide](./CUSTOM_COMPONENTS_SETUP.md)**
-Learn how to create and integrate your own media library component step by step.
-
 ## Example: Unsplash Media Library
 
 You can copy following this code into your own media library modal and customize the UI as needed.  
