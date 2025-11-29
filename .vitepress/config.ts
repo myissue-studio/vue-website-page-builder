@@ -3,11 +3,22 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'docs',
-
-  title: 'Vue 3 Page Builder',
+  title: 'Vue 3 Page Builder Guide',
   description:
     'Vue 3 Drag & Drop Page Builder. Power your vision and build impressive, modern pages. A web builder designed for stunning results. Enable users to design and publish responsive pages—such as listings, job posts, or blogs—at any scale. Easily manage and update content with flexibility.',
   base: '/vue-website-page-builder/',
+  head: [
+    ['link', { rel: 'icon', href: '/vue-website-page-builder/favicon.ico' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    [
+      'link',
+      {
+        href: 'https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap',
+        rel: 'stylesheet',
+      },
+    ],
+  ],
   themeConfig: {
     search: {
       provider: 'local',
@@ -49,5 +60,8 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/myissue-studio/vue-website-page-builder' },
     ],
+    footer: {
+      message: 'Released under the MIT License.',
+    },
   },
 })
