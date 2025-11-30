@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'docs',
-  title: 'Vue 3 Page Builder Guide',
+  title: 'Vue 3 Page Builder',
   description:
     'Vue 3 Drag & Drop Page Builder. Power your vision and build impressive, modern pages. A web builder designed for stunning results. Enable users to design and publish responsive pages—such as listings, job posts, or blogs—at any scale. Easily manage and update content with flexibility.',
   base: '/vue-website-page-builder/',
@@ -20,6 +20,7 @@ export default defineConfig({
     ],
   ],
   themeConfig: {
+    logo: '/logo.svg',
     search: {
       provider: 'local',
     },
