@@ -7,3 +7,16 @@
 :root {
   font-family: var(--vp-font-family-base);
 }
+
+/* Make logo white in dark mode */
+html.dark img[src*='logo.svg'],
+html.dark .VPNavBar .VPNavBarTitle .VPImage.logo {
+  filter: brightness(0) invert(1);
+}
+
+/* If you use <img> for logo, this works. If you use <svg> directly, use: */
+html.dark svg#Layer_1 {
+  /* All polygons and paths inside will inherit this fill */
+  /* Or target specific elements if needed */
+  fill: #fff !important;
+}

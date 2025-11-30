@@ -6,7 +6,7 @@
 
 - [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
   - [Demo](#demo)
-  - [Guide](#guide)
+  - [Guide \& Documentation](#guide--documentation)
   - [Overview](#overview)
   - [Get Started in Minutes](#get-started-in-minutes)
   - [About](#about)
@@ -29,21 +29,21 @@ Vue 3 Page Builder component with drag-and-drop functionality for creating dynam
 
 Try the live demo to explore real-time visual updates and smooth content management.
 <br>
-[Play around with the Page Builder](https://mybuilder.dev)
+[Play with the Page Builder](https://mybuilder.dev)
 
 Create and enhance digital experiences with Vue on any backend.
 Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.
 
 <img style="width: 100%;" src="./public/home/for_read_me/vue3_page_builder_myissue.gif" alt="Vue Website Page Builder - the editor" />
 
-## Guide
+## Guide & Documentation
 
 A Page Builder designed for growth. Build your website pages with ready-made components that are fully customizable and always responsive, designed to fit every need. A powerful Page Builder for growing merchants, brands, and agencies. And it is totally free.
 
 Find everything you need to get started, configure, and master the Vue Website Page Builder.
 This section covers installation, requirements, quick start, advanced usage, and integration tips—so you can build and launch pages with confidence.
 
-[Guide](https://myissue-studio.github.io/vue-website-page-builder/)
+[Open Guides & Docs](https://myissue-studio.github.io/vue-website-page-builder/)
 
 ## Overview
 
