@@ -334,15 +334,16 @@ export class PageBuilderService {
     }
 
     if (needsDefault) {
+      // Safely merge: start with existing userSettings (or empty object if undefined) and add/override language
+      const mergedUserSettings = userSettings ? { ...userSettings } : {}
+      mergedUserSettings.language = {
+        default: defaultLang,
+        enable: defaultEnable as typeof defaultEnable,
+      }
+
       const updatedLanguage = {
         ...config,
-        userSettings: {
-          ...userSettings,
-          language: {
-            default: defaultLang,
-            enable: defaultEnable as typeof defaultEnable,
-          },
-        },
+        userSettings: mergedUserSettings,
       } as const
       this.pageBuilderStateStore.setPageBuilderConfig(updatedLanguage)
       return
@@ -383,6 +384,9 @@ export class PageBuilderService {
     // Set config for page builder if not set by user
     if (!config || (config && Object.keys(config).length === 0 && config.constructor === Object)) {
       this.pageBuilderStateStore.setPageBuilderConfig(defaultConfigValues)
+      // After setting defaults, re-fetch or pass the updated config to subsequent validators
+      // For simplicity, assuming validateConfig is called with fresh config; in practice, reload from store if needed
+      return
     }
 
     if (config && Object.keys(config).length !== 0 && config.constructor === Object) {
@@ -402,7 +406,26 @@ export class PageBuilderService {
       }
     }
 
-    this.ensureLanguage(config)
+    // Ensure autoSave is true if not provided (but do not override false)
+    // This is called before ensureLanguage to ensure autoSave is preserved in any subsequent merges
+    let currentConfig = config // Use a local ref to track updates
+    if (
+      !currentConfig.userSettings ||
+      typeof currentConfig.userSettings !== 'object' ||
+      !('autoSave' in currentConfig.userSettings)
+    ) {
+      const mergedUserSettings = currentConfig.userSettings ? { ...currentConfig.userSettings } : {}
+      mergedUserSettings.autoSave = currentConfig.userSettings?.autoSave === false ? false : true
+
+      const updatedConfig = {
+        ...currentConfig,
+        userSettings: mergedUserSettings,
+      }
+      this.pageBuilderStateStore.setPageBuilderConfig(updatedConfig)
+      currentConfig = updatedConfig // Update local ref for downstream calls
+    }
+
+    this.ensureLanguage(currentConfig) // Pass the potentially updated config
   }
 
   /**

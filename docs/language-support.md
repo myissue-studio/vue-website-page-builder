@@ -22,11 +22,16 @@ The Page Builder offers robust multilingual support, enabling you to reach a glo
 You can set a default language for your project:
 
 ```typescript
-userSettings: {
-	language: {
-		default: 'en',
-	},
-},
+const configPageBuilder = {
+  userSettings: {
+    theme: 'light',
+    language: {
+      default: 'en',
+      enable: ['en', 'zh-Hans', 'fr'],
+    },
+    autoSave: true,
+  },
+}
 ```
 
 If you prefer to offer only a subset of these languages for users to switch between, specify them using the `enable` option.
@@ -34,12 +39,16 @@ If you prefer to offer only a subset of these languages for users to switch betw
 If you do not provide the `enable` array, the Page Builder will default to showing all supported languages by default.
 
 ```typescript
-userSettings: {
-	language: {
-		default: 'en',
-		enable: ['en', 'zh-Hans', 'fr'],
-	},
-},
+const configPageBuilder = {
+  userSettings: {
+    theme: 'light',
+    language: {
+      default: 'en',
+      enable: ['en', 'zh-Hans', 'fr'],
+    },
+    autoSave: true,
+  },
+}
 ```
 
 ## Disabling the Language Dropdown
@@ -49,13 +58,16 @@ If you want to completely hide the language selector from the UI (e.g., when onl
 Even when the dropdown is disabled, the default language will still be applied automatically. This gives you full control over localization while keeping the interface simple for your users.
 
 ```typescript
-userSettings: {
-	theme: 'light',
-	language: {
-		default: 'en',
-		disableLanguageDropdown: true,
-	},
-},
+const configPageBuilder = {
+  userSettings: {
+    theme: 'light',
+    language: {
+      default: 'en',
+      enable: ['en', 'zh-Hans', 'fr'],
+    },
+    autoSave: true,
+  },
+}
 ```
 
 This flexibility allows you to tailor the language experience to your audience’s needs.
