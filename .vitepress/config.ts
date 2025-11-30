@@ -43,6 +43,11 @@ export default defineConfig({
           { text: 'Vue Integration', link: '/vue-integration' },
           { text: 'Providing Configuration', link: '/providing-configuration' },
           { text: 'Language Support', link: '/language-support' },
+        ],
+      },
+      {
+        text: 'Usage',
+        items: [
           { text: 'Automatic Draft Recovery', link: '/automatic-draft-recovery' },
           { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
           { text: 'Restoring Previously Content', link: '/restoring-previously-content' },
