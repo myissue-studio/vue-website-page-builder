@@ -42,13 +42,13 @@ export default defineConfig({
           { text: 'Installation', link: '/installation' },
           { text: 'Nuxt Integration', link: '/nuxt-integration' },
           { text: 'Vue Integration', link: '/vue-integration' },
-          { text: 'Providing Configuration', link: '/providing-configuration' },
-          { text: 'Language Support', link: '/language-support' },
         ],
       },
       {
         text: 'Usage',
         items: [
+          { text: 'Providing Configuration', link: '/providing-configuration' },
+          { text: 'Language Support', link: '/language-support' },
           { text: 'Automatic Draft Recovery', link: '/automatic-draft-recovery' },
           { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
           { text: 'Restoring Previously Content', link: '/restoring-previously-content' },
