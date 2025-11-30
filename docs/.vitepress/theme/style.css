@@ -4,16 +4,10 @@
     'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* (Optional) apply the font to the whole document */
-html {
+:root {
   font-family: var(--vp-font-family-base);
 }
 
-/* .vitepress/theme/my-fonts.css */
-:root {
-  --vp-font-family-base: /* normal text font */ --vp-font-family-mono: /* code font */;
-}
-
-body {
-  color: red !important;
+html {
+  font-family: 'Jost', sans-serif;
 }
