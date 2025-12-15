@@ -20,3 +20,7 @@ html.dark svg#Layer_1 {
   /* Or target specific elements if needed */
   fill: #fff !important;
 }
+
+.Layout {
+  min-height: 1400px !important;
+}
