@@ -89,7 +89,8 @@ const componentHelpers: ComponentHelper[] = [
     allowfullscreen
     class="pbx-w-full pbx-aspect-video"
     src="" 
-    allow="accelerometer; autoplay; clipboard-write;" allowfullscreen>
+    sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen">
     </iframe>
     </div>
     </div>

@@ -173,19 +173,53 @@ const handleModalIframeSrc = function () {
       getElement.value.firstElementChild &&
       getElement.value.firstElementChild.tagName === 'IFRAME'
     ) {
-      // Set the src attribute
+      // Convert YouTube URL to proper embed format
+      let embedUrl = iframeSrc.value
 
-      // replace watch with embed
-      iframeSrc.value = iframeSrc.value.replace('watch?v=', 'embed/')
+      try {
+        const url = new URL(iframeSrc.value)
 
-      // Remove dynamic parameters (&ab_channel, &list, &start_radio)
-      iframeSrc.value = iframeSrc.value
-        .replace(/&ab_channel=[^&]*/, '')
-        .replace(/&list=[^&]*/, '')
-        .replace(/&start_radio=[^&]*/, '')
-        .replace(/&t=[^&]*/, '') // Remove the 't' parameter (time)
+        // Check if it's a YouTube URL
+        if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
+          let videoId = ''
 
-      getElement.value.firstElementChild.src = iframeSrc.value
+          // Extract video ID from different YouTube URL formats
+          if (url.hostname.includes('youtu.be')) {
+            // Format: https://youtu.be/VIDEO_ID
+            videoId = url.pathname.slice(1)
+          } else if (url.pathname.includes('/embed/')) {
+            // Already an embed URL
+            videoId = url.pathname.split('/embed/')[1]?.split('?')[0]
+          } else if (url.pathname.includes('/watch')) {
+            // Format: https://www.youtube.com/watch?v=VIDEO_ID
+            videoId = url.searchParams.get('v')
+          }
+
+          if (videoId) {
+            // Build clean embed URL with required parameters
+            const params = new URLSearchParams()
+
+            // Add playlist parameter if present
+            const listParam = url.searchParams.get('list')
+            if (listParam) {
+              params.append('list', listParam)
+            }
+
+            // Add parameters required for Safari and embedded playback
+            params.append('enablejsapi', '1')
+            params.append('origin', window.location.origin)
+            params.append('autoplay', '0')
+
+            embedUrl = `https://www.youtube.com/embed/${videoId}?${params.toString()}`
+          }
+        }
+      } catch (error) {
+        // If URL parsing fails, fallback to original simple replace
+        console.warn('URL parsing failed, using fallback method:', error)
+        embedUrl = iframeSrc.value.replace('watch?v=', 'embed/')
+      }
+
+      getElement.value.firstElementChild.src = embedUrl
     }
 
     showModalIframeSrc.value = false

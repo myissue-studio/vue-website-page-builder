@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 
 const props = defineProps({
   mobile: {
@@ -22,20 +22,37 @@ if (previewData) {
   }
 }
 
-watchEffect(() => {
-  if (props.mobile && iframeRef.value && htmlPage.value) {
-    const iframe = iframeRef.value
-    const doc = iframe.contentWindow.document
-    doc.open()
-    doc.write(
-      `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body><div  id="pagebuilder" class="pbx-font-sans pbx-text-black">${htmlPage.value}</div></body></html>`,
-    )
-    doc.close()
+// Collect stylesheet content for mobile iframe
+const stylesheetContent = ref('')
 
-    // Copy stylesheets
-    document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
-      doc.head.appendChild(node.cloneNode(true))
-    })
+const updateStylesheets = () => {
+  const styles = []
+  document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
+    if (node.tagName === 'STYLE') {
+      styles.push(`<style>${node.textContent}</style>`)
+    } else if (node.tagName === 'LINK') {
+      styles.push(`<link rel="stylesheet" href="${node.href}">`)
+    }
+  })
+  stylesheetContent.value = styles.join('')
+}
+
+const iframeContent = computed(() => {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${stylesheetContent.value}
+</head>
+<body>
+  <div id="pagebuilder" class="pbx-font-sans pbx-text-black">${htmlPage.value}</div>
+</body>
+</html>`
+})
+
+watchEffect(() => {
+  if (props.mobile && htmlPage.value) {
+    updateStylesheets()
   }
 })
 </script>
@@ -57,7 +74,9 @@ watchEffect(() => {
       <iframe
         ref="iframeRef"
         class="pbx-mx-auto pbx-w-full pbx-bg-white pbx-shadow-lg pbx-h-[80vh] pbx-border-0"
-        src="about:blank"
+        :srcdoc="iframeContent"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
       ></iframe>
     </div>
   </template>
