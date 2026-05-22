@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
+import type { PageBuilderConfig } from '@myissue/vue-website-page-builder'
 
-const configPageBuilder = {
+const props = defineProps<{
+  pageId?: number
+  pageName?: string
+}>()
+
+const config: PageBuilderConfig = {
   updateOrCreate: {
-    formType: 'create' as const,
+    formType: 'create',
     formName: 'page',
   },
+  resourceData: props.pageId ? { title: props.pageName ?? 'page', id: props.pageId } : null,
 }
 
 onMounted(async () => {
   const builder = getPageBuilder()
-  const result = await builder.startBuilder(configPageBuilder)
-  console.info('Page Builder ready:', result)
+  await builder.startBuilder(config)
 })
 </script>
 

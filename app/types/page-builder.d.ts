@@ -1,6 +1,18 @@
 declare module '@myissue/vue-website-page-builder' {
   import type { Component, Plugin } from 'vue'
 
+  export type FormName =
+    | 'post' | 'article' | 'blog' | 'news' | 'page' | 'faq'
+    | 'testimonial' | 'case-study' | 'press-release'
+    | 'product' | 'products' | 'category' | 'collection' | 'brand'
+    | 'coupon' | 'discount' | 'shop' | 'cart' | 'checkout'
+    | 'profile' | 'account' | 'team' | 'team-member' | 'author'
+    | 'customer' | 'user'
+    | 'service' | 'services' | 'package' | 'plan' | 'pricing'
+    | 'subscription'
+    | 'job' | 'job-listing' | 'career' | 'applicant'
+    | 'event' | 'events' | 'webinar' | 'appointment' | 'reservation'
+
   export interface PageBuilderUser {
     name: string
     image: string
@@ -9,7 +21,7 @@ declare module '@myissue/vue-website-page-builder' {
   export interface PageBuilderConfig {
     updateOrCreate: {
       formType: 'create' | 'update'
-      formName: string
+      formName: FormName
     }
     pageBuilderLogo?: { src: string } | null
     resourceData?: { title: string; id?: number } | null
