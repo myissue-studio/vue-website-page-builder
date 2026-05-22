@@ -10,7 +10,7 @@ frontend:
       commands:
         - NITRO_PRESET=aws-amplify pnpm run build
   artifacts:
-    baseDirectory: app/.amplify-hosting
+    baseDirectory: app/.amplify-hosting/static
     files:
       - '**/*'
   cache:
