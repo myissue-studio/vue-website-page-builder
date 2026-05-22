@@ -1,23 +1,19 @@
 version: 1
-applications:
-  - appRoot: app
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm install -g pnpm@9
-            - cd .. && pnpm install --no-frozen-lockfile && pnpm run build:lib
-            - cd app && pnpm install --no-frozen-lockfile
-        build:
-          commands:
-            - NITRO_PRESET=aws-amplify pnpm run build
-            - ls -la .amplify-hosting/ && cat .amplify-hosting/deploy-manifest.json || echo "MISSING amplify-hosting dir"
-      artifacts:
-        baseDirectory: .amplify-hosting
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
-          - ../.cache/**/*
-          - ../.nuxt/**/*
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install -g pnpm@9
+        - pnpm install --no-frozen-lockfile && pnpm run build:lib
+        - cd app && pnpm install --no-frozen-lockfile
+    build:
+      commands:
+        - NITRO_PRESET=aws-amplify pnpm run build
+  artifacts:
+    baseDirectory: app/.amplify-hosting
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - app/node_modules/**/*
