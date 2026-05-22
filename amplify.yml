@@ -11,6 +11,7 @@ applications:
         build:
           commands:
             - NITRO_PRESET=aws-amplify pnpm run build
+            - ls -la .amplify-hosting/ && cat .amplify-hosting/deploy-manifest.json || echo "WARNING: .amplify-hosting not found"
       artifacts:
         baseDirectory: .amplify-hosting
         files:
