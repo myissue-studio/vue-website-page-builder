@@ -37,3 +37,4 @@ new_release/
 .nuxt
 .output
 .playwright-mcp
+.amplify-hosting

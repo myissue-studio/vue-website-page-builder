@@ -1,10 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-21',
 
-  routeRules: {
-    '/**': { ssr: false },
-  },
-
   modules: ['@nuxtjs/tailwindcss'],
 
   css: ['@myissue/vue-website-page-builder/style.css', '~/assets/css/main.css'],
