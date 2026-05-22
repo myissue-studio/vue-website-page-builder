@@ -10,9 +10,9 @@ applications:
             - cd app && pnpm install --no-frozen-lockfile
         build:
           commands:
-            - NITRO_PRESET=aws-lambda pnpm run build
+            - NITRO_PRESET=aws-amplify pnpm run build
       artifacts:
-        baseDirectory: .output
+        baseDirectory: .amplify-hosting
         files:
           - '**/*'
       cache:

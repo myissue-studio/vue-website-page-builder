@@ -25,6 +25,6 @@ export default defineNuxtConfig({
     // Swap preset via env: NITRO_PRESET=aws-lambda for Amplify Lambda,
     // NITRO_PRESET=static for S3/CDN-only static hosting.
     // Defaults to node-server for local preview / EC2-style deploys.
-    preset: (process.env.NITRO_PRESET as 'node-server') || 'node-server',
+    preset: (process.env.NITRO_PRESET as 'aws-amplify') || 'node-server',
   },
 })
