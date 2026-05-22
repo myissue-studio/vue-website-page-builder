@@ -7,7 +7,7 @@ applications:
           commands:
             - npm install -g pnpm@9
             - cd .. && pnpm install --no-frozen-lockfile && pnpm run build:lib
-            - pnpm install --no-frozen-lockfile
+            - cd app && pnpm install --no-frozen-lockfile
         build:
           commands:
             - NITRO_PRESET=aws-lambda pnpm run build
