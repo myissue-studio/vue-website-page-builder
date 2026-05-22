@@ -5,12 +5,12 @@ applications:
       phases:
         preBuild:
           commands:
-            # Build the page builder library first so the Nuxt app can install it
-            - cd .. && npm ci && npm run build:lib
-            - cd app && npm ci
+            - npm install -g pnpm
+            - cd .. && pnpm install --no-frozen-lockfile && pnpm run build:lib
+            - pnpm install --no-frozen-lockfile
         build:
           commands:
-            - npm run build
+            - NITRO_PRESET=aws-lambda pnpm run build
       artifacts:
         baseDirectory: .output
         files:
