@@ -2,12 +2,13 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { serverRoutesPlugin } from './vite-plugins/server-routes'
 
 export default defineConfig(({ mode }) => {
   const isLibMode = mode === 'lib'
 
   const baseConfig = {
-    plugins: [vue(), ...(isLibMode ? [] : [])],
+    plugins: [vue(), ...(isLibMode ? [] : [serverRoutesPlugin()])],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version) },
   }

@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - appRoot: app
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            # Build the page builder library first so the Nuxt app can install it
+            - cd .. && npm ci && npm run build:lib
+            - cd app && npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: .output
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - ../.cache/**/*
+          - ../.nuxt/**/*
