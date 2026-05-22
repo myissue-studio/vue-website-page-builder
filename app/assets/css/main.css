@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-size-primary: 0.875rem;
+  --color-primary-background: #ffffff;
+  --color-primary-text: #000000;
+  --color-primary-brand: #000000;
+  --color-primary-link: #16a34a;
+  --color-primary-error: #d60000;
+  --color-primary-success: #16a34a;
+}
+
+body {
+  font-size: var(--font-size-primary);
+  background-color: var(--color-primary-background);
+  color: var(--color-primary-text);
+}

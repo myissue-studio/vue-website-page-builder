@@ -7,7 +7,10 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "nuxt typecheck",
+    "format": "prettier --write .",
+    "clean": "rimraf .nuxt .output dist node_modules"
   },
   "dependencies": {
     "@myissue/vue-website-page-builder": "file:../",
@@ -17,6 +20,18 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.0",
+    "@types/node": "^22.0.0",
+    "prettier": "^3.5.2",
+    "rimraf": "^6.0.1",
     "typescript": "~5.8.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild"
+    ]
   }
 }
