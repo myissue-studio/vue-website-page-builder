@@ -155,7 +155,7 @@ onMounted(async () => {
           >Search</label
         >
 
-        <div class="mysearchBarWithOptions">
+        <div class="flex items-center gap-2 border border-gray-300 rounded-lg overflow-hidden">
           <div class="relative w-full">
             <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <span class="material-symbols-outlined"> search </span>
@@ -164,7 +164,7 @@ onMounted(async () => {
               type="search"
               id="search_query"
               v-model="getSearchTerm"
-              class="myPrimarySearchInput"
+              class="w-full text-sm py-4 border-none outline-none pl-10 bg-transparent focus:ring-0 focus:outline-none"
               autocomplete="off"
               placeholder="Search..."
             />
@@ -178,7 +178,7 @@ onMounted(async () => {
               }
             "
             type="submit"
-            class="myPrimaryTag break-keep mr-4"
+            class="px-4 py-2 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer break-keep mr-4"
           >
             Search
           </button>
@@ -193,9 +193,9 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('landscape')"
               type="button"
-              class="myPrimaryTag"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
               :class="{
-                'bg-myPrimaryBrandColor text-white': getOrientationValue === 'landscape',
+                'bg-blue-600 text-white': getOrientationValue === 'landscape',
                 '': getOrientationValue !== 'landscape',
               }"
             >
@@ -204,9 +204,9 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('portrait')"
               type="button"
-              class="myPrimaryTag"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
               :class="{
-                'bg-myPrimaryBrandColor text-white': getOrientationValue === 'portrait',
+                'bg-blue-600 text-white': getOrientationValue === 'portrait',
                 '': getOrientationValue !== 'portrait',
               }"
             >
@@ -215,9 +215,9 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('squarish')"
               type="button"
-              class="myPrimaryTag"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
               :class="{
-                'bg-myPrimaryBrandColor text-white': getOrientationValue === 'squarish',
+                'bg-blue-600 text-white': getOrientationValue === 'squarish',
                 '': getOrientationValue !== 'squarish',
               }"
             >
@@ -238,14 +238,14 @@ onMounted(async () => {
           </div>
 
           <nav class="flex items-center gap-2 justify-start" aria-label="Pagination">
-            <p class="myPrimaryParagraph text-xs italic">
+            <p class="text-sm text-gray-700 text-xs italic">
               Total pages {{ getUnsplashImages.total_pages }}
             </p>
-            <p class="myPrimaryParagraph text-xs italic">Images {{ getUnsplashImages.total }}</p>
+            <p class="text-sm text-gray-700 text-xs italic">Images {{ getUnsplashImages.total }}</p>
             <div class="flex flex-1 justify-between sm:justify-end items-center gap-2">
               <span
                 v-if="Number(getCurrentPageNumber) !== 1"
-                class="myPrimaryParagraph text-xs italic pr-2 pl-1 cursor-pointer underline"
+                class="text-sm text-gray-700 text-xs italic pr-2 pl-1 cursor-pointer underline"
                 @click="nextPage(Number((getCurrentPageNumber = 1)))"
               >
                 First page
@@ -254,7 +254,7 @@ onMounted(async () => {
             <button
               v-if="Number(getCurrentPageNumber) > 1"
               :disabled="Number(getCurrentPageNumber) < 1"
-              class="myPrimaryTag"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer disabled:opacity-50"
               @click="previousPage(Number(getCurrentPageNumber--))"
             >
               {{
@@ -266,12 +266,12 @@ onMounted(async () => {
               }}
             </button>
 
-            <span class="myPrimaryTag py-2.5 px-4">
+            <span class="px-4 py-2.5 text-sm font-medium rounded-full border border-gray-300">
               {{ Number(getCurrentPageNumber) }}
             </span>
             <button
               :disabled="Number(getCurrentPageNumber) >= getUnsplashImages.total_pages"
-              class="myPrimaryTag"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer disabled:opacity-50"
               :class="{
                 'opacity-50': Number(getCurrentPageNumber) >= getUnsplashImages.total_pages,
               }"
@@ -323,7 +323,7 @@ onMounted(async () => {
                     class="group block w-full overflow-hidden cursor-pointer"
                     :src="image.urls.thumb"
                   />
-                  <p class="myPrimaryParagraph text-xs font-normal mt-2">
+                  <p class="text-sm text-gray-700 text-xs font-normal mt-2">
                     By: {{ image.user.name }}
                   </p>
                 </div>
@@ -337,11 +337,15 @@ onMounted(async () => {
                 getUnsplashImages.results.length < 1
               "
             >
-              <p class="myPrimaryParagraph py-4 px-4">
+              <p class="text-sm text-gray-700 py-4 px-4">
                 <span v-if="getCurrentPageNumber === 1">
                   We did not find any images. Make a new search.
                 </span>
-                <span v-if="getCurrentPageNumber > 1" @click="nextPage(1)" class="myPrimaryLink">
+                <span
+                  v-if="getCurrentPageNumber > 1"
+                  @click="nextPage(1)"
+                  class="text-blue-600 underline cursor-pointer"
+                >
                   No results on current page. Navigate to First Page.
                 </span>
               </p>
@@ -357,7 +361,7 @@ onMounted(async () => {
               />
               <div class="md:px-3 px-2">
                 <div>
-                  <p class="myPrimaryParagraph font-normal text-gray-900 pt-4">Information</p>
+                  <p class="text-sm text-gray-700 font-normal text-gray-900 pt-4">Information</p>
                   <dl class="mt-2 border-t border-b border-gray-200 divide-y divide-gray-200">
                     <div class="py-3 flex justify-between text-sm font-normal items-center">
                       <dt class="text-gray-500">From:</dt>
@@ -386,7 +390,7 @@ onMounted(async () => {
                 localStorage.setItem('unsplash-page', getCurrentPageNumber)
               }
             "
-            class="mySecondaryButton focus:ring-2 focus:ring-blue-500"
+            class="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 cursor-pointer"
             type="button"
           >
             Close
@@ -394,7 +398,7 @@ onMounted(async () => {
           <button
             v-if="getCurrentImage && typeof getCurrentImage === 'string'"
             @click="useImage(getCurrentImage)"
-            class="myPrimaryButton focus:ring-2 focus:ring-blue-500"
+            class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 cursor-pointer"
             type="button"
           >
             Select image
