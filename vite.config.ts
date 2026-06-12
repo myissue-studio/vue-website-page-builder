@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const baseConfig = {
     plugins: [vue(), ...(isLibMode ? [] : [])],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-    define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version) },
+    define: {},
   }
 
   if (isLibMode) {
@@ -42,6 +42,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     ...baseConfig,
-    server: { port: 9999 },
+    server: { port: 9998 },
   }
 })

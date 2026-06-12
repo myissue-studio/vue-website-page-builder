@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "module": "ESNext",
     "target": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "allowJs": false,
     "isolatedModules": false,
     "jsx": "preserve",
