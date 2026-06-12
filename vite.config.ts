@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const baseConfig = {
     plugins: [vue(), ...(isLibMode ? [] : [])],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-    define: { __PBX_VERSION__: JSON.stringify(process.env.npm_package_version) },
+    define: {},
   }
 
   if (isLibMode) {

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 
 import { isEmptyObject } from '../../../helpers/isEmptyObject.ts'
-const version = __PBX_VERSION__
+import { version } from '../../../../package.json'
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore

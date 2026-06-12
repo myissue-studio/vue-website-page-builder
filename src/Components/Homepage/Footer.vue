@@ -1,5 +1,5 @@
 <script setup>
-const version = __PBX_VERSION__
+import { version } from '../../../package.json'
 </script>
 
 <template>
