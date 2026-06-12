@@ -193,10 +193,10 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('landscape')"
               type="button"
-              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 cursor-pointer"
               :class="{
                 'bg-blue-600 text-white': getOrientationValue === 'landscape',
-                '': getOrientationValue !== 'landscape',
+                'hover:bg-gray-50': getOrientationValue !== 'landscape',
               }"
             >
               Landscape
@@ -204,10 +204,10 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('portrait')"
               type="button"
-              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 cursor-pointer"
               :class="{
                 'bg-blue-600 text-white': getOrientationValue === 'portrait',
-                '': getOrientationValue !== 'portrait',
+                'hover:bg-gray-50': getOrientationValue !== 'portrait',
               }"
             >
               Portrait
@@ -215,10 +215,10 @@ onMounted(async () => {
             <button
               @click="searchByOrientation('squarish')"
               type="button"
-              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
+              class="px-3 py-1.5 text-sm font-medium rounded-full border border-gray-300 cursor-pointer"
               :class="{
                 'bg-blue-600 text-white': getOrientationValue === 'squarish',
-                '': getOrientationValue !== 'squarish',
+                'hover:bg-gray-50': getOrientationValue !== 'squarish',
               }"
             >
               Squarish
