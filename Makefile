@@ -3,4 +3,8 @@ update:
 	@chmod +x ./scripts/publish-to-npm.sh
 	@./scripts/publish-to-npm.sh
 
-.PHONY: update
+dev:
+	@chmod +x ./setup-local-dev.sh
+	@./setup-local-dev.sh
+
+.PHONY: update dev
