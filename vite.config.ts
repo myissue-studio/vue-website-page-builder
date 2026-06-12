@@ -42,6 +42,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     ...baseConfig,
-    server: { port: 9999 },
+    server: { port: 9998 },
   }
 })
