@@ -1,9 +1,9 @@
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 
 import { isEmptyObject } from '../../../helpers/isEmptyObject.ts'
-const version = __APP_VERSION__
+const version = __PBX_VERSION__
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -487,7 +487,7 @@ const getPageBuilderConfig = computed(() => {
                           <span
                             class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
                             :class="
-                              getPageBuilderConfig.updateOrCreate === 'create'
+                              getPageBuilderConfig.updateOrCreate.formType === 'create'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-blue-100 text-blue-800'
                             "

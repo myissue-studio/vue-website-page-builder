@@ -1,5 +1,5 @@
 <script setup>
-const version = __APP_VERSION__
+const version = __PBX_VERSION__
 </script>
 
 <template>
