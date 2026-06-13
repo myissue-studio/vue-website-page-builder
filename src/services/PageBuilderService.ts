@@ -1526,7 +1526,10 @@ export class PageBuilderService {
     const history = LocalStorageManager.getHistory(baseKey)
     if (history.length > 1 && this.pageBuilderStateStore.getHistoryIndex > 0) {
       this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex - 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex]
+      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
+        components: BuilderResourceData
+        pageSettings?: PageSettings
+      }
       const htmlString = this.renderComponentsToHtml(data.components)
       await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
     }
@@ -1542,7 +1545,10 @@ export class PageBuilderService {
     const history = LocalStorageManager.getHistory(baseKey)
     if (history.length > 0 && this.pageBuilderStateStore.getHistoryIndex < history.length - 1) {
       this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex + 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex]
+      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
+        components: BuilderResourceData
+        pageSettings?: PageSettings
+      }
       const htmlString = this.renderComponentsToHtml(data.components)
       await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
     }
@@ -2142,7 +2148,9 @@ export class PageBuilderService {
           localStorage.setItem(baseKey, JSON.stringify(dataToSave))
           let history = LocalStorageManager.getHistory(baseKey)
 
-          const lastState = history[history.length - 1]
+          const lastState = history[history.length - 1] as
+            | { components: unknown; pageSettings: unknown }
+            | undefined
           if (lastState) {
             const lastComponents = JSON.stringify(lastState.components)
             const newComponents = JSON.stringify(dataToSave.components)
