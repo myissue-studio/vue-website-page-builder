@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import { useTranslations } from '../../../../composables/useTranslations'

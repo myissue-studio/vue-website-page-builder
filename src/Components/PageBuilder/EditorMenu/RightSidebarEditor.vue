@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import ClassEditor from './Editables/ClassEditor.vue'
@@ -30,7 +30,7 @@ const elementTag = computed(() => {
   return getElement.value?.tagName
 })
 
-const scrollContainer = ref(null)
+const scrollContainer = ref<HTMLElement | null>(null)
 let lastScrollTop = 0
 
 // Watch for changes that cause re-render (e.g. dropdown value in store)

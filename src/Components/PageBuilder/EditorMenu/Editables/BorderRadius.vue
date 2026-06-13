@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -11,11 +11,11 @@ const pageBuilderService = getPageBuilder()
 
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const borderRadiusGlobal = ref(null)
-const borderRadiusTopLeft = ref(null)
-const borderRadiusTopRight = ref(null)
-const borderRadiusBottomleft = ref(null)
-const borderRadiusBottomRight = ref(null)
+const borderRadiusGlobal = ref<string | null>(null)
+const borderRadiusTopLeft = ref<string | null>(null)
+const borderRadiusTopRight = ref<string | null>(null)
+const borderRadiusBottomleft = ref<string | null>(null)
+const borderRadiusBottomRight = ref<string | null>(null)
 const getBorderRadiusGlobal = computed(() => {
   return pageBuilderStateStore.getBorderRadiusGlobal
 })
@@ -89,7 +89,7 @@ watch(
           id="global-border-radius"
           v-model="borderRadiusGlobal"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusGlobal(borderRadiusGlobal)"
+          @change="pageBuilderService.handleBorderRadiusGlobal(borderRadiusGlobal ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -112,7 +112,7 @@ watch(
           id="border-radius-top-left"
           v-model="borderRadiusTopLeft"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusTopLeft(borderRadiusTopLeft)"
+          @change="pageBuilderService.handleBorderRadiusTopLeft(borderRadiusTopLeft ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -132,7 +132,7 @@ watch(
           id="border-radius-top-right"
           v-model="borderRadiusTopRight"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusTopRight(borderRadiusTopRight)"
+          @change="pageBuilderService.handleBorderRadiusTopRight(borderRadiusTopRight ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -152,7 +152,9 @@ watch(
           id="border-radius-bottom-left"
           v-model="borderRadiusBottomleft"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusBottomleft(borderRadiusBottomleft)"
+          @change="
+            pageBuilderService.handleBorderRadiusBottomleft(borderRadiusBottomleft ?? undefined)
+          "
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -172,7 +174,9 @@ watch(
           id="border-radius-bottom-right"
           v-model="borderRadiusBottomRight"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusBottomRight(borderRadiusBottomRight)"
+          @change="
+            pageBuilderService.handleBorderRadiusBottomRight(borderRadiusBottomRight ?? undefined)
+          "
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option

@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+import type { SEOSummary } from '../../../../types'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import { ref } from 'vue'
 import { getPageBuilder } from '../../../../composables/builderInstance'
@@ -20,12 +21,12 @@ const gridColumnModal = ref(Number(1))
 const titleModal = ref('')
 const descriptionModal = ref('')
 const firstButtonModal = ref('')
-const secondButtonModal = ref(null)
-const thirdButtonModal = ref(null)
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
 
-const firstModalButtonFunctionDynamicModalBuilder = ref(null)
-const secondModalButtonFunctionDynamicModalBuilder = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
 
 const handleDeleteComponentsFromDOM = function () {
   showModalDeleteAllComponents.value = true
@@ -61,7 +62,7 @@ const openMainSettings = function () {
   showMainSettings.value = true
 }
 
-const seoResult = ref(null)
+const seoResult = ref<SEOSummary | null>(null)
 const showSEO = ref(false)
 
 const handleSEO = async function () {
@@ -244,11 +245,17 @@ const closeSEO = function () {
       :description="descriptionModal"
       :isLoading="isDeletingLayout"
       :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal"
-      :thirdButtonText="thirdButtonModal"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonFunctionDynamicModalBuilder"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonFunctionDynamicModalBuilder"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
+      :secondButtonText="secondButtonModal ?? undefined"
+      :thirdButtonText="thirdButtonModal ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        firstModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        secondModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        thirdModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
     >
       <header></header>
       <main></main>

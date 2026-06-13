@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const expanded = ref(false)
+</script>
+
 <template>
   <div
     class="pbx-flex pbx-flex-col pbx-border-solid pbx-border pbx-border-gray-400"
@@ -30,17 +36,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import { ref } from 'vue'
-
-export default {
-  setup() {
-    const expanded = ref(false)
-
-    return {
-      expanded,
-    }
-  },
-}
-</script>

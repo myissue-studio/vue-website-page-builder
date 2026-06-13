@@ -255,6 +255,7 @@ export interface PageBuilderConfig {
       enable?: ReadonlyArray<
         'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'it'
       >
+      disableLanguageDropDown?: boolean
     }
 
     autoSave?: boolean

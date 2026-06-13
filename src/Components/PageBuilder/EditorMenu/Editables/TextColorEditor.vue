@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import tailwindColors from '../../../../utils/builder/tailwaind-colors'
@@ -15,11 +15,11 @@ const pageBuilderStateStore = sharedPageBuilderStore
 
 defineProps({
   globalPageLayout: {
-    Type: Boolean,
+    type: Boolean,
   },
 })
 
-const textColor = ref(null)
+const textColor = ref<string | null>(null)
 const getTextColor = computed(() => {
   return pageBuilderStateStore.getTextColor
 })
@@ -91,7 +91,7 @@ watch(
           <ListboxOption
             as="template"
             v-for="color in tailwindColors.textColorVariables"
-            @click="pageBuilderService.handleTextColor(textColor)"
+            @click="pageBuilderService.handleTextColor(textColor ?? undefined)"
             :key="color"
             :value="color"
             v-slot="{ active, textColor }"

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, inject } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
@@ -14,7 +14,7 @@ const pageBuilderService = getPageBuilder()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
-const customMediaComponent = inject('CustomMediaComponent')
+const customMediaComponent = inject<Record<string, unknown> | null>('CustomMediaComponent', null)
 
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
@@ -45,14 +45,14 @@ const getComponent = computed(() => {
 const typeModalTipTap = ref('')
 const gridColumnModalTipTap = ref(Number(1))
 const titleModalTipTap = ref('')
-const descriptionModalTipTap = ref('')
-const firstButtonModalTipTap = ref('')
-const secondButtonModalTipTap = ref(null)
-const thirdButtonModalTipTap = ref(null)
+const descriptionModalTipTap = ref<string | null>('')
+const firstButtonModalTipTap = ref<string | null>('')
+const secondButtonModalTipTap = ref<string | null>(null)
+const thirdButtonModalTipTap = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
-const secondModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
+const firstModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
 
 const handleModalPreviewTiptap = function () {
   pageBuilderService.toggleTipTapModal(true)
@@ -85,12 +85,12 @@ const getBasePrimaryImage = computed(() => {
 const showMediaLibraryModal = ref(false)
 // modal content
 const titleMedia = ref('')
-const descriptionMedia = ref('')
+const descriptionMedia = ref<string | null>('')
 const firstButtonMedia = ref('')
-const secondButtonMedia = ref(null)
-const thirdButtonMedia = ref(null)
+const secondButtonMedia = ref<string | null>(null)
+const thirdButtonMedia = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstMediaButtonFunction = ref(null)
+const firstMediaButtonFunction = ref<(() => void) | null>(null)
 
 const handleAddImage = function () {
   // open modal to true
@@ -109,7 +109,7 @@ const handleAddImage = function () {
 
 // Logic for Video Iframe
 
-const urlError = ref(null)
+const urlError = ref<string | null>(null)
 const iframeSrc = ref('')
 const showModalIframeSrc = ref(false)
 
@@ -139,8 +139,8 @@ const handleModalIframeSrc = function () {
     getElement.value &&
     getElement.value.firstElementChild?.tagName === 'IFRAME' &&
     getElement.value.firstElementChild.hasAttribute('src') &&
-    getElement.value.firstElementChild.getAttribute('src').trim() !== ''
-      ? getElement.value.firstElementChild.src
+    (getElement.value.firstElementChild.getAttribute('src') ?? '').trim() !== ''
+      ? (getElement.value.firstElementChild as HTMLIFrameElement).src
       : ''
 
   iframeSrc.value = iframeSrcValue
@@ -192,7 +192,7 @@ const handleModalIframeSrc = function () {
             videoId = url.pathname.split('/embed/')[1]?.split('?')[0]
           } else if (url.pathname.includes('/watch')) {
             // Format: https://www.youtube.com/watch?v=VIDEO_ID
-            videoId = url.searchParams.get('v')
+            videoId = url.searchParams.get('v') ?? ''
           }
 
           if (videoId) {
@@ -219,7 +219,7 @@ const handleModalIframeSrc = function () {
         embedUrl = iframeSrc.value.replace('watch?v=', 'embed/')
       }
 
-      getElement.value.firstElementChild.src = embedUrl
+      ;(getElement.value.firstElementChild as HTMLIFrameElement).src = embedUrl
     }
 
     showModalIframeSrc.value = false
@@ -241,12 +241,12 @@ const gridColumnModal = ref(Number(1))
 const titleModal = ref('')
 const descriptionModal = ref('')
 const firstButtonModal = ref('')
-const secondButtonModal = ref(null)
-const thirdButtonModal = ref(null)
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilder = ref(null)
-const secondModalButtonFunctionDynamicModalBuilder = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
 
 // remove component
 const handleDelete = function () {
@@ -282,17 +282,17 @@ const handleDelete = function () {
       :gridColumnAmount="gridColumnModalTipTap"
       :title="titleModalTipTap"
       :description="descriptionModalTipTap"
-      :firstButtonText="firstButtonModalTipTap"
-      :secondButtonText="secondButtonModalTipTap"
-      :thirdButtonText="thirdButtonModalTipTap"
+      :firstButtonText="firstButtonModalTipTap ?? undefined"
+      :secondButtonText="secondButtonModalTipTap ?? undefined"
+      :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap
+        firstModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap
+        secondModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap
+        thirdModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
     >
       <header></header>
@@ -329,17 +329,17 @@ const handleDelete = function () {
       :gridColumnAmount="gridColumnModalTipTap"
       :title="titleModalTipTap"
       :description="descriptionModalTipTap"
-      :firstButtonText="firstButtonModalTipTap"
-      :secondButtonText="secondButtonModalTipTap"
-      :thirdButtonText="thirdButtonModalTipTap"
+      :firstButtonText="firstButtonModalTipTap ?? undefined"
+      :secondButtonText="secondButtonModalTipTap ?? undefined"
+      :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap
+        firstModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap
+        secondModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap
+        thirdModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
       "
     >
       <header></header>
@@ -354,11 +354,17 @@ const handleDelete = function () {
       :title="titleModal"
       :description="descriptionModal"
       :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal"
-      :thirdButtonText="thirdButtonModal"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonFunctionDynamicModalBuilder"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonFunctionDynamicModalBuilder"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
+      :secondButtonText="secondButtonModal ?? undefined"
+      :thirdButtonText="thirdButtonModal ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        firstModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        secondModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        thirdModalButtonFunctionDynamicModalBuilder ?? undefined
+      "
     >
       <header></header>
       <main></main>
@@ -368,10 +374,10 @@ const handleDelete = function () {
       :title="titleMedia"
       :description="descriptionMedia"
       :firstButtonText="firstButtonMedia"
-      :secondButtonText="secondButtonMedia"
-      :thirdButtonText="thirdButtonMedia"
-      :customMediaComponent="customMediaComponent"
-      @firstMediaButtonFunction="firstMediaButtonFunction"
+      :secondButtonText="secondButtonMedia ?? undefined"
+      :thirdButtonText="thirdButtonMedia ?? undefined"
+      :customMediaComponent="customMediaComponent ?? undefined"
+      @firstMediaButtonFunction="firstMediaButtonFunction ?? undefined"
     >
     </MediaLibraryModal>
 

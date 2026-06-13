@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -10,7 +10,7 @@ const pageBuilderService = getPageBuilder()
 
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const currentStyles = ref(null)
+const currentStyles = ref<Record<string, string> | null>(null)
 const getCurrentStyles = computed(() => pageBuilderStateStore.getCurrentStyles)
 
 watch(
@@ -24,7 +24,7 @@ watch(
 const inputProperty = ref('')
 const inputValue = ref('')
 const errorMessage = ref('')
-const valueInputRef = ref(null)
+const valueInputRef = ref<HTMLInputElement | null>(null)
 
 const handleEnterOnProperty = () => {
   if (valueInputRef.value) {

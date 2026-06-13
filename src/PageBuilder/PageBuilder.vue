@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, computed, ref, watch, provide } from 'vue'
 import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
 import Preview from './Preview.vue'
@@ -66,12 +66,12 @@ const typeModalloseNoSave = ref('')
 const showModalCloseNoSave = ref(false)
 const titleModalCloseNoSave = ref('')
 const descriptionModalCloseNoSave = ref('')
-const firstButtonCloseNoSave = ref('')
-const secondButtonCloseNoSave = ref(null)
-const thirdButtonCloseNoSave = ref(null)
-const firstModalButtonCloseNoSaveFunction = ref(null)
-const secondModalButtonCloseNoSaveFunction = ref(null)
-const thirdModalButtonCloseNoSaveFunction = ref(null)
+const firstButtonCloseNoSave = ref<string | null>('')
+const secondButtonCloseNoSave = ref<string | null>(null)
+const thirdButtonCloseNoSave = ref<string | null>(null)
+const firstModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const closePageBuilder = async function () {
   typeModalloseNoSave.value = 'warning'
@@ -131,7 +131,7 @@ watch(languageSelction, async (newVal) => {
     pageBuilderService.changeLanguage(newVal)
 
     // Ensure lang is updated within userSettings
-    const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder')) || {}
+    const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? '{}') || {}
     userSettings.lang = newVal
     localStorage.setItem('userSettingsPageBuilder', JSON.stringify(userSettings))
     isLoadingLang.value = false
@@ -188,7 +188,7 @@ const firstPageBuilderPreviewModalButtonMobile = function () {
 const showModalAddComponent = ref(false)
 const titleModalAddComponent = ref('')
 const firstButtonTextSearchComponents = ref('')
-const firstModalButtonSearchComponentsFunction = ref(null)
+const firstModalButtonSearchComponentsFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const toggleAddComponentModal = async function () {
   await pageBuilderService.clearHtmlSelection()
@@ -206,7 +206,7 @@ const toggleAddComponentModal = async function () {
   // end modal
 }
 
-const handleInsertButtonClick = function (id) {
+const handleInsertButtonClick = function (id: number) {
   pageBuilderStateStore.setAddComponentAddIndex(id)
   pageBuilderStateStore.setComponentArrayAddMethod('insert')
   toggleAddComponentModal()
@@ -236,7 +236,7 @@ watch(getHasLocalDraftForUpdate, (newVal) => {
 
 const getElementAttributes = computed(() => {
   if (!getElement.value || !(getElement.value instanceof HTMLElement)) {
-    return ''
+    return null
   }
 
   // Extract the attributes to watch
@@ -268,7 +268,9 @@ watch(getElementAttributes, async (newAttributes, oldAttributes) => {
   }
 })
 
-const handleSelectComponent = function (componentObject) {
+const handleSelectComponent = function (
+  componentObject: Parameters<typeof pageBuilderStateStore.setComponent>[0],
+) {
   pageBuilderStateStore.setComponent(componentObject)
 }
 
@@ -292,11 +294,11 @@ const showModalResumeEditing = ref(false)
 const titleModalResumeEditing = ref('')
 const descriptionModalResumeEditing = ref('')
 const firstButtonResumeEditing = ref('')
-const secondButtonResumeEditing = ref(null)
-const thirdButtonResumeEditing = ref(null)
-const firstModalButtonResumeEditingFunction = ref(null)
-const secondModalButtonResumeEditingFunction = ref(null)
-const thirdModalButtonResumeEditingFunction = ref(null)
+const secondButtonResumeEditing = ref<string | null>(null)
+const thirdButtonResumeEditing = ref<string | null>(null)
+const firstModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const handlerRumeEditingForUpdate = async function () {
   typeModal.value = 'warning'
@@ -333,11 +335,11 @@ const showModalRestore = ref(false)
 const titleModalRestore = ref('')
 const descriptionModalRestore = ref('')
 const firstButtonRestore = ref('')
-const secondButtonRestore = ref(null)
-const thirdButtonRestore = ref(null)
-const firstModalButtonRestoreFunction = ref(null)
-const secondModalButtonRestoreFunction = ref(null)
-const thirdModalButtonRestoreFunction = ref(null)
+const secondButtonRestore = ref<string | null>(null)
+const thirdButtonRestore = ref<string | null>(null)
+const firstModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const handleRestoreOriginalContent = async function () {
   await pageBuilderService.clearHtmlSelection()
@@ -395,7 +397,7 @@ const handleCloseHTMLEditor = () => {
 }
 
 const isLoading = ref(false)
-const errSaveComponents = ref(null)
+const errSaveComponents = ref<string | null>(null)
 
 const handleSaveChangesElement = async () => {
   errSaveComponents.value = null
@@ -439,7 +441,7 @@ const ensureBuilderInitialized = function () {
   }
 }
 
-const pbxBuilderWrapper = ref(null)
+const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 
 const hideToolbar = function () {
   const toolbar = document.querySelector('#pbxEditToolbar')
@@ -451,7 +453,7 @@ const hideToolbar = function () {
 
 function updatePanelPosition() {
   const container = pbxBuilderWrapper.value
-  const editToolbarElement = container && container.querySelector('#pbxEditToolbar')
+  const editToolbarElement = container && container.querySelector<HTMLElement>('#pbxEditToolbar')
 
   if (!container || !editToolbarElement) return
 
@@ -494,10 +496,10 @@ function updatePanelPosition() {
   }
 }
 
-const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder'))
+const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
 
 onMounted(async () => {
-  await pageBuilderService.completeBuilderInitialization(undefined, true)
+  await pageBuilderService.completeBuilderInitialization(undefined)
 
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
@@ -576,7 +578,9 @@ onMounted(async () => {
       :firstButtonText="firstButtonTextSearchComponents"
       :title="titleModalAddComponent"
       :CustomBuilderComponents="props.CustomBuilderComponents"
-      @firstModalButtonSearchComponentsFunction="firstModalButtonSearchComponentsFunction"
+      @firstModalButtonSearchComponentsFunction="
+        firstModalButtonSearchComponentsFunction ?? undefined
+      "
     ></BuilderComponents>
 
     <DynamicModalBuilder
@@ -586,12 +590,18 @@ onMounted(async () => {
       :gridColumnAmount="gridColumnModalCloseNoSave"
       :title="titleModalCloseNoSave"
       :description="descriptionModalCloseNoSave"
-      :firstButtonText="firstButtonCloseNoSave"
-      :secondButtonText="secondButtonCloseNoSave"
-      :thirdButtonText="thirdButtonCloseNoSave"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonCloseNoSaveFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonCloseNoSaveFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonCloseNoSaveFunction"
+      :firstButtonText="firstButtonCloseNoSave ?? undefined"
+      :secondButtonText="secondButtonCloseNoSave ?? undefined"
+      :thirdButtonText="thirdButtonCloseNoSave ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        firstModalButtonCloseNoSaveFunction ?? undefined
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        secondModalButtonCloseNoSaveFunction ?? undefined
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        thirdModalButtonCloseNoSaveFunction ?? undefined
+      "
     >
       <header></header>
       <main></main>
@@ -623,11 +633,17 @@ onMounted(async () => {
       :title="titleModalResumeEditing"
       :description="descriptionModalResumeEditing"
       :firstButtonText="firstButtonResumeEditing"
-      :secondButtonText="secondButtonResumeEditing"
-      :thirdButtonText="thirdButtonResumeEditing"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonResumeEditingFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonResumeEditingFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonResumeEditingFunction"
+      :secondButtonText="secondButtonResumeEditing ?? undefined"
+      :thirdButtonText="thirdButtonResumeEditing ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        firstModalButtonResumeEditingFunction ?? undefined
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        secondModalButtonResumeEditingFunction ?? undefined
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        thirdModalButtonResumeEditingFunction ?? undefined
+      "
     >
       <header></header>
       <main></main>
@@ -640,11 +656,11 @@ onMounted(async () => {
       :title="titleModalRestore"
       :description="descriptionModalRestore"
       :firstButtonText="firstButtonRestore"
-      :secondButtonText="secondButtonRestore"
-      :thirdButtonText="thirdButtonRestore"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonRestoreFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonRestoreFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonRestoreFunction"
+      :secondButtonText="secondButtonRestore ?? undefined"
+      :thirdButtonText="thirdButtonRestore ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonRestoreFunction ?? undefined"
+      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonRestoreFunction ?? undefined"
+      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonRestoreFunction ?? undefined"
     >
       <header></header>
       <main></main>
@@ -915,7 +931,8 @@ onMounted(async () => {
             getPageBuilderConfig &&
             getPageBuilderConfig.userSettings &&
             getPageBuilderConfig.userSettings.language &&
-            !getPageBuilderConfig.userSettings.language.disableLanguageDropDown
+            !(getPageBuilderConfig.userSettings.language as Record<string, unknown>)
+              ?.disableLanguageDropDown
           "
         >
           <template
@@ -942,7 +959,11 @@ onMounted(async () => {
                   <option
                     v-for="lang in pageBuilderService
                       .availableLanguage()
-                      .filter((l) => getPageBuilderConfig.userSettings.language.enable.includes(l))"
+                      .filter(
+                        (l) =>
+                          getPageBuilderConfig?.userSettings?.language?.enable?.includes(l) ??
+                          false,
+                      )"
                     :key="lang"
                     :value="lang"
                   >
@@ -1273,9 +1294,6 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-#pagebuilder #addsection {
-  /* display: none; */
 }
 #pagebuilder #nolocalstorage:hover #addsection {
   display: flex;

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -12,10 +12,10 @@ const pageBuilderService = getPageBuilder()
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const fontVerticalPadding = ref(null)
-const fontHorizontalPadding = ref(null)
-const fontVerticalMargin = ref(null)
-const fontHorizontalMargin = ref(null)
+const fontVerticalPadding = ref<string | null>(null)
+const fontHorizontalPadding = ref<string | null>(null)
+const fontVerticalMargin = ref<string | null>(null)
+const fontHorizontalMargin = ref<string | null>(null)
 const getFontVerticalPadding = computed(() => {
   return pageBuilderStateStore.getFontVerticalPadding
 })
@@ -80,7 +80,7 @@ watch(
           id="vertical-margin"
           v-model="fontVerticalMargin"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleVerticalMargin(fontVerticalMargin)"
+          @change="pageBuilderService.handleVerticalMargin(fontVerticalMargin ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -100,7 +100,7 @@ watch(
           id="horizontal-margin"
           v-model="fontHorizontalMargin"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleHorizontalMargin(fontHorizontalMargin)"
+          @change="pageBuilderService.handleHorizontalMargin(fontHorizontalMargin ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option

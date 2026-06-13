@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import tailwindFontSizes from '../../../../utils/builder/tailwind-font-sizes'
@@ -14,13 +14,13 @@ const pageBuilderService = getPageBuilder()
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const fontBase = ref(null)
-const fontDesktop = ref(null)
-const fontTablet = ref(null)
-const fontMobile = ref(null)
-const fontWeight = ref(null)
-const fontFamily = ref(null)
-const fontStyle = ref(null)
+const fontBase = ref<string | null>(null)
+const fontDesktop = ref<string | null>(null)
+const fontTablet = ref<string | null>(null)
+const fontMobile = ref<string | null>(null)
+const fontWeight = ref<string | null>(null)
+const fontFamily = ref<string | null>(null)
+const fontStyle = ref<string | null>(null)
 const getFontBase = computed(() => {
   return pageBuilderStateStore.getFontBase
 })
@@ -118,7 +118,7 @@ watch(
             id="font-base"
             v-model="fontBase"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontSizeBase(fontBase)"
+            @change="pageBuilderService.handleFontSizeBase(fontBase ?? undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontSize in tailwindFontSizes.fontBase" :key="fontSize">
@@ -135,7 +135,7 @@ watch(
           id="font-desktop"
           v-model="fontDesktop"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleFontSizeDesktop(fontDesktop)"
+          @change="pageBuilderService.handleFontSizeDesktop(fontDesktop ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option v-for="fontSize in tailwindFontSizes.fontDesktop" :key="fontSize">
@@ -152,7 +152,7 @@ watch(
             id="font-tablet"
             v-model="fontTablet"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontSizeTablet(fontTablet)"
+            @change="pageBuilderService.handleFontSizeTablet(fontTablet ?? undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontSize in tailwindFontSizes.fontTablet" :key="fontSize">
@@ -168,7 +168,7 @@ watch(
             id="font-mobile"
             v-model="fontMobile"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontSizeMobile(fontMobile)"
+            @change="pageBuilderService.handleFontSizeMobile(fontMobile ?? undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontSize in tailwindFontSizes.fontMobile" :key="fontSize">
@@ -187,7 +187,7 @@ watch(
           id="font-weight"
           v-model="fontWeight"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleFontWeight(fontWeight)"
+          @change="pageBuilderService.handleFontWeight(fontWeight ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option v-for="fontWeight in tailwindFontStyles.fontWeight" :key="fontWeight">
@@ -206,7 +206,7 @@ watch(
           id="font-family"
           v-model="fontFamily"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleFontFamily(fontFamily)"
+          @change="pageBuilderService.handleFontFamily(fontFamily ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option v-for="fontFamily in tailwindFontStyles.fontFamily" :key="fontFamily">
@@ -224,7 +224,7 @@ watch(
           id="font-style"
           v-model="fontStyle"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleFontStyle(fontStyle)"
+          @change="pageBuilderService.handleFontStyle(fontStyle ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option v-for="fontStyle in tailwindFontStyles.fontStyle" :key="fontStyle">

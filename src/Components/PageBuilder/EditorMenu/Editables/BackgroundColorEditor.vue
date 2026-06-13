@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import tailwindColors from '../../../../utils/builder/tailwaind-colors'
@@ -15,11 +15,11 @@ const pageBuilderStateStore = sharedPageBuilderStore
 
 defineProps({
   globalPageLayout: {
-    Type: Boolean,
+    type: Boolean,
   },
 })
 
-const backgroundColor = ref(null)
+const backgroundColor = ref<string | null>(null)
 const getBackgroundColor = computed(() => {
   return pageBuilderStateStore.getBackgroundColor
 })
@@ -109,10 +109,10 @@ watch(
           <ListboxOption
             as="template"
             v-for="color in tailwindColors.backgroundColorVariables"
-            @click="pageBuilderService.handleBackgroundColor(backgroundColor)"
+            @click="pageBuilderService.handleBackgroundColor(backgroundColor ?? undefined)"
             :key="color"
             :value="color"
-            v-slot="{ active, backgroundColor }"
+            v-slot="{ active }"
           >
             <li
               :class="[

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, inject } from 'vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
@@ -10,19 +10,19 @@ const { translate } = useTranslations()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
-const customMediaComponent = inject('CustomMediaComponent')
+const customMediaComponent = inject<Record<string, unknown> | null>('CustomMediaComponent', null)
 
 const getIsLoadingImage = ref(false)
 
 const showMediaLibraryModal = ref(false)
 // modal content
 const titleMedia = ref('')
-const descriptionMedia = ref('')
+const descriptionMedia = ref<string | null>('')
 const firstButtonMedia = ref('')
-const secondButtonMedia = ref(null)
-const thirdButtonMedia = ref(null)
+const secondButtonMedia = ref<string | null>(null)
+const thirdButtonMedia = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstMediaButtonFunction = ref(null)
+const firstMediaButtonFunction = ref<(() => void) | null>(null)
 
 // get current image from store
 const getBasePrimaryImage = computed(() => {
@@ -49,7 +49,7 @@ const handleAddImage = function () {
   // end modal
 }
 
-const loadingImage = async function (imageURL) {
+const loadingImage = async function (imageURL: string) {
   getIsLoadingImage.value = true
 
   if (imageURL && typeof imageURL === 'string' && imageURL.length > 2) {
@@ -76,7 +76,7 @@ const loadingImage = async function (imageURL) {
     <div v-show="getBasePrimaryImage && !getIsLoadingImage">
       <img
         class="pbx-object-cover pbx-object-center pbx-w-full pbx-cursor-pointer"
-        :src="getBasePrimaryImage"
+        :src="getBasePrimaryImage ?? undefined"
         @click="handleAddImage"
         alt="image"
       />
@@ -86,10 +86,10 @@ const loadingImage = async function (imageURL) {
       :title="titleMedia"
       :description="descriptionMedia"
       :firstButtonText="firstButtonMedia"
-      :secondButtonText="secondButtonMedia"
-      :thirdButtonText="thirdButtonMedia"
-      :customMediaComponent="customMediaComponent"
-      @firstMediaButtonFunction="firstMediaButtonFunction"
+      :secondButtonText="secondButtonMedia ?? undefined"
+      :thirdButtonText="thirdButtonMedia ?? undefined"
+      :customMediaComponent="customMediaComponent ?? undefined"
+      @firstMediaButtonFunction="firstMediaButtonFunction ?? undefined"
     >
     </MediaLibraryModal>
   </div>

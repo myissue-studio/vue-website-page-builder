@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
@@ -10,7 +10,7 @@ const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 
 const hyperlinkEnable = ref(false)
-const urlInput = ref(null)
+const urlInput = ref<string | null>(null)
 const openHyperlinkInNewTab = ref(false)
 const getElementContainsHyperlink = computed(() => {
   return pageBuilderStateStore.getElementContainsHyperlink
@@ -34,9 +34,6 @@ const getHyberlinkEnable = computed(() => {
 const getOpenHyperlinkInNewTab = computed(() => {
   return pageBuilderStateStore.getOpenHyperlinkInNewTab
 })
-const getElement = computed(() => {
-  return pageBuilderStateStore.getElement
-})
 
 watch(getHyperlinkInput, (newValue) => {
   urlInput.value = newValue
@@ -45,7 +42,7 @@ watch(getHyberlinkEnable, (newValue) => {
   hyperlinkEnable.value = newValue
 })
 watch(getOpenHyperlinkInNewTab, (newValue) => {
-  openHyperlinkInNewTab.value = newValue
+  openHyperlinkInNewTab.value = newValue ?? false
 })
 
 // remove hyperlink
@@ -54,7 +51,7 @@ watch(hyperlinkEnable, (hyperlinkEnableNewValue) => {
   pageBuilderStateStore.setHyberlinkEnable(hyperlinkEnable.value)
 })
 
-const handleToggleHyperlinkEnable = async function (data) {
+const handleToggleHyperlinkEnable = async function (data: string) {
   await nextTick()
 
   // remove hyperlink
