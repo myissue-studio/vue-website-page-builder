@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SEOSummary } from '../../../../types'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { delay } from '../../../../composables/delay'
@@ -64,6 +64,17 @@ const openMainSettings = function () {
 
 const seoResult = ref<SEOSummary | null>(null)
 const showSEO = ref(false)
+
+const seoGroups = computed(() => {
+  if (!seoResult.value) return []
+  const map = new Map<string, typeof seoResult.value.checks>()
+  for (const check of seoResult.value.checks) {
+    const cat = check.category ?? 'Other'
+    if (!map.has(cat)) map.set(cat, [])
+    map.get(cat)!.push(check)
+  }
+  return Array.from(map.entries()).map(([title, checks]) => ({ title, checks }))
+})
 
 const handleSEO = async function () {
   showSEO.value = !showSEO.value
@@ -135,54 +146,62 @@ const closeSEO = function () {
               <!-- score indicator end -->
 
               <!-- Checks start -->
-              <div
-                v-if="seoResult && seoResult.checks && seoResult.checks.length"
-                class="pbx-w-full"
-              >
+              <div v-if="seoGroups.length" class="pbx-w-full pbx-space-y-6">
                 <h3 class="pbx-text-xl pbx-font-semibold pbx-mb-4 pbx-text-center">
                   {{ translate('SEO Check Results') }}
                 </h3>
 
-                <ul class="pbx-space-y-4">
-                  <li
-                    v-for="(check, index) in seoResult.checks"
-                    :key="index"
-                    class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-border-solid pbx-border-2"
-                    :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
+                <div v-for="group in seoGroups" :key="group.title">
+                  <!-- Group heading -->
+                  <h4
+                    class="pbx-text-sm pbx-font-semibold pbx-uppercase pbx-tracking-widest pbx-text-gray-400 pbx-mb-3 pbx-px-1"
                   >
-                    <!-- Status indicator -->
-                    <div class="pbx-flex-shrink-0 pbx-mt-1">
-                      <template v-if="check.passed">
-                        <div
-                          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryLinkColor pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-white hover:pbx-text-white"
-                        >
-                          <span class="material-symbols-outlined"> check </span>
-                        </div>
-                      </template>
+                    {{ group.title }}
+                  </h4>
 
-                      <template v-if="!check.passed">
-                        <div
-                          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryErrorColor pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-white"
-                        >
-                          <span class="material-symbols-outlined"> check_indeterminate_small </span>
-                        </div>
-                      </template>
-                    </div>
+                  <ul class="pbx-space-y-3">
+                    <li
+                      v-for="(check, index) in group.checks"
+                      :key="index"
+                      class="pbx-flex pbx-items-start pbx-gap-4 pbx-p-4 pbx-bg-white pbx-rounded-lg pbx-border-solid pbx-border-2"
+                      :class="check.passed ? 'pbx-border-emerald-500' : 'pbx-border-red-600'"
+                    >
+                      <!-- Status indicator -->
+                      <div class="pbx-flex-shrink-0 pbx-mt-1">
+                        <template v-if="check.passed">
+                          <div
+                            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryLinkColor pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-white hover:pbx-text-white"
+                          >
+                            <span class="material-symbols-outlined"> check </span>
+                          </div>
+                        </template>
 
-                    <!-- Check details -->
-                    <div class="pbx-flex-1">
-                      <p
-                        class="pbx-text-lg pbx-font-medium"
-                        :class="check.passed ? 'pbx-text-green-700' : 'pbx-text-red-700'"
-                      >
-                        {{ check.check }}
-                      </p>
-                      <p class="pbx-text-sm pbx-text-gray-600">
-                        {{ check.details }}
-                      </p>
-                    </div>
-                  </li>
-                </ul>
+                        <template v-if="!check.passed">
+                          <div
+                            class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-myPrimaryErrorColor pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-white"
+                          >
+                            <span class="material-symbols-outlined">
+                              check_indeterminate_small
+                            </span>
+                          </div>
+                        </template>
+                      </div>
+
+                      <!-- Check details -->
+                      <div class="pbx-flex-1">
+                        <p
+                          class="pbx-text-lg pbx-font-medium"
+                          :class="check.passed ? 'pbx-text-green-700' : 'pbx-text-red-700'"
+                        >
+                          {{ check.check }}
+                        </p>
+                        <p class="pbx-text-sm pbx-text-gray-600">
+                          {{ check.details }}
+                        </p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               <div v-else class="pbx-text-gray-500 pbx-text-center">No SEO checks available.</div>

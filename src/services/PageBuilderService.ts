@@ -847,8 +847,18 @@ export class PageBuilderService {
    * @param {HTMLElement} element - The element to process.
    * @private
    */
+  private ensureImagesHaveAltText(element: HTMLElement): void {
+    if (element.tagName === 'IMG' && !element.hasAttribute('alt')) {
+      element.setAttribute('alt', 'image')
+    }
+    element.querySelectorAll('img:not([alt])').forEach((img) => {
+      img.setAttribute('alt', 'image')
+    })
+  }
+
   private applyHelperCSSToElements(element: HTMLElement): void {
     this.wrapElementInDivIfExcluded(element)
+    this.ensureImagesHaveAltText(element)
 
     // If this is a DIV and its only/main child is a heading, apply font size classes to the DIV
     if (
@@ -2667,6 +2677,7 @@ export class PageBuilderService {
       check: 'At least 300 words of content',
       passed: totalWords >= 300,
       details: `Found ${totalWords} words`,
+      category: 'Content',
     })
 
     // Individual heading checks (H2-H6)
@@ -2675,6 +2686,7 @@ export class PageBuilderService {
       check: 'Has at least one H2',
       passed: h2Count > 0,
       details: `Found ${h2Count} H2 headings`,
+      category: 'Headings',
     })
 
     const h3Count = doc.querySelectorAll('h3').length
@@ -2682,6 +2694,7 @@ export class PageBuilderService {
       check: 'Has at least one H3',
       passed: h3Count > 0,
       details: `Found ${h3Count} H3 headings`,
+      category: 'Headings',
     })
 
     const h4Count = doc.querySelectorAll('h4').length
@@ -2689,6 +2702,7 @@ export class PageBuilderService {
       check: 'Has at least one H4',
       passed: h4Count > 0,
       details: `Found ${h4Count} H4 headings`,
+      category: 'Headings',
     })
 
     const h5Count = doc.querySelectorAll('h5').length
@@ -2696,6 +2710,7 @@ export class PageBuilderService {
       check: 'Has at least one H5',
       passed: h5Count > 0,
       details: `Found ${h5Count} H5 headings`,
+      category: 'Headings',
     })
 
     const h6Count = doc.querySelectorAll('h6').length
@@ -2703,6 +2718,66 @@ export class PageBuilderService {
       check: 'Has at least one H6',
       passed: h6Count > 0,
       details: `Found ${h6Count} H6 headings`,
+      category: 'Headings',
+    })
+
+    // No heading levels are skipped (e.g. H3 without H2)
+    const headingLevels = [2, 3, 4, 5, 6]
+    let headingStructureValid = true
+    let headingStructureDetail = 'Heading hierarchy is correct'
+    for (let i = 1; i < headingLevels.length; i++) {
+      const current = headingLevels[i]
+      const previous = headingLevels[i - 1]
+      if (
+        doc.querySelectorAll(`h${current}`).length > 0 &&
+        doc.querySelectorAll(`h${previous}`).length === 0
+      ) {
+        headingStructureValid = false
+        headingStructureDetail = `H${current} found but H${previous} is missing — heading levels should not be skipped`
+        break
+      }
+    }
+    checks.push({
+      check: 'Heading levels are not skipped',
+      passed: headingStructureValid,
+      details: headingStructureDetail,
+      category: 'Headings',
+    })
+
+    // Page contains at least one image
+    const allImages = [...doc.querySelectorAll('img')]
+    checks.push({
+      check: 'Page contains at least one image',
+      passed: allImages.length > 0,
+      details: `Found ${allImages.length} image(s)`,
+      category: 'Media',
+    })
+
+    // All images have alt text
+    const imagesWithoutAlt = allImages.filter(
+      (img) => !img.getAttribute('alt') || img.getAttribute('alt')!.trim() === '',
+    )
+    checks.push({
+      check: 'All images have alt text',
+      passed: allImages.length === 0 || imagesWithoutAlt.length === 0,
+      details:
+        allImages.length === 0
+          ? 'No images found'
+          : imagesWithoutAlt.length === 0
+            ? `All ${allImages.length} image(s) have alt text`
+            : `${imagesWithoutAlt.length} of ${allImages.length} image(s) are missing alt text`,
+      category: 'Media',
+    })
+
+    // Page contains at least one link
+    const allLinks = [...doc.querySelectorAll('a[href]')].filter(
+      (a) => (a.getAttribute('href') || '').trim() !== '',
+    )
+    checks.push({
+      check: 'Page contains at least one link',
+      passed: allLinks.length > 0,
+      details: `Found ${allLinks.length} link(s)`,
+      category: 'Links',
     })
 
     // Score = % of passed checks

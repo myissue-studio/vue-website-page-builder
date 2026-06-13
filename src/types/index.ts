@@ -13,6 +13,7 @@ export interface SEOCheck {
   check: string
   passed: boolean
   details: string
+  category: string
 }
 
 export interface SEOSummary {
