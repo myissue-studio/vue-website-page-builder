@@ -75,6 +75,8 @@ export class PageBuilderService {
   // Holds data to be mounted when pagebuilder is not yet present in the DOM
   private savedMountComponents: BuilderResourceData | null = null
   private pendingMountComponents: BuilderResourceData | null = null
+  private globalStylesObserver: MutationObserver | null = null
+  private _pendingPageSettings: { classes: string; style: string } | null = null
   private isPageBuilderMissingOnStart: boolean = false
 
   // Add a class-level WeakMap to track elements and their listeners
@@ -721,10 +723,9 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearClassesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
-
-    pagebuilder.removeAttribute('class')
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      el.removeAttribute('class')
+    })
 
     this.initializeElementStyles()
     await nextTick()
@@ -734,10 +735,9 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearInlineStylesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
-
-    pagebuilder.removeAttribute('style')
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      el.removeAttribute('style')
+    })
 
     this.initializeElementStyles()
     await nextTick()
@@ -748,19 +748,50 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async globalPageStyles() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
+    const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
+    const firstEl = allContentEls[0] as HTMLElement | undefined
+    if (!firstEl) return
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
-    //
-    // Set the element in the store
-    this.pageBuilderStateStore.setElement(pagebuilder as HTMLElement)
+
+    // Set the element in the store (right sidebar edits this one)
+    this.pageBuilderStateStore.setElement(firstEl)
 
     // Add the data attribute for styling
-    pagebuilder.setAttribute('data-global-selected', 'true')
+    firstEl.setAttribute('data-global-selected', 'true')
+
+    // Sync class/style changes from the first wrapper to all other section wrappers
+    if (this.globalStylesObserver) this.globalStylesObserver.disconnect()
+    this.globalStylesObserver = new MutationObserver(() => {
+      const cls = firstEl.getAttribute('class') ?? ''
+      const style = firstEl.getAttribute('style') ?? ''
+      allContentEls.forEach((el) => {
+        if (el === firstEl) return
+        if (cls) el.setAttribute('class', cls)
+        else el.removeAttribute('class')
+        if (style) el.setAttribute('style', style)
+        else el.removeAttribute('style')
+      })
+    })
+    this.globalStylesObserver.observe(firstEl, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+    })
 
     await nextTick()
+  }
+
+  /**
+   * Disconnects the MutationObserver that syncs global page style changes across
+   * all [data-pagebuilder-content] section wrappers. Call when closing the global
+   * styles editor panel.
+   */
+  public stopGlobalStylesSync() {
+    if (this.globalStylesObserver) {
+      this.globalStylesObserver.disconnect()
+      this.globalStylesObserver = null
+    }
   }
 
   /**
@@ -2108,9 +2139,10 @@ export class PageBuilderService {
       })
     })
 
+    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
     const pageSettings = {
-      classes: pagebuilder.className || '',
-      style: pagebuilder.getAttribute('style') || (pagebuilder as HTMLElement).style.cssText || '',
+      classes: contentEl?.className || '',
+      style: contentEl?.getAttribute('style') || contentEl?.style.cssText || '',
     }
 
     const dataToSave = {
@@ -3176,10 +3208,9 @@ export class PageBuilderService {
       const doc = parser.parseFromString(htmlString, 'text/html')
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
-      const livePageBuilder = document.querySelector('#pagebuilder') as HTMLElement | null
 
       // Initialize configPageSettings to null
-      let configPageSettings = null
+      let configPageSettings: { classes: string; style: string } | null = null
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
@@ -3200,31 +3231,13 @@ export class PageBuilderService {
       }
 
       // Apply the page settings to the live page builder
-      if (!pageSettingsFromHistory && configPageSettings && livePageBuilder) {
-        // Remove existing class and style attributes
-        livePageBuilder.removeAttribute('class')
-        livePageBuilder.removeAttribute('style')
-
-        // Apply new classes and styles
-        livePageBuilder.className = configPageSettings.classes || ''
-        livePageBuilder.setAttribute(
-          'style',
-          this.convertStyleObjectToString(configPageSettings.style),
-        )
+      if (!pageSettingsFromHistory && configPageSettings) {
+        this._pendingPageSettings = configPageSettings
       }
 
       // Apply the page settings to the live page builder
-      if (pageSettingsFromHistory && livePageBuilder) {
-        // Remove existing class and style attributes
-        livePageBuilder.removeAttribute('class')
-        livePageBuilder.removeAttribute('style')
-
-        // Apply new classes and styles
-        livePageBuilder.className = pageSettingsFromHistory.classes || ''
-        livePageBuilder.setAttribute(
-          'style',
-          this.convertStyleObjectToString(pageSettingsFromHistory.style),
-        )
+      if (pageSettingsFromHistory) {
+        this._pendingPageSettings = pageSettingsFromHistory
       }
 
       // Select all <section> elements
@@ -3265,6 +3278,20 @@ export class PageBuilderService {
       // Clear selections and re-bind events
       await this.clearHtmlSelection()
       await nextTick()
+
+      // Apply pending page settings to all [data-pagebuilder-content] wrappers now that Vue has rendered them
+      if (this._pendingPageSettings) {
+        const settings = this._pendingPageSettings
+        this._pendingPageSettings = null
+        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+          el.removeAttribute('class')
+          el.removeAttribute('style')
+          if (settings.classes) el.setAttribute('class', settings.classes)
+          const styleStr = this.convertStyleObjectToString(settings.style)
+          if (styleStr) el.setAttribute('style', styleStr)
+        })
+      }
+
       await this.addListenersToEditableElements()
     } catch (error) {
       console.error('Error parsing HTML components:', error)

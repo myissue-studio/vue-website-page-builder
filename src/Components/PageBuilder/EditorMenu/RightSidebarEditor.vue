@@ -73,8 +73,11 @@ const closeHTMLSettings = async function () {
   await delay(200)
   await pageBuilderService.handleManualSave()
 
+  // Stop syncing global style changes across section wrappers
+  pageBuilderService.stopGlobalStylesSync()
+
   // Remove global highlight if present
-  const pagebuilder = document.querySelector('#pagebuilder')
+  const pagebuilder = document.querySelector('[data-pagebuilder-content]')
   if (pagebuilder) {
     pagebuilder.removeAttribute('data-global-selected')
   }
