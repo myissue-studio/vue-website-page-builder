@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue'
 
 const props = defineProps({
@@ -8,7 +8,6 @@ const props = defineProps({
 })
 
 const htmlPage = ref('')
-const iframeRef = ref(null)
 
 const previewData = localStorage.getItem('preview')
 
@@ -26,12 +25,12 @@ if (previewData) {
 const stylesheetContent = ref('')
 
 const updateStylesheets = () => {
-  const styles = []
+  const styles: string[] = []
   document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
     if (node.tagName === 'STYLE') {
       styles.push(`<style>${node.textContent}</style>`)
     } else if (node.tagName === 'LINK') {
-      styles.push(`<link rel="stylesheet" href="${node.href}">`)
+      styles.push(`<link rel="stylesheet" href="${(node as HTMLLinkElement).href}">`)
     }
   })
   stylesheetContent.value = styles.join('')

@@ -2,13 +2,13 @@ export class LocalStorageManager {
   private static readonly HISTORY_KEY_SUFFIX = '-history'
   private static readonly MAX_HISTORY_SIZE = 10
 
-  public static getHistory(baseKey: string): any[] {
+  public static getHistory(baseKey: string): unknown[] {
     const historyKey = baseKey + this.HISTORY_KEY_SUFFIX
     const historyJson = localStorage.getItem(historyKey)
     return historyJson ? JSON.parse(historyJson) : []
   }
 
-  public static addToHistory(baseKey: string, data: any) {
+  public static addToHistory(baseKey: string, data: unknown) {
     const historyKey = baseKey + this.HISTORY_KEY_SUFFIX
     let history = this.getHistory(baseKey)
     history.push(data)
