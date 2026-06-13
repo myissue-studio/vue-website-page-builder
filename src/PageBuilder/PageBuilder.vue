@@ -578,9 +578,7 @@ onMounted(async () => {
       :firstButtonText="firstButtonTextSearchComponents"
       :title="titleModalAddComponent"
       :CustomBuilderComponents="props.CustomBuilderComponents"
-      @firstModalButtonSearchComponentsFunction="
-        firstModalButtonSearchComponentsFunction ?? undefined
-      "
+      @firstModalButtonSearchComponentsFunction="() => firstModalButtonSearchComponentsFunction?.()"
     ></BuilderComponents>
 
     <DynamicModalBuilder
@@ -593,15 +591,9 @@ onMounted(async () => {
       :firstButtonText="firstButtonCloseNoSave ?? undefined"
       :secondButtonText="secondButtonCloseNoSave ?? undefined"
       :thirdButtonText="thirdButtonCloseNoSave ?? undefined"
-      @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonCloseNoSaveFunction ?? undefined
-      "
-      @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonCloseNoSaveFunction ?? undefined
-      "
-      @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonCloseNoSaveFunction ?? undefined
-      "
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonCloseNoSaveFunction?.()"
+      @secondModalButtonFunctionDynamicModalBuilder="() => secondModalButtonCloseNoSaveFunction?.()"
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonCloseNoSaveFunction?.()"
     >
       <header></header>
       <main></main>
@@ -635,15 +627,11 @@ onMounted(async () => {
       :firstButtonText="firstButtonResumeEditing"
       :secondButtonText="secondButtonResumeEditing ?? undefined"
       :thirdButtonText="thirdButtonResumeEditing ?? undefined"
-      @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonResumeEditingFunction ?? undefined
-      "
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonResumeEditingFunction?.()"
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonResumeEditingFunction ?? undefined
+        () => secondModalButtonResumeEditingFunction?.()
       "
-      @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonResumeEditingFunction ?? undefined
-      "
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonResumeEditingFunction?.()"
     >
       <header></header>
       <main></main>
@@ -658,9 +646,9 @@ onMounted(async () => {
       :firstButtonText="firstButtonRestore"
       :secondButtonText="secondButtonRestore ?? undefined"
       :thirdButtonText="thirdButtonRestore ?? undefined"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonRestoreFunction ?? undefined"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonRestoreFunction ?? undefined"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonRestoreFunction ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonRestoreFunction?.()"
+      @secondModalButtonFunctionDynamicModalBuilder="() => secondModalButtonRestoreFunction?.()"
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonRestoreFunction?.()"
     >
       <header></header>
       <main></main>

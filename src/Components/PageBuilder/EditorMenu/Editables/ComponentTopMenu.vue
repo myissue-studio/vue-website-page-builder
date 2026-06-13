@@ -267,13 +267,13 @@ const closeSEO = function () {
       :secondButtonText="secondButtonModal ?? undefined"
       :thirdButtonText="thirdButtonModal ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => firstModalButtonFunctionDynamicModalBuilder?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => secondModalButtonFunctionDynamicModalBuilder?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => thirdModalButtonFunctionDynamicModalBuilder?.()
       "
     >
       <header></header>

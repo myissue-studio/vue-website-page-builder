@@ -286,13 +286,13 @@ const handleDelete = function () {
       :secondButtonText="secondButtonModalTipTap ?? undefined"
       :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => firstModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => secondModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => thirdModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
     >
       <header></header>
@@ -333,13 +333,13 @@ const handleDelete = function () {
       :secondButtonText="secondButtonModalTipTap ?? undefined"
       :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => firstModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => secondModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap ?? undefined
+        () => thirdModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
     >
       <header></header>
@@ -357,13 +357,13 @@ const handleDelete = function () {
       :secondButtonText="secondButtonModal ?? undefined"
       :thirdButtonText="thirdButtonModal ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => firstModalButtonFunctionDynamicModalBuilder?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => secondModalButtonFunctionDynamicModalBuilder?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilder ?? undefined
+        () => thirdModalButtonFunctionDynamicModalBuilder?.()
       "
     >
       <header></header>
@@ -377,7 +377,7 @@ const handleDelete = function () {
       :secondButtonText="secondButtonMedia ?? undefined"
       :thirdButtonText="thirdButtonMedia ?? undefined"
       :customMediaComponent="customMediaComponent ?? undefined"
-      @firstMediaButtonFunction="firstMediaButtonFunction ?? undefined"
+      @firstMediaButtonFunction="() => firstMediaButtonFunction?.()"
     >
     </MediaLibraryModal>
 

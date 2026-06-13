@@ -89,7 +89,7 @@ const loadingImage = async function (imageURL: string) {
       :secondButtonText="secondButtonMedia ?? undefined"
       :thirdButtonText="thirdButtonMedia ?? undefined"
       :customMediaComponent="customMediaComponent ?? undefined"
-      @firstMediaButtonFunction="firstMediaButtonFunction ?? undefined"
+      @firstMediaButtonFunction="() => firstMediaButtonFunction?.()"
     >
     </MediaLibraryModal>
   </div>
