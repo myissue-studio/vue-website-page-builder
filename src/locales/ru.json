@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "Обнаружены несопряжённые теги <section>. Каждый компонент должен быть обёрнут в правильно сопряжённые <section>...</section>.",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "Вложенные теги <section> не допускаются. Убедитесь, что ни один <section> не помещён внутрь другого <section>.",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Квадратные [] или фигурные {} скобки не являются допустимым HTML. Они используются для форматов данных, таких как JSON.",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "Теги <section> не найдены. Каждый компонент должен быть обёрнут в тег <section>."
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "Теги <section> не найдены. Каждый компонент должен быть обёрнут в тег <section>.",
+  "Dark mode": "Тёмный режим",
+  "Light mode": "Светлый режим"
 }

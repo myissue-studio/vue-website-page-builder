@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "تم الكشف عن وسوم <section> غير متطابقة. يجب أن يكون كل مكوّن داخل <section>...</section> متطابقة.",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "لا يُسمح بتداخل وسوم <section>. تأكد من عدم وضع <section> داخل <section> أخرى.",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "الأقواس [] أو الأقواس المعقوفة {} ليست HTML صالحة. تُستخدم لتنسيقات البيانات مثل JSON.",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "لم يتم العثور على وسوم <section>. يجب تضمين كل مكوّن داخل وسم <section>."
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "لم يتم العثور على وسوم <section>. يجب تضمين كل مكوّن داخل وسم <section>.",
+  "Dark mode": "الوضع الداكن",
+  "Light mode": "الوضع الفاتح"
 }

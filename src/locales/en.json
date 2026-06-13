@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "No <section> tags found. Each component must be wrapped in a <section> tag."
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "No <section> tags found. Each component must be wrapped in a <section> tag.",
+  "Dark mode": "Dark mode",
+  "Light mode": "Light mode"
 }

@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "检测到不均匀的<section>标签。每个组件必须包裹在正确配对的<section>...</section>中。",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "不允许嵌套<section>标签。请确保没有<section>被放置在另一个<section>内部。",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "方括号[]或花括号{}不是有效的HTML。它们用于JSON等数据格式。",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "未找到<section>标签。每个组件必须包裹在<section>标签中。"
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "未找到<section>标签。每个组件必须包裹在<section>标签中。",
+  "Dark mode": "深色模式",
+  "Light mode": "浅色模式"
 }

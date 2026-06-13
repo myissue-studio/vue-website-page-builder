@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "<section>タグが不均等です。各コンポーネントは正しくペアになった<section>...</section>で囲む必要があります。",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "ネストされた<section>タグは許可されていません。<section>が別の<section>内にないことを確認してください。",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "角括弧[]や波括弧{}は有効なHTMLではありません。JSONなどのデータ形式に使用されます。",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "<section>タグが見つかりません。各コンポーネントは<section>タグで囲む必要があります。"
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "<section>タグが見つかりません。各コンポーネントは<section>タグで囲む必要があります。",
+  "Dark mode": "ダークモード",
+  "Light mode": "ライトモード"
 }

@@ -141,6 +141,16 @@ watch(languageSelction, async (newVal) => {
 const getBuilderStarted = computed(() => {
   return pageBuilderStateStore.getBuilderStarted
 })
+
+const getIsDarkMode = computed(() => pageBuilderStateStore.getIsDarkMode)
+
+const toggleDarkMode = () => {
+  const next = !pageBuilderStateStore.getIsDarkMode
+  pageBuilderStateStore.setIsDarkMode(next)
+  const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? '{}')
+  userSettings.darkMode = next
+  localStorage.setItem('userSettingsPageBuilder', JSON.stringify(userSettings))
+}
 const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
@@ -504,6 +514,9 @@ onMounted(async () => {
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
   }
+  if (userSettings && typeof userSettings.darkMode === 'boolean') {
+    pageBuilderStateStore.setIsDarkMode(userSettings.darkMode)
+  }
   if (
     getPageBuilderConfig.value &&
     getPageBuilderConfig.value.userSettings &&
@@ -554,7 +567,8 @@ onMounted(async () => {
 
 <template>
   <div
-    class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-mx-auto pbx-flex pbx-flex-col pbx-font-sans pbx-text-black pbx-border-solid pbx-border pbx-border-gray-400 pbx-inset-x-0 pbx-z-10 pbx-bg-white pbx-overflow-x-auto pbx-h-full"
+    :class="[getIsDarkMode ? 'dark' : '']"
+    class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-mx-auto pbx-flex pbx-flex-col pbx-font-sans pbx-text-black dark:pbx-text-white pbx-border-solid pbx-border pbx-border-gray-400 pbx-inset-x-0 pbx-z-10 pbx-bg-white dark:pbx-bg-gray-900 pbx-overflow-x-auto pbx-h-full"
   >
     <GlobalLoader
       v-if="(getIsLoadingGlobal && !openAppNotStartedModal) || isLoadingLang"
@@ -656,7 +670,7 @@ onMounted(async () => {
 
     <div
       id="pagebuilder-navbar"
-      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-2 pbx-font-sans pbx-min-h-20"
+      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor dark:pbx-bg-gray-800 pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 dark:pbx-border-gray-700 pbx-mb-2 pbx-font-sans pbx-min-h-20"
     >
       <template
         v-if="
@@ -878,6 +892,23 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+
+          <!-- Dark mode toggle -->
+          <template v-if="false">
+            <div class="lg:pbx-flex pbx-hidden pbx-items-center pbx-justify-center pbx-ml-2">
+              <button
+                type="button"
+                @click="toggleDarkMode"
+                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 dark:pbx-bg-gray-700 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black dark:pbx-text-white hover:pbx-text-white"
+                :title="getIsDarkMode ? translate('Light mode') : translate('Dark mode')"
+              >
+                <!-- Moon icon (show in light mode to switch to dark) -->
+                <span v-if="!getIsDarkMode" class="material-symbols-outlined"> dark_mode </span>
+                <!-- Sun icon (show in dark mode to switch to light) -->
+                <span v-else class="material-symbols-outlined"> sunny </span>
+              </button>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -1009,7 +1040,7 @@ onMounted(async () => {
           }
         "
         id="pagebuilder-left-menu"
-        class="pbx-w-16 pbx-pt-7 pbx-pb-2 pbx-bg-myPrimaryLightGrayColor pbx-rounded-r-2xl pbx-shadow-sm"
+        class="pbx-w-16 pbx-pt-7 pbx-pb-2 pbx-bg-myPrimaryLightGrayColor dark:pbx-bg-gray-800 pbx-rounded-r-2xl pbx-shadow-sm"
       >
         <div class="pbx-mx-2 pbx-flex pbx-flex-col pbx-myPrimaryGap pbx-items-stretch">
           <div
@@ -1028,7 +1059,7 @@ onMounted(async () => {
       <main
         ref="pbxBuilderWrapper"
         id="page-builder-wrapper"
-        class="pbx-transition-all pbx-duration-300 pbx-font-sans pbx-p-1 pbx-flex pbx-flex-col pbx-grow pbx-rounded-tr-2xl pbx-rounded-tl-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-items-stretch pbx-text-black pbx-h-[100vh] pbx-overflow-y-scroll pbx-relative pbx-pt-16"
+        class="pbx-transition-all pbx-duration-300 pbx-font-sans pbx-p-1 pbx-flex pbx-flex-col pbx-grow pbx-rounded-tr-2xl pbx-rounded-tl-2xl pbx-border-solid pbx-border pbx-border-gray-200 dark:pbx-border-gray-700 pbx-items-stretch pbx-text-black dark:pbx-text-white pbx-h-[100vh] pbx-overflow-y-scroll pbx-relative pbx-pt-16"
         :class="[getMenuRight ? 'pbx-w-full' : 'pbx-w-full']"
       >
         <div
@@ -1123,7 +1154,7 @@ onMounted(async () => {
           class="pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh] pbx-pl-2"
           :class="[
             getMenuRight
-              ? 'pbx-w-80 pbx-bg-myPrimaryLightGrayColor pbx-items-stretch'
+              ? 'pbx-w-80 pbx-bg-myPrimaryLightGrayColor dark:pbx-bg-gray-800 pbx-items-stretch'
               : 'bpx-w-0 pbx-mr-0',
           ]"
         >
@@ -1137,7 +1168,7 @@ onMounted(async () => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-w-18 pbx-bg-myPrimaryLightGrayColor pbx-pt-5 pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh] pbx-pl-2 pbx-pr-2"
+          class="pbx-w-18 pbx-bg-myPrimaryLightGrayColor dark:pbx-bg-gray-800 pbx-pt-5 pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh] pbx-pl-2 pbx-pr-2"
         >
           <div
             @click.self="

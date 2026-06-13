@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "असमान <section> टैग पाए गए। प्रत्येक कॉम्पोनेंट को सही <section>...</section> में लपेटा जाना चाहिए।",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "नेस्टेड <section> टैग की अनुमति नहीं है। सुनिश्चित करें कि कोई <section> किसी अन्य <section> के अंदर न हो।",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "[] या {} HTML के लिए मान्य नहीं हैं। इनका उपयोग JSON जैसे डेटा प्रारूपों के लिए किया जाता है।",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "कोई <section> टैग नहीं मिले। प्रत्येक कॉम्पोनेंट को <section> टैग में लपेटा जाना चाहिए।"
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "कोई <section> टैग नहीं मिले। प्रत्येक कॉम्पोनेंट को <section> टैग में लपेटा जाना चाहिए।",
+  "Dark mode": "डार्क मोड",
+  "Light mode": "लाइट मोड"
 }

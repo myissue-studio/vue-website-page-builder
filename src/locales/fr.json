@@ -247,5 +247,7 @@
   "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "Des balises <section> inégales ont été détectées. Chaque composant doit être enveloppé dans des balises <section>...</section> correctement appariées.",
   "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "Les balises <section> imbriquées ne sont pas autorisées. Assurez-vous qu'aucune <section> n'est placée dans une autre <section>.",
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Les crochets [] ou accolades {} ne sont pas du HTML valide. Ils sont utilisés pour les formats de données comme JSON.",
-  "No <section> tags found. Each component must be wrapped in a <section> tag.": "Aucune balise <section> trouvée. Chaque composant doit être enveloppé dans une balise <section>."
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "Aucune balise <section> trouvée. Chaque composant doit être enveloppé dans une balise <section>.",
+  "Dark mode": "Mode sombre",
+  "Light mode": "Mode clair"
 }
