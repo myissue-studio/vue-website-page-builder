@@ -47,5 +47,5 @@ export function getPageBuilder(): PageBuilderService {
 // dependencies (e.g. PageBuilderService) change via HMR. This prevents
 // stale singleton instances from persisting across hot updates.
 if (import.meta.hot) {
-  import.meta.hot.decline()
+  import.meta.hot.invalidate()
 }

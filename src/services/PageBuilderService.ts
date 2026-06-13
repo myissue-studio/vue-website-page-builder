@@ -77,7 +77,7 @@ export class PageBuilderService {
   private savedMountComponents: BuilderResourceData | null = null
   private pendingMountComponents: BuilderResourceData | null = null
   private globalStylesObserver: MutationObserver | null = null
-  private _pendingPageSettings: { classes: string; style: string } | null = null
+  private _pendingPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
 
   // Add a class-level WeakMap to track elements and their listeners
@@ -3242,7 +3242,7 @@ export class PageBuilderService {
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
 
       // Initialize configPageSettings to null
-      let configPageSettings: { classes: string; style: string } | null = null
+      let configPageSettings: PageSettings | null = null
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
@@ -3253,7 +3253,7 @@ export class PageBuilderService {
       if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
         configPageSettings = {
           classes: importedPageBuilder.className || '',
-          style: importedPageBuilder.getAttribute('style') || '',
+          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
         }
       }
 
