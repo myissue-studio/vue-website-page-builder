@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Le parentesi quadre [] o graffe {} non sono HTML valido. Vengono usate per formati dati come JSON.",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "Nessun tag <section> trovato. Ogni componente deve essere racchiuso in un tag <section>.",
   "Dark mode": "Modalità scura",
-  "Light mode": "Modalità chiara"
+  "Light mode": "Modalità chiara",
+  "Search components...": "Cerca componenti...",
+  "No components found.": "Nessun componente trovato.",
+  "No themes found.": "Nessun tema trovato."
 }

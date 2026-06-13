@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Les crochets [] ou accolades {} ne sont pas du HTML valide. Ils sont utilisés pour les formats de données comme JSON.",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "Aucune balise <section> trouvée. Chaque composant doit être enveloppé dans une balise <section>.",
   "Dark mode": "Mode sombre",
-  "Light mode": "Mode clair"
+  "Light mode": "Mode clair",
+  "Search components...": "Rechercher des composants...",
+  "No components found.": "Aucun composant trouvé.",
+  "No themes found.": "Aucun thème trouvé."
 }

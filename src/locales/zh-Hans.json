@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "方括号[]或花括号{}不是有效的HTML。它们用于JSON等数据格式。",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "未找到<section>标签。每个组件必须包裹在<section>标签中。",
   "Dark mode": "深色模式",
-  "Light mode": "浅色模式"
+  "Light mode": "浅色模式",
+  "Search components...": "搜索组件...",
+  "No components found.": "未找到组件。",
+  "No themes found.": "未找到主题。"
 }

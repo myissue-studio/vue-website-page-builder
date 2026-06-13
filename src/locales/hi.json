@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "[] या {} HTML के लिए मान्य नहीं हैं। इनका उपयोग JSON जैसे डेटा प्रारूपों के लिए किया जाता है।",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "कोई <section> टैग नहीं मिले। प्रत्येक कॉम्पोनेंट को <section> टैग में लपेटा जाना चाहिए।",
   "Dark mode": "डार्क मोड",
-  "Light mode": "लाइट मोड"
+  "Light mode": "लाइट मोड",
+  "Search components...": "कॉम्पोनेन्ट खोजें...",
+  "No components found.": "कोई कॉम्पोनेन्ट नहीं मिला।",
+  "No themes found.": "कोई थीम नहीं मिली।"
 }

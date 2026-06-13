@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "角括弧[]や波括弧{}は有効なHTMLではありません。JSONなどのデータ形式に使用されます。",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "<section>タグが見つかりません。各コンポーネントは<section>タグで囲む必要があります。",
   "Dark mode": "ダークモード",
-  "Light mode": "ライトモード"
+  "Light mode": "ライトモード",
+  "Search components...": "コンポーネントを検索...",
+  "No components found.": "コンポーネントが見つかりません。",
+  "No themes found.": "テーマが見つかりません。"
 }

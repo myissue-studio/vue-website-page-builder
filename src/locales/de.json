@@ -249,5 +249,8 @@
   "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Eckige [] oder geschweifte {} Klammern sind kein gültiges HTML. Sie werden für Datenformate wie JSON verwendet.",
   "No <section> tags found. Each component must be wrapped in a <section> tag.": "Keine <section>-Tags gefunden. Jede Komponente muss in einem <section>-Tag eingeschlossen werden.",
   "Dark mode": "Dunkelmodus",
-  "Light mode": "Hellmodus"
+  "Light mode": "Hellmodus",
+  "Search components...": "Komponenten suchen...",
+  "No components found.": "Keine Komponenten gefunden.",
+  "No themes found.": "Keine Themen gefunden."
 }
