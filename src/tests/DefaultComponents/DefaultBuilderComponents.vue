@@ -183,20 +183,9 @@ const convertToComponentObject = function (comp: {
               : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
           ]"
         >
-          <span>
-            <svg
-              fill="currentColor"
-              height="22"
-              viewBox="0 0 22 22"
-              width="22"
-              xmlns="http://www.w3.org/2000/svg"
-              class="catalog-gy660l"
-            >
-              <path
-                d="M4 7.23V4h3.23v3.23H4zM9.385 7.23V4h3.23v3.23h-3.23zM14.77 4v3.23H18V4h-3.23zM4 12.615v-3.23h3.23v3.23H4zM9.385 9.385v3.23h3.23v-3.23h-3.23zM14.77 12.615v-3.23H18v3.23h-3.23zM4 14.77V18h3.23v-3.23H4zM9.385 18v-3.23h3.23V18h-3.23zM14.77 14.77V18H18v-3.23h-3.23z"
-              ></path>
-            </svg>
-          </span>
+          <span class="material-symbols-outlined">{{
+            category === 'Themes' ? 'landscape_2' : 'wheat'
+          }}</span>
           <span>
             {{ translate(category) }}
           </span>
