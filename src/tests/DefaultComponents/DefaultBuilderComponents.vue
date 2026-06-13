@@ -7,6 +7,7 @@ import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type { ComponentObject } from '../../types'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
+import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 
 const { translate } = useTranslations()
 
@@ -238,11 +239,8 @@ const convertToComponentObject = function (comp: {
                 <div
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
-                  <!-- Use SVG preview instead of external images -->
-                  <div
-                    class="pbx-w-64 pbx-h-96 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
-                    v-html="theme.cover_image"
-                  ></div>
+                  <!-- Sandboxed iframe preview -->
+                  <ComponentThumbnail :htmlCode="theme.html_code" :containerHeight="384" />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
@@ -332,11 +330,8 @@ const convertToComponentObject = function (comp: {
                 <div
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
-                  <!-- Use SVG preview instead of external images -->
-                  <div
-                    class="pbx-w-64 pbx-h-64 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
-                    v-html="comp.cover_image"
-                  ></div>
+                  <!-- Sandboxed iframe preview -->
+                  <ComponentThumbnail :htmlCode="comp.html_code" />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
