@@ -9,7 +9,7 @@ import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSideba
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
 import { delay } from '../composables/delay'
-import { useDebounce } from '../composables/useDebounce.ts'
+import { useDebounce } from '../composables/useDebounce'
 import DynamicModalBuilder from '../Components/Modals/DynamicModalBuilder.vue'
 import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
 import { useTranslations } from '../composables/useTranslations'
