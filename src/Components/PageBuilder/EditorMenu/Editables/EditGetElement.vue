@@ -151,7 +151,7 @@ const handleModalIframeSrc = function () {
 
   typeModalTipTap.value = 'success'
   gridColumnModalTipTap.value = 2
-  titleModalTipTap.value = 'Add video url'
+  titleModalTipTap.value = translate('Add video url')
   descriptionModalTipTap.value = null
   firstButtonModalTipTap.value = translate('Close')
   secondButtonModalTipTap.value = 'Save'
@@ -300,7 +300,9 @@ const handleDelete = function () {
         <div class="pbx-myInputGroup">
           <div class="pbx-myPrimaryFormOrganizationHeaderDescriptionSection">
             <div class="pbx-myPrimaryFormOrganizationHeader">
-              <label for="youtube-video" class="pbx-myPrimaryInputLabel">Video url:</label>
+              <label for="youtube-video" class="pbx-myPrimaryInputLabel">{{
+                translate('Video url:')
+              }}</label>
               <input
                 id="youtube-video"
                 v-model="iframeSrc"

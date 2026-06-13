@@ -37,12 +37,12 @@ const handleAddStyle = async () => {
   const value = inputValue.value.trim()
 
   if (!property || !value) {
-    errorMessage.value = 'Please enter a property and a value.'
+    errorMessage.value = translate('Please enter a property and a value.')
     return
   }
 
   if (currentStyles.value && currentStyles.value[property]) {
-    errorMessage.value = `Property "${property}" already exists. Remove it first to add a new one.`
+    errorMessage.value = `"${property}" ${translate('already exists. Remove it first to add a new one.')}`
     return
   }
 

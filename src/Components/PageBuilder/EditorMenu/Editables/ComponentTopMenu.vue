@@ -204,7 +204,9 @@ const closeSEO = function () {
                 </div>
               </div>
 
-              <div v-else class="pbx-text-gray-500 pbx-text-center">No SEO checks available.</div>
+              <div v-else class="pbx-text-gray-500 pbx-text-center">
+                {{ translate('No SEO checks available.') }}
+              </div>
               <!-- Checks end -->
             </div>
           </div>

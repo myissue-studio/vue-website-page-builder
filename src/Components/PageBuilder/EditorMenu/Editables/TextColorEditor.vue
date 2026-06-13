@@ -106,7 +106,7 @@ watch(
             >
               <div v-if="color === 'none'" class="pbx-flex pbx-items-center">
                 <span class="material-symbols-outlined"> invert_colors </span>
-                <span class="pbx-ml-3">Default black</span>
+                <span class="pbx-ml-3">{{ translate('Default black') }}</span>
               </div>
               <div v-if="color !== 'none'" class="pbx-flex pbx-items-center">
                 <div

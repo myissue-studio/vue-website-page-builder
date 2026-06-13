@@ -4,7 +4,9 @@ import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import { Switch } from '@headlessui/vue'
 import { getPageBuilder } from '../../../../composables/builderInstance'
+import { useTranslations } from '../../../../composables/useTranslations'
 const pageBuilderService = getPageBuilder()
+const { translate } = useTranslations()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -81,7 +83,7 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
 
 <template>
   <EditorAccordion>
-    <template #title>Link</template>
+    <template #title>{{ translate('Link') }}</template>
     <template #content>
       <!-- Hyperlink ability / start -->
       <div v-if="getHyperlinkAbility === false" class="pbx-rounded-md pbx-bg-red-50 pbx-p-2">
@@ -91,7 +93,7 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
           </div>
           <div class="pbx-ml-2">
             <p class="pbx-text-sm pbx-font-medium pbx-text-green-800">
-              Not able to add hyperlink on this element
+              {{ translate('Not able to add hyperlink on this element') }}
             </p>
           </div>
           <div class="pbx-ml-auto pbx-pl-3">
@@ -108,7 +110,7 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
       <div v-if="getHyperlinkAbility === true">
         <div class="pbx-my-2 pbx-py-2">
           <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-2 pbx-w-full">
-            <p class="pbx-myPrimaryParagraph">Enable hyperlink</p>
+            <p class="pbx-myPrimaryParagraph">{{ translate('Enable hyperlink') }}</p>
             <!-- Toggle start -->
             <Switch
               v-model="hyperlinkEnable"
@@ -178,7 +180,9 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
               <span class="pbx-myMediumIcon material-symbols-outlined"> check </span>
             </div>
             <div class="pbx-ml-2">
-              <p class="pbx-text-sm pbx-font-medium pbx-text-green-800">Hyperlink added</p>
+              <p class="pbx-text-sm pbx-font-medium pbx-text-green-800">
+                {{ translate('Hyperlink added') }}
+              </p>
             </div>
             <div class="pbx-ml-auto pbx-pl-3">
               <div class="pbx-mx-1.5 pbx-my-1.5">
@@ -201,7 +205,9 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
               <span class="pbx-myMediumIcon material-symbols-outlined"> warning </span>
             </div>
             <div class="pbx-ml-2">
-              <p class="pbx-text-sm pbx-font-medium pbx-text-green-800">No hyperlink added</p>
+              <p class="pbx-text-sm pbx-font-medium pbx-text-green-800">
+                {{ translate('No hyperlink added') }}
+              </p>
             </div>
             <div class="pbx-ml-auto pbx-pl-3">
               <div class="pbx-mx-1.5 pbx-my-1.5">
@@ -221,7 +227,7 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
             <input
               v-model="urlInput"
               type="text"
-              placeholder="URL.."
+              :placeholder="translate('URL..')"
               autocomplete="off"
               class="pbx-myPrimaryInput pbx-border-none pbx-rounded-r-none pbx-ml-0 pbx-w-full"
               @keydown.enter.tab.prevent="handleHyperlink()"
@@ -245,7 +251,7 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
 
           <div class="pbx-my-2 pbx-py-2">
             <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-2 pbx-w-full">
-              <p class="pbx-myPrimaryParagraph">Open in new tab</p>
+              <p class="pbx-myPrimaryParagraph">{{ translate('Open in new tab') }}</p>
               <!-- Toggle start -->
               <Switch
                 v-model="openHyperlinkInNewTab"

@@ -4,6 +4,9 @@ import { sharedPageBuilderStore } from '../../../stores/shared-store'
 
 import { isEmptyObject } from '../../../helpers/isEmptyObject'
 import { version } from '../../../../package.json'
+import { useTranslations } from '../../../composables/useTranslations'
+
+const { translate } = useTranslations()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -24,17 +27,22 @@ const getPageBuilderConfig = computed(() => {
       <!-- Advanced Settings - start -->
       <div>
         <div class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
-          <h3 class="pbx-myQuaternaryHeader">Configuration Overview</h3>
+          <h3 class="pbx-myQuaternaryHeader">{{ translate('Configuration Overview') }}</h3>
           <p class="pbx-myPrimaryParagraph pbx-text-xs">
-            A summary of current user preferences, application settings, and system metadata
-            including UI theme, language, saved components, and logo configuration.
+            {{
+              translate(
+                'A summary of current user preferences, application settings, and system metadata including UI theme, language, saved components, and logo configuration.',
+              )
+            }}
           </p>
         </div>
 
         <!-- Version Information Table - start -->
         <div class="pbx-px-2">
           <div class="pbx-mt-8">
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">Version Information</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('Version Information') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -46,13 +54,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        App
+                        {{ translate('App') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Version
+                        {{ translate('Version') }}
                       </th>
                     </tr>
                   </thead>
@@ -61,7 +69,9 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Page Builder</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">
+                          {{ translate('Page Builder') }}
+                        </div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -90,7 +100,9 @@ const getPageBuilderConfig = computed(() => {
               !isEmptyObject(getPageBuilderConfig.resourceData)
             "
           >
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">Resource Data</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('Resource Data') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -102,13 +114,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Property
+                        {{ translate('Property') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Value
+                        {{ translate('Value') }}
                       </th>
                     </tr>
                   </thead>
@@ -117,7 +129,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Title</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Title') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -131,7 +143,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">ID</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('ID') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -156,7 +168,9 @@ const getPageBuilderConfig = computed(() => {
               !isEmptyObject(getPageBuilderConfig.userForPageBuilder)
             "
           >
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">User Information</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('User Information') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -168,13 +182,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Property
+                        {{ translate('Property') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Value
+                        {{ translate('Value') }}
                       </th>
                     </tr>
                   </thead>
@@ -183,7 +197,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">User Name</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('User Name') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -197,7 +211,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Image</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Image') }}</div>
                       </td>
                       <td
                         v-if="
@@ -222,7 +236,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Image URL</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Image URL') }}</div>
                       </td>
                       <td
                         v-if="
@@ -252,7 +266,9 @@ const getPageBuilderConfig = computed(() => {
               !isEmptyObject(getPageBuilderConfig.userSettings)
             "
           >
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">User Settings</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('User Settings') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -264,13 +280,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Setting
+                        {{ translate('Setting') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Value
+                        {{ translate('Value') }}
                       </th>
                     </tr>
                   </thead>
@@ -279,7 +295,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Theme</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Theme') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -293,7 +309,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Language</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Language') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -307,7 +323,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Auto Save</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Auto Save') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -322,7 +338,9 @@ const getPageBuilderConfig = computed(() => {
                             "
                           >
                             {{
-                              getPageBuilderConfig.userSettings.autoSave ? 'Enabled' : 'Disabled'
+                              getPageBuilderConfig.userSettings.autoSave
+                                ? translate('Enabled')
+                                : translate('Disabled')
                             }}
                           </span>
                         </div>
@@ -332,7 +350,9 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Notifications</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">
+                          {{ translate('Notifications') }}
+                        </div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -348,8 +368,8 @@ const getPageBuilderConfig = computed(() => {
                           >
                             {{
                               getPageBuilderConfig.userSettings.notifications
-                                ? 'Enabled'
-                                : 'Disabled'
+                                ? translate('Enabled')
+                                : translate('Disabled')
                             }}
                           </span>
                         </div>
@@ -371,7 +391,9 @@ const getPageBuilderConfig = computed(() => {
               !isEmptyObject(getPageBuilderConfig.pageBuilderLogo)
             "
           >
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">Logo Configuration</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('Logo Configuration') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -383,13 +405,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Property
+                        {{ translate('Property') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Value
+                        {{ translate('Value') }}
                       </th>
                     </tr>
                   </thead>
@@ -398,7 +420,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Logo</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -418,7 +440,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Logo URL</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo URL') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -451,7 +473,9 @@ const getPageBuilderConfig = computed(() => {
               !isEmptyObject(getPageBuilderConfig.updateOrCreate)
             "
           >
-            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">Form Type</h4>
+            <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+              {{ translate('Form Type') }}
+            </h4>
             <div
               class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
             >
@@ -463,13 +487,13 @@ const getPageBuilderConfig = computed(() => {
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Mode
+                        {{ translate('Mode') }}
                       </th>
                       <th
                         scope="col"
                         class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
                       >
-                        Description
+                        {{ translate('Description') }}
                       </th>
                     </tr>
                   </thead>
@@ -478,7 +502,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Form Type</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Form Type') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -521,7 +545,7 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
-                        <div class="pbx-min-w-[30rem] pbx-w-max">Form Name</div>
+                        <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Form Name') }}</div>
                       </td>
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
@@ -551,11 +575,13 @@ const getPageBuilderConfig = computed(() => {
       class="pbx-mt-4 pbx-mb-4 pbx-py-8 pbx-px-2 pbx-border pbx-border-solid pbx-border-gray-600 pbx-rounded-xl"
     >
       <div class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
-        <h3 class="pbx-myQuaternaryHeader">Complete Configuration Overview</h3>
+        <h3 class="pbx-myQuaternaryHeader">{{ translate('Complete Configuration Overview') }}</h3>
         <p class="pbx-myPrimaryParagraph pbx-text-xs">
-          Complete configuration object currently used by the Page Builder. Includes user
-          information, branding settings, and other context-specific data needed for rendering and
-          managing the builder environment.
+          {{
+            translate(
+              'Complete configuration object currently used by the Page Builder. Includes user information, branding settings, and other context-specific data needed for rendering and managing the builder environment.',
+            )
+          }}
         </p>
       </div>
 
@@ -566,7 +592,7 @@ const getPageBuilderConfig = computed(() => {
           <div
             class="pbx-mb-px pbx-flex pbx-text-xs pbx-font-medium pbx-text-myPrimaryMediumGrayColor"
           >
-            <div class="pbx-px-4 pbx-py-4 pbx-text-white">Configuration</div>
+            <div class="pbx-px-4 pbx-py-4 pbx-text-white">{{ translate('Configuration') }}</div>
           </div>
         </div>
         <div class="pbx-px-4 pbx-pb-8 pbx-pt-4 pbx-text-white pbx-text-xs pbx-break-all">
