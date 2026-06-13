@@ -4,7 +4,7 @@
  * providing a single source of truth for the page builder's state and logic.
  */
 
-import { PageBuilderService } from '../services/PageBuilderService'
+import type { PageBuilderService } from '../services/PageBuilderService'
 
 /**
  * The singleton instance of the PageBuilderService.
@@ -22,9 +22,7 @@ let instance: PageBuilderService | null = null
  * @returns {void}
  */
 export function setBuilderInstance(newInstance: PageBuilderService): void {
-  if (!instance) {
-    instance = newInstance
-  }
+  instance = newInstance
 }
 
 /**
@@ -43,4 +41,11 @@ export function getPageBuilder(): PageBuilderService {
     )
   }
   return instance
+}
+
+// In development, force a full page reload when this module or its
+// dependencies (e.g. PageBuilderService) change via HMR. This prevents
+// stale singleton instances from persisting across hot updates.
+if (import.meta.hot) {
+  import.meta.hot.decline()
 }
