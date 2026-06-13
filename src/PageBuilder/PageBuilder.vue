@@ -1288,6 +1288,8 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 2;
 }
 #pagebuilder #nolocalstorage:hover #addsection {
   display: flex;
