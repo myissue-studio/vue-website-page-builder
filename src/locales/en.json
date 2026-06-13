@@ -210,7 +210,6 @@
   "No SEO checks available.": "No SEO checks available.",
   "Video url:": "Video url:",
   "Add video url": "Add video url",
-  "Save": "Save",
   "Configuration Overview": "Configuration Overview",
   "A summary of current user preferences, application settings, and system metadata including UI theme, language, saved components, and logo configuration.": "A summary of current user preferences, application settings, and system metadata including UI theme, language, saved components, and logo configuration.",
   "Version Information": "Version Information",
@@ -241,5 +240,12 @@
   "Mode": "Mode",
   "Complete Configuration Overview": "Complete Configuration Overview",
   "Complete configuration object currently used by the Page Builder. Includes user information, branding settings, and other context-specific data needed for rendering and managing the builder environment.": "Complete configuration object currently used by the Page Builder. Includes user information, branding settings, and other context-specific data needed for rendering and managing the builder environment.",
-  "Configuration": "Configuration"
+  "Configuration": "Configuration",
+  "No HTML content was provided. Please ensure a valid HTML string is passed.": "No HTML content was provided. Please ensure a valid HTML string is passed.",
+  "Error: The <section> tag cannot be used as it is already included inside this component.": "Error: The <section> tag cannot be used as it is already included inside this component.",
+  "Could not parse element from HTML string.": "Could not parse element from HTML string.",
+  "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.": "Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.",
+  "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.": "Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.",
+  "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.": "Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.",
+  "No <section> tags found. Each component must be wrapped in a <section> tag.": "No <section> tags found. Each component must be wrapped in a <section> tag."
 }

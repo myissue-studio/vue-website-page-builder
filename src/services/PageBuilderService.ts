@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { delay } from '../composables/delay'
 import { isEmptyObject } from '../helpers/isEmptyObject'
 import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
+import { useTranslations } from '../composables/useTranslations'
 
 // Define available languages as a type and an array for easy iteration and type safety
 export type AvailableLanguage =
@@ -89,9 +90,13 @@ export class PageBuilderService {
     { click: EventListener; mouseover: EventListener; mouseleave: EventListener }
   >()
 
+  private translate: (key: string) => string
+
   constructor(pageBuilderStateStore: ReturnType<typeof usePageBuilderStateStore>) {
     this.hasStartedEditing = false
     this.pageBuilderStateStore = pageBuilderStateStore
+    const { translate } = useTranslations()
+    this.translate = translate
     this.getApplyImageToSelection = computed(
       () => this.pageBuilderStateStore.getApplyImageToSelection,
     )
@@ -3072,12 +3077,16 @@ export class PageBuilderService {
    */
   public async applyModifiedHTML(htmlString: string): Promise<string | null> {
     if (!htmlString || (typeof htmlString === 'string' && htmlString.length === 0)) {
-      return 'No HTML content was provided. Please ensure a valid HTML string is passed.'
+      return this.translate(
+        'No HTML content was provided. Please ensure a valid HTML string is passed.',
+      )
     }
 
     // Check if the htmlString contains any <section> tags
     if (/<section[\s>]/i.test(htmlString)) {
-      return 'Error: The <section> tag cannot be used as it is already included inside this component.'
+      return this.translate(
+        'Error: The <section> tag cannot be used as it is already included inside this component.',
+      )
     }
 
     const tempDiv = document.createElement('div')
@@ -3086,7 +3095,7 @@ export class PageBuilderService {
     const parsedElement = tempDiv.firstElementChild as HTMLElement | null
 
     if (!parsedElement) {
-      return 'Could not parse element from HTML string.'
+      return this.translate('Could not parse element from HTML string.')
     }
 
     // Replace the actual DOM element
@@ -3114,7 +3123,9 @@ export class PageBuilderService {
     const closingSectionMatches = htmlString.match(/<\/section>/gi) || []
 
     if (!htmlString || htmlString.trim().length === 0) {
-      const error = 'No HTML content was provided. Please ensure a valid HTML string is passed.'
+      const error = this.translate(
+        'No HTML content was provided. Please ensure a valid HTML string is passed.',
+      )
       if (options && options.logError) {
         console.error(error)
         // Behavior
@@ -3125,9 +3136,9 @@ export class PageBuilderService {
     }
 
     if (openingSectionMatches.length !== closingSectionMatches.length) {
-      const error =
-        'Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. ' +
-        'Ensure that all <section> tags have a matching closing </section> tag.'
+      const error = this.translate(
+        'Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.',
+      )
 
       if (options && options.logError) {
         console.error(error)
@@ -3141,8 +3152,9 @@ export class PageBuilderService {
     tempDiv.innerHTML = trimmedData
     const nestedSection = tempDiv.querySelector('section section')
     if (nestedSection) {
-      const error =
-        'Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.'
+      const error = this.translate(
+        'Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.',
+      )
       if (options && options.logError) {
         console.error(error)
         return error
@@ -3152,8 +3164,9 @@ export class PageBuilderService {
 
     // Return error since JSON data has been passed to mount HTML to DOM
     if (trimmedData.startsWith('[') || trimmedData.startsWith('{')) {
-      const error =
-        'Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.'
+      const error = this.translate(
+        'Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.',
+      )
       if (options && options.logError) {
         console.error(error)
         return error
@@ -3177,7 +3190,9 @@ export class PageBuilderService {
     const openingSectionMatches = htmlString.match(/<section\b[^>]*>/gi) || []
 
     if (openingSectionMatches.length === 0) {
-      const error = 'No <section> tags found. Each component must be wrapped in a <section> tag.'
+      const error = this.translate(
+        'No <section> tags found. Each component must be wrapped in a <section> tag.',
+      )
       if (error) {
         return error
       }
