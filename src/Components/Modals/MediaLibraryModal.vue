@@ -21,6 +21,7 @@ defineProps({
     type: String,
   },
   open: {
+    type: Boolean,
     required: true,
   },
   customMediaComponent: {
