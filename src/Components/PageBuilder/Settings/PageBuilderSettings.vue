@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 
-import { isEmptyObject } from '../../../helpers/isEmptyObject.ts'
+import { isEmptyObject } from '../../../helpers/isEmptyObject'
 import { version } from '../../../../package.json'
 
 // Use shared store instance
