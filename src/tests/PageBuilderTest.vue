@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import FullWidthElement from '../Components/Layouts/FullWidthElement.vue'
 import PageBuilder from '../PageBuilder/PageBuilder.vue'
 import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
-import DemoBuilderComponentsTest from '../tests/TestComponents/DemoBuilderComponentsTest.vue'
 import { computed, watch } from 'vue'
 import componentsArray from '../tests/componentsArray.test.json'
 import { getPageBuilder } from '../composables/builderInstance'

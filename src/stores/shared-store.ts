@@ -1,6 +1,5 @@
 import { createPinia } from 'pinia'
 import { usePageBuilderStateStore } from './page-builder-state'
-import type { PageBuilderStateStore } from '../types'
 
 // Create a shared Pinia instance that will be used across the entire package
 export const sharedPageBuilderPinia = createPinia()

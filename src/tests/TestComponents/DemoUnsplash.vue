@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 const unsplashKey = import.meta.env.VITE_UNSPLASH_KEY
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
@@ -20,13 +20,24 @@ const getOrientationValue = ref('')
 const getApplyImageToSelection = ref('')
 const getCurrentUser = ref('')
 
-const getUnsplashImages = ref([])
+interface UnsplashImage {
+  id: string
+  urls: { regular: string; thumb: string }
+  user: { name: string }
+}
+interface UnsplashResponse {
+  results: UnsplashImage[]
+  total: number
+  total_pages: number
+}
+
+const getUnsplashImages = ref<UnsplashResponse | null>(null)
 
 const fetchUnsplash = async function () {
   getIsLoading.value = true
   await delay(300)
   localStorage.setItem('unsplash-query', getSearchTerm.value)
-  localStorage.setItem('unsplash-page', getCurrentPageNumber.value)
+  localStorage.setItem('unsplash-page', String(getCurrentPageNumber.value))
 
   if (
     getUnsplashImages.value &&
@@ -65,7 +76,7 @@ const fetchUnsplash = async function () {
   }
 }
 
-const handleImageClick = async function (data) {
+const handleImageClick = async function (data: { url: string; user: string }) {
   getIsLoadingImage.value = true
 
   if (data.url) {
@@ -78,10 +89,10 @@ const handleImageClick = async function (data) {
   getIsLoadingImage.value = false
 }
 
-const searchByOrientation = function (orientationParameter) {
+const searchByOrientation = function (orientationParameter: string | null) {
   // check if search term length is more than 0
   if (getOrientationValue.value !== orientationParameter) {
-    getOrientationValue.value = orientationParameter
+    getOrientationValue.value = orientationParameter ?? ''
     getCurrentPageNumber.value = 1
     fetchUnsplash()
   }
@@ -89,19 +100,21 @@ const searchByOrientation = function (orientationParameter) {
 //
 // load images for previous page
 const previousPage = function () {
-  localStorage.setItem('unsplash-page', getCurrentPageNumber.value)
+  getCurrentPageNumber.value--
+  localStorage.setItem('unsplash-page', String(getCurrentPageNumber.value))
   fetchUnsplash()
 }
 
 // load images for next page
 const nextPage = async function () {
-  localStorage.setItem('unsplash-page', getCurrentPageNumber.value)
+  getCurrentPageNumber.value++
+  localStorage.setItem('unsplash-page', String(getCurrentPageNumber.value))
   fetchUnsplash()
 }
 
 const isLoading = ref(false)
 
-const applySelectedImage = async function (imageURL) {
+const applySelectedImage = async function (imageURL: string) {
   isLoading.value = true
   await pageBuilderService.applySelectedImage({
     src: `${imageURL}`,
@@ -243,7 +256,12 @@ onMounted(async () => {
               <span
                 v-if="Number(getCurrentPageNumber) !== 1"
                 class="pbx-myPrimaryParagraph pbx-text-xs pbx-italic pbx-pr-2 pbx-pl-1 pbx-cursor-pointer pbx-underline"
-                @click="nextPage(Number((getCurrentPageNumber = 1)))"
+                @click="
+                  () => {
+                    getCurrentPageNumber = 1
+                    nextPage()
+                  }
+                "
               >
                 {{ translate('First page') }}
               </span>
@@ -252,7 +270,12 @@ onMounted(async () => {
               v-if="Number(getCurrentPageNumber) > 1"
               :disabled="Number(getCurrentPageNumber) < 1"
               class="pbx-myPrimaryTag pbx-cursor-pointer"
-              @click="previousPage(Number(getCurrentPageNumber--))"
+              @click="
+                () => {
+                  getCurrentPageNumber--
+                  previousPage()
+                }
+              "
             >
               {{
                 `${translate('Prev')} ${Number(getCurrentPageNumber) > 0 ? Number(getCurrentPageNumber) - 1 : Number(getCurrentPageNumber) - 1}`
@@ -268,7 +291,12 @@ onMounted(async () => {
               :class="{
                 'pbx-opacity-50': Number(getCurrentPageNumber) >= getUnsplashImages.total_pages,
               }"
-              @click="nextPage(Number(getCurrentPageNumber++))"
+              @click="
+                () => {
+                  getCurrentPageNumber++
+                  nextPage()
+                }
+              "
             >
               {{
                 `${translate('Next')} ${Number(getCurrentPageNumber) > 0 ? Number(getCurrentPageNumber) + 1 : Number(getCurrentPageNumber) + 1}`
@@ -315,7 +343,12 @@ onMounted(async () => {
                 </span>
                 <span
                   v-if="getCurrentPageNumber > 1"
-                  @click="nextPage(1)"
+                  @click="
+                    () => {
+                      getCurrentPageNumber = 1
+                      nextPage()
+                    }
+                  "
                   class="pbx-myPrimaryLink"
                 >
                   {{ translate('No results on current page. Navigate to First Page.') }}

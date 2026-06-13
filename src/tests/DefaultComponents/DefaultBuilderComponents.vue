@@ -98,7 +98,10 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
 }
 
 // Helper function to convert ComponentData to ComponentObject
-const convertToComponentObject = function (comp: any): ComponentObject {
+const convertToComponentObject = function (comp: {
+  title: string
+  html_code: string
+}): ComponentObject {
   return {
     id: null, // Generate ID when needed in PageBuilderClass
     html_code: comp.html_code,
