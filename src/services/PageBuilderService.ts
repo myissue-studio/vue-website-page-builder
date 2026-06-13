@@ -2868,6 +2868,18 @@ export class PageBuilderService {
       ) {
         this.syncDomToStoreOnly()
         await nextTick()
+
+        // Capture the current global page styles BEFORE inserting the new component.
+        // After setComponents() Vue creates a fresh [data-pagebuilder-content] div for
+        // the new component — it has no class/style.  Existing divs keep their
+        // user-applied attributes because Vue doesn't manage them.  We re-apply
+        // the captured styles to ALL divs (including the new one) after the render.
+        const styledContent = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        const globalClasses = styledContent?.getAttribute('class') || ''
+        const globalStyle = styledContent?.getAttribute('style') || ''
+
         const components = this.pageBuilderStateStore.getComponents || []
         const newComponents = [
           ...components.slice(0, placeCompAtLocation),
@@ -2876,6 +2888,18 @@ export class PageBuilderService {
         ]
         this.pageBuilderStateStore.setComponents(newComponents)
         insertedIndex = placeCompAtLocation
+
+        // Re-apply global styles to every [data-pagebuilder-content] div including
+        // the newly created one that Vue just rendered without any classes.
+        if (globalClasses || globalStyle) {
+          await nextTick()
+          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+            if (globalClasses) el.setAttribute('class', globalClasses)
+            else el.removeAttribute('class')
+            if (globalStyle) el.setAttribute('style', globalStyle)
+            else el.removeAttribute('style')
+          })
+        }
       } else {
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
