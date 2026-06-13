@@ -63,8 +63,6 @@ const openHTMLSettings = async function () {
   await delay(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
-
-  await pageBuilderService.generateHtmlFromComponents()
   isLoading.value = false
 }
 

@@ -2073,6 +2073,11 @@ export class PageBuilderService {
     const pagebuilder = document.querySelector('#pagebuilder')
     if (!pagebuilder) return
 
+    // Save current page settings before setComponents triggers a full DOM remount
+    const firstContent = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
+    const savedClasses = firstContent?.getAttribute('class') || ''
+    const savedStyle = firstContent?.getAttribute('style') || ''
+
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
     pagebuilder.querySelectorAll('section[data-componentid]').forEach((section) => {
@@ -2085,6 +2090,18 @@ export class PageBuilderService {
     })
 
     this.pageBuilderStateStore.setComponents(componentsToSave)
+
+    // Re-apply page settings after the re-render (setComponents forces components = [] first)
+    if (savedClasses || savedStyle) {
+      nextTick(() => {
+        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+          if (savedClasses) el.setAttribute('class', savedClasses)
+          else el.removeAttribute('class')
+          if (savedStyle) el.setAttribute('style', savedStyle)
+          else el.removeAttribute('style')
+        })
+      })
+    }
   }
 
   public async generateHtmlFromComponents(): Promise<string> {
