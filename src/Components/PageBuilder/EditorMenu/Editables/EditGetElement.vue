@@ -100,7 +100,7 @@ function buildSliderStyle(n: number): string {
     `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r 9s infinite;pointer-events:none}`,
     `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
     '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
-    '.pbx-isl-nums{display:none;gap:0.75rem}',
+    '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
     '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center}',
     '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
     '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
