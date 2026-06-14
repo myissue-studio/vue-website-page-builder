@@ -1076,7 +1076,7 @@ onMounted(async () => {
         </div>
         <!-- Element Popover toolbar end -->
 
-        <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
+        <div id="pagebuilder" data-builder-canvas class="pbx-text-black pbx-font-sans">
           <!-- Insert button when empty of componenets -->
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
@@ -1320,8 +1320,10 @@ onMounted(async () => {
 
 <style>
 /* Pause slider auto-rotation while in edit mode so users can edit slides */
-#pagebuilder [data-isl][data-isl-auto] .pbx-isl-t {
+/* Also restore pointer-events so images remain clickable even with auto-rotate on */
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
   animation-play-state: paused !important;
+  pointer-events: auto !important;
 }
 
 #pagebuilder #nolocalstorage {
