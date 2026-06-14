@@ -5,6 +5,7 @@ import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
+import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -37,7 +38,7 @@ const sliderAutoRotate = computed(() => {
   return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
 })
 
-const toggleSliderAutoRotate = async () => {
+const toggleSliderAutoRotate = async (_newVal?: boolean) => {
   if (!(getElement.value instanceof HTMLElement)) return
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   if (!container) return
@@ -495,19 +496,15 @@ const handleDelete = function () {
         </template>
 
         <template v-if="isInsideSlider">
-          <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
-            <div
-              @click="toggleSliderAutoRotate"
-              :class="[
-                sliderAutoRotate
-                  ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                  : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor',
-              ]"
-              class="pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white pbx-gap-1 pbx-text-xs pbx-font-medium pbx-whitespace-nowrap"
+          <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-1.5 pbx-w-max">
+            <ToggleInput
+              :model-value="sliderAutoRotate"
+              @update:model-value="toggleSliderAutoRotate"
+            />
+            <span
+              class="pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-whitespace-nowrap"
+              >Auto</span
             >
-              <span class="material-symbols-outlined pbx-text-base"> autoplay </span>
-              <span>Auto</span>
-            </div>
           </div>
         </template>
 
