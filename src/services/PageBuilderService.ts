@@ -1016,6 +1016,7 @@ export class PageBuilderService {
    */
   public isEditableElement(el: Element | null): boolean {
     if (!el) return false
+    if (el.closest('[data-pb-no-select]')) return false
     return !this.NoneListernesTags.includes(el.tagName)
   }
 
