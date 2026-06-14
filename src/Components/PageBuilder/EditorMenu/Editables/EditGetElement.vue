@@ -37,13 +37,13 @@ const isInsideSlider = computed(() => {
 })
 
 const sliderAutoRotate = computed(() => {
-  autoRotateTick.value
+  void autoRotateTick.value
   if (!(getElement.value instanceof HTMLElement)) return false
   return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
 })
 
 const sliderImageCount = computed(() => {
-  autoRotateTick.value
+  void autoRotateTick.value
   if (!(getElement.value instanceof HTMLElement)) return 3
   const container = getElement.value.closest('[data-isl]')
   if (!container) return 3
@@ -67,7 +67,7 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
 }
 
 const sliderSpeed = computed(() => {
-  autoRotateTick.value
+  void autoRotateTick.value
   if (!(getElement.value instanceof HTMLElement)) return 3
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   return parseInt(container?.getAttribute('data-isl-speed') || '3', 10)
@@ -78,6 +78,12 @@ const changeSliderSpeed = async (n: number) => {
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   if (!container) return
   container.setAttribute('data-isl-speed', String(n))
+  // Rebuild style tag so animation duration updates immediately
+  const section = container.closest('section')
+  const styleTag = section?.querySelector('style')
+  const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+  const count = track ? track.children.length : 3
+  if (styleTag) styleTag.textContent = buildSliderStyle(count, n)
   autoRotateTick.value++
   await pageBuilderService.handleAutoSave()
 }
@@ -89,7 +95,60 @@ function buildSliderOnclickJs(idx: number): string {
   return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
 }
 
-function buildSliderStyle(n: number): string {
+function buildSliderStyle(n: number, speed: number = 3): string {
+  const T = n * speed
+  const step = 100 / n
+  const hold = Math.max(step - 3, 1)
+  const trackW = n * 100
+  const slideW = (100 / n).toFixed(3)
+
+  // Track keyframes
+  let trackKf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
+  for (let i = 1; i < n; i++) {
+    const tx = -((100 * i) / n).toFixed(3)
+    const s = (i * step).toFixed(3)
+    const e2 = (i * step + hold).toFixed(3)
+    trackKf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
+  }
+  trackKf += `99%,100%{transform:translateX(0)}}`
+
+  // Per-dot keyframes + rules (sync background with track timing)
+  let dotKfs = ''
+  let dotRules = ''
+  for (let i = 0; i < n; i++) {
+    const aStart = (i * step).toFixed(3)
+    const aEnd = (i * step + hold).toFixed(3)
+    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
+    const dim = 'rgba(255,255,255,0.55)'
+    const active = 'rgba(255,255,255,1)'
+    if (i === 0) {
+      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
+    } else {
+      const before = (i * step - 0.001).toFixed(3)
+      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${before}%{background:${dim}}${aStart}%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
+    }
+    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s infinite}`
+  }
+
+  // Per-num keyframes + rules (sync opacity+background with track timing)
+  let numKfs = ''
+  let numRules = ''
+  for (let i = 0; i < n; i++) {
+    const aStart = (i * step).toFixed(3)
+    const aEnd = (i * step + hold).toFixed(3)
+    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
+    const dimState = 'opacity:0.55;background:rgba(255,255,255,0.25)'
+    const activeState = 'opacity:1;background:rgba(255,255,255,0.9)'
+    if (i === 0) {
+      numKfs += `@keyframes pbx-isl-na-${i}{0%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
+    } else {
+      const before = (i * step - 0.001).toFixed(3)
+      numKfs += `@keyframes pbx-isl-na-${i}{0%,${before}%{${dimState}}${aStart}%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
+    }
+    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s infinite}`
+  }
+
+  // Builder active-slide rules (CSS attribute selector — used in edit mode)
   let activeRules = ''
   for (let i = 0; i < n; i++) {
     if (i > 0) activeRules += ','
@@ -97,15 +156,23 @@ function buildSliderStyle(n: number): string {
   }
   activeRules +=
     '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
+
   return [
     '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
     '.pbx-isl-t::-webkit-scrollbar{display:none}',
+    trackKf,
+    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s infinite;pointer-events:none}`,
+    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
     '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
     '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
     '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
     '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
     '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
     activeRules,
+    dotKfs,
+    dotRules,
+    numKfs,
+    numRules,
   ].join('')
 }
 
@@ -165,7 +232,7 @@ const changeSlideCount = async (newCount: number) => {
       dotsDiv.appendChild(dotSpan)
     }
   }
-  if (styleTag) styleTag.textContent = buildSliderStyle(newCount)
+  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, sliderSpeed.value)
   autoRotateTick.value++
   await pageBuilderService.handleAutoSave()
 }

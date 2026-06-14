@@ -1319,6 +1319,21 @@ onMounted(async () => {
 </template>
 
 <style>
+/* In builder edit mode: pause animation, restore full scrollability for editing */
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
+  animation-play-state: paused !important;
+  overflow: auto !important;
+  width: auto !important;
+  pointer-events: auto !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
+  min-width: 100% !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-dot,
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-nums span {
+  animation-play-state: paused !important;
+}
+
 #pagebuilder #nolocalstorage {
   display: flex;
   justify-content: center;
