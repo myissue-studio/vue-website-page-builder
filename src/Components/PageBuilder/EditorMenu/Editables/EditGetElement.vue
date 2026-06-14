@@ -28,6 +28,27 @@ const elementTag = computed(() => {
 const canMoveUp = computed(() => pageBuilderService.canMoveUp())
 const canMoveDown = computed(() => pageBuilderService.canMoveDown())
 
+const isInsideSlider = computed(() => {
+  return !!(getElement.value instanceof HTMLElement && getElement.value.closest('[data-isl]'))
+})
+
+const sliderAutoRotate = computed(() => {
+  if (!(getElement.value instanceof HTMLElement)) return false
+  return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
+})
+
+const toggleSliderAutoRotate = async () => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  if (container.hasAttribute('data-isl-auto')) {
+    container.removeAttribute('data-isl-auto')
+  } else {
+    container.setAttribute('data-isl-auto', '')
+  }
+  await pageBuilderService.handleAutoSave()
+}
+
 const getShowModalTipTap = computed(() => {
   const result = pageBuilderStateStore.getShowModalTipTap
 
@@ -470,6 +491,23 @@ const handleDelete = function () {
             class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
           >
             <span class="material-symbols-outlined"> delete </span>
+          </div>
+        </template>
+
+        <template v-if="isInsideSlider">
+          <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+            <div
+              @click="toggleSliderAutoRotate"
+              :class="[
+                sliderAutoRotate
+                  ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                  : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor',
+              ]"
+              class="pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white pbx-gap-1 pbx-text-xs pbx-font-medium pbx-whitespace-nowrap"
+            >
+              <span class="material-symbols-outlined pbx-text-base"> autoplay </span>
+              <span>Auto</span>
+            </div>
           </div>
         </template>
 

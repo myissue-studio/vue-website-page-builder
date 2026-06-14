@@ -470,7 +470,11 @@ function updatePanelPosition() {
   const selected = container.querySelector('[selected]')
 
   if (selected && typeof selected.getBoundingClientRect === 'function') {
-    const selectedRect = selected.getBoundingClientRect()
+    // When selected element is inside a no-select zone (e.g. image slider), anchor the
+    // toolbar to the zone's outer container so it doesn't jump around with each slide.
+    const noSelectAncestor = selected.closest('[data-pb-no-select]') as Element | null
+    const targetEl = noSelectAncestor || selected
+    const selectedRect = targetEl.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
 
     let left =
