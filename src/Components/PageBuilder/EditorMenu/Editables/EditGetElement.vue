@@ -101,7 +101,7 @@ function buildSliderStyle(n: number): string {
     `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
     '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
     '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
-    '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center}',
+    '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
     '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
     '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
     activeRules,
