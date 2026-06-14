@@ -30,6 +30,14 @@ export function extractCleanHTMLFromPageBuilder(
     }
   })
 
+  // Remove builder-only attributes that must not appear in published/preview HTML
+  clone.querySelectorAll<HTMLElement>('[data-pagebuilder-content]').forEach((el) => {
+    el.removeAttribute('data-pagebuilder-content')
+  })
+  clone.querySelectorAll<HTMLElement>('[data-isl-active]').forEach((el) => {
+    el.removeAttribute('data-isl-active')
+  })
+
   if (config && config && typeof config.imageUrlPrefix === 'string') {
     const imageUrlPrefix = config.imageUrlPrefix
     const imgs = clone.querySelectorAll<HTMLImageElement>('img')
