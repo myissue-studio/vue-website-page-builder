@@ -30,15 +30,25 @@ const canMoveUp = computed(() => pageBuilderService.canMoveUp())
 const canMoveDown = computed(() => pageBuilderService.canMoveDown())
 
 const autoRotateTick = ref(0)
+const showSliderModal = ref(false)
 
 const isInsideSlider = computed(() => {
   return !!(getElement.value instanceof HTMLElement && getElement.value.closest('[data-isl]'))
 })
 
 const sliderAutoRotate = computed(() => {
-  autoRotateTick.value // reactive dependency — re-run when toggle mutates DOM
+  autoRotateTick.value
   if (!(getElement.value instanceof HTMLElement)) return false
   return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
+})
+
+const sliderImageCount = computed(() => {
+  autoRotateTick.value
+  if (!(getElement.value instanceof HTMLElement)) return 3
+  const container = getElement.value.closest('[data-isl]')
+  if (!container) return 3
+  const track = container.querySelector('.pbx-isl-t')
+  return track ? track.children.length : 3
 })
 
 const toggleSliderAutoRotate = async (_newVal?: boolean) => {
@@ -48,12 +58,115 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
   if (container.hasAttribute('data-isl-auto')) {
     container.removeAttribute('data-isl-auto')
   } else {
-    // Reset scroll position before enabling so translate math starts from 0
     const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
     if (track) track.scrollLeft = 0
     container.setAttribute('data-isl-auto', '')
   }
-  autoRotateTick.value++ // force sliderAutoRotate to re-compute
+  autoRotateTick.value++
+  await pageBuilderService.handleAutoSave()
+}
+
+// ── Slider style/onclick helpers ───────────────────────────────────────────
+function buildSliderOnclickJs(idx: number): string {
+  const scroll = idx === 0 ? '0' : `t.offsetWidth*${idx}`
+  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.4';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'';s.style.borderRadius=i===${idx}?'9999px':'';s.style.padding=i===${idx}?'0.1rem 0.55rem':'';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'';});`
+  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
+  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}t.scrollTo({left:${scroll},behavior:'smooth'});var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
+}
+
+function buildSliderStyle(n: number): string {
+  const step = 100 / n
+  const hold = step - 3
+  let kf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
+  for (let i = 1; i < n; i++) {
+    const tx = -((100 * i) / n).toFixed(3)
+    const s = (i * step).toFixed(3)
+    const e2 = (i * step + hold).toFixed(3)
+    kf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
+  }
+  kf += `99%,100%{transform:translateX(0)}}`
+  const trackW = n * 100
+  const slideW = (100 / n).toFixed(3)
+  let activeRules = ''
+  for (let i = 0; i < n; i++) {
+    if (i > 0) activeRules += ','
+    activeRules += `[data-isl-active="${i}"] .pbx-isl-nums span:nth-child(${i + 1})`
+  }
+  activeRules +=
+    '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
+  return [
+    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
+    '.pbx-isl-t::-webkit-scrollbar{display:none}',
+    kf,
+    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r 9s infinite;pointer-events:none}`,
+    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
+    '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
+    '.pbx-isl-nums{display:none;gap:0.75rem}',
+    '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center}',
+    '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
+    '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
+    activeRules,
+  ].join('')
+}
+
+const changeSlideCount = async (newCount: number) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+  if (!track) return
+  const currentCount = track.children.length
+  const section = container.closest('section')
+  const styleTag = section?.querySelector('style')
+  const firstImg = track.querySelector('img') as HTMLImageElement | null
+  const placeholderSrc = firstImg?.getAttribute('src') || ''
+  if (newCount > currentCount) {
+    for (let i = currentCount; i < newCount; i++) {
+      const slide = document.createElement('div')
+      slide.style.minWidth = '100%'
+      slide.style.scrollSnapAlign = 'start'
+      const img = document.createElement('img')
+      img.src = placeholderSrc
+      img.style.width = '100%'
+      img.style.aspectRatio = '16/9'
+      img.style.objectFit = 'cover'
+      img.style.display = 'block'
+      img.alt = `Slide ${i + 1}`
+      slide.appendChild(img)
+      track.appendChild(slide)
+    }
+  } else if (newCount < currentCount) {
+    for (let i = currentCount - 1; i >= newCount; i--) {
+      track.children[i]?.remove()
+    }
+  }
+  const numsDiv = container.querySelector('.pbx-isl-nums') as HTMLElement | null
+  const dotsDiv = numsDiv?.nextElementSibling as HTMLElement | null
+  if (numsDiv && dotsDiv) {
+    numsDiv.innerHTML = ''
+    dotsDiv.innerHTML = ''
+    for (let i = 0; i < newCount; i++) {
+      const numSpan = document.createElement('span')
+      numSpan.textContent = String(i + 1)
+      numSpan.setAttribute('onclick', buildSliderOnclickJs(i))
+      if (i === 0) {
+        numSpan.style.opacity = '1'
+        numSpan.style.background = 'rgba(255,255,255,0.9)'
+        numSpan.style.color = '#111'
+        numSpan.style.borderRadius = '9999px'
+        numSpan.style.padding = '0.1rem 0.55rem'
+        numSpan.style.textShadow = 'none'
+      }
+      numsDiv.appendChild(numSpan)
+      const dotSpan = document.createElement('span')
+      dotSpan.className = 'pbx-isl-dot'
+      if (i === 0) dotSpan.style.background = 'rgba(255,255,255,1)'
+      dotSpan.setAttribute('onclick', buildSliderOnclickJs(i))
+      dotsDiv.appendChild(dotSpan)
+    }
+  }
+  if (styleTag) styleTag.textContent = buildSliderStyle(newCount)
+  autoRotateTick.value++
   await pageBuilderService.handleAutoSave()
 }
 
@@ -526,17 +639,71 @@ const handleDelete = function () {
         </template>
 
         <template v-if="isInsideSlider">
-          <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-1.5 pbx-w-max">
-            <ToggleInput
-              :model-value="sliderAutoRotate"
-              @update:model-value="toggleSliderAutoRotate"
-            />
-            <span
-              class="pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-whitespace-nowrap"
-              >Auto</span
-            >
+          <div
+            @click="showSliderModal = true"
+            :class="
+              sliderAutoRotate
+                ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor'
+            "
+            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :title="translate('Slider Settings')"
+          >
+            <span class="material-symbols-outlined pbx-text-base">adjust</span>
           </div>
         </template>
+
+        <DynamicModalBuilder
+          v-if="showSliderModal"
+          :showDynamicModalBuilder="showSliderModal"
+          :isLoading="false"
+          type="success"
+          :gridColumnAmount="1"
+          :title="translate('Slider Settings')"
+          :firstButtonText="translate('Close')"
+          @firstModalButtonFunctionDynamicModalBuilder="showSliderModal = false"
+        >
+          <header></header>
+          <main>
+            <div class="pbx-flex pbx-flex-col pbx-gap-4 pbx-py-2">
+              <!-- Auto rotate -->
+              <div
+                class="pbx-flex pbx-items-center pbx-justify-between pbx-py-3 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200"
+              >
+                <span class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">{{
+                  translate('Auto Rotate')
+                }}</span>
+                <ToggleInput
+                  :model-value="sliderAutoRotate"
+                  @update:model-value="toggleSliderAutoRotate"
+                />
+              </div>
+              <!-- Slide count -->
+              <div class="pbx-py-1">
+                <span
+                  class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-block pbx-mb-3"
+                  >{{ translate('Number of images') }}</span
+                >
+                <div class="pbx-flex pbx-gap-2">
+                  <button
+                    v-for="n in [2, 3, 4, 5, 6]"
+                    :key="n"
+                    @click="changeSlideCount(n)"
+                    :class="
+                      sliderImageCount === n
+                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                        : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                    "
+                    class="pbx-h-9 pbx-w-9 pbx-rounded-full pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0"
+                    type="button"
+                  >
+                    {{ n }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </DynamicModalBuilder>
 
         <div
           v-if="getElement && getComponent"
