@@ -241,6 +241,7 @@ const changeSlideCount = async (newCount: number) => {
   }
   if (styleTag) styleTag.textContent = buildSliderStyle(newCount, sliderSpeed.value)
   autoRotateTick.value++
+  await pageBuilderService.refreshListeners()
   await pageBuilderService.handleAutoSave()
 }
 

@@ -2350,6 +2350,15 @@ export class PageBuilderService {
   }
 
   /**
+   * Re-attaches click/hover listeners to any newly added DOM elements.
+   * Call this after programmatically inserting elements into the builder canvas.
+   */
+  public async refreshListeners(): Promise<void> {
+    await nextTick()
+    await this.addListenersToEditableElements()
+  }
+
+  /**
    * Resumes editing from a draft saved in local storage.
    * @returns {Promise<void>}
    */
