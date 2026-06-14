@@ -1325,6 +1325,7 @@ onMounted(async () => {
   overflow: auto !important;
   width: auto !important;
   pointer-events: auto !important;
+  transform: none !important;
 }
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
   min-width: 100% !important;

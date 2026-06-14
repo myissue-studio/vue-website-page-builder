@@ -62,6 +62,12 @@ const toggleSliderAutoRotate = async () => {
     if (track) track.scrollLeft = 0
     container.setAttribute('data-isl-auto', '')
   }
+  // Rebuild onclick handlers so preview navigation uses the correct path
+  // (animation-restart for auto mode, scrollTo for non-auto mode)
+  const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
+  const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
+  nums.forEach((span, i) => span.setAttribute('onclick', buildSliderOnclickJs(i)))
+  dots.forEach((dot, i) => dot.setAttribute('onclick', buildSliderOnclickJs(i)))
   autoRotateTick.value++
   await pageBuilderService.handleAutoSave()
 }
@@ -92,7 +98,7 @@ const changeSliderSpeed = async (n: number) => {
 function buildSliderOnclickJs(idx: number): string {
   const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.55';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
   const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
-  const nav = `if(c.hasAttribute('data-isl-auto')){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(${idx === 0 ? '0' : `(-${idx}*sp)`})+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});}`
+  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(${idx === 0 ? '0' : `(-${idx}*sp)`})+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});}`
   return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}${nav}var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
 }
 
