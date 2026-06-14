@@ -734,50 +734,81 @@ const handleDelete = function () {
         >
           <header></header>
           <main>
-            <div class="pbx-flex pbx-flex-col pbx-gap-4 pbx-py-2">
-              <!-- Auto rotate -->
+            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
+              <!-- Auto Rotate card -->
               <div
-                class="pbx-flex pbx-items-center pbx-justify-between pbx-py-3 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200"
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-overflow-hidden"
               >
-                <span class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">{{
-                  translate('Auto Rotate')
-                }}</span>
-                <ToggleInput
-                  :model-value="sliderAutoRotate"
-                  @update:model-value="toggleSliderAutoRotate"
-                />
-              </div>
-              <!-- Speed -->
-              <div
-                v-if="sliderAutoRotate"
-                class="pbx-flex pbx-items-center pbx-justify-between pbx-py-3 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200"
-              >
-                <span class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">{{
-                  translate('Rotation Speed (s)')
-                }}</span>
-                <div class="pbx-flex pbx-gap-2">
-                  <button
-                    v-for="s in [1, 2, 3, 4, 5]"
-                    :key="s"
-                    @click="changeSliderSpeed(s)"
-                    :class="
-                      sliderSpeed === s
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                        : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-                    "
-                    class="pbx-h-9 pbx-w-9 pbx-rounded-full pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0"
-                    type="button"
+                <div
+                  class="pbx-flex pbx-items-center pbx-justify-between pbx-px-4 pbx-py-3"
+                  :class="sliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor' : 'pbx-bg-gray-50'"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-2">
+                    <span
+                      class="material-symbols-outlined pbx-text-xl"
+                      :class="
+                        sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
+                      "
+                      >autoplay</span
+                    >
+                    <span
+                      class="pbx-text-sm pbx-font-semibold"
+                      :class="
+                        sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
+                      "
+                      >{{ translate('Auto Rotate') }}</span
+                    >
+                  </div>
+                  <ToggleInput
+                    :model-value="sliderAutoRotate"
+                    @update:model-value="toggleSliderAutoRotate"
+                  />
+                </div>
+
+                <!-- Speed row — only when auto rotate is on -->
+                <div
+                  v-if="sliderAutoRotate"
+                  class="pbx-px-4 pbx-py-3 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-bg-white"
+                >
+                  <p
+                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-mb-2 pbx-uppercase pbx-tracking-wide"
                   >
-                    {{ s }}
-                  </button>
+                    {{ translate('Rotation Speed (s)') }}
+                  </p>
+                  <div class="pbx-flex pbx-gap-2">
+                    <button
+                      v-for="s in [1, 2, 3, 4, 5]"
+                      :key="s"
+                      @click="changeSliderSpeed(s)"
+                      :class="
+                        sliderSpeed === s
+                          ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+                          : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200'
+                      "
+                      class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
+                      type="button"
+                    >
+                      {{ s }}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <!-- Slide count -->
-              <div class="pbx-py-1">
-                <span
-                  class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-block pbx-mb-3"
-                  >{{ translate('Number of images') }}</span
-                >
+
+              <!-- Number of images card -->
+              <div
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
+                  <span
+                    class="material-symbols-outlined pbx-text-xl pbx-text-myPrimaryDarkGrayColor"
+                    >photo_library</span
+                  >
+                  <p
+                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-uppercase pbx-tracking-wide"
+                  >
+                    {{ translate('Number of images') }}
+                  </p>
+                </div>
                 <div class="pbx-flex pbx-gap-2">
                   <button
                     v-for="n in [2, 3, 4, 5, 6]"
@@ -785,10 +816,10 @@ const handleDelete = function () {
                     @click="changeSlideCount(n)"
                     :class="
                       sliderImageCount === n
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                        : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+                        : 'pbx-bg-white pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200 pbx-border pbx-border-solid pbx-border-gray-200'
                     "
-                    class="pbx-h-9 pbx-w-9 pbx-rounded-full pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0"
+                    class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
                     type="button"
                   >
                     {{ n }}
