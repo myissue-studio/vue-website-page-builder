@@ -717,7 +717,7 @@ const handleDelete = function () {
             class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
             :title="translate('Slider Settings')"
           >
-            <span class="material-symbols-outlined pbx-text-base">adjust</span>
+            <span class="material-symbols-outlined"> settings </span>
           </div>
         </template>
 
