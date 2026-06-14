@@ -1319,6 +1319,11 @@ onMounted(async () => {
 </template>
 
 <style>
+/* Pause slider auto-rotation while in edit mode so users can edit slides */
+#pagebuilder [data-isl][data-isl-auto] .pbx-isl-t {
+  animation-play-state: paused !important;
+}
+
 #pagebuilder #nolocalstorage {
   display: flex;
   justify-content: center;
