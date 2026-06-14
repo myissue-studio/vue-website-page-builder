@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, watch } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
@@ -29,11 +29,14 @@ const elementTag = computed(() => {
 const canMoveUp = computed(() => pageBuilderService.canMoveUp())
 const canMoveDown = computed(() => pageBuilderService.canMoveDown())
 
+const autoRotateTick = ref(0)
+
 const isInsideSlider = computed(() => {
   return !!(getElement.value instanceof HTMLElement && getElement.value.closest('[data-isl]'))
 })
 
 const sliderAutoRotate = computed(() => {
+  autoRotateTick.value // reactive dependency — re-run when toggle mutates DOM
   if (!(getElement.value instanceof HTMLElement)) return false
   return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
 })
@@ -47,8 +50,32 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
   } else {
     container.setAttribute('data-isl-auto', '')
   }
+  autoRotateTick.value++ // force sliderAutoRotate to re-compute
   await pageBuilderService.handleAutoSave()
 }
+
+const activeSlideIndex = computed(() => {
+  if (!(getElement.value instanceof HTMLElement)) return -1
+  const container = getElement.value.closest('[data-isl]')
+  if (!container) return -1
+  const track = container.querySelector('.pbx-isl-t')
+  if (!track) return -1
+  for (let i = 0; i < track.children.length; i++) {
+    if (track.children[i].contains(getElement.value)) return i
+  }
+  return -1
+})
+
+watch(activeSlideIndex, (idx) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  if (idx >= 0) {
+    container.setAttribute('data-isl-active', String(idx))
+  } else {
+    container.removeAttribute('data-isl-active')
+  }
+})
 
 const getShowModalTipTap = computed(() => {
   const result = pageBuilderStateStore.getShowModalTipTap
