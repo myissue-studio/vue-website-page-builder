@@ -48,6 +48,9 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
   if (container.hasAttribute('data-isl-auto')) {
     container.removeAttribute('data-isl-auto')
   } else {
+    // Reset scroll position before enabling so translate math starts from 0
+    const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+    if (track) track.scrollLeft = 0
     container.setAttribute('data-isl-auto', '')
   }
   autoRotateTick.value++ // force sliderAutoRotate to re-compute
