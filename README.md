@@ -128,6 +128,7 @@ The Page Builder is packed with features:
 - **Reordering**: Change the order of your content without hassle.
 - **True Visual Editing**: See your changes in real-time as you make them.
 - **Media Library**: Easily inject your own custom media library component.
+- **Advanced Sliders & Carousels**: Build responsive image and content sliders with autoplay, navigation controls, touch support, and full customization options.
 - **Local Storage & Auto-Save**: Never lose your work—changes are saved as you go.
 - **Unsplash**: Unsplash integration.
 - **Responsive Editing**: Ensure your site looks great on all devices.
