@@ -2866,19 +2866,19 @@ export class PageBuilderService {
         typeof placeCompAtLocation === 'number' &&
         placeCompAtLocation >= 0
       ) {
-        this.syncDomToStoreOnly()
-        await nextTick()
-
-        // Capture the current global page styles BEFORE inserting the new component.
-        // After setComponents() Vue creates a fresh [data-pagebuilder-content] div for
-        // the new component — it has no class/style.  Existing divs keep their
-        // user-applied attributes because Vue doesn't manage them.  We re-apply
-        // the captured styles to ALL divs (including the new one) after the render.
-        const styledContent = document.querySelector(
+        // Capture global page styles from the first styled div BEFORE any DOM
+        // manipulation — this is the only moment we can guarantee they are present.
+        const existingStyled = document.querySelector(
           '[data-pagebuilder-content]',
         ) as HTMLElement | null
-        const globalClasses = styledContent?.getAttribute('class') || ''
-        const globalStyle = styledContent?.getAttribute('style') || ''
+        const globalClasses = existingStyled?.getAttribute('class') || ''
+        const globalStyle = existingStyled?.getAttribute('style') || ''
+
+        // Pause the MutationObserver so it doesn't fire on the divs being removed/recreated.
+        this.globalStylesObserver?.disconnect()
+
+        this.syncDomToStoreOnly()
+        await nextTick()
 
         const components = this.pageBuilderStateStore.getComponents || []
         const newComponents = [
@@ -2889,9 +2889,62 @@ export class PageBuilderService {
         this.pageBuilderStateStore.setComponents(newComponents)
         insertedIndex = placeCompAtLocation
 
-        // Re-apply global styles to every [data-pagebuilder-content] div including
-        // the newly created one that Vue just rendered without any classes.
+        // Wait for Vue to finish rendering the new component list (including the
+        // freshly created [data-pagebuilder-content] div for the new component).
+        await nextTick()
+        await nextTick()
+
+        // Apply the captured global styles to every wrapper, including the new div.
         if (globalClasses || globalStyle) {
+          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+            if (globalClasses) el.setAttribute('class', globalClasses)
+            else el.removeAttribute('class')
+            if (globalStyle) el.setAttribute('style', globalStyle)
+            else el.removeAttribute('style')
+          })
+        }
+
+        // Restart the MutationObserver on the (possibly new) first wrapper so that
+        // future style edits continue to sync to all wrappers.
+        const newFirstEl = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        if (newFirstEl && this.globalStylesObserver !== null) {
+          // Observer was active before — reconnect it to the new first element.
+          const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
+          this.globalStylesObserver = new MutationObserver(() => {
+            const cls = newFirstEl.getAttribute('class') ?? ''
+            const style = newFirstEl.getAttribute('style') ?? ''
+            allContentEls.forEach((el) => {
+              if (el === newFirstEl) return
+              if (cls) el.setAttribute('class', cls)
+              else el.removeAttribute('class')
+              if (style) el.setAttribute('style', style)
+              else el.removeAttribute('style')
+            })
+          })
+          this.globalStylesObserver.observe(newFirstEl, {
+            attributes: true,
+            attributeFilter: ['class', 'style'],
+          })
+        }
+      } else {
+        // Capture styles before push so we can apply to the new div after render.
+        const existingStyled = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        const globalClasses = existingStyled?.getAttribute('class') || ''
+        const globalStyle = existingStyled?.getAttribute('style') || ''
+
+        this.pageBuilderStateStore.setPushComponents({
+          component: clonedComponent,
+          componentArrayAddMethod: this.getComponentArrayAddMethod.value
+            ? this.getComponentArrayAddMethod.value
+            : 'push',
+        })
+
+        if (globalClasses || globalStyle) {
+          await nextTick()
           await nextTick()
           document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
             if (globalClasses) el.setAttribute('class', globalClasses)
@@ -2900,13 +2953,6 @@ export class PageBuilderService {
             else el.removeAttribute('style')
           })
         }
-      } else {
-        this.pageBuilderStateStore.setPushComponents({
-          component: clonedComponent,
-          componentArrayAddMethod: this.getComponentArrayAddMethod.value
-            ? this.getComponentArrayAddMethod.value
-            : 'push',
-        })
       }
 
       const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
