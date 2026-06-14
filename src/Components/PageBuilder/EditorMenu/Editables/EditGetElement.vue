@@ -51,7 +51,7 @@ const sliderImageCount = computed(() => {
   return track ? track.children.length : 3
 })
 
-const toggleSliderAutoRotate = async (_newVal?: boolean) => {
+const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   if (!container) return
