@@ -1016,7 +1016,8 @@ export class PageBuilderService {
    */
   public isEditableElement(el: Element | null): boolean {
     if (!el) return false
-    if (el.closest('[data-pb-no-select]')) return false
+    // IMG elements are always selectable even inside no-select zones (e.g. slider)
+    if (el.tagName !== 'IMG' && el.closest('[data-pb-no-select]')) return false
     return !this.NoneListernesTags.includes(el.tagName)
   }
 
