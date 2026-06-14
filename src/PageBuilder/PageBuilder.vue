@@ -1319,11 +1319,16 @@ onMounted(async () => {
 </template>
 
 <style>
-/* Pause slider auto-rotation while in edit mode so users can edit slides */
-/* Also restore pointer-events so images remain clickable even with auto-rotate on */
+/* Pause slider auto-rotation while in edit mode so users can edit slides.
+   Restore overflow:auto so scrollTo() works when clicking dots/numbers.
+   Restore pointer-events so images are clickable. */
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
-  animation-play-state: paused !important;
+  overflow: auto !important;
   pointer-events: auto !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div:first-child {
+  animation-play-state: paused !important;
+  margin-left: 0 !important;
 }
 
 #pagebuilder #nolocalstorage {
