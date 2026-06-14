@@ -30,7 +30,8 @@ const BASE_CSS = `*,*::before,*::after{box-sizing:border-box}body{margin:0;paddi
 
 const srcdoc = computed(() => {
   if (!isVisible.value) return ''
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=${props.renderWidth}"><style>${BASE_CSS}</style><style>${tailwindCSS}</style></head><body style="overflow:hidden">${props.htmlCode}</body></html>`
+  const safeHtml = props.htmlCode.replace(/\s+on\w+="[^"]*"/g, '')
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=${props.renderWidth}"><style>${BASE_CSS}</style><style>${tailwindCSS}</style></head><body style="overflow:hidden">${safeHtml}</body></html>`
 })
 
 const wrapper = ref<HTMLElement | null>(null)
