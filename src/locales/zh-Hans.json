@@ -252,5 +252,8 @@
   "Light mode": "浅色模式",
   "Search components...": "搜索组件...",
   "No components found.": "未找到组件。",
-  "No themes found.": "未找到主题。"
+  "No themes found.": "未找到主题。",
+  "Slider Settings": "滑块设置",
+  "Auto Rotate": "自动旋转",
+  "Number of images": "图片数量"
 }

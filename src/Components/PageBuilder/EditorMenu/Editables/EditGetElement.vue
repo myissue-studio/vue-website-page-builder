@@ -68,10 +68,9 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
 
 // ── Slider style/onclick helpers ───────────────────────────────────────────
 function buildSliderOnclickJs(idx: number): string {
-  const scroll = idx === 0 ? '0' : `t.offsetWidth*${idx}`
   const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.4';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'';s.style.borderRadius=i===${idx}?'9999px':'';s.style.padding=i===${idx}?'0.1rem 0.55rem':'';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'';});`
   const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
-  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}t.scrollTo({left:${scroll},behavior:'smooth'});var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
+  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
 }
 
 function buildSliderStyle(n: number): string {
@@ -660,6 +659,7 @@ const handleDelete = function () {
           type="success"
           :gridColumnAmount="1"
           :title="translate('Slider Settings')"
+          description=""
           :firstButtonText="translate('Close')"
           @firstModalButtonFunctionDynamicModalBuilder="showSliderModal = false"
         >

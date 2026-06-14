@@ -252,5 +252,8 @@
   "Light mode": "Hellmodus",
   "Search components...": "Komponenten suchen...",
   "No components found.": "Keine Komponenten gefunden.",
-  "No themes found.": "Keine Themen gefunden."
+  "No themes found.": "Keine Themen gefunden.",
+  "Slider Settings": "Slider-Einstellungen",
+  "Auto Rotate": "Automatisch rotieren",
+  "Number of images": "Anzahl der Bilder"
 }

@@ -252,5 +252,8 @@
   "Light mode": "लाइट मोड",
   "Search components...": "कॉम्पोनेन्ट खोजें...",
   "No components found.": "कोई कॉम्पोनेन्ट नहीं मिला।",
-  "No themes found.": "कोई थीम नहीं मिली।"
+  "No themes found.": "कोई थीम नहीं मिली।",
+  "Slider Settings": "स्लाइडर सेटिंग्स",
+  "Auto Rotate": "स्वतः घुमाएँ",
+  "Number of images": "छवियों की संख्या"
 }

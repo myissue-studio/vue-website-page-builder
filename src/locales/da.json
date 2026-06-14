@@ -252,5 +252,8 @@
   "Light mode": "Lys tilstand",
   "Search components...": "Søg i komponenter...",
   "No components found.": "Ingen komponenter fundet.",
-  "No themes found.": "Ingen temaer fundet."
+  "No themes found.": "Ingen temaer fundet.",
+  "Slider Settings": "Skyderindstillinger",
+  "Auto Rotate": "Automatisk rotation",
+  "Number of images": "Antal billeder"
 }

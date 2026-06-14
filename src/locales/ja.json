@@ -252,5 +252,8 @@
   "Light mode": "ライトモード",
   "Search components...": "コンポーネントを検索...",
   "No components found.": "コンポーネントが見つかりません。",
-  "No themes found.": "テーマが見つかりません。"
+  "No themes found.": "テーマが見つかりません。",
+  "Slider Settings": "スライダー設定",
+  "Auto Rotate": "自動回転",
+  "Number of images": "画像数"
 }

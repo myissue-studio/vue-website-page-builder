@@ -252,5 +252,8 @@
   "Light mode": "Светлый режим",
   "Search components...": "Поиск компонентов...",
   "No components found.": "Компоненты не найдены.",
-  "No themes found.": "Темы не найдены."
+  "No themes found.": "Темы не найдены.",
+  "Slider Settings": "Настройки слайдера",
+  "Auto Rotate": "Автовращение",
+  "Number of images": "Количество изображений"
 }

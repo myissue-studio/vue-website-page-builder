@@ -252,5 +252,8 @@
   "Light mode": "Modo claro",
   "Search components...": "Buscar componentes...",
   "No components found.": "No se encontraron componentes.",
-  "No themes found.": "No se encontraron temas."
+  "No themes found.": "No se encontraron temas.",
+  "Slider Settings": "Configuración del slider",
+  "Auto Rotate": "Rotación automática",
+  "Number of images": "Número de imágenes"
 }
