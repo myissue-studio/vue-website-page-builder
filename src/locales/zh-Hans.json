@@ -255,5 +255,6 @@
   "No themes found.": "未找到主题。",
   "Slider Settings": "滑块设置",
   "Auto Rotate": "自动旋转",
-  "Number of images": "图片数量"
+  "Number of images": "图片数量",
+  "Rotation Speed (s)": "旋转速度 (秒)"
 }

@@ -255,5 +255,6 @@
   "No themes found.": "Ingen temaer fundet.",
   "Slider Settings": "Skyderindstillinger",
   "Auto Rotate": "Automatisk rotation",
-  "Number of images": "Antal billeder"
+  "Number of images": "Antal billeder",
+  "Rotation Speed (s)": "Rotationshastighed (s)"
 }

@@ -255,5 +255,6 @@
   "No themes found.": "कोई थीम नहीं मिली।",
   "Slider Settings": "स्लाइडर सेटिंग्स",
   "Auto Rotate": "स्वतः घुमाएँ",
-  "Number of images": "छवियों की संख्या"
+  "Number of images": "छवियों की संख्या",
+  "Rotation Speed (s)": "रोटेशन गति (s)"
 }

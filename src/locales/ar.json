@@ -255,5 +255,6 @@
   "No themes found.": "لم يتم العثور على ثيمات.",
   "Slider Settings": "إعدادات السلايدر",
   "Auto Rotate": "التدوير التلقائي",
-  "Number of images": "عدد الصور"
+  "Number of images": "عدد الصور",
+  "Rotation Speed (s)": "سرعة التدوير (ث)"
 }

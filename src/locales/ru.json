@@ -255,5 +255,6 @@
   "No themes found.": "Темы не найдены.",
   "Slider Settings": "Настройки слайдера",
   "Auto Rotate": "Автовращение",
-  "Number of images": "Количество изображений"
+  "Number of images": "Количество изображений",
+  "Rotation Speed (s)": "Скорость вращения (с)"
 }

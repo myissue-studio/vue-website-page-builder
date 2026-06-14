@@ -66,6 +66,22 @@ const toggleSliderAutoRotate = async (_newVal?: boolean) => {
   await pageBuilderService.handleAutoSave()
 }
 
+const sliderSpeed = computed(() => {
+  autoRotateTick.value
+  if (!(getElement.value instanceof HTMLElement)) return 3
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  return parseInt(container?.getAttribute('data-isl-speed') || '3', 10)
+})
+
+const changeSliderSpeed = async (n: number) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  container.setAttribute('data-isl-speed', String(n))
+  autoRotateTick.value++
+  await pageBuilderService.handleAutoSave()
+}
+
 // ── Slider style/onclick helpers ───────────────────────────────────────────
 function buildSliderOnclickJs(idx: number): string {
   const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.55';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
@@ -74,18 +90,6 @@ function buildSliderOnclickJs(idx: number): string {
 }
 
 function buildSliderStyle(n: number): string {
-  const step = 100 / n
-  const hold = step - 3
-  let kf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
-  for (let i = 1; i < n; i++) {
-    const tx = -((100 * i) / n).toFixed(3)
-    const s = (i * step).toFixed(3)
-    const e2 = (i * step + hold).toFixed(3)
-    kf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
-  }
-  kf += `99%,100%{transform:translateX(0)}}`
-  const trackW = n * 100
-  const slideW = (100 / n).toFixed(3)
   let activeRules = ''
   for (let i = 0; i < n; i++) {
     if (i > 0) activeRules += ','
@@ -96,9 +100,6 @@ function buildSliderStyle(n: number): string {
   return [
     '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
     '.pbx-isl-t::-webkit-scrollbar{display:none}',
-    kf,
-    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r 9s infinite;pointer-events:none}`,
-    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
     '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
     '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
     '.pbx-isl-nums span{font-size:1.25rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
@@ -677,6 +678,31 @@ const handleDelete = function () {
                   :model-value="sliderAutoRotate"
                   @update:model-value="toggleSliderAutoRotate"
                 />
+              </div>
+              <!-- Speed -->
+              <div
+                v-if="sliderAutoRotate"
+                class="pbx-flex pbx-items-center pbx-justify-between pbx-py-3 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200"
+              >
+                <span class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">{{
+                  translate('Rotation Speed (s)')
+                }}</span>
+                <div class="pbx-flex pbx-gap-2">
+                  <button
+                    v-for="s in [1, 2, 3, 4, 5]"
+                    :key="s"
+                    @click="changeSliderSpeed(s)"
+                    :class="
+                      sliderSpeed === s
+                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                        : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                    "
+                    class="pbx-h-9 pbx-w-9 pbx-rounded-full pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0"
+                    type="button"
+                  >
+                    {{ s }}
+                  </button>
+                </div>
               </div>
               <!-- Slide count -->
               <div class="pbx-py-1">

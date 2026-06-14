@@ -255,5 +255,6 @@
   "No themes found.": "Keine Themen gefunden.",
   "Slider Settings": "Slider-Einstellungen",
   "Auto Rotate": "Automatisch rotieren",
-  "Number of images": "Anzahl der Bilder"
+  "Number of images": "Anzahl der Bilder",
+  "Rotation Speed (s)": "Rotationsgeschwindigkeit (s)"
 }

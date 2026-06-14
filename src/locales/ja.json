@@ -255,5 +255,6 @@
   "No themes found.": "テーマが見つかりません。",
   "Slider Settings": "スライダー設定",
   "Auto Rotate": "自動回転",
-  "Number of images": "画像数"
+  "Number of images": "画像数",
+  "Rotation Speed (s)": "回転速度 (秒)"
 }
