@@ -30,7 +30,23 @@ const BASE_CSS = `*,*::before,*::after{box-sizing:border-box}body{margin:0;paddi
 
 const srcdoc = computed(() => {
   if (!isVisible.value) return ''
-  const safeHtml = props.htmlCode.replace(/\s+on\w+="[^"]*"/g, '')
+  // Use DOMParser to reliably strip ALL on* event handler attributes regardless
+  // of quoting style, encoding, or whitespace. Regex-based stripping is fragile
+  // for complex onclick values like the slider's animation-restart handlers.
+  let safeHtml = props.htmlCode
+  if (typeof DOMParser !== 'undefined') {
+    const doc = new DOMParser().parseFromString(props.htmlCode, 'text/html')
+    doc.querySelectorAll('*').forEach((el) => {
+      const toRemove: string[] = []
+      for (const attr of el.attributes) {
+        if (/^on/i.test(attr.name)) toRemove.push(attr.name)
+      }
+      toRemove.forEach((name) => el.removeAttribute(name))
+    })
+    safeHtml = doc.body.innerHTML
+  } else {
+    safeHtml = props.htmlCode.replace(/\s+on\w+="[^"]*"/g, '')
+  }
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=${props.renderWidth}"><style>${BASE_CSS}</style><style>${tailwindCSS}</style></head><body style="overflow:hidden">${safeHtml}</body></html>`
 })
 
