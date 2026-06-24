@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import tailwindCSS from '../css/style.css?inline'
+import ElementLoader from './Loaders/ElementLoader.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -37,6 +38,7 @@ const iframeHeight = computed(() =>
 )
 
 const isVisible = ref(false)
+const isLoaded = ref(false)
 
 // Component HTML is authored for both the pbx-prefixed library CSS AND the
 // consuming app's non-prefixed Tailwind CSS. The inlined style.css only has
@@ -71,13 +73,15 @@ const wrapper = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 
 function onIframeLoad(event: Event) {
-  if (props.fit !== 'contain') return
-  const iframe = event.target as HTMLIFrameElement
-  const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
-  if (contentHeight && contentHeight > 0) {
-    // Keep full-width scale, grow the container height to show all content
-    adaptiveHeight.value = Math.ceil(contentHeight * scale.value) + PADDING * 2
+  if (props.fit === 'contain') {
+    const iframe = event.target as HTMLIFrameElement
+    const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
+    if (contentHeight && contentHeight > 0) {
+      // Keep full-width scale, grow the container height to show all content
+      adaptiveHeight.value = Math.ceil(contentHeight * scale.value) + PADDING * 2
+    }
   }
+  isLoaded.value = true
 }
 
 onMounted(() => {
@@ -130,6 +134,11 @@ onUnmounted(() => {
       }"
       @load="onIframeLoad"
     ></iframe>
-    <div v-else class="pbx-w-full pbx-h-full pbx-bg-gray-100 pbx-animate-pulse"></div>
+    <div
+      v-if="!isLoaded"
+      class="pbx-absolute pbx-inset-0 pbx-flex pbx-items-center pbx-justify-center pbx-bg-white"
+    >
+      <ElementLoader />
+    </div>
   </div>
 </template>
