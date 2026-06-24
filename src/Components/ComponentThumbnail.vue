@@ -11,14 +11,11 @@ const props = withDefaults(
     /** 'cover' (default): fill width, clip tall content.
      *  'contain': shrink to fit full content within the container. */
     fit?: 'cover' | 'contain'
-    /** Maximum height the container can grow to in contain mode. Defaults to containerHeight. */
-    maxContainerHeight?: number
   }>(),
   {
     containerHeight: 256,
     renderWidth: 1024,
     fit: 'cover',
-    maxContainerHeight: undefined,
   },
 )
 
@@ -82,11 +79,7 @@ function onIframeLoad(event: Event) {
     const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
     if (contentHeight && contentHeight > 0) {
       // Keep full-width scale, grow the container height to show all content
-      const cap = props.maxContainerHeight ?? props.containerHeight
-      adaptiveHeight.value = Math.min(
-        Math.ceil(contentHeight * scale.value) + PADDING_TOP + PADDING_BOTTOM,
-        cap,
-      )
+      adaptiveHeight.value = Math.ceil(contentHeight * scale.value) + PADDING_TOP + PADDING_BOTTOM
     }
   }
   isLoaded.value = true
