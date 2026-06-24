@@ -19,6 +19,7 @@ const props = withDefaults(
 )
 
 const CONTAINER_W = 256
+const PADDING = 8 // px top + bottom padding around the iframe preview
 
 const scale = computed(() => CONTAINER_W / props.renderWidth)
 // For contain mode: measure content height then grow the container to fit it all
@@ -75,7 +76,7 @@ function onIframeLoad(event: Event) {
   const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
   if (contentHeight && contentHeight > 0) {
     // Keep full-width scale, grow the container height to show all content
-    adaptiveHeight.value = Math.ceil(contentHeight * scale.value)
+    adaptiveHeight.value = Math.ceil(contentHeight * scale.value) + PADDING * 2
   }
 }
 
@@ -125,6 +126,7 @@ onUnmounted(() => {
         height: `${iframeHeight}px`,
         transform: `scale(${scale})`,
         transformOrigin: 'top left',
+        top: `${PADDING}px`,
       }"
       @load="onIframeLoad"
     ></iframe>
