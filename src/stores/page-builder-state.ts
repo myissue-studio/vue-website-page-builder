@@ -61,7 +61,6 @@ interface PageBuilderState {
 
   // User State
   builderStarted: boolean
-  isDarkMode: boolean
   isLoadingGlobal: boolean
   isSaving: boolean
   hasLocalDraftForUpdate: boolean
@@ -127,7 +126,6 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
 
     // User State
     builderStarted: false,
-    isDarkMode: false,
     isLoadingGlobal: true,
     isSaving: false,
     hasLocalDraftForUpdate: false,
@@ -285,7 +283,6 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
 
     // User Getters
     getBuilderStarted: (state: PageBuilderState): boolean => state.builderStarted,
-    getIsDarkMode: (state: PageBuilderState): boolean => state.isDarkMode,
     getIsLoadingGlobal: (state: PageBuilderState): boolean => state.isLoadingGlobal,
     getIsSaving: (state: PageBuilderState): boolean => state.isSaving,
     getHasLocalDraftForUpdate: (state: PageBuilderState): boolean => state.hasLocalDraftForUpdate,
@@ -483,9 +480,6 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     // User Actions
     setBuilderStarted(payload: boolean): void {
       this.builderStarted = payload
-    },
-    setIsDarkMode(payload: boolean): void {
-      this.isDarkMode = payload
     },
     setIsLoadingGlobal(payload: boolean): void {
       this.isLoadingGlobal = payload
