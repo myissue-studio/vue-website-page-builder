@@ -229,7 +229,11 @@ const convertToComponentObject = function (comp: {
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
                   <!-- Sandboxed iframe preview -->
-                  <ComponentThumbnail :htmlCode="theme.html_code" :containerHeight="384" />
+                  <ComponentThumbnail
+                    :htmlCode="theme.html_code"
+                    :containerHeight="384"
+                    fit="contain"
+                  />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
@@ -320,7 +324,7 @@ const convertToComponentObject = function (comp: {
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
                   <!-- Sandboxed iframe preview -->
-                  <ComponentThumbnail :htmlCode="comp.html_code" />
+                  <ComponentThumbnail :htmlCode="comp.html_code" fit="contain" />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">

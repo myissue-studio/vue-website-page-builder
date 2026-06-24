@@ -7,17 +7,31 @@ const props = withDefaults(
     htmlCode: string
     containerHeight?: number
     renderWidth?: number
+    /** 'cover' (default): fill width, clip tall content.
+     *  'contain': shrink to fit full content within the container. */
+    fit?: 'cover' | 'contain'
   }>(),
   {
     containerHeight: 256,
     renderWidth: 1024,
+    fit: 'cover',
   },
 )
 
 const CONTAINER_W = 256
 
-const scale = computed(() => CONTAINER_W / props.renderWidth)
-const iframeHeight = computed(() => Math.ceil(props.containerHeight / scale.value))
+const baseScale = computed(() => CONTAINER_W / props.renderWidth)
+// For contain mode we update this after measuring content height
+const measuredScale = ref<number | null>(null)
+const scale = computed(() =>
+  props.fit === 'contain' && measuredScale.value !== null ? measuredScale.value : baseScale.value,
+)
+// Use a tall initial iframe for contain so content can fully render before measuring
+const iframeHeight = computed(() =>
+  props.fit === 'contain' && measuredScale.value === null
+    ? 8192
+    : Math.ceil(props.containerHeight / scale.value),
+)
 
 const isVisible = ref(false)
 
@@ -52,6 +66,19 @@ const srcdoc = computed(() => {
 
 const wrapper = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
+
+function onIframeLoad(event: Event) {
+  if (props.fit !== 'contain') return
+  const iframe = event.target as HTMLIFrameElement
+  const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
+  if (contentHeight && contentHeight > 0) {
+    const fitScale = Math.min(
+      CONTAINER_W / props.renderWidth,
+      props.containerHeight / contentHeight,
+    )
+    measuredScale.value = fitScale
+  }
+}
 
 onMounted(() => {
   if (typeof IntersectionObserver === 'undefined') {
@@ -100,6 +127,7 @@ onUnmounted(() => {
         transform: `scale(${scale})`,
         transformOrigin: 'top left',
       }"
+      @load="onIframeLoad"
     ></iframe>
     <div v-else class="pbx-w-full pbx-h-full pbx-bg-gray-100 pbx-animate-pulse"></div>
   </div>
