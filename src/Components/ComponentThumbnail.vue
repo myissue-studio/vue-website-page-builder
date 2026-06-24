@@ -20,17 +20,19 @@ const props = withDefaults(
 
 const CONTAINER_W = 256
 
-const baseScale = computed(() => CONTAINER_W / props.renderWidth)
-// For contain mode we update this after measuring content height
-const measuredScale = ref<number | null>(null)
-const scale = computed(() =>
-  props.fit === 'contain' && measuredScale.value !== null ? measuredScale.value : baseScale.value,
+const scale = computed(() => CONTAINER_W / props.renderWidth)
+// For contain mode: measure content height then grow the container to fit it all
+const adaptiveHeight = ref<number | null>(null)
+const displayHeight = computed(() =>
+  props.fit === 'contain' && adaptiveHeight.value !== null
+    ? adaptiveHeight.value
+    : props.containerHeight,
 )
-// Use a tall initial iframe for contain so content can fully render before measuring
+// Use a tall initial iframe so content fully renders before we measure
 const iframeHeight = computed(() =>
-  props.fit === 'contain' && measuredScale.value === null
+  props.fit === 'contain' && adaptiveHeight.value === null
     ? 8192
-    : Math.ceil(props.containerHeight / scale.value),
+    : Math.ceil(displayHeight.value / scale.value),
 )
 
 const isVisible = ref(false)
@@ -72,11 +74,8 @@ function onIframeLoad(event: Event) {
   const iframe = event.target as HTMLIFrameElement
   const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
   if (contentHeight && contentHeight > 0) {
-    const fitScale = Math.min(
-      CONTAINER_W / props.renderWidth,
-      props.containerHeight / contentHeight,
-    )
-    measuredScale.value = fitScale
+    // Keep full-width scale, grow the container height to show all content
+    adaptiveHeight.value = Math.ceil(contentHeight * scale.value)
   }
 }
 
@@ -109,7 +108,7 @@ onUnmounted(() => {
   <div
     ref="wrapper"
     class="pbx-relative pbx-overflow-hidden pbx-bg-white pbx-mx-auto"
-    :style="{ width: `${CONTAINER_W}px`, height: `${containerHeight}px` }"
+    :style="{ width: `${CONTAINER_W}px`, height: `${displayHeight}px` }"
   >
     <iframe
       v-if="isVisible"
