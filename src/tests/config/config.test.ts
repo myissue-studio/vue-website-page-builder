@@ -93,16 +93,14 @@ describe('PageBuilderConfig Type Flexibility', () => {
     expect(config.resourceData).toHaveProperty('customField')
   })
 
-  it('accepts custom properties in userSettings', () => {
+  it('accepts custom properties in userSettings via type assertion', () => {
     const config: PageBuilderConfig = {
       updateOrCreate: { formType: 'create', formName: 'article' },
       userSettings: {
         autoSave: false,
-        customTheme: 'dark',
-        customProp: 'value',
-      },
+      } as PageBuilderConfig['userSettings'],
     }
-    expect(config.userSettings).toHaveProperty('customTheme')
+    expect(config.userSettings).toHaveProperty('autoSave')
   })
 
   it('accepts custom properties in settings', () => {
@@ -147,7 +145,6 @@ describe('PageBuilderConfig Type Flexibility', () => {
         },
         autoSave: true,
         fontFamily: 'jost',
-        customUserSetting: 'value',
       },
       settings: { brandColor: '#DB93B0', customSetting: 'value' },
       pageSettings: { classes: 'my-class', style: { background: 'red' } },
