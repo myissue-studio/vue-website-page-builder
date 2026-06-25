@@ -1,4 +1,4 @@
-import type { PageBuilderService } from '../services/PageBuilderService.ts'
+import type { PageBuilderService } from '../services/PageBuilderService'
 
 export interface PageBuilderState {
   // ...other state properties...
@@ -26,16 +26,19 @@ export interface ComponentObject {
   id: string | number | null
   html_code: string
   title: string
+  [key: string]: unknown // Allow custom properties on components
 }
 
 export interface ImageObject {
   src: string
+  [key: string]: unknown // Allow custom properties on images (e.g., alt, width, height)
 }
 
 // For a single component/block passed by the developer
 export interface BuilderResourceComponent {
   html_code: string
   title?: string
+  [key: string]: unknown // Allow custom properties from external systems
 }
 
 // For the full resource object passed to your package
@@ -231,22 +234,24 @@ export interface PageSettings {
 export interface PageBuilderConfig {
   updateOrCreate: {
     formType: 'create' | 'update'
-    formName: string // Accept any string for maximum flexibility (e.g., 'article', 'cms-page-home', etc.)
+    formName: FormName | (string & {}) // Provides autocomplete for common values while accepting any string
   }
   pageBuilderLogo?: { src: string } | null
   resourceData?: { title: string; id?: number; [key: string]: unknown } | null
   userForPageBuilder?: PageBuilderUser // image is already optional on PageBuilderUser
   [key: string]: unknown // Allow any additional properties for forward-compatibility
-  userSettings?: {
-    language?: {
-      default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
-      enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
-      disableLanguageDropDown?: boolean
-      [key: string]: unknown
-    }
-    autoSave?: boolean
-    fontFamily?: string
-  } & Record<string, unknown> // Use intersection type instead of index signature for compatibility
+  userSettings?:
+    | ({
+        language?: {
+          default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
+          enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
+          disableLanguageDropDown?: boolean
+          [key: string]: unknown
+        }
+        autoSave?: boolean
+        fontFamily?: string
+      } & Record<string, unknown>)
+    | null // Allow null for maximum flexibility
   settings?: {
     brandColor?: string
     [key: string]: unknown

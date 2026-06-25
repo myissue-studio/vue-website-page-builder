@@ -3,6 +3,7 @@ interface ComponentHelper {
   id: string | null
   title: string
   icon: string
+  [key: string]: unknown // Allow compatibility with ComponentObject
 }
 
 const componentHelpers: ComponentHelper[] = [
