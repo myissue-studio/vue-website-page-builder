@@ -1,20 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import tailwindOpacities from '../../../../utils/builder/tailwind-opacities'
-import {
-  Listbox,
-  ListboxButton,
-  ListboxLabel,
-  ListboxOption,
-  ListboxOptions,
-} from '@headlessui/vue'
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
+import { useTranslations } from '../../../../composables/useTranslations'
 const pageBuilderService = getPageBuilder()
+const { translate } = useTranslations()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
-const opacityVueModel = ref(null)
+const opacityVueModel = ref<string | null>(null)
 const getOpacity = computed(() => {
   return pageBuilderStateStore.getOpacity
 })
@@ -31,7 +27,7 @@ watch(
 
 <template>
   <div class="pbx-my-2 pbx-py-2">
-    <label for="default-opacity" class="pbx-myPrimaryInputLabel"> Opacity</label>
+    <label for="default-opacity" class="pbx-myPrimaryInputLabel"> {{ translate('Opacity') }}</label>
 
     <Listbox as="div" v-model="opacityVueModel">
       <div class="pbx-relative">
@@ -50,7 +46,7 @@ watch(
             ></div>
 
             <span class="pbx-block pbx-truncate" :class="[opacityVueModel !== 'none' ? '' : '']">{{
-              opacityVueModel === 'none' ? 'Transparent' : opacityVueModel
+              opacityVueModel === 'none' ? translate('Transparent') : opacityVueModel
             }}</span>
           </span>
         </ListboxButton>
@@ -91,7 +87,9 @@ watch(
                     class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-bg-gray-950"
                     :class="`${elementOpacity}`"
                   ></div>
-                  <span v-if="elementOpacity === 'none'" class="pbx-ml-3">Transparent</span>
+                  <span v-if="elementOpacity === 'none'" class="pbx-ml-3">{{
+                    translate('Transparent')
+                  }}</span>
                   <span v-if="elementOpacity !== 'none'" class="pbx-ml-3">{{
                     elementOpacity
                   }}</span>

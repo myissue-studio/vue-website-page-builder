@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import ClassEditor from './Editables/ClassEditor.vue'
@@ -30,7 +30,7 @@ const elementTag = computed(() => {
   return getElement.value?.tagName
 })
 
-const scrollContainer = ref(null)
+const scrollContainer = ref<HTMLElement | null>(null)
 let lastScrollTop = 0
 
 // Watch for changes that cause re-render (e.g. dropdown value in store)
@@ -63,8 +63,6 @@ const openHTMLSettings = async function () {
   await delay(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
-
-  await pageBuilderService.generateHtmlFromComponents()
   isLoading.value = false
 }
 
@@ -73,8 +71,11 @@ const closeHTMLSettings = async function () {
   await delay(200)
   await pageBuilderService.handleManualSave()
 
+  // Stop syncing global style changes across section wrappers
+  pageBuilderService.stopGlobalStylesSync()
+
   // Remove global highlight if present
-  const pagebuilder = document.querySelector('#pagebuilder')
+  const pagebuilder = document.querySelector('[data-pagebuilder-content]')
   if (pagebuilder) {
     pagebuilder.removeAttribute('data-global-selected')
   }

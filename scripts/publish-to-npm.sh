@@ -16,9 +16,18 @@ echo ""
 
 # Check if user is logged in to npm
 if ! npm whoami &>/dev/null; then
-    echo "Error: You are not logged in to npm"
-    echo "Please run: npm login"
-    exit 1
+    if [[ -n "$NPM_TOKEN" ]]; then
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+        echo "Authenticated using NPM_TOKEN."
+    else
+        echo "Not logged in to npm. Logging in (no browser required)..."
+        npm login --auth-type=legacy
+    fi
+
+    if ! npm whoami &>/dev/null; then
+        echo "Error: Still not logged in to npm. Aborting."
+        exit 1
+    fi
 fi
 
 echo "Logged in as: $(npm whoami)"

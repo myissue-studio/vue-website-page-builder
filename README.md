@@ -128,6 +128,7 @@ The Page Builder is packed with features:
 - **Reordering**: Change the order of your content without hassle.
 - **True Visual Editing**: See your changes in real-time as you make them.
 - **Media Library**: Easily inject your own custom media library component.
+- **Advanced Sliders & Carousels**: Build responsive image and content sliders with autoplay, navigation controls, touch support, and full customization options.
 - **Local Storage & Auto-Save**: Never lose your work—changes are saved as you go.
 - **Unsplash**: Unsplash integration.
 - **Responsive Editing**: Ensure your site looks great on all devices.
@@ -139,9 +140,10 @@ The Page Builder is packed with features:
 - **YouTube Videos**: Integrate video content smoothly.
 - **Download HTML**: Export the entire page as a standalone HTML file.
 - **Global Page Styling**: Instantly define, update, or clear global styles for the main page wrapper at initialization or dynamically at runtime. Gain full control over fonts, colors, backgrounds, and more for a dynamic user experience.
-- **Tailwind Support**: Fully compatible with Tailwind CSS (with automatic class prefixing to avoid conflicts). Tailwind installation is not required for the Page Builder to work.
+- **Tailwind Support**: Fully compatible with Tailwind CSS (v.3 or v.4) (with automatic class prefixing to avoid conflicts). Tailwind installation is not required for the Page Builder to work.
 - **Scoped Styles**: To ensure clean and predictable styling, the builder uses scoped style isolation. There is no risk of style conflicts between the builder and your app.
 - **HTML Editor**: Access and edit raw HTML directly for full customization and developer-level control.
+- **Tailwind CSS 4**: Optimized for performance and flexibility.
 
 ## How the Page Builder Works
 

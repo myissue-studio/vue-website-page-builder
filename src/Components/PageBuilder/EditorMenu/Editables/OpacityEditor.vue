@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import EditorAccordion from '../EditorAccordion.vue'
 import ManageBackgroundOpacity from './ManageBackgroundOpacity.vue'
 import ManageOpacity from './ManageOpacity.vue'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import GlobalLoader from '../../../Components/Loaders/GlobalLoader.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'

@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { delay } from '../composables/delay'
 import { isEmptyObject } from '../helpers/isEmptyObject'
 import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
+import { useTranslations } from '../composables/useTranslations'
 
 // Define available languages as a type and an array for easy iteration and type safety
 export type AvailableLanguage =
@@ -75,6 +76,8 @@ export class PageBuilderService {
   // Holds data to be mounted when pagebuilder is not yet present in the DOM
   private savedMountComponents: BuilderResourceData | null = null
   private pendingMountComponents: BuilderResourceData | null = null
+  private globalStylesObserver: MutationObserver | null = null
+  private _pendingPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
 
   // Add a class-level WeakMap to track elements and their listeners
@@ -87,9 +90,13 @@ export class PageBuilderService {
     { click: EventListener; mouseover: EventListener; mouseleave: EventListener }
   >()
 
+  private translate: (key: string) => string
+
   constructor(pageBuilderStateStore: ReturnType<typeof usePageBuilderStateStore>) {
     this.hasStartedEditing = false
     this.pageBuilderStateStore = pageBuilderStateStore
+    const { translate } = useTranslations()
+    this.translate = translate
     this.getApplyImageToSelection = computed(
       () => this.pageBuilderStateStore.getApplyImageToSelection,
     )
@@ -458,6 +465,12 @@ export class PageBuilderService {
     try {
       this.originalComponents = passedComponentsArray
       this.pageBuilderStateStore.setPageBuilderConfig(config)
+
+      // Apply language default from config if localStorage has no saved preference
+      const savedSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
+      if (!savedSettings?.lang && config.userSettings?.language?.default) {
+        this.changeLanguage(config.userSettings.language.default)
+      }
       // Validate and normalize the config (ensure required fields are present)
       this.validateConfig(config)
 
@@ -721,10 +734,9 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearClassesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
-
-    pagebuilder.removeAttribute('class')
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      el.removeAttribute('class')
+    })
 
     this.initializeElementStyles()
     await nextTick()
@@ -734,10 +746,9 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearInlineStylesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
-
-    pagebuilder.removeAttribute('style')
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      el.removeAttribute('style')
+    })
 
     this.initializeElementStyles()
     await nextTick()
@@ -748,19 +759,50 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async globalPageStyles() {
-    const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
+    const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
+    const firstEl = allContentEls[0] as HTMLElement | undefined
+    if (!firstEl) return
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
-    //
-    // Set the element in the store
-    this.pageBuilderStateStore.setElement(pagebuilder as HTMLElement)
+
+    // Set the element in the store (right sidebar edits this one)
+    this.pageBuilderStateStore.setElement(firstEl)
 
     // Add the data attribute for styling
-    pagebuilder.setAttribute('data-global-selected', 'true')
+    firstEl.setAttribute('data-global-selected', 'true')
+
+    // Sync class/style changes from the first wrapper to all other section wrappers
+    if (this.globalStylesObserver) this.globalStylesObserver.disconnect()
+    this.globalStylesObserver = new MutationObserver(() => {
+      const cls = firstEl.getAttribute('class') ?? ''
+      const style = firstEl.getAttribute('style') ?? ''
+      allContentEls.forEach((el) => {
+        if (el === firstEl) return
+        if (cls) el.setAttribute('class', cls)
+        else el.removeAttribute('class')
+        if (style) el.setAttribute('style', style)
+        else el.removeAttribute('style')
+      })
+    })
+    this.globalStylesObserver.observe(firstEl, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+    })
 
     await nextTick()
+  }
+
+  /**
+   * Disconnects the MutationObserver that syncs global page style changes across
+   * all [data-pagebuilder-content] section wrappers. Call when closing the global
+   * styles editor panel.
+   */
+  public stopGlobalStylesSync() {
+    if (this.globalStylesObserver) {
+      this.globalStylesObserver.disconnect()
+      this.globalStylesObserver = null
+    }
   }
 
   /**
@@ -847,8 +889,18 @@ export class PageBuilderService {
    * @param {HTMLElement} element - The element to process.
    * @private
    */
+  private ensureImagesHaveAltText(element: HTMLElement): void {
+    if (element.tagName === 'IMG' && !element.hasAttribute('alt')) {
+      element.setAttribute('alt', 'image')
+    }
+    element.querySelectorAll('img:not([alt])').forEach((img) => {
+      img.setAttribute('alt', 'image')
+    })
+  }
+
   private applyHelperCSSToElements(element: HTMLElement): void {
     this.wrapElementInDivIfExcluded(element)
+    this.ensureImagesHaveAltText(element)
 
     // If this is a DIV and its only/main child is a heading, apply font size classes to the DIV
     if (
@@ -970,6 +1022,8 @@ export class PageBuilderService {
    */
   public isEditableElement(el: Element | null): boolean {
     if (!el) return false
+    // IMG elements are always selectable even inside no-select zones (e.g. slider)
+    if (el.tagName !== 'IMG' && el.closest('[data-pb-no-select]')) return false
     return !this.NoneListernesTags.includes(el.tagName)
   }
 
@@ -1526,7 +1580,10 @@ export class PageBuilderService {
     const history = LocalStorageManager.getHistory(baseKey)
     if (history.length > 1 && this.pageBuilderStateStore.getHistoryIndex > 0) {
       this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex - 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex]
+      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
+        components: BuilderResourceData
+        pageSettings?: PageSettings
+      }
       const htmlString = this.renderComponentsToHtml(data.components)
       await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
     }
@@ -1542,7 +1599,10 @@ export class PageBuilderService {
     const history = LocalStorageManager.getHistory(baseKey)
     if (history.length > 0 && this.pageBuilderStateStore.getHistoryIndex < history.length - 1) {
       this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex + 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex]
+      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
+        components: BuilderResourceData
+        pageSettings?: PageSettings
+      }
       const htmlString = this.renderComponentsToHtml(data.components)
       await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
     }
@@ -2026,6 +2086,11 @@ export class PageBuilderService {
     const pagebuilder = document.querySelector('#pagebuilder')
     if (!pagebuilder) return
 
+    // Save current page settings before setComponents triggers a full DOM remount
+    const firstContent = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
+    const savedClasses = firstContent?.getAttribute('class') || ''
+    const savedStyle = firstContent?.getAttribute('style') || ''
+
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
     pagebuilder.querySelectorAll('section[data-componentid]').forEach((section) => {
@@ -2038,6 +2103,18 @@ export class PageBuilderService {
     })
 
     this.pageBuilderStateStore.setComponents(componentsToSave)
+
+    // Re-apply page settings after the re-render (setComponents forces components = [] first)
+    if (savedClasses || savedStyle) {
+      nextTick(() => {
+        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+          if (savedClasses) el.setAttribute('class', savedClasses)
+          else el.removeAttribute('class')
+          if (savedStyle) el.setAttribute('style', savedStyle)
+          else el.removeAttribute('style')
+        })
+      })
+    }
   }
 
   public async generateHtmlFromComponents(): Promise<string> {
@@ -2092,9 +2169,10 @@ export class PageBuilderService {
       })
     })
 
+    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
     const pageSettings = {
-      classes: pagebuilder.className || '',
-      style: pagebuilder.getAttribute('style') || (pagebuilder as HTMLElement).style.cssText || '',
+      classes: contentEl?.className || '',
+      style: contentEl?.getAttribute('style') || contentEl?.style.cssText || '',
     }
 
     const dataToSave = {
@@ -2142,7 +2220,9 @@ export class PageBuilderService {
           localStorage.setItem(baseKey, JSON.stringify(dataToSave))
           let history = LocalStorageManager.getHistory(baseKey)
 
-          const lastState = history[history.length - 1]
+          const lastState = history[history.length - 1] as
+            | { components: unknown; pageSettings: unknown }
+            | undefined
           if (lastState) {
             const lastComponents = JSON.stringify(lastState.components)
             const newComponents = JSON.stringify(dataToSave.components)
@@ -2273,6 +2353,15 @@ export class PageBuilderService {
    */
   public startEditing() {
     this.hasStartedEditing = true
+  }
+
+  /**
+   * Re-attaches click/hover listeners to any newly added DOM elements.
+   * Call this after programmatically inserting elements into the builder canvas.
+   */
+  public async refreshListeners(): Promise<void> {
+    await nextTick()
+    await this.addListenersToEditableElements()
   }
 
   /**
@@ -2659,6 +2748,7 @@ export class PageBuilderService {
       check: 'At least 300 words of content',
       passed: totalWords >= 300,
       details: `Found ${totalWords} words`,
+      category: 'Content',
     })
 
     // Individual heading checks (H2-H6)
@@ -2667,6 +2757,7 @@ export class PageBuilderService {
       check: 'Has at least one H2',
       passed: h2Count > 0,
       details: `Found ${h2Count} H2 headings`,
+      category: 'Headings',
     })
 
     const h3Count = doc.querySelectorAll('h3').length
@@ -2674,6 +2765,7 @@ export class PageBuilderService {
       check: 'Has at least one H3',
       passed: h3Count > 0,
       details: `Found ${h3Count} H3 headings`,
+      category: 'Headings',
     })
 
     const h4Count = doc.querySelectorAll('h4').length
@@ -2681,6 +2773,7 @@ export class PageBuilderService {
       check: 'Has at least one H4',
       passed: h4Count > 0,
       details: `Found ${h4Count} H4 headings`,
+      category: 'Headings',
     })
 
     const h5Count = doc.querySelectorAll('h5').length
@@ -2688,6 +2781,7 @@ export class PageBuilderService {
       check: 'Has at least one H5',
       passed: h5Count > 0,
       details: `Found ${h5Count} H5 headings`,
+      category: 'Headings',
     })
 
     const h6Count = doc.querySelectorAll('h6').length
@@ -2695,6 +2789,66 @@ export class PageBuilderService {
       check: 'Has at least one H6',
       passed: h6Count > 0,
       details: `Found ${h6Count} H6 headings`,
+      category: 'Headings',
+    })
+
+    // No heading levels are skipped (e.g. H3 without H2)
+    const headingLevels = [2, 3, 4, 5, 6]
+    let headingStructureValid = true
+    let headingStructureDetail = 'Heading hierarchy is correct'
+    for (let i = 1; i < headingLevels.length; i++) {
+      const current = headingLevels[i]
+      const previous = headingLevels[i - 1]
+      if (
+        doc.querySelectorAll(`h${current}`).length > 0 &&
+        doc.querySelectorAll(`h${previous}`).length === 0
+      ) {
+        headingStructureValid = false
+        headingStructureDetail = `H${current} found but H${previous} is missing — heading levels should not be skipped`
+        break
+      }
+    }
+    checks.push({
+      check: 'Heading levels are not skipped',
+      passed: headingStructureValid,
+      details: headingStructureDetail,
+      category: 'Headings',
+    })
+
+    // Page contains at least one image
+    const allImages = [...doc.querySelectorAll('img')]
+    checks.push({
+      check: 'Page contains at least one image',
+      passed: allImages.length > 0,
+      details: `Found ${allImages.length} image(s)`,
+      category: 'Media',
+    })
+
+    // All images have alt text
+    const imagesWithoutAlt = allImages.filter(
+      (img) => !img.getAttribute('alt') || img.getAttribute('alt')!.trim() === '',
+    )
+    checks.push({
+      check: 'All images have alt text',
+      passed: allImages.length === 0 || imagesWithoutAlt.length === 0,
+      details:
+        allImages.length === 0
+          ? 'No images found'
+          : imagesWithoutAlt.length === 0
+            ? `All ${allImages.length} image(s) have alt text`
+            : `${imagesWithoutAlt.length} of ${allImages.length} image(s) are missing alt text`,
+      category: 'Media',
+    })
+
+    // Page contains at least one link
+    const allLinks = [...doc.querySelectorAll('a[href]')].filter(
+      (a) => (a.getAttribute('href') || '').trim() !== '',
+    )
+    checks.push({
+      check: 'Page contains at least one link',
+      passed: allLinks.length > 0,
+      details: `Found ${allLinks.length} link(s)`,
+      category: 'Links',
     })
 
     // Score = % of passed checks
@@ -2729,8 +2883,20 @@ export class PageBuilderService {
         typeof placeCompAtLocation === 'number' &&
         placeCompAtLocation >= 0
       ) {
+        // Capture global page styles from the first styled div BEFORE any DOM
+        // manipulation — this is the only moment we can guarantee they are present.
+        const existingStyled = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        const globalClasses = existingStyled?.getAttribute('class') || ''
+        const globalStyle = existingStyled?.getAttribute('style') || ''
+
+        // Pause the MutationObserver so it doesn't fire on the divs being removed/recreated.
+        this.globalStylesObserver?.disconnect()
+
         this.syncDomToStoreOnly()
         await nextTick()
+
         const components = this.pageBuilderStateStore.getComponents || []
         const newComponents = [
           ...components.slice(0, placeCompAtLocation),
@@ -2739,13 +2905,71 @@ export class PageBuilderService {
         ]
         this.pageBuilderStateStore.setComponents(newComponents)
         insertedIndex = placeCompAtLocation
+
+        // Wait for Vue to finish rendering the new component list (including the
+        // freshly created [data-pagebuilder-content] div for the new component).
+        await nextTick()
+        await nextTick()
+
+        // Apply the captured global styles to every wrapper, including the new div.
+        if (globalClasses || globalStyle) {
+          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+            if (globalClasses) el.setAttribute('class', globalClasses)
+            else el.removeAttribute('class')
+            if (globalStyle) el.setAttribute('style', globalStyle)
+            else el.removeAttribute('style')
+          })
+        }
+
+        // Restart the MutationObserver on the (possibly new) first wrapper so that
+        // future style edits continue to sync to all wrappers.
+        const newFirstEl = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        if (newFirstEl && this.globalStylesObserver !== null) {
+          // Observer was active before — reconnect it to the new first element.
+          const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
+          this.globalStylesObserver = new MutationObserver(() => {
+            const cls = newFirstEl.getAttribute('class') ?? ''
+            const style = newFirstEl.getAttribute('style') ?? ''
+            allContentEls.forEach((el) => {
+              if (el === newFirstEl) return
+              if (cls) el.setAttribute('class', cls)
+              else el.removeAttribute('class')
+              if (style) el.setAttribute('style', style)
+              else el.removeAttribute('style')
+            })
+          })
+          this.globalStylesObserver.observe(newFirstEl, {
+            attributes: true,
+            attributeFilter: ['class', 'style'],
+          })
+        }
       } else {
+        // Capture styles before push so we can apply to the new div after render.
+        const existingStyled = document.querySelector(
+          '[data-pagebuilder-content]',
+        ) as HTMLElement | null
+        const globalClasses = existingStyled?.getAttribute('class') || ''
+        const globalStyle = existingStyled?.getAttribute('style') || ''
+
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
           componentArrayAddMethod: this.getComponentArrayAddMethod.value
             ? this.getComponentArrayAddMethod.value
             : 'push',
         })
+
+        if (globalClasses || globalStyle) {
+          await nextTick()
+          await nextTick()
+          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+            if (globalClasses) el.setAttribute('class', globalClasses)
+            else el.removeAttribute('class')
+            if (globalStyle) el.setAttribute('style', globalStyle)
+            else el.removeAttribute('style')
+          })
+        }
       }
 
       const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
@@ -2940,12 +3164,16 @@ export class PageBuilderService {
    */
   public async applyModifiedHTML(htmlString: string): Promise<string | null> {
     if (!htmlString || (typeof htmlString === 'string' && htmlString.length === 0)) {
-      return 'No HTML content was provided. Please ensure a valid HTML string is passed.'
+      return this.translate(
+        'No HTML content was provided. Please ensure a valid HTML string is passed.',
+      )
     }
 
     // Check if the htmlString contains any <section> tags
     if (/<section[\s>]/i.test(htmlString)) {
-      return 'Error: The <section> tag cannot be used as it is already included inside this component.'
+      return this.translate(
+        'Error: The <section> tag cannot be used as it is already included inside this component.',
+      )
     }
 
     const tempDiv = document.createElement('div')
@@ -2954,7 +3182,7 @@ export class PageBuilderService {
     const parsedElement = tempDiv.firstElementChild as HTMLElement | null
 
     if (!parsedElement) {
-      return 'Could not parse element from HTML string.'
+      return this.translate('Could not parse element from HTML string.')
     }
 
     // Replace the actual DOM element
@@ -2982,7 +3210,9 @@ export class PageBuilderService {
     const closingSectionMatches = htmlString.match(/<\/section>/gi) || []
 
     if (!htmlString || htmlString.trim().length === 0) {
-      const error = 'No HTML content was provided. Please ensure a valid HTML string is passed.'
+      const error = this.translate(
+        'No HTML content was provided. Please ensure a valid HTML string is passed.',
+      )
       if (options && options.logError) {
         console.error(error)
         // Behavior
@@ -2993,9 +3223,9 @@ export class PageBuilderService {
     }
 
     if (openingSectionMatches.length !== closingSectionMatches.length) {
-      const error =
-        'Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. ' +
-        'Ensure that all <section> tags have a matching closing </section> tag.'
+      const error = this.translate(
+        'Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.',
+      )
 
       if (options && options.logError) {
         console.error(error)
@@ -3009,8 +3239,9 @@ export class PageBuilderService {
     tempDiv.innerHTML = trimmedData
     const nestedSection = tempDiv.querySelector('section section')
     if (nestedSection) {
-      const error =
-        'Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.'
+      const error = this.translate(
+        'Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.',
+      )
       if (options && options.logError) {
         console.error(error)
         return error
@@ -3020,8 +3251,9 @@ export class PageBuilderService {
 
     // Return error since JSON data has been passed to mount HTML to DOM
     if (trimmedData.startsWith('[') || trimmedData.startsWith('{')) {
-      const error =
-        'Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.'
+      const error = this.translate(
+        'Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.',
+      )
       if (options && options.logError) {
         console.error(error)
         return error
@@ -3045,7 +3277,9 @@ export class PageBuilderService {
     const openingSectionMatches = htmlString.match(/<section\b[^>]*>/gi) || []
 
     if (openingSectionMatches.length === 0) {
-      const error = 'No <section> tags found. Each component must be wrapped in a <section> tag.'
+      const error = this.translate(
+        'No <section> tags found. Each component must be wrapped in a <section> tag.',
+      )
       if (error) {
         return error
       }
@@ -3093,10 +3327,9 @@ export class PageBuilderService {
       const doc = parser.parseFromString(htmlString, 'text/html')
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
-      const livePageBuilder = document.querySelector('#pagebuilder') as HTMLElement | null
 
       // Initialize configPageSettings to null
-      let configPageSettings = null
+      let configPageSettings: PageSettings | null = null
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
@@ -3107,7 +3340,7 @@ export class PageBuilderService {
       if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
         configPageSettings = {
           classes: importedPageBuilder.className || '',
-          style: importedPageBuilder.getAttribute('style') || '',
+          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
         }
       }
 
@@ -3117,31 +3350,13 @@ export class PageBuilderService {
       }
 
       // Apply the page settings to the live page builder
-      if (!pageSettingsFromHistory && configPageSettings && livePageBuilder) {
-        // Remove existing class and style attributes
-        livePageBuilder.removeAttribute('class')
-        livePageBuilder.removeAttribute('style')
-
-        // Apply new classes and styles
-        livePageBuilder.className = configPageSettings.classes || ''
-        livePageBuilder.setAttribute(
-          'style',
-          this.convertStyleObjectToString(configPageSettings.style),
-        )
+      if (!pageSettingsFromHistory && configPageSettings) {
+        this._pendingPageSettings = configPageSettings
       }
 
       // Apply the page settings to the live page builder
-      if (pageSettingsFromHistory && livePageBuilder) {
-        // Remove existing class and style attributes
-        livePageBuilder.removeAttribute('class')
-        livePageBuilder.removeAttribute('style')
-
-        // Apply new classes and styles
-        livePageBuilder.className = pageSettingsFromHistory.classes || ''
-        livePageBuilder.setAttribute(
-          'style',
-          this.convertStyleObjectToString(pageSettingsFromHistory.style),
-        )
+      if (pageSettingsFromHistory) {
+        this._pendingPageSettings = pageSettingsFromHistory
       }
 
       // Select all <section> elements
@@ -3182,6 +3397,20 @@ export class PageBuilderService {
       // Clear selections and re-bind events
       await this.clearHtmlSelection()
       await nextTick()
+
+      // Apply pending page settings to all [data-pagebuilder-content] wrappers now that Vue has rendered them
+      if (this._pendingPageSettings) {
+        const settings = this._pendingPageSettings
+        this._pendingPageSettings = null
+        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+          el.removeAttribute('class')
+          el.removeAttribute('style')
+          if (settings.classes) el.setAttribute('class', settings.classes)
+          const styleStr = this.convertStyleObjectToString(settings.style)
+          if (styleStr) el.setAttribute('style', styleStr)
+        })
+      }
+
       await this.addListenersToEditableElements()
     } catch (error) {
       console.error('Error parsing HTML components:', error)

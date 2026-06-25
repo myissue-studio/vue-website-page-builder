@@ -1,10 +1,11 @@
-<script setup>
-import { ref, computed, inject } from 'vue'
+<script setup lang="ts">
+import { ref, computed, inject, watch } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
+import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -14,7 +15,7 @@ const pageBuilderService = getPageBuilder()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
-const customMediaComponent = inject('CustomMediaComponent')
+const customMediaComponent = inject<Record<string, unknown> | null>('CustomMediaComponent', null)
 
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
@@ -27,6 +28,245 @@ const elementTag = computed(() => {
 
 const canMoveUp = computed(() => pageBuilderService.canMoveUp())
 const canMoveDown = computed(() => pageBuilderService.canMoveDown())
+
+const autoRotateTick = ref(0)
+const showSliderModal = ref(false)
+
+const isInsideSlider = computed(() => {
+  return !!(getElement.value instanceof HTMLElement && getElement.value.closest('[data-isl]'))
+})
+
+const sliderAutoRotate = computed(() => {
+  void autoRotateTick.value
+  if (!(getElement.value instanceof HTMLElement)) return false
+  return getElement.value.closest('[data-isl]')?.hasAttribute('data-isl-auto') ?? false
+})
+
+const sliderImageCount = computed(() => {
+  void autoRotateTick.value
+  if (!(getElement.value instanceof HTMLElement)) return 3
+  const container = getElement.value.closest('[data-isl]')
+  if (!container) return 3
+  const track = container.querySelector('.pbx-isl-t')
+  return track ? track.children.length : 3
+})
+
+const toggleSliderAutoRotate = async () => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  if (container.hasAttribute('data-isl-auto')) {
+    container.removeAttribute('data-isl-auto')
+  } else {
+    const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+    if (track) track.scrollLeft = 0
+    container.setAttribute('data-isl-auto', '')
+  }
+  // Rebuild onclick handlers so preview navigation uses the correct path
+  // (animation-restart for auto mode, scrollTo for non-auto mode)
+  const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
+  const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
+  nums.forEach((span, i) => span.setAttribute('onclick', buildSliderOnclickJs(i)))
+  dots.forEach((dot, i) => dot.setAttribute('onclick', buildSliderOnclickJs(i)))
+  autoRotateTick.value++
+  await pageBuilderService.handleAutoSave()
+}
+
+const sliderSpeed = computed(() => {
+  void autoRotateTick.value
+  if (!(getElement.value instanceof HTMLElement)) return 3
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  return parseInt(container?.getAttribute('data-isl-speed') || '3', 10)
+})
+
+const changeSliderSpeed = async (n: number) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  container.setAttribute('data-isl-speed', String(n))
+  // Rebuild style tag so animation duration updates immediately
+  const section = container.closest('section')
+  const styleTag = section?.querySelector('style')
+  const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+  const count = track ? track.children.length : 3
+  if (styleTag) styleTag.textContent = buildSliderStyle(count, n)
+  autoRotateTick.value++
+  await pageBuilderService.handleAutoSave()
+}
+
+// ── Slider style/onclick helpers ───────────────────────────────────────────
+function buildSliderOnclickJs(idx: number): string {
+  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.55';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
+  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
+  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(${idx === 0 ? '0' : `(-${idx}*sp)`})+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});}`
+  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}${nav}var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
+}
+
+function buildSliderStyle(n: number, speed: number = 3): string {
+  const T = n * speed
+  const step = 100 / n
+  const hold = Math.max(step - 3, 1)
+  const trackW = n * 100
+  const slideW = (100 / n).toFixed(3)
+
+  // Track keyframes
+  let trackKf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
+  for (let i = 1; i < n; i++) {
+    const tx = -((100 * i) / n).toFixed(3)
+    const s = (i * step).toFixed(3)
+    const e2 = (i * step + hold).toFixed(3)
+    trackKf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
+  }
+  trackKf += `99%,100%{transform:translateX(0)}}`
+
+  // Per-dot keyframes + rules (sync background with track timing)
+  let dotKfs = ''
+  let dotRules = ''
+  for (let i = 0; i < n; i++) {
+    const aStart = (i * step).toFixed(3)
+    const aEnd = (i * step + hold).toFixed(3)
+    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
+    const dim = 'rgba(255,255,255,0.55)'
+    const active = 'rgba(255,255,255,1)'
+    if (i === 0) {
+      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
+    } else {
+      const before = (i * step - 0.001).toFixed(3)
+      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${before}%{background:${dim}}${aStart}%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
+    }
+    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s infinite}`
+  }
+
+  // Per-num keyframes + rules (sync opacity+background with track timing)
+  let numKfs = ''
+  let numRules = ''
+  for (let i = 0; i < n; i++) {
+    const aStart = (i * step).toFixed(3)
+    const aEnd = (i * step + hold).toFixed(3)
+    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
+    const dimState = 'opacity:0.55;background:rgba(255,255,255,0.25)'
+    const activeState = 'opacity:1;background:rgba(255,255,255,0.9)'
+    if (i === 0) {
+      numKfs += `@keyframes pbx-isl-na-${i}{0%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
+    } else {
+      const before = (i * step - 0.001).toFixed(3)
+      numKfs += `@keyframes pbx-isl-na-${i}{0%,${before}%{${dimState}}${aStart}%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
+    }
+    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s infinite}`
+  }
+
+  // Builder active-slide rules (CSS attribute selector — used in edit mode)
+  let activeRules = ''
+  for (let i = 0; i < n; i++) {
+    if (i > 0) activeRules += ','
+    activeRules += `[data-isl-active="${i}"] .pbx-isl-nums span:nth-child(${i + 1})`
+  }
+  activeRules +=
+    '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
+
+  return [
+    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
+    '.pbx-isl-t::-webkit-scrollbar{display:none}',
+    trackKf,
+    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s infinite;pointer-events:none}`,
+    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
+    '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
+    '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
+    '.pbx-isl-nums span{font-size:1rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
+    '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
+    '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
+    activeRules,
+    dotKfs,
+    dotRules,
+    numKfs,
+    numRules,
+  ].join('')
+}
+
+const changeSlideCount = async (newCount: number) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+  if (!track) return
+  const currentCount = track.children.length
+  const section = container.closest('section')
+  const styleTag = section?.querySelector('style')
+  const firstImg = track.querySelector('img') as HTMLImageElement | null
+  const placeholderSrc = firstImg?.getAttribute('src') || ''
+  if (newCount > currentCount) {
+    for (let i = currentCount; i < newCount; i++) {
+      const slide = document.createElement('div')
+      slide.style.minWidth = '100%'
+      slide.style.scrollSnapAlign = 'start'
+      const img = document.createElement('img')
+      img.src = placeholderSrc
+      img.style.width = '100%'
+      img.style.aspectRatio = '16/9'
+      img.style.objectFit = 'cover'
+      img.style.display = 'block'
+      img.alt = `Slide ${i + 1}`
+      slide.appendChild(img)
+      track.appendChild(slide)
+    }
+  } else if (newCount < currentCount) {
+    for (let i = currentCount - 1; i >= newCount; i--) {
+      track.children[i]?.remove()
+    }
+  }
+  const numsDiv = container.querySelector('.pbx-isl-nums') as HTMLElement | null
+  const dotsDiv = numsDiv?.nextElementSibling as HTMLElement | null
+  if (numsDiv && dotsDiv) {
+    numsDiv.innerHTML = ''
+    dotsDiv.innerHTML = ''
+    for (let i = 0; i < newCount; i++) {
+      const numSpan = document.createElement('span')
+      numSpan.textContent = String(i + 1)
+      numSpan.setAttribute('onclick', buildSliderOnclickJs(i))
+      if (i === 0) {
+        numSpan.style.opacity = '1'
+        numSpan.style.background = 'rgba(255,255,255,0.9)'
+        numSpan.style.color = '#111'
+        numSpan.style.borderRadius = '9999px'
+        numSpan.style.padding = '0.1rem 0.55rem'
+        numSpan.style.textShadow = 'none'
+      }
+      numsDiv.appendChild(numSpan)
+      const dotSpan = document.createElement('span')
+      dotSpan.className = 'pbx-isl-dot'
+      if (i === 0) dotSpan.style.background = 'rgba(255,255,255,1)'
+      dotSpan.setAttribute('onclick', buildSliderOnclickJs(i))
+      dotsDiv.appendChild(dotSpan)
+    }
+  }
+  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, sliderSpeed.value)
+  autoRotateTick.value++
+  await pageBuilderService.refreshListeners()
+  await pageBuilderService.handleAutoSave()
+}
+
+const activeSlideIndex = computed(() => {
+  if (!(getElement.value instanceof HTMLElement)) return -1
+  const container = getElement.value.closest('[data-isl]')
+  if (!container) return -1
+  const track = container.querySelector('.pbx-isl-t')
+  if (!track) return -1
+  for (let i = 0; i < track.children.length; i++) {
+    if (track.children[i].contains(getElement.value)) return i
+  }
+  return -1
+})
+
+watch(activeSlideIndex, (idx) => {
+  if (!(getElement.value instanceof HTMLElement)) return
+  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (!container) return
+  if (idx >= 0) {
+    container.setAttribute('data-isl-active', String(idx))
+  } else {
+    container.removeAttribute('data-isl-active')
+  }
+})
 
 const getShowModalTipTap = computed(() => {
   const result = pageBuilderStateStore.getShowModalTipTap
@@ -45,14 +285,14 @@ const getComponent = computed(() => {
 const typeModalTipTap = ref('')
 const gridColumnModalTipTap = ref(Number(1))
 const titleModalTipTap = ref('')
-const descriptionModalTipTap = ref('')
-const firstButtonModalTipTap = ref('')
-const secondButtonModalTipTap = ref(null)
-const thirdButtonModalTipTap = ref(null)
+const descriptionModalTipTap = ref<string | null>('')
+const firstButtonModalTipTap = ref<string | null>('')
+const secondButtonModalTipTap = ref<string | null>(null)
+const thirdButtonModalTipTap = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
-const secondModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilderTipTap = ref(null)
+const firstModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilderTipTap = ref<(() => void) | null>(null)
 
 const handleModalPreviewTiptap = function () {
   pageBuilderService.toggleTipTapModal(true)
@@ -85,12 +325,12 @@ const getBasePrimaryImage = computed(() => {
 const showMediaLibraryModal = ref(false)
 // modal content
 const titleMedia = ref('')
-const descriptionMedia = ref('')
+const descriptionMedia = ref<string | null>('')
 const firstButtonMedia = ref('')
-const secondButtonMedia = ref(null)
-const thirdButtonMedia = ref(null)
+const secondButtonMedia = ref<string | null>(null)
+const thirdButtonMedia = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstMediaButtonFunction = ref(null)
+const firstMediaButtonFunction = ref<(() => void) | null>(null)
 
 const handleAddImage = function () {
   // open modal to true
@@ -109,7 +349,7 @@ const handleAddImage = function () {
 
 // Logic for Video Iframe
 
-const urlError = ref(null)
+const urlError = ref<string | null>(null)
 const iframeSrc = ref('')
 const showModalIframeSrc = ref(false)
 
@@ -139,8 +379,8 @@ const handleModalIframeSrc = function () {
     getElement.value &&
     getElement.value.firstElementChild?.tagName === 'IFRAME' &&
     getElement.value.firstElementChild.hasAttribute('src') &&
-    getElement.value.firstElementChild.getAttribute('src').trim() !== ''
-      ? getElement.value.firstElementChild.src
+    (getElement.value.firstElementChild.getAttribute('src') ?? '').trim() !== ''
+      ? (getElement.value.firstElementChild as HTMLIFrameElement).src
       : ''
 
   iframeSrc.value = iframeSrcValue
@@ -151,7 +391,7 @@ const handleModalIframeSrc = function () {
 
   typeModalTipTap.value = 'success'
   gridColumnModalTipTap.value = 2
-  titleModalTipTap.value = 'Add video url'
+  titleModalTipTap.value = translate('Add video url')
   descriptionModalTipTap.value = null
   firstButtonModalTipTap.value = translate('Close')
   secondButtonModalTipTap.value = 'Save'
@@ -192,7 +432,7 @@ const handleModalIframeSrc = function () {
             videoId = url.pathname.split('/embed/')[1]?.split('?')[0]
           } else if (url.pathname.includes('/watch')) {
             // Format: https://www.youtube.com/watch?v=VIDEO_ID
-            videoId = url.searchParams.get('v')
+            videoId = url.searchParams.get('v') ?? ''
           }
 
           if (videoId) {
@@ -219,7 +459,7 @@ const handleModalIframeSrc = function () {
         embedUrl = iframeSrc.value.replace('watch?v=', 'embed/')
       }
 
-      getElement.value.firstElementChild.src = embedUrl
+      ;(getElement.value.firstElementChild as HTMLIFrameElement).src = embedUrl
     }
 
     showModalIframeSrc.value = false
@@ -241,12 +481,12 @@ const gridColumnModal = ref(Number(1))
 const titleModal = ref('')
 const descriptionModal = ref('')
 const firstButtonModal = ref('')
-const secondButtonModal = ref(null)
-const thirdButtonModal = ref(null)
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilder = ref(null)
-const secondModalButtonFunctionDynamicModalBuilder = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
 
 // remove component
 const handleDelete = function () {
@@ -282,17 +522,17 @@ const handleDelete = function () {
       :gridColumnAmount="gridColumnModalTipTap"
       :title="titleModalTipTap"
       :description="descriptionModalTipTap"
-      :firstButtonText="firstButtonModalTipTap"
-      :secondButtonText="secondButtonModalTipTap"
-      :thirdButtonText="thirdButtonModalTipTap"
+      :firstButtonText="firstButtonModalTipTap ?? undefined"
+      :secondButtonText="secondButtonModalTipTap ?? undefined"
+      :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap
+        () => firstModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap
+        () => secondModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap
+        () => thirdModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
     >
       <header></header>
@@ -300,7 +540,9 @@ const handleDelete = function () {
         <div class="pbx-myInputGroup">
           <div class="pbx-myPrimaryFormOrganizationHeaderDescriptionSection">
             <div class="pbx-myPrimaryFormOrganizationHeader">
-              <label for="youtube-video" class="pbx-myPrimaryInputLabel">Video url:</label>
+              <label for="youtube-video" class="pbx-myPrimaryInputLabel">{{
+                translate('Video url:')
+              }}</label>
               <input
                 id="youtube-video"
                 v-model="iframeSrc"
@@ -329,17 +571,17 @@ const handleDelete = function () {
       :gridColumnAmount="gridColumnModalTipTap"
       :title="titleModalTipTap"
       :description="descriptionModalTipTap"
-      :firstButtonText="firstButtonModalTipTap"
-      :secondButtonText="secondButtonModalTipTap"
-      :thirdButtonText="thirdButtonModalTipTap"
+      :firstButtonText="firstButtonModalTipTap ?? undefined"
+      :secondButtonText="secondButtonModalTipTap ?? undefined"
+      :thirdButtonText="thirdButtonModalTipTap ?? undefined"
       @firstModalButtonFunctionDynamicModalBuilder="
-        firstModalButtonFunctionDynamicModalBuilderTipTap
+        () => firstModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @secondModalButtonFunctionDynamicModalBuilder="
-        secondModalButtonFunctionDynamicModalBuilderTipTap
+        () => secondModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
       @thirdModalButtonFunctionDynamicModalBuilder="
-        thirdModalButtonFunctionDynamicModalBuilderTipTap
+        () => thirdModalButtonFunctionDynamicModalBuilderTipTap?.()
       "
     >
       <header></header>
@@ -354,11 +596,17 @@ const handleDelete = function () {
       :title="titleModal"
       :description="descriptionModal"
       :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal"
-      :thirdButtonText="thirdButtonModal"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonFunctionDynamicModalBuilder"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonFunctionDynamicModalBuilder"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
+      :secondButtonText="secondButtonModal ?? undefined"
+      :thirdButtonText="thirdButtonModal ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        () => firstModalButtonFunctionDynamicModalBuilder?.()
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        () => secondModalButtonFunctionDynamicModalBuilder?.()
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        () => thirdModalButtonFunctionDynamicModalBuilder?.()
+      "
     >
       <header></header>
       <main></main>
@@ -368,10 +616,10 @@ const handleDelete = function () {
       :title="titleMedia"
       :description="descriptionMedia"
       :firstButtonText="firstButtonMedia"
-      :secondButtonText="secondButtonMedia"
-      :thirdButtonText="thirdButtonMedia"
-      :customMediaComponent="customMediaComponent"
-      @firstMediaButtonFunction="firstMediaButtonFunction"
+      :secondButtonText="secondButtonMedia ?? undefined"
+      :thirdButtonText="thirdButtonMedia ?? undefined"
+      :customMediaComponent="customMediaComponent ?? undefined"
+      @firstMediaButtonFunction="() => firstMediaButtonFunction?.()"
     >
     </MediaLibraryModal>
 
@@ -464,6 +712,130 @@ const handleDelete = function () {
             <span class="material-symbols-outlined"> delete </span>
           </div>
         </template>
+
+        <template v-if="isInsideSlider">
+          <div
+            @click="showSliderModal = true"
+            :class="
+              sliderAutoRotate
+                ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor'
+            "
+            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :title="translate('Slider Settings')"
+          >
+            <span class="material-symbols-outlined"> settings </span>
+          </div>
+        </template>
+
+        <DynamicModalBuilder
+          v-if="showSliderModal"
+          :showDynamicModalBuilder="showSliderModal"
+          :isLoading="false"
+          type="success"
+          :gridColumnAmount="1"
+          :title="translate('Slider Settings')"
+          description=""
+          :firstButtonText="translate('Close')"
+          @firstModalButtonFunctionDynamicModalBuilder="showSliderModal = false"
+        >
+          <header></header>
+          <main>
+            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
+              <!-- Auto Rotate card -->
+              <div
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-overflow-hidden"
+              >
+                <div
+                  class="pbx-flex pbx-items-center pbx-justify-between pbx-px-4 pbx-py-3"
+                  :class="sliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor' : 'pbx-bg-gray-50'"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-2">
+                    <span
+                      class="material-symbols-outlined pbx-text-xl"
+                      :class="
+                        sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
+                      "
+                      >autoplay</span
+                    >
+                    <span
+                      class="pbx-text-sm pbx-font-semibold"
+                      :class="
+                        sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
+                      "
+                      >{{ translate('Auto Rotate') }}</span
+                    >
+                  </div>
+                  <ToggleInput
+                    :model-value="sliderAutoRotate"
+                    @update:model-value="toggleSliderAutoRotate"
+                  />
+                </div>
+
+                <!-- Speed row — only when auto rotate is on -->
+                <div
+                  v-if="sliderAutoRotate"
+                  class="pbx-px-4 pbx-py-3 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-bg-white"
+                >
+                  <p
+                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-mb-2 pbx-uppercase pbx-tracking-wide"
+                  >
+                    {{ translate('Rotation Speed (s)') }}
+                  </p>
+                  <div class="pbx-flex pbx-gap-2">
+                    <button
+                      v-for="s in [1, 2, 3, 4, 5]"
+                      :key="s"
+                      @click="changeSliderSpeed(s)"
+                      :class="
+                        sliderSpeed === s
+                          ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+                          : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200'
+                      "
+                      class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
+                      type="button"
+                    >
+                      {{ s }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Number of images card -->
+              <div
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
+                  <span
+                    class="material-symbols-outlined pbx-text-xl pbx-text-myPrimaryDarkGrayColor"
+                    >photo_library</span
+                  >
+                  <p
+                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-uppercase pbx-tracking-wide"
+                  >
+                    {{ translate('Number of images') }}
+                  </p>
+                </div>
+                <div class="pbx-flex pbx-gap-2">
+                  <button
+                    v-for="n in [2, 3, 4, 5, 6]"
+                    :key="n"
+                    @click="changeSlideCount(n)"
+                    :class="
+                      sliderImageCount === n
+                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+                        : 'pbx-bg-white pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200 pbx-border pbx-border-solid pbx-border-gray-200'
+                    "
+                    class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
+                    type="button"
+                  >
+                    {{ n }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </DynamicModalBuilder>
 
         <div
           v-if="getElement && getComponent"

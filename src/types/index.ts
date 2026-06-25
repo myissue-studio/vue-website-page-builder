@@ -13,6 +13,7 @@ export interface SEOCheck {
   check: string
   passed: boolean
   details: string
+  category: string
 }
 
 export interface SEOSummary {
@@ -237,7 +238,6 @@ export interface PageBuilderConfig {
   userForPageBuilder?: PageBuilderUser
   [key: string]: unknown
   userSettings?: {
-    theme?: 'light' | 'dark' | 'auto'
     language?: {
       default:
         | 'en'
@@ -255,9 +255,11 @@ export interface PageBuilderConfig {
       enable?: ReadonlyArray<
         'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'it'
       >
+      disableLanguageDropDown?: boolean
     }
 
     autoSave?: boolean
+    fontFamily?: string
     [key: string]: unknown
   } | null
   settings?: {

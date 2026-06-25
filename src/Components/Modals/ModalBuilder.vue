@@ -59,7 +59,7 @@ const maxWidthClass = computed(() => {
       <!-- Modal -->
       <div
         v-if="showModalBuilder"
-        class="pbx-fixed pbx-inset-0 pbx-z-40 pbx-flex pbx-items-center pbx-justify-center pbx-mx-4"
+        class="pbx-fixed pbx-inset-0 pbx-z-[9999] pbx-flex pbx-items-center pbx-justify-center pbx-mx-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dialog-title"

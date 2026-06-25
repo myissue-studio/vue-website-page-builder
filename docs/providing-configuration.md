@@ -15,7 +15,7 @@ Your `configPageBuilder` object can include:
 - **`pageBuilderLogo` (optional):**
   Display your company logo in the builder toolbar.
 - **`userSettings` (optional):**
-  Set user preferences such as theme, language, or auto-save.
+  Set user preferences such as language, font family, or auto-save.
 - **`brandColor` (optional):**
   Set your brand’s primary color for key UI elements (inside the `settings` config).
 
@@ -39,11 +39,11 @@ const configPageBuilder = {
     src: '/logo/logo.svg',
   },
   userSettings: {
-    theme: 'light',
     language: {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],
     },
+    fontFamily: 'raleway',
     autoSave: true,
   },
   settings: {

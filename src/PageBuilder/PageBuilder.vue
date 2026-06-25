@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, computed, ref, watch, provide } from 'vue'
 import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
 import Preview from './Preview.vue'
@@ -9,7 +9,7 @@ import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSideba
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
 import { delay } from '../composables/delay'
-import { useDebounce } from '../composables/useDebounce.ts'
+import { useDebounce } from '../composables/useDebounce'
 import DynamicModalBuilder from '../Components/Modals/DynamicModalBuilder.vue'
 import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
 import { useTranslations } from '../composables/useTranslations'
@@ -66,12 +66,12 @@ const typeModalloseNoSave = ref('')
 const showModalCloseNoSave = ref(false)
 const titleModalCloseNoSave = ref('')
 const descriptionModalCloseNoSave = ref('')
-const firstButtonCloseNoSave = ref('')
-const secondButtonCloseNoSave = ref(null)
-const thirdButtonCloseNoSave = ref(null)
-const firstModalButtonCloseNoSaveFunction = ref(null)
-const secondModalButtonCloseNoSaveFunction = ref(null)
-const thirdModalButtonCloseNoSaveFunction = ref(null)
+const firstButtonCloseNoSave = ref<string | null>('')
+const secondButtonCloseNoSave = ref<string | null>(null)
+const thirdButtonCloseNoSave = ref<string | null>(null)
+const firstModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonCloseNoSaveFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const closePageBuilder = async function () {
   typeModalloseNoSave.value = 'warning'
@@ -131,7 +131,7 @@ watch(languageSelction, async (newVal) => {
     pageBuilderService.changeLanguage(newVal)
 
     // Ensure lang is updated within userSettings
-    const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder')) || {}
+    const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? '{}') || {}
     userSettings.lang = newVal
     localStorage.setItem('userSettingsPageBuilder', JSON.stringify(userSettings))
     isLoadingLang.value = false
@@ -141,8 +141,22 @@ watch(languageSelction, async (newVal) => {
 const getBuilderStarted = computed(() => {
   return pageBuilderStateStore.getBuilderStarted
 })
+
 const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
+})
+
+const canvasFontClass = computed(() => {
+  const font = getPageBuilderConfig.value?.userSettings?.fontFamily
+  if (!font) return 'pbx-font-sans'
+  return font.startsWith('pbx-font-') ? font : `pbx-font-${font}`
+})
+
+const getCurrentLanguage = computed(() => pageBuilderStateStore.getCurrentLanguage)
+watch(getCurrentLanguage, (lang) => {
+  if (lang && lang !== languageSelction.value) {
+    languageSelction.value = lang
+  }
 })
 
 const getMenuRight = computed(() => {
@@ -188,7 +202,7 @@ const firstPageBuilderPreviewModalButtonMobile = function () {
 const showModalAddComponent = ref(false)
 const titleModalAddComponent = ref('')
 const firstButtonTextSearchComponents = ref('')
-const firstModalButtonSearchComponentsFunction = ref(null)
+const firstModalButtonSearchComponentsFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const toggleAddComponentModal = async function () {
   await pageBuilderService.clearHtmlSelection()
@@ -206,7 +220,7 @@ const toggleAddComponentModal = async function () {
   // end modal
 }
 
-const handleInsertButtonClick = function (id) {
+const handleInsertButtonClick = function (id: number) {
   pageBuilderStateStore.setAddComponentAddIndex(id)
   pageBuilderStateStore.setComponentArrayAddMethod('insert')
   toggleAddComponentModal()
@@ -236,7 +250,7 @@ watch(getHasLocalDraftForUpdate, (newVal) => {
 
 const getElementAttributes = computed(() => {
   if (!getElement.value || !(getElement.value instanceof HTMLElement)) {
-    return ''
+    return null
   }
 
   // Extract the attributes to watch
@@ -268,7 +282,9 @@ watch(getElementAttributes, async (newAttributes, oldAttributes) => {
   }
 })
 
-const handleSelectComponent = function (componentObject) {
+const handleSelectComponent = function (
+  componentObject: Parameters<typeof pageBuilderStateStore.setComponent>[0],
+) {
   pageBuilderStateStore.setComponent(componentObject)
 }
 
@@ -292,11 +308,11 @@ const showModalResumeEditing = ref(false)
 const titleModalResumeEditing = ref('')
 const descriptionModalResumeEditing = ref('')
 const firstButtonResumeEditing = ref('')
-const secondButtonResumeEditing = ref(null)
-const thirdButtonResumeEditing = ref(null)
-const firstModalButtonResumeEditingFunction = ref(null)
-const secondModalButtonResumeEditingFunction = ref(null)
-const thirdModalButtonResumeEditingFunction = ref(null)
+const secondButtonResumeEditing = ref<string | null>(null)
+const thirdButtonResumeEditing = ref<string | null>(null)
+const firstModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonResumeEditingFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const handlerRumeEditingForUpdate = async function () {
   typeModal.value = 'warning'
@@ -333,11 +349,11 @@ const showModalRestore = ref(false)
 const titleModalRestore = ref('')
 const descriptionModalRestore = ref('')
 const firstButtonRestore = ref('')
-const secondButtonRestore = ref(null)
-const thirdButtonRestore = ref(null)
-const firstModalButtonRestoreFunction = ref(null)
-const secondModalButtonRestoreFunction = ref(null)
-const thirdModalButtonRestoreFunction = ref(null)
+const secondButtonRestore = ref<string | null>(null)
+const thirdButtonRestore = ref<string | null>(null)
+const firstModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
+const secondModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
+const thirdModalButtonRestoreFunction = ref<(() => void | Promise<void>) | null>(null)
 
 const handleRestoreOriginalContent = async function () {
   await pageBuilderService.clearHtmlSelection()
@@ -395,7 +411,7 @@ const handleCloseHTMLEditor = () => {
 }
 
 const isLoading = ref(false)
-const errSaveComponents = ref(null)
+const errSaveComponents = ref<string | null>(null)
 
 const handleSaveChangesElement = async () => {
   errSaveComponents.value = null
@@ -439,7 +455,7 @@ const ensureBuilderInitialized = function () {
   }
 }
 
-const pbxBuilderWrapper = ref(null)
+const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 
 const hideToolbar = function () {
   const toolbar = document.querySelector('#pbxEditToolbar')
@@ -451,14 +467,18 @@ const hideToolbar = function () {
 
 function updatePanelPosition() {
   const container = pbxBuilderWrapper.value
-  const editToolbarElement = container && container.querySelector('#pbxEditToolbar')
+  const editToolbarElement = container && container.querySelector<HTMLElement>('#pbxEditToolbar')
 
   if (!container || !editToolbarElement) return
 
   const selected = container.querySelector('[selected]')
 
   if (selected && typeof selected.getBoundingClientRect === 'function') {
-    const selectedRect = selected.getBoundingClientRect()
+    // When selected element is inside a no-select zone (e.g. image slider), anchor the
+    // toolbar to the zone's outer container so it doesn't jump around with each slide.
+    const noSelectAncestor = selected.closest('[data-pb-no-select]') as Element | null
+    const targetEl = noSelectAncestor || selected
+    const selectedRect = targetEl.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
 
     let left =
@@ -494,22 +514,13 @@ function updatePanelPosition() {
   }
 }
 
-const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder'))
+const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
 
 onMounted(async () => {
-  await pageBuilderService.completeBuilderInitialization(undefined, true)
+  await pageBuilderService.completeBuilderInitialization(undefined)
 
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
-  }
-  if (
-    getPageBuilderConfig.value &&
-    getPageBuilderConfig.value.userSettings &&
-    getPageBuilderConfig.value.userSettings.language &&
-    getPageBuilderConfig.value.userSettings.language.default &&
-    (!userSettings || !userSettings.lang)
-  ) {
-    languageSelction.value = getPageBuilderConfig.value.userSettings.language.default
   }
 
   await loadTranslations(languageSelction.value)
@@ -576,7 +587,7 @@ onMounted(async () => {
       :firstButtonText="firstButtonTextSearchComponents"
       :title="titleModalAddComponent"
       :CustomBuilderComponents="props.CustomBuilderComponents"
-      @firstModalButtonSearchComponentsFunction="firstModalButtonSearchComponentsFunction"
+      @firstModalButtonSearchComponentsFunction="() => firstModalButtonSearchComponentsFunction?.()"
     ></BuilderComponents>
 
     <DynamicModalBuilder
@@ -586,12 +597,12 @@ onMounted(async () => {
       :gridColumnAmount="gridColumnModalCloseNoSave"
       :title="titleModalCloseNoSave"
       :description="descriptionModalCloseNoSave"
-      :firstButtonText="firstButtonCloseNoSave"
-      :secondButtonText="secondButtonCloseNoSave"
-      :thirdButtonText="thirdButtonCloseNoSave"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonCloseNoSaveFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonCloseNoSaveFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonCloseNoSaveFunction"
+      :firstButtonText="firstButtonCloseNoSave ?? undefined"
+      :secondButtonText="secondButtonCloseNoSave ?? undefined"
+      :thirdButtonText="thirdButtonCloseNoSave ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonCloseNoSaveFunction?.()"
+      @secondModalButtonFunctionDynamicModalBuilder="() => secondModalButtonCloseNoSaveFunction?.()"
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonCloseNoSaveFunction?.()"
     >
       <header></header>
       <main></main>
@@ -623,11 +634,13 @@ onMounted(async () => {
       :title="titleModalResumeEditing"
       :description="descriptionModalResumeEditing"
       :firstButtonText="firstButtonResumeEditing"
-      :secondButtonText="secondButtonResumeEditing"
-      :thirdButtonText="thirdButtonResumeEditing"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonResumeEditingFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonResumeEditingFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonResumeEditingFunction"
+      :secondButtonText="secondButtonResumeEditing ?? undefined"
+      :thirdButtonText="thirdButtonResumeEditing ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonResumeEditingFunction?.()"
+      @secondModalButtonFunctionDynamicModalBuilder="
+        () => secondModalButtonResumeEditingFunction?.()
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonResumeEditingFunction?.()"
     >
       <header></header>
       <main></main>
@@ -640,11 +653,11 @@ onMounted(async () => {
       :title="titleModalRestore"
       :description="descriptionModalRestore"
       :firstButtonText="firstButtonRestore"
-      :secondButtonText="secondButtonRestore"
-      :thirdButtonText="thirdButtonRestore"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonRestoreFunction"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonRestoreFunction"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonRestoreFunction"
+      :secondButtonText="secondButtonRestore ?? undefined"
+      :thirdButtonText="thirdButtonRestore ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="() => firstModalButtonRestoreFunction?.()"
+      @secondModalButtonFunctionDynamicModalBuilder="() => secondModalButtonRestoreFunction?.()"
+      @thirdModalButtonFunctionDynamicModalBuilder="() => thirdModalButtonRestoreFunction?.()"
     >
       <header></header>
       <main></main>
@@ -915,7 +928,8 @@ onMounted(async () => {
             getPageBuilderConfig &&
             getPageBuilderConfig.userSettings &&
             getPageBuilderConfig.userSettings.language &&
-            !getPageBuilderConfig.userSettings.language.disableLanguageDropDown
+            !(getPageBuilderConfig.userSettings.language as Record<string, unknown>)
+              ?.disableLanguageDropDown
           "
         >
           <template
@@ -942,7 +956,11 @@ onMounted(async () => {
                   <option
                     v-for="lang in pageBuilderService
                       .availableLanguage()
-                      .filter((l) => getPageBuilderConfig.userSettings.language.enable.includes(l))"
+                      .filter(
+                        (l) =>
+                          getPageBuilderConfig?.userSettings?.language?.enable?.includes(l) ??
+                          false,
+                      )"
                     :key="lang"
                     :value="lang"
                   >
@@ -1032,7 +1050,7 @@ onMounted(async () => {
         </div>
         <!-- Element Popover toolbar end -->
 
-        <div id="pagebuilder" class="pbx-text-black pbx-font-sans">
+        <div id="pagebuilder" data-builder-canvas :class="[canvasFontClass, 'pbx-text-black']">
           <!-- Insert button when empty of componenets -->
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
@@ -1053,10 +1071,11 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+
           <!-- Insert button at the top -->
           <div v-if="Array.isArray(getComponents) && getComponents.length != 0" id="nolocalstorage">
             <div
-              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
+              class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
             >
               <div
                 @click="handleInsertButtonClick(0)"
@@ -1070,19 +1089,24 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+
+          <!-- Each section gets its own data-pagebuilder-content wrapper.
+               User global styles land on these wrappers, NOT on #pagebuilder.
+               Insert buttons are siblings (never inside a styled wrapper). -->
           <template v-for="(component, idx) in getComponents" :key="component.id">
             <div
               v-if="component.html_code"
+              data-pagebuilder-content
               v-html="component.html_code"
               @mouseup="handleSelectComponent(component)"
             ></div>
-            <!-- Insert button between components -->
+            <!-- Insert button — sibling of [data-pagebuilder-content], inherits nothing -->
             <div
               v-if="Array.isArray(getComponents) && getComponents.length != 0"
               id="nolocalstorage"
             >
               <div
-                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-border pbx-border-transparent hover:pbx-border hover:pbx-border-gray-200 pbx-rounded-r-full pbx-z-10"
+                class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
               >
                 <div
                   @click="handleInsertButtonClick(idx + 1)"
@@ -1269,19 +1293,37 @@ onMounted(async () => {
 </template>
 
 <style>
+/* In builder edit mode: pause animation, restore full scrollability for editing */
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
+  animation-play-state: paused !important;
+  overflow: auto !important;
+  width: auto !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
+  min-width: 100% !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-dot,
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-nums span {
+  animation-play-state: paused !important;
+}
+
 #pagebuilder #nolocalstorage {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-#pagebuilder #addsection {
-  /* display: none; */
+  position: relative;
+  z-index: 2;
 }
 #pagebuilder #nolocalstorage:hover #addsection {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+/* Insert buttons are siblings of [data-pagebuilder-content], so user
+   padding/margin/background/border-radius on those wrappers cannot affect
+   the buttons — no CSS reset needed here. */
 
 #pagebuilder [element] {
   outline: rgba(255, 255, 255, 0) dashed 3px !important;

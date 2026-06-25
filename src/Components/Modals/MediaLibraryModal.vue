@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { provide } from 'vue'
 import DefaultMediaLibraryComponent from '../../tests/DefaultComponents/DefaultMediaLibraryComponent.vue'
 import ModalBuilder from './ModalBuilder.vue'
@@ -21,6 +21,7 @@ defineProps({
     type: String,
   },
   open: {
+    type: Boolean,
     required: true,
   },
   customMediaComponent: {

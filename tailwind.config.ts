@@ -4,6 +4,7 @@ import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   prefix: 'pbx-',
   content: [
     './css/style.css',
@@ -34,6 +35,7 @@ export default {
       },
       fontFamily: {
         sans: ['Jost', 'Raleway', "'Cormorant'", 'sans-serif', ...defaultTheme.fontFamily.sans],
+        raleway: ['Raleway', 'sans-serif'],
         arial: ['Arial', 'sans-serif'],
         helvetica: ['Helvetica', 'Arial', 'sans-serif'],
         georgia: ['Georgia', 'serif'],

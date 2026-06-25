@@ -24,7 +24,6 @@ You can set a default language for your project:
 ```typescript
 const configPageBuilder = {
   userSettings: {
-    theme: 'light',
     language: {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],
@@ -41,7 +40,6 @@ If you do not provide the `enable` array, the Page Builder will default to showi
 ```typescript
 const configPageBuilder = {
   userSettings: {
-    theme: 'light',
     language: {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],
@@ -60,7 +58,6 @@ Even when the dropdown is disabled, the default language will still be applied a
 ```typescript
 const configPageBuilder = {
   userSettings: {
-    theme: 'light',
     language: {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],

@@ -7,6 +7,7 @@ import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type { ComponentObject } from '../../types'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
+import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 
 const { translate } = useTranslations()
 
@@ -21,6 +22,8 @@ defineProps({
 
 const isLoading = ref(false)
 
+const searchQuery = ref('')
+
 const selectedThemeSelection = ref('Components')
 
 const componentOrThemes = computed(() => {
@@ -34,10 +37,19 @@ const categories = computed(() => {
 })
 
 const filteredComponents = computed(() => {
-  if (selectedCategory.value === 'All') {
-    return components[0].components.data
-  }
-  return components[0].components.data.filter((comp) => comp.category === selectedCategory.value)
+  const query = searchQuery.value.trim().toLowerCase()
+  const byCategory =
+    !query && selectedCategory.value !== 'All'
+      ? components[0].components.data.filter((comp) => comp.category === selectedCategory.value)
+      : components[0].components.data
+  if (!query) return byCategory
+  return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))
+})
+
+const filteredHelpers = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return componentHelpers
+  return componentHelpers.filter((comp) => comp.title.toLowerCase().includes(query))
 })
 
 const selectedThemeCategory = ref('All')
@@ -48,10 +60,13 @@ const themeCategories = computed(() => {
 })
 
 const filteredThemes = computed(() => {
-  if (selectedThemeCategory.value === 'All') {
-    return themes[0].themes.data
-  }
-  return themes[0].themes.data.filter((comp) => comp.category === selectedThemeCategory.value)
+  const query = searchQuery.value.trim().toLowerCase()
+  const byCategory =
+    !query && selectedThemeCategory.value !== 'All'
+      ? themes[0].themes.data.filter((comp) => comp.category === selectedThemeCategory.value)
+      : themes[0].themes.data
+  if (!query) return byCategory
+  return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))
 })
 
 // Get modal close function
@@ -98,7 +113,10 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
 }
 
 // Helper function to convert ComponentData to ComponentObject
-const convertToComponentObject = function (comp: any): ComponentObject {
+const convertToComponentObject = function (comp: {
+  title: string
+  html_code: string
+}): ComponentObject {
   return {
     id: null, // Generate ID when needed in PageBuilderClass
     html_code: comp.html_code,
@@ -141,6 +159,16 @@ const convertToComponentObject = function (comp: any): ComponentObject {
       </div>
     </template>
     <div v-if="!isLoading">
+      <!-- Search input -->
+      <div class="pbx-mb-4 pbx-px-4">
+        <input
+          v-model="searchQuery"
+          type="text"
+          :placeholder="translate('Search components...')"
+          class="pbx-myPrimaryInput"
+        />
+      </div>
+
       <div
         class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto"
       >
@@ -155,20 +183,9 @@ const convertToComponentObject = function (comp: any): ComponentObject {
               : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
           ]"
         >
-          <span>
-            <svg
-              fill="currentColor"
-              height="22"
-              viewBox="0 0 22 22"
-              width="22"
-              xmlns="http://www.w3.org/2000/svg"
-              class="catalog-gy660l"
-            >
-              <path
-                d="M4 7.23V4h3.23v3.23H4zM9.385 7.23V4h3.23v3.23h-3.23zM14.77 4v3.23H18V4h-3.23zM4 12.615v-3.23h3.23v3.23H4zM9.385 9.385v3.23h3.23v-3.23h-3.23zM14.77 12.615v-3.23H18v3.23h-3.23zM4 14.77V18h3.23v-3.23H4zM9.385 18v-3.23h3.23V18h-3.23zM14.77 14.77V18H18v-3.23h-3.23z"
-              ></path>
-            </svg>
-          </span>
+          <span class="material-symbols-outlined">{{
+            category === 'Themes' ? 'landscape_2' : 'wheat'
+          }}</span>
           <span>
             {{ translate(category) }}
           </span>
@@ -199,6 +216,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
 
           <div class="pbx-min-h-[96rem]">
             <div
+              v-if="filteredThemes.length"
               class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4"
             >
               <div
@@ -210,11 +228,12 @@ const convertToComponentObject = function (comp: any): ComponentObject {
                 <div
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
-                  <!-- Use SVG preview instead of external images -->
-                  <div
-                    class="pbx-w-64 pbx-h-96 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
-                    v-html="theme.cover_image"
-                  ></div>
+                  <!-- Sandboxed iframe preview -->
+                  <ComponentThumbnail
+                    :htmlCode="theme.html_code"
+                    :containerHeight="384"
+                    fit="contain"
+                  />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
@@ -226,6 +245,12 @@ const convertToComponentObject = function (comp: any): ComponentObject {
                 </div>
               </div>
             </div>
+            <p
+              v-if="!filteredThemes.length"
+              class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400"
+            >
+              {{ translate('No themes found.') }}
+            </p>
           </div>
         </div>
       </template>
@@ -236,12 +261,13 @@ const convertToComponentObject = function (comp: any): ComponentObject {
         <div class="pbx-mb-8">
           <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Helper Components') }}</h3>
           <div
+            v-if="filteredHelpers.length"
             class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
           >
             <div
-              v-for="helper in componentHelpers"
+              v-for="helper in filteredHelpers"
               :key="helper.title"
-              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4"
+              class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl"
               @click="handleDropComponent(helper)"
             >
               <div
@@ -258,6 +284,9 @@ const convertToComponentObject = function (comp: any): ComponentObject {
               </div>
             </div>
           </div>
+          <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
+            {{ translate('No components found.') }}
+          </p>
         </div>
 
         <!-- Regular Components Section -->
@@ -282,6 +311,7 @@ const convertToComponentObject = function (comp: any): ComponentObject {
           </div>
           <div class="pbx-min-h-[96rem]">
             <div
+              v-if="filteredComponents.length"
               class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4 pbx-pb-4"
             >
               <div
@@ -293,11 +323,8 @@ const convertToComponentObject = function (comp: any): ComponentObject {
                 <div
                   class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
                 >
-                  <!-- Use SVG preview instead of external images -->
-                  <div
-                    class="pbx-w-64 pbx-h-64 pbx-object-cover pbx-cursor-pointer pbx-bg-white pbx-mx-auto pbx-flex pbx-items-center pbx-justify-center pbx-theme-cover"
-                    v-html="comp.cover_image"
-                  ></div>
+                  <!-- Sandboxed iframe preview -->
+                  <ComponentThumbnail :htmlCode="comp.html_code" fit="contain" />
                 </div>
                 <div class="pbx-p-3">
                   <h4 class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-normal">
@@ -309,6 +336,12 @@ const convertToComponentObject = function (comp: any): ComponentObject {
                 </div>
               </div>
             </div>
+            <p
+              v-if="!filteredComponents.length"
+              class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400"
+            >
+              {{ translate('No components found.') }}
+            </p>
           </div>
         </div>
       </template>

@@ -49,6 +49,7 @@ const tailwindFontStyles: TailwindFontStyles = {
     'pbx-font-franklin-gothic',
     'pbx-font-rockwell',
     'pbx-font-baskerville',
+    'pbx-font-raleway',
   ],
   fontStyle: ['none', 'pbx-italic', 'pbx-non-italic'],
 }

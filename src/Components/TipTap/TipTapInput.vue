@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
@@ -24,12 +24,12 @@ const gridColumnModal = ref(Number(1))
 const titleModal = ref('')
 const descriptionModal = ref('')
 const firstButtonModal = ref('')
-const secondButtonModal = ref(null)
-const thirdButtonModal = ref(null)
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
 // set dynamic modal handle functions
-const firstModalButtonFunctionDynamicModalBuilder = ref(null)
-const secondModalButtonFunctionDynamicModalBuilder = ref(null)
-const thirdModalButtonFunctionDynamicModalBuilder = ref(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
 
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
@@ -49,9 +49,9 @@ watch(getElement, (newVal) => {
   const tempContainer = document.createElement('div')
 
   if (newVal) {
-    tempContainer.innerHTML = newVal
+    tempContainer.innerHTML = newVal.innerHTML
     const textContent = tempContainer.textContent
-    getElementtextContentLength.value = textContent.length
+    getElementtextContentLength.value = textContent?.length ?? 0
   }
 })
 
@@ -93,7 +93,7 @@ watch(textContent, async (newValue) => {
 const TipTapSetContent = function () {
   if (!pageBuilderService.isSelectedElementValidText()) return
 
-  if (editor.value) {
+  if (editor.value && getElement.value) {
     editor.value.commands.setContent(getElement.value.innerHTML)
   }
 }
@@ -105,13 +105,13 @@ watch(getElement, () => {
 // Manage URL
 const urlEnteret = ref('')
 const newUpdatedExistingURL = ref('')
-const urlError = ref(null)
+const urlError = ref<string | null>(null)
 
 watch(urlEnteret, (newVal) => {
   newUpdatedExistingURL.value = newVal
 })
 const handleURL = function () {
-  urlEnteret.value = editor.value.getAttributes('link').href
+  urlEnteret.value = editor.value?.getAttributes('link').href
 
   showModalUrl.value = true
   typeModal.value = 'success'
@@ -132,7 +132,7 @@ const handleURL = function () {
 
   // handle click
   secondModalButtonFunctionDynamicModalBuilder.value = function () {
-    editor.value.chain().focus().extendMarkRange('link').unsetLink().run()
+    editor.value?.chain().focus().extendMarkRange('link').unsetLink().run()
     showModalUrl.value = false
   }
 
@@ -173,7 +173,7 @@ const validateURL = function () {
 const setEnteretURL = function () {
   // update link
   editor.value
-    .chain()
+    ?.chain()
     .focus()
     .extendMarkRange('link')
     .setLink({ href: newUpdatedExistingURL.value })
@@ -204,11 +204,17 @@ onMounted(() => {
       :title="titleModal"
       :description="descriptionModal"
       :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal"
-      :thirdButtonText="thirdButtonModal"
-      @firstModalButtonFunctionDynamicModalBuilder="firstModalButtonFunctionDynamicModalBuilder"
-      @secondModalButtonFunctionDynamicModalBuilder="secondModalButtonFunctionDynamicModalBuilder"
-      @thirdModalButtonFunctionDynamicModalBuilder="thirdModalButtonFunctionDynamicModalBuilder"
+      :secondButtonText="secondButtonModal ?? undefined"
+      :thirdButtonText="thirdButtonModal ?? undefined"
+      @firstModalButtonFunctionDynamicModalBuilder="
+        () => firstModalButtonFunctionDynamicModalBuilder?.()
+      "
+      @secondModalButtonFunctionDynamicModalBuilder="
+        () => secondModalButtonFunctionDynamicModalBuilder?.()
+      "
+      @thirdModalButtonFunctionDynamicModalBuilder="
+        () => thirdModalButtonFunctionDynamicModalBuilder?.()
+      "
     >
       <header></header>
       <main>

@@ -1,8 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import tailwindBorderStyleWidthPlusColor from '../../../../utils/builder/tailwind-border-style-width-color'
-import tailwindColors from '../../../../utils/builder/tailwaind-colors'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
@@ -14,9 +13,9 @@ const pageBuilderService = getPageBuilder()
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const borderStyle = ref(null)
-const borderWidth = ref(null)
-const borderColor = ref(null)
+const borderStyle = ref<string | null>(null)
+const borderWidth = ref<string | null>(null)
+const borderColor = ref<string | null>(null)
 const getBorderStyle = computed(() => {
   return pageBuilderStateStore.getBorderStyle
 })
@@ -69,7 +68,7 @@ watch(
           id="border-style"
           v-model="borderStyle"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderStyle(borderStyle)"
+          @change="pageBuilderService.handleBorderStyle(borderStyle ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -89,7 +88,7 @@ watch(
           id="border-width"
           v-model="borderWidth"
           class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderWidth(borderWidth)"
+          @change="pageBuilderService.handleBorderWidth(borderWidth ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
@@ -134,7 +133,7 @@ watch(
                 <ListboxOption
                   as="template"
                   v-for="color in tailwindBorderStyleWidthPlusColor.borderColor"
-                  @click="pageBuilderService.handleBorderColor(borderColor)"
+                  @click="pageBuilderService.handleBorderColor(borderColor ?? undefined)"
                   :key="color"
                   :value="color"
                   v-slot="{ active, borderColor }"

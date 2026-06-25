@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import ModalBuilder from '../Modals/ModalBuilder.vue'
 import DefaultBuilderComponents from '../../tests/DefaultComponents/DefaultBuilderComponents.vue'
 import { inject } from 'vue'
-const customMediaComponent = inject('CustomMediaComponent')
+const customMediaComponent = inject<object | null>('CustomMediaComponent', null)
 
 defineProps({
   firstButtonText: {
     required: true,
   },
   title: {
+    type: String,
     required: true,
   },
   show: {
@@ -45,7 +46,7 @@ const firstButtonBuilder = function () {
           <component :is="CustomBuilderComponents" />
         </div>
         <div v-else>
-          <DefaultBuilderComponents :customMediaComponent="customMediaComponent" />
+          <DefaultBuilderComponents :customMediaComponent="customMediaComponent ?? undefined" />
         </div>
       </div>
     </div>

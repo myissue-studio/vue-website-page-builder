@@ -1,26 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import { useTranslations } from '../../../composables/useTranslations'
 import Typography from '../EditorMenu/Editables/Typography.vue'
 import ClassEditor from '../EditorMenu/Editables/ClassEditor.vue'
 import StyleEditor from '../EditorMenu/Editables/StyleEditor.vue'
-import ImageEditor from '../EditorMenu/Editables/ImageEditor.vue'
-import OpacityEditor from '../EditorMenu/Editables/OpacityEditor.vue'
 import Padding from '../EditorMenu/Editables/Padding.vue'
 import Margin from '../EditorMenu/Editables/Margin.vue'
 import BorderRadius from '../EditorMenu/Editables/BorderRadius.vue'
 import BackgroundColorEditor from '../EditorMenu/Editables/BackgroundColorEditor.vue'
 import TextColorEditor from '../EditorMenu/Editables/TextColorEditor.vue'
 import Borders from '../EditorMenu/Editables/Borders.vue'
-import LinkEditor from '../EditorMenu/Editables/LinkEditor.vue'
-import EditGetElement from '../EditorMenu/Editables/EditGetElement.vue'
 import HTMLEditor from '../EditorMenu/Editables/HTMLEditor.vue'
 import { extractCleanHTMLFromPageBuilder } from '../../../composables/extractCleanHTMLFromPageBuilder'
 
 defineProps({
   isLoading: {
-    Type: Boolean,
+    type: Boolean,
     required: true,
     default: true,
   },
@@ -42,10 +38,10 @@ const getComponents = computed(() => {
 })
 const current = ref('element')
 
-const updateCurrentTab = function (tab) {
+const updateCurrentTab = function (tab: string) {
   current.value = tab
 }
-function prettifyHtml(html) {
+function prettifyHtml(html: string) {
   if (!html) return ''
 
   const tab = '  '
@@ -79,7 +75,7 @@ function prettifyHtml(html) {
     '&lt;wbr',
   ]
 
-  tokens.forEach((token) => {
+  tokens.forEach((token: string) => {
     const trimmed = token.trim()
     if (!trimmed) return
 
@@ -128,14 +124,14 @@ function prettifyHtml(html) {
   return result
 }
 
-const generateHTML = function (filename, HTML) {
+const generateHTML = function (filename: string, HTML: string) {
   // Extract existing styles from the page
   const existingStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
     .map((style) => {
       if (style.tagName === 'STYLE') {
         return style.outerHTML // Inline styles
       } else if (style.tagName === 'LINK') {
-        return `<link rel="stylesheet" href="${style.href}">` // External stylesheets
+        return `<link rel="stylesheet" href="${(style as HTMLLinkElement).href}">` // External stylesheets
       }
       return ''
     })
@@ -227,7 +223,7 @@ const handleDownloadHTML = function () {
 
 const selectedTab = ref('globalPageStyles')
 
-function selectTab(tab) {
+function selectTab(tab: string) {
   selectedTab.value = tab
 }
 </script>
@@ -572,7 +568,11 @@ function selectTab(tab) {
                                   <td
                                     class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-text-gray-100 pbx-font-normal pbx-whitespace-pre-line"
                                   >
-                                    {{ getElement?.src ? getElement?.src : typeof getElement?.src }}
+                                    {{
+                                      (getElement as HTMLImageElement)?.src
+                                        ? (getElement as HTMLImageElement)?.src
+                                        : typeof (getElement as HTMLImageElement)?.src
+                                    }}
                                   </td>
                                 </tr>
                               </tbody>
@@ -708,7 +708,7 @@ function selectTab(tab) {
                       <div v-if="getComponents">
                         <div
                           v-for="component in getComponents"
-                          :key="component.id"
+                          :key="component.id ?? component.title"
                           class="pbx-overflow-hidden pbx-border-solid pbx-border pbx-border-gray-100 pbx-mb-6"
                         >
                           <!-- Id and Title above the table, styled to look connected -->
