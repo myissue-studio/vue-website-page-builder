@@ -56,13 +56,25 @@ const { closeAddComponentModal, closeMediaLibraryModal } = usePageBuilderModal()
 
 Configuration object for initializing the page builder.
 
+**Flexible Types:** All configuration properties accept flexible types for maximum compatibility:
+
+- `formName` accepts any string (not limited to predefined types)
+- `userForPageBuilder.image` is optional
+- `language.default` accepts any language code string
+- `language.enable` accepts any string array (including readonly arrays from `as const`)
+- Additional custom properties can be added via index signatures
+- All properties are optional except `updateOrCreate`
+
+**Note on `as const`:** When using `as const` for your config object, arrays become readonly. The interface supports this automatically.
+
 ```typescript
 import type { PageBuilderConfig } from '@myissue/vue-website-page-builder'
 
+// Example 1: Standard usage
 const config: PageBuilderConfig = {
   updateOrCreate: {
     formType: 'create', // or 'update'
-    formName: 'article',
+    formName: 'article', // Any string accepted: 'article', 'cms-page-home', 'custom-form', etc.
   },
   resourceData: {
     title: 'My Article',
@@ -70,15 +82,15 @@ const config: PageBuilderConfig = {
   },
   userForPageBuilder: {
     name: 'John Doe',
-    image: '/john_doe.jpg',
+    image: '/john_doe.jpg', // Optional
   },
   pageBuilderLogo: {
     src: '/logo/logo.svg',
   },
   userSettings: {
     language: {
-      default: 'en',
-      enable: ['en', 'zh-Hans', 'fr'],
+      default: 'en', // Any language code accepted
+      enable: ['en', 'zh-Hans', 'fr'], // Any language codes accepted
     },
     // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
     // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
@@ -89,6 +101,27 @@ const config: PageBuilderConfig = {
   },
   settings: {
     brandColor: '#DB93B0',
+  },
+}
+
+// Example 2: Dynamic form names and minimal config
+const dynamicConfig: PageBuilderConfig = {
+  updateOrCreate: {
+    formType: 'update',
+    formName: `cms-page-${pageSlug}`, // Template literals work!
+  },
+  resourceData: {
+    title: pageTitle,
+    customField: 'any value', // Custom properties allowed
+  },
+  userForPageBuilder: {
+    name: userName, // Image is optional
+  },
+  userSettings: {
+    language: {
+      default: userLanguage, // Any string accepted
+    },
+    autoSave: false,
   },
 }
 ```
@@ -126,9 +159,16 @@ User information for display in the builder.
 ```typescript
 import type { PageBuilderUser } from '@myissue/vue-website-page-builder'
 
+// With image
 const user: PageBuilderUser = {
   name: 'John Doe',
-  image: '/john_doe.jpg',
+  image: '/john_doe.jpg', // Optional
+}
+
+// Without image
+const minimalUser: PageBuilderUser = {
+  name: 'Jane Doe', // Image is optional
+}
 }
 ```
 

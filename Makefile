@@ -5,7 +5,16 @@ token:
 	@echo ""
 	@echo "Settings: Read & write access, bypass 2FA, max expiration"
 	@echo ""
-	@read -p "Paste your token here: " token && echo "//registry.npmjs.org/:_authToken=$$token" > ~/.npmrc && echo "✓ Token saved to ~/.npmrc"
+	@echo "⚠️  Paste ONLY the token (starting with 'npm_'), NOT the word 'Token'!"
+	@echo ""
+	@read -p "Paste your token here: " token && \
+	token=$$(echo "$$token" | sed 's/^[Tt]oken[[:space:]]*//') && \
+	(echo "//registry.npmjs.org/:_authToken=$$token" > ~/.npmrc && \
+	echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && \
+	echo "✓ Token saved to ~/.npmrc" && \
+	echo "" && \
+	npm whoami && \
+	echo "✓ Authentication verified!")
 
 update:
 	@echo "Publishing new version to npm..."
