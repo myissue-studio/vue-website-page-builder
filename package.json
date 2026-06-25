@@ -62,7 +62,6 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "postinstall": "cp ./node_modules/@tiptap/core/dist/index.d.cts ./node_modules/@tiptap/core/dist/index.d.ts && cp ./node_modules/@tiptap/extension-list/dist/index.d.cts ./node_modules/@tiptap/extension-list/dist/index.d.ts",
     "dev": "vite",
     "build": "npm run type-check && vite build",
     "build:lib": "vue-tsc --declaration --emitDeclarationOnly --outDir dist && vite build --mode lib",
