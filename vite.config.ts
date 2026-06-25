@@ -2,12 +2,23 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig(({ mode }) => {
   const isLibMode = mode === 'lib'
 
   const baseConfig = {
-    plugins: [vue(), ...(isLibMode ? [] : [])],
+    plugins: [
+      vue(),
+      ...(isLibMode
+        ? [
+            dts({
+              entryRoot: './src',
+              tsconfigPath: './tsconfig.app.json',
+            }),
+          ]
+        : []),
+    ],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     define: {},
   }
@@ -31,7 +42,7 @@ export default defineConfig(({ mode }) => {
             assetFileNames: 'style.css',
           },
         },
-        emptyOutDir: true,
+        emptyOutDir: true, // Now safe to clear because vite-plugin-dts handles declarations
         cssCodeSplit: true,
       },
       esbuild: {

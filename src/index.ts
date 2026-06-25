@@ -9,7 +9,20 @@ export { usePageBuilderStateStore } from './stores/page-builder-state'
 export { usePageBuilderModal } from './composables/usePageBuilderModal'
 
 // Export types
-export type { PageBuilderUser, ComponentObject, ImageObject, PageBuilderConfig } from './types'
+export type {
+  PageBuilderUser,
+  ComponentObject,
+  ImageObject,
+  PageBuilderConfig,
+  BuilderResourceComponent,
+  BuilderResourceData,
+  StartBuilderResult,
+  PageSettings,
+  FormName,
+} from './types'
+
+// Export the PageBuilderService class for type declarations
+export { PageBuilderService } from './services/PageBuilderService'
 
 // Export Pinia for convenience (same version as package uses)
 export { createPinia } from 'pinia'
@@ -19,8 +32,6 @@ import './css/style.css'
 
 // Export shared store instances for external access
 export { sharedPageBuilderPinia, sharedPageBuilderStore } from './stores/shared-store'
-
-// export { PageBuilderService } from './src/services/PageBuilderService.ts'
 
 export { getPageBuilder } from './composables/builderInstance'
 

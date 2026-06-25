@@ -42,7 +42,7 @@ const handleClose = () => {
         <!-- Right-aligned Modal -->
 
         <div
-          class="pbx-fixed pbx-top-0 pbx-rounded-3xl pbx-py-2 pbx-px-2 pbx-border pbx-border-gray-200 pbx-max-h-[80vh] lg:pbx-min-h-[98%] pbx-min-h-[80vh] lg:pbx-min-w-96 lg:pbx-w-96 pbx-w-[96%] pbx-overflow-y-auto pbx-z-50 pbx-bg-white lg:pbx-mt-2 pbx-mt-2"
+          class="pbx-font-sans pbx-fixed pbx-top-0 pbx-rounded-3xl pbx-py-2 pbx-px-2 pbx-border pbx-border-gray-200 pbx-max-h-[80vh] lg:pbx-min-h-[98%] pbx-min-h-[80vh] lg:pbx-min-w-96 lg:pbx-w-96 pbx-w-[96%] pbx-overflow-y-auto pbx-z-50 pbx-bg-white lg:pbx-mt-2 pbx-mt-2"
           :class="[
             position === 'left' ? 'pbx-left-0 pbx-ml-[1%]' : '',
             position === 'right' ? 'pbx-right-0 pbx-mr-[1%]' : '',

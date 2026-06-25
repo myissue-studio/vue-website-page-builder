@@ -47,13 +47,13 @@ watch(currentTranslations, async () => {
       id: 1,
     },
     userSettings: {
-      theme: 'light',
       language: {
         default: 'en',
         enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da', 'it'],
         disableLanguageDropDown: false,
       },
       autoSave: true,
+      fontFamily: 'jost', // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
     },
 
     settings: {
