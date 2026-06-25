@@ -284,4 +284,105 @@ describe('PageBuilderConfig Type Flexibility', () => {
       expect(config.updateOrCreate.formName).toBe(formName)
     })
   })
+
+  // -------------------------------------------------------------------------
+  // Named interface assignment — the pattern that object-literal tests miss.
+  //
+  // TypeScript treats object literals loosely (no index-signature check), but
+  // is strict when you assign a pre-typed variable. Every test below was added
+  // specifically because a bug went undetected: [key: string]: unknown on
+  // userSettings prevented consumers from passing their own typed interfaces.
+  // -------------------------------------------------------------------------
+
+  it('accepts userSettings from a typed interface without index signature', () => {
+    // This is the EXACT pattern GeoStarter uses — a named interface, no [key: string]: unknown.
+    // Previously failed with: "Index signature for type 'string' is missing in type 'UserSettings'"
+    interface UserSettings {
+      language?: { default?: string; enable?: string[] }
+      autoSave?: boolean
+      fontFamily?: string
+    }
+
+    const userSettings: UserSettings = {
+      language: { default: 'da', enable: ['en', 'da'] },
+      autoSave: true,
+    }
+
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'update', formName: 'cms-page-about' },
+      userSettings, // ← assigning a typed variable, not an object literal
+    }
+    expect(config.userSettings?.language?.default).toBe('da')
+  })
+
+  it('accepts userSettings from a class instance', () => {
+    class AppSettings {
+      language = { default: 'en', enable: ['en', 'fr'] as string[] }
+      autoSave = false
+      fontFamily = 'jost'
+    }
+
+    const userSettings = new AppSettings()
+
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userSettings,
+    }
+    expect(config.userSettings?.fontFamily).toBe('jost')
+  })
+
+  it('accepts userSettings from a function return value typed as an interface', () => {
+    interface LanguageSettings {
+      default: string
+      enable: string[]
+      disableLanguageDropDown: boolean
+    }
+    interface AppUserSettings {
+      language: LanguageSettings
+      autoSave: boolean
+    }
+
+    function buildSettings(): AppUserSettings {
+      return {
+        language: { default: 'en', enable: ['en', 'de'], disableLanguageDropDown: false },
+        autoSave: true,
+      }
+    }
+
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'update', formName: 'blog' },
+      userSettings: buildSettings(),
+    }
+    expect(config.userSettings?.language?.default).toBe('en')
+  })
+
+  it('replicates the exact GeoStarter startBuilder call pattern', () => {
+    // Mirrors the exact code structure in GeoStarter's composable.
+    interface UserSettings {
+      language?: { default?: string; enable?: readonly string[] }
+      autoSave?: boolean
+    }
+
+    const options = { pageSlug: 'home', pageTitle: 'Home' }
+    const userName = 'Admin'
+    const existingPage = {
+      title: 'Home Page',
+      components: [{ html_code: '<section/>', title: 'S' }],
+    }
+    const hasContent = existingPage.components.length > 0
+    const userSettings: UserSettings = { language: { default: 'da' }, autoSave: true }
+
+    // This is the call that previously caused the TypeScript error
+    const config: PageBuilderConfig = {
+      updateOrCreate: {
+        formType: hasContent ? 'update' : 'create',
+        formName: `cms-page-${options.pageSlug}`,
+      },
+      resourceData: { title: existingPage.title || options.pageTitle },
+      userForPageBuilder: { name: userName },
+      userSettings,
+    }
+    expect(config.userSettings?.language?.default).toBe('da')
+    expect(config.updateOrCreate.formName).toBe('cms-page-home')
+  })
 })

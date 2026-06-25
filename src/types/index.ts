@@ -240,18 +240,15 @@ export interface PageBuilderConfig {
   resourceData?: { title: string; id?: number; [key: string]: unknown } | null
   userForPageBuilder?: PageBuilderUser // image is already optional on PageBuilderUser
   [key: string]: unknown // Allow any additional properties for forward-compatibility
-  userSettings?:
-    | ({
-        language?: {
-          default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
-          enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
-          disableLanguageDropDown?: boolean
-          [key: string]: unknown
-        }
-        autoSave?: boolean
-        fontFamily?: string
-      } & Record<string, unknown>)
-    | null // Allow null for maximum flexibility
+  userSettings?: {
+    language?: {
+      default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
+      enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
+      disableLanguageDropDown?: boolean
+    }
+    autoSave?: boolean
+    fontFamily?: string
+  } | null // Allow null for maximum flexibility
   settings?: {
     brandColor?: string
     [key: string]: unknown
