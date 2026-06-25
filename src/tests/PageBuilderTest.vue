@@ -53,7 +53,7 @@ watch(currentTranslations, async () => {
         disableLanguageDropDown: false,
       },
       autoSave: true,
-      fontFamily: 'palantino', // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
+      fontFamily: 'jost', // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
     },
 
     settings: {
