@@ -1,17 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import type { PageBuilderConfig } from '../types'
+import type { PageBuilderConfig } from '../../types'
 
 /**
- * Comprehensive tests to ensure PageBuilderConfig accepts various user patterns
- * These tests validate that our types are flexible enough for real-world usage
+ * Comprehensive tests to ensure PageBuilderConfig accepts various user patterns.
+ * These tests validate that our types are flexible enough for real-world usage.
  */
 describe('PageBuilderConfig Type Flexibility', () => {
   it('accepts minimal config', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
     }
     expect(config).toBeDefined()
   })
@@ -19,10 +16,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
   it('accepts dynamic formName with template literals', () => {
     const pageSlug = 'home'
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'update',
-        formName: `cms-page-${pageSlug}`,
-      },
+      updateOrCreate: { formType: 'update', formName: `cms-page-${pageSlug}` },
     }
     expect(config.updateOrCreate.formName).toBe('cms-page-home')
   })
@@ -30,10 +24,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
   it('accepts user without image property', () => {
     const userName = 'John Doe'
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       userForPageBuilder: { name: userName },
     }
     expect(config.userForPageBuilder?.image).toBeUndefined()
@@ -41,14 +32,8 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts user with image property', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
-      userForPageBuilder: {
-        name: 'Jane Doe',
-        image: '/jane_doe.jpg',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userForPageBuilder: { name: 'Jane Doe', image: '/jane_doe.jpg' },
     }
     expect(config.userForPageBuilder?.image).toBe('/jane_doe.jpg')
   })
@@ -56,30 +41,17 @@ describe('PageBuilderConfig Type Flexibility', () => {
   it('accepts any language code string', () => {
     const userLang = 'es'
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
-      userSettings: {
-        language: {
-          default: userLang,
-        },
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userSettings: { language: { default: userLang } },
     }
     expect(config.userSettings?.language?.default).toBe('es')
   })
 
   it('accepts custom language codes not in standard list', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       userSettings: {
-        language: {
-          default: 'custom-lang',
-          enable: ['custom-lang-1', 'custom-lang-2'],
-        },
+        language: { default: 'custom-lang', enable: ['custom-lang-1', 'custom-lang-2'] },
       },
     }
     expect(config.userSettings?.language?.enable).toHaveLength(2)
@@ -87,14 +59,9 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts readonly arrays from as const', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       userSettings: {
-        language: {
-          enable: ['en', 'fr', 'de'] as const,
-        },
+        language: { enable: ['en', 'fr', 'de'] as const },
       },
     }
     expect(config.userSettings?.language?.enable).toEqual(['en', 'fr', 'de'])
@@ -102,14 +69,9 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts entire config with as const', () => {
     const config = {
-      updateOrCreate: {
-        formType: 'update',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'update', formName: 'article' },
       userSettings: {
-        language: {
-          enable: ['en', 'zh-Hans', 'fr'],
-        },
+        language: { enable: ['en', 'zh-Hans', 'fr'] },
         autoSave: true,
       },
     } as const
@@ -120,10 +82,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts custom properties in resourceData', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       resourceData: {
         title: 'My Article',
         id: 1,
@@ -136,10 +95,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts custom properties in userSettings', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       userSettings: {
         autoSave: false,
         customTheme: 'dark',
@@ -151,24 +107,15 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts custom properties in settings', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
-      settings: {
-        brandColor: '#DB93B0',
-        customSetting: 'value',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      settings: { brandColor: '#DB93B0', customSetting: 'value' },
     }
     expect(config.settings).toHaveProperty('customSetting')
   })
 
   it('accepts top-level custom properties', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       customTopLevelProp: 'value',
       anotherCustomProp: { data: 'nested' },
     }
@@ -177,16 +124,10 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts all font family values', () => {
     const fonts = ['jost', 'raleway', 'palantino', 'arial', 'helvetica', 'custom-font']
-
     fonts.forEach((font) => {
       const config: PageBuilderConfig = {
-        updateOrCreate: {
-          formType: 'create',
-          formName: 'article',
-        },
-        userSettings: {
-          fontFamily: font,
-        },
+        updateOrCreate: { formType: 'create', formName: 'article' },
+        userSettings: { fontFamily: font },
       }
       expect(config.userSettings?.fontFamily).toBe(font)
     })
@@ -194,22 +135,10 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts maximal config with all properties', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'update',
-        formName: 'collection',
-      },
-      pageBuilderLogo: {
-        src: '/logo/logo.svg',
-      },
-      resourceData: {
-        title: 'Demo Article',
-        id: 1,
-        customField: 'value',
-      },
-      userForPageBuilder: {
-        name: 'Jane Doe',
-        image: '/jane_doe.jpg',
-      },
+      updateOrCreate: { formType: 'update', formName: 'collection' },
+      pageBuilderLogo: { src: '/logo/logo.svg' },
+      resourceData: { title: 'Demo Article', id: 1, customField: 'value' },
+      userForPageBuilder: { name: 'Jane Doe', image: '/jane_doe.jpg' },
       userSettings: {
         language: {
           default: 'en',
@@ -220,14 +149,8 @@ describe('PageBuilderConfig Type Flexibility', () => {
         fontFamily: 'jost',
         customUserSetting: 'value',
       },
-      settings: {
-        brandColor: '#DB93B0',
-        customSetting: 'value',
-      },
-      pageSettings: {
-        classes: 'my-class',
-        style: { background: 'red' },
-      },
+      settings: { brandColor: '#DB93B0', customSetting: 'value' },
+      pageSettings: { classes: 'my-class', style: { background: 'red' } },
       customTopLevel: 'value',
     }
     expect(config).toBeDefined()
@@ -236,7 +159,6 @@ describe('PageBuilderConfig Type Flexibility', () => {
   it('accepts conditional properties', () => {
     const hasExistingData = false
     const existingData = hasExistingData ? { title: 'Existing', id: 1 } : undefined
-
     const config: PageBuilderConfig = {
       updateOrCreate: {
         formType: hasExistingData ? 'update' : 'create',
@@ -248,34 +170,18 @@ describe('PageBuilderConfig Type Flexibility', () => {
   })
 
   it('accepts spread objects', () => {
-    const baseSettings = {
-      autoSave: true,
-      fontFamily: 'jost',
-    }
-
-    const customSettings = {
-      customProp: 'value',
-    }
-
+    const baseSettings = { autoSave: true, fontFamily: 'jost' }
+    const customSettings = { customProp: 'value' }
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
-      userSettings: {
-        ...baseSettings,
-        ...customSettings,
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userSettings: { ...baseSettings, ...customSettings },
     }
     expect(config.userSettings).toHaveProperty('customProp')
   })
 
   it('accepts null values for optional properties', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       pageBuilderLogo: null,
       resourceData: null,
       userSettings: null,
@@ -287,10 +193,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
 
   it('accepts empty objects for nested properties', () => {
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: 'article',
-      },
+      updateOrCreate: { formType: 'create', formName: 'article' },
       userSettings: {},
       settings: {},
     }
@@ -298,29 +201,12 @@ describe('PageBuilderConfig Type Flexibility', () => {
   })
 
   it('accepts variables from external sources', () => {
-    // Simulating data from API or external source
-    const apiResponse = {
-      userName: 'John Doe',
-      userLanguage: 'en',
-      pageTitle: 'My Page',
-    }
-
+    const apiResponse = { userName: 'John Doe', userLanguage: 'en', pageTitle: 'My Page' }
     const config: PageBuilderConfig = {
-      updateOrCreate: {
-        formType: 'create',
-        formName: `cms-page-dynamic`,
-      },
-      resourceData: {
-        title: apiResponse.pageTitle,
-      },
-      userForPageBuilder: {
-        name: apiResponse.userName,
-      },
-      userSettings: {
-        language: {
-          default: apiResponse.userLanguage,
-        },
-      },
+      updateOrCreate: { formType: 'create', formName: `cms-page-dynamic` },
+      resourceData: { title: apiResponse.pageTitle },
+      userForPageBuilder: { name: apiResponse.userName },
+      userSettings: { language: { default: apiResponse.userLanguage } },
     }
     expect(config.resourceData?.title).toBe('My Page')
   })
@@ -334,19 +220,15 @@ describe('PageBuilderConfig Type Flexibility', () => {
       language: { default: 'da', enable: ['en', 'da'] },
       autoSave: true,
     }
-
     const config: PageBuilderConfig = {
       updateOrCreate: {
         formType: hasContent ? 'update' : 'create',
         formName: `cms-page-${options.pageSlug}`,
       },
-      resourceData: {
-        title: existingPage.title || options.pageTitle,
-      },
+      resourceData: { title: existingPage.title || options.pageTitle },
       userForPageBuilder: { name: userName },
       userSettings,
     }
-
     expect(config.updateOrCreate.formName).toBe('cms-page-about')
     expect(config.userForPageBuilder?.image).toBeUndefined()
   })
@@ -366,6 +248,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
     }
     expect(config.userSettings?.language?.disableLanguageDropDown).toBe(true)
   })
+
   it('accepts pageSettings alone', () => {
     const config: PageBuilderConfig = {
       updateOrCreate: { formType: 'create', formName: 'article' },
@@ -373,6 +256,7 @@ describe('PageBuilderConfig Type Flexibility', () => {
     }
     expect(config.pageSettings?.classes).toBe('custom-class')
   })
+
   it('accepts non-string top-level custom properties', () => {
     const config: PageBuilderConfig = {
       updateOrCreate: { formType: 'create', formName: 'article' },
@@ -382,5 +266,22 @@ describe('PageBuilderConfig Type Flexibility', () => {
       customNull: null,
     }
     expect(config.customNum).toBe(42)
+  })
+
+  it('accepts FormName autocomplete values', () => {
+    const commonForms: PageBuilderConfig['updateOrCreate']['formName'][] = [
+      'article',
+      'post',
+      'product',
+      'collection',
+      'job',
+      'event',
+    ]
+    commonForms.forEach((formName) => {
+      const config: PageBuilderConfig = {
+        updateOrCreate: { formType: 'update', formName },
+      }
+      expect(config.updateOrCreate.formName).toBe(formName)
+    })
   })
 })
