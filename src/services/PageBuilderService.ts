@@ -467,9 +467,7 @@ export class PageBuilderService {
       this.pageBuilderStateStore.setPageBuilderConfig(config)
 
       // Apply language default from config if localStorage has no saved preference
-      const savedSettings = JSON.parse(
-        localStorage.getItem('userSettingsPageBuilder') ?? 'null',
-      )
+      const savedSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
       if (!savedSettings?.lang && config.userSettings?.language?.default) {
         this.changeLanguage(config.userSettings.language.default)
       }

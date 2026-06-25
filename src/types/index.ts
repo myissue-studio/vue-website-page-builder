@@ -238,7 +238,6 @@ export interface PageBuilderConfig {
   userForPageBuilder?: PageBuilderUser
   [key: string]: unknown
   userSettings?: {
-    theme?: 'light' | 'dark' | 'auto'
     language?: {
       default:
         | 'en'
