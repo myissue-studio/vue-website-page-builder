@@ -35,6 +35,7 @@ export default {
       },
       fontFamily: {
         sans: ['Jost', 'Raleway', "'Cormorant'", 'sans-serif', ...defaultTheme.fontFamily.sans],
+        raleway: ['Raleway', 'sans-serif'],
         arial: ['Arial', 'sans-serif'],
         helvetica: ['Helvetica', 'Arial', 'sans-serif'],
         georgia: ['Georgia', 'serif'],

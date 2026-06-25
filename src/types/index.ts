@@ -260,6 +260,7 @@ export interface PageBuilderConfig {
     }
 
     autoSave?: boolean
+    fontFamily?: string
     [key: string]: unknown
   } | null
   settings?: {

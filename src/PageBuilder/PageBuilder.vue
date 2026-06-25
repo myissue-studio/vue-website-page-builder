@@ -146,6 +146,10 @@ const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
 
+const canvasFontClass = computed(
+  () => getPageBuilderConfig.value?.userSettings?.fontFamily ?? 'pbx-font-sans',
+)
+
 const getMenuRight = computed(() => {
   return pageBuilderStateStore.getMenuRight
 })
@@ -1046,7 +1050,7 @@ onMounted(async () => {
         </div>
         <!-- Element Popover toolbar end -->
 
-        <div id="pagebuilder" data-builder-canvas class="pbx-text-black pbx-font-sans">
+        <div id="pagebuilder" data-builder-canvas :class="[canvasFontClass, 'pbx-text-black']">
           <!-- Insert button when empty of componenets -->
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
