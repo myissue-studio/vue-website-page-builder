@@ -3331,9 +3331,23 @@ export class PageBuilderService {
       // Initialize configPageSettings to null
       let configPageSettings: PageSettings | null = null
 
+      // Capture current DOM page settings before any remount (in case we need to preserve them)
+      const currentContentEl = document.querySelector(
+        '[data-pagebuilder-content]',
+      ) as HTMLElement | null
+      const currentDomPageSettings: PageSettings | null = currentContentEl
+        ? {
+            classes: currentContentEl.getAttribute('class') || '',
+            style: this.parseStyleString(currentContentEl.getAttribute('style') || ''),
+          }
+        : null
+
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
-        configPageSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || null
+        // Prefer config.pageSettings, but fall back to the current DOM state so that
+        // global page styles applied by the user are not wiped on re-initialization.
+        configPageSettings =
+          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || currentDomPageSettings
       }
 
       // Use imported page builder settings if available and pageSettings is still null
