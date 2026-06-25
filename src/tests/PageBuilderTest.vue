@@ -47,13 +47,13 @@ watch(currentTranslations, async () => {
       id: 1,
     },
     userSettings: {
-      theme: 'light',
       language: {
         default: 'en',
         enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da', 'it'],
         disableLanguageDropDown: false,
       },
       autoSave: true,
+      fontFamily: 'raleway',
     },
 
     settings: {
