@@ -219,7 +219,7 @@ export interface User {
 // Specific user interface for page builder usage
 export interface PageBuilderUser {
   name: string
-  image: string
+  image?: string // Optional - allows flexibility for different user contexts
 }
 
 export interface PageSettings {
@@ -231,30 +231,16 @@ export interface PageSettings {
 export interface PageBuilderConfig {
   updateOrCreate: {
     formType: 'create' | 'update'
-    formName: FormName
+    formName: string // Accept any string for maximum flexibility (e.g., 'article', 'cms-page-home', etc.)
   }
   pageBuilderLogo?: { src: string } | null
-  resourceData?: { title: string; id?: number } | null
-  userForPageBuilder?: PageBuilderUser
-  [key: string]: unknown
+  resourceData?: { title: string; id?: number; [key: string]: unknown } | null
+  userForPageBuilder?: PageBuilderUser // image is already optional on PageBuilderUser
+  [key: string]: unknown // Allow any additional properties for forward-compatibility
   userSettings?: {
     language?: {
-      default:
-        | 'en'
-        | 'zh-Hans'
-        | 'fr'
-        | 'ja'
-        | 'ru'
-        | 'es'
-        | 'pt'
-        | 'de'
-        | 'ar'
-        | 'hi'
-        | 'da'
-        | 'it'
-      enable?: ReadonlyArray<
-        'en' | 'zh-Hans' | 'fr' | 'ja' | 'ru' | 'es' | 'pt' | 'de' | 'ar' | 'hi' | 'da' | 'it'
-      >
+      default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
+      enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
       disableLanguageDropDown?: boolean
     }
 
