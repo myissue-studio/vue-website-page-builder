@@ -146,9 +146,11 @@ const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
 
-const canvasFontClass = computed(
-  () => getPageBuilderConfig.value?.userSettings?.fontFamily ?? 'pbx-font-sans',
-)
+const canvasFontClass = computed(() => {
+  const font = getPageBuilderConfig.value?.userSettings?.fontFamily
+  if (!font) return 'pbx-font-sans'
+  return font.startsWith('pbx-font-') ? font : `pbx-font-${font}`
+})
 
 const getMenuRight = computed(() => {
   return pageBuilderStateStore.getMenuRight
