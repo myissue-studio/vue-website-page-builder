@@ -27,6 +27,7 @@ import {
   containsProp,
   controlledComputed,
   controlledRef,
+  createDisposableDirective,
   createEventHook,
   createFetch,
   createFilterWrapper,
@@ -156,6 +157,7 @@ import {
   useConfirmDialog,
   useCountdown,
   useCounter,
+  useCssSupports,
   useCssVar,
   useCurrentElement,
   useCycleList,
@@ -296,8 +298,8 @@ import {
   watchTriggerable,
   watchWithFilter,
   whenever
-} from "./chunk-4YXCMTZQ.js";
-import "./chunk-DEFK5HPI.js";
+} from "./chunk-HUMNTXJD.js";
+import "./chunk-D6XSK43L.js";
 export {
   DefaultMagicKeysAliasMap,
   StorageSerializers,
@@ -327,6 +329,7 @@ export {
   containsProp,
   controlledComputed,
   controlledRef,
+  createDisposableDirective,
   createEventHook,
   createFetch,
   createFilterWrapper,
@@ -456,6 +459,7 @@ export {
   useConfirmDialog,
   useCountdown,
   useCounter,
+  useCssSupports,
   useCssVar,
   useCurrentElement,
   useCycleList,

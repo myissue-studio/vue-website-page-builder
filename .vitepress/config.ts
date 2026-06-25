@@ -48,6 +48,7 @@ export default defineConfig({
         text: 'Usage',
         items: [
           { text: 'Providing Configuration', link: '/providing-configuration' },
+          { text: 'TypeScript Support', link: '/typescript-support' },
           { text: 'Language Support', link: '/language-support' },
           { text: 'Automatic Draft Recovery', link: '/automatic-draft-recovery' },
           { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
