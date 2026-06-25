@@ -53,7 +53,7 @@ watch(currentTranslations, async () => {
         disableLanguageDropDown: false,
       },
       autoSave: true,
-      fontFamily: 'raleway',
+      fontFamily: 'jost', // jost, raleway, palantino
     },
 
     settings: {
