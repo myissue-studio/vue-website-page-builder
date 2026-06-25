@@ -145,6 +145,7 @@ describe('FloatingSidePanel — teleport to body', () => {
     const { app, container } = await mountInto(FloatingSidePanel, {
       showSidebarPanel: true,
       title: 'Test Panel',
+      position: 'right',
     })
 
     await nextTick()
@@ -174,7 +175,11 @@ describe('FloatingSidePanel — teleport to body', () => {
     const app = createApp(
       defineComponent({
         render() {
-          return h(FloatingSidePanel, { showSidebarPanel: true, title: 'Side Panel' }, {})
+          return h(
+            FloatingSidePanel,
+            { showSidebarPanel: true, title: 'Side Panel', position: 'right' },
+            {},
+          )
         },
       }),
     )
@@ -299,7 +304,7 @@ describe('Integration — page builder inside user parent modal', () => {
         render() {
           return h('div', [
             h(ModalBuilder, { title: 'Settings', showModalBuilder: true }),
-            h(FloatingSidePanel, { title: 'Styles', showSidebarPanel: true }),
+            h(FloatingSidePanel, { title: 'Styles', showSidebarPanel: true, position: 'right' }),
           ])
         },
       }),
