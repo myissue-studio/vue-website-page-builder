@@ -242,12 +242,11 @@ export interface PageBuilderConfig {
       default?: string // Accept any language code (e.g., 'en', 'fr', 'custom-lang', etc.)
       enable?: readonly string[] // Accept any language codes array (readonly for 'as const' compatibility)
       disableLanguageDropDown?: boolean
+      [key: string]: unknown
     }
-
     autoSave?: boolean
     fontFamily?: string
-    [key: string]: unknown
-  } | null
+  } & Record<string, unknown> // Use intersection type instead of index signature for compatibility
   settings?: {
     brandColor?: string
     [key: string]: unknown
