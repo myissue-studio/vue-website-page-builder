@@ -152,6 +152,13 @@ const canvasFontClass = computed(() => {
   return font.startsWith('pbx-font-') ? font : `pbx-font-${font}`
 })
 
+const getCurrentLanguage = computed(() => pageBuilderStateStore.getCurrentLanguage)
+watch(getCurrentLanguage, (lang) => {
+  if (lang && lang !== languageSelction.value) {
+    languageSelction.value = lang
+  }
+})
+
 const getMenuRight = computed(() => {
   return pageBuilderStateStore.getMenuRight
 })
@@ -514,15 +521,6 @@ onMounted(async () => {
 
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
-  }
-  if (
-    getPageBuilderConfig.value &&
-    getPageBuilderConfig.value.userSettings &&
-    getPageBuilderConfig.value.userSettings.language &&
-    getPageBuilderConfig.value.userSettings.language.default &&
-    (!userSettings || !userSettings.lang)
-  ) {
-    languageSelction.value = getPageBuilderConfig.value.userSettings.language.default
   }
 
   await loadTranslations(languageSelction.value)
