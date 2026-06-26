@@ -247,6 +247,7 @@ export interface PageBuilderConfig {
       disableLanguageDropDown?: boolean
     }
     autoSave?: boolean
+    notifications?: boolean
     fontFamily?: string
   } | null // Allow null for maximum flexibility
   settings?: {
