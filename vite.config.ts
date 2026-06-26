@@ -1,11 +1,14 @@
 import { fileURLToPath, URL } from 'node:url'
+import { createRequire } from 'node:module'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import dts from 'vite-plugin-dts'
+
+const require = createRequire(import.meta.url)
 
 export default defineConfig(({ mode }) => {
   const isLibMode = mode === 'lib'
+  const dts = isLibMode ? require('vite-plugin-dts').default : null
 
   const baseConfig = {
     plugins: [
