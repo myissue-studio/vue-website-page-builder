@@ -6,6 +6,7 @@ import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/Com
 import EditGetElement from '../Components/PageBuilder/EditorMenu/Editables/EditGetElement.vue'
 import BuilderComponents from '../Components/Modals/BuilderComponents.vue'
 import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSidebarEditor.vue'
+import AdvancedPageBuilderSettings from '../Components/PageBuilder/Settings/AdvancedPageBuilderSettings.vue'
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
 import { delay } from '../composables/delay'
@@ -412,6 +413,34 @@ const handleCloseHTMLEditor = () => {
 
 const isLoading = ref(false)
 const errSaveComponents = ref<string | null>(null)
+const showGlobalPageSettings = ref(false)
+const isLoadingGlobalPageSettings = ref(false)
+
+const openGlobalPageSettings = async () => {
+  showGlobalPageSettings.value = true
+  isLoadingGlobalPageSettings.value = true
+  hideToolbar()
+  await delay(200)
+  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
+  await pageBuilderService.globalPageStyles()
+  hideToolbar()
+  isLoadingGlobalPageSettings.value = false
+}
+
+const closeGlobalPageSettings = async () => {
+  isLoadingGlobalPageSettings.value = true
+  await delay(200)
+  await pageBuilderService.handleManualSave()
+  pageBuilderService.stopGlobalStylesSync()
+
+  const pagebuilder = document.querySelector('[data-pagebuilder-content]')
+  if (pagebuilder) {
+    pagebuilder.removeAttribute('data-global-selected')
+  }
+
+  showGlobalPageSettings.value = false
+  isLoadingGlobalPageSettings.value = false
+}
 
 const handleSaveChangesElement = async () => {
   errSaveComponents.value = null
@@ -1045,7 +1074,7 @@ onMounted(async () => {
           class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-sm pbx-px-2 pbx-h-0 pbx-min-w-52 pbx-relative"
         >
           <template v-if="getElement">
-            <EditGetElement></EditGetElement>
+            <EditGetElement @open-global-page-settings="openGlobalPageSettings"></EditGetElement>
           </template>
         </div>
         <!-- Element Popover toolbar end -->
@@ -1192,6 +1221,17 @@ onMounted(async () => {
     </div>
     <!-- Page Builder Main End -->
   </div>
+  <ModalBuilder
+    maxWidth="5xl"
+    :showModalBuilder="showGlobalPageSettings"
+    :title="translate('Global Page Styles')"
+    @closeMainModalBuilder="closeGlobalPageSettings"
+    minHeight=""
+    maxHeight=""
+  >
+    <AdvancedPageBuilderSettings :isLoading="isLoadingGlobalPageSettings">
+    </AdvancedPageBuilderSettings>
+  </ModalBuilder>
   <ModalBuilder
     maxWidth="7xl"
     :showModalBuilder="getShowModalHTMLEditor"

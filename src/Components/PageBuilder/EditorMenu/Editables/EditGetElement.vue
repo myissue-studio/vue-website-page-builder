@@ -12,6 +12,9 @@ import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
+const emit = defineEmits<{
+  (event: 'open-global-page-settings'): void
+}>()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -472,6 +475,11 @@ const handleShowHTMLEditor = async () => {
   pageBuilderStateStore.setToggleGlobalHtmlMode(false)
   openOptionsMoreOpen.value = false
   pageBuilderStateStore.setShowModalHTMLEditor(true)
+}
+
+const handleOpenGlobalPageSettings = () => {
+  openOptionsMoreOpen.value = false
+  emit('open-global-page-settings')
 }
 
 const showModalDeleteComponent = ref(false)
@@ -975,6 +983,18 @@ const handleDelete = function () {
               <span class="material-symbols-outlined"> deployed_code </span>
             </div>
             <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
+          </div>
+          <div
+            v-if="getElement && getComponent"
+            @click="handleOpenGlobalPageSettings"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> tune </span>
+            </div>
+            <div class="pbx-text-sm">{{ translate('Global Page Styles') }}</div>
           </div>
 
           <!-- content end -->
