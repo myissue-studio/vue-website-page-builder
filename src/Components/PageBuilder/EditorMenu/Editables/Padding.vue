@@ -161,6 +161,11 @@ watch(
         </select>
       </div>
       <hr />
+      <div class="pbx-pt-4 pbx-pb-2">
+        <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
+          {{ translate('Advanced Padding') }}
+        </p>
+      </div>
       <div class="pbx-my-2 pbx-py-2">
         <label for="top-padding" class="pbx-myPrimaryInputLabel">{{
           translate('Top Padding')
