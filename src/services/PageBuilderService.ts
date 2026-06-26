@@ -56,6 +56,8 @@ export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'it',
 ]
 
+const FULL_WIDTH_COMPONENT_CLASS = 'pbx-full-width-component'
+
 export class PageBuilderService {
   // Class properties with types
   private fontSizeRegex =
@@ -1025,6 +1027,34 @@ export class PageBuilderService {
     // IMG elements are always selectable even inside no-select zones (e.g. slider)
     if (el.tagName !== 'IMG' && el.closest('[data-pb-no-select]')) return false
     return !this.NoneListernesTags.includes(el.tagName)
+  }
+
+  public getSelectedComponentSection(): HTMLElement | null {
+    const element = this.getElement.value
+    if (!element || !(element instanceof HTMLElement)) return null
+
+    return element.closest('section') as HTMLElement | null
+  }
+
+  public isSelectedComponentTopElement(): boolean {
+    const element = this.getElement.value
+    const section = this.getSelectedComponentSection()
+
+    if (!element || !section) return false
+
+    return element.parentElement === section
+  }
+
+  public selectedComponentIsFullWidth(): boolean {
+    return this.getSelectedComponentSection()?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+  }
+
+  public async setSelectedComponentFullWidth(enabled: boolean): Promise<void> {
+    const section = this.getSelectedComponentSection()
+    if (!section) return
+
+    section.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
+    await this.handleAutoSave()
   }
 
   /**

@@ -54,6 +54,31 @@ const sliderImageCount = computed(() => {
   return track ? track.children.length : 3
 })
 
+const componentSettingsTick = ref(0)
+const showComponentSettingsModal = ref(false)
+
+const isSelectedComponentTopElement = computed(() => {
+  void componentSettingsTick.value
+  return pageBuilderService.isSelectedComponentTopElement()
+})
+
+const selectedComponentFullWidth = computed(() => {
+  void componentSettingsTick.value
+  return pageBuilderService.selectedComponentIsFullWidth()
+})
+
+const openComponentSettings = () => {
+  componentSettingsTick.value++
+  showComponentSettingsModal.value = true
+}
+
+const updateSelectedComponentFullWidth = async (enabled: boolean) => {
+  const updatePromise = pageBuilderService.setSelectedComponentFullWidth(enabled)
+  componentSettingsTick.value++
+  await updatePromise
+  componentSettingsTick.value++
+}
+
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
@@ -721,6 +746,16 @@ const handleDelete = function () {
           </div>
         </template>
 
+        <template v-if="getElement && getComponent && isSelectedComponentTopElement">
+          <div
+            @click="openComponentSettings"
+            class="pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :title="translate('Component Settings')"
+          >
+            <span class="material-symbols-outlined"> settings </span>
+          </div>
+        </template>
+
         <template v-if="isInsideSlider">
           <div
             @click="showSliderModal = true"
@@ -735,6 +770,42 @@ const handleDelete = function () {
             <span class="material-symbols-outlined"> settings </span>
           </div>
         </template>
+
+        <DynamicModalBuilder
+          v-if="showComponentSettingsModal"
+          :showDynamicModalBuilder="showComponentSettingsModal"
+          :isLoading="false"
+          type="success"
+          :gridColumnAmount="1"
+          :title="translate('Component Settings')"
+          description=""
+          :firstButtonText="translate('Close')"
+          @firstModalButtonFunctionDynamicModalBuilder="showComponentSettingsModal = false"
+        >
+          <header></header>
+          <main>
+            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
+              <div
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
+              >
+                <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-4">
+                  <div class="pbx-flex pbx-flex-col pbx-gap-1">
+                    <p class="pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor">
+                      {{ translate('Full-width component') }}
+                    </p>
+                    <p class="pbx-text-xs pbx-text-gray-500 pbx-my-0">
+                      {{ translate('Stretch across browser width') }}
+                    </p>
+                  </div>
+                  <ToggleInput
+                    :model-value="selectedComponentFullWidth"
+                    @update:model-value="updateSelectedComponentFullWidth"
+                  />
+                </div>
+              </div>
+            </div>
+          </main>
+        </DynamicModalBuilder>
 
         <DynamicModalBuilder
           v-if="showSliderModal"

@@ -31,6 +31,12 @@
   .pbx-myPrimaryWidthScreenModule {
     @apply pbx-myModulePyMargin pbx-myModulePadding;
   }
+  .pbx-full-width-component {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
   .pbx-myPrimaryModule {
     @apply pbx-max-w-7xl pbx-mx-auto pbx-myModulePyMargin pbx-myModulePadding;
   }
