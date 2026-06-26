@@ -36,6 +36,10 @@ interface PageBuilderState {
   currentStyles: Record<string, string>
   fontVerticalPadding: string | null
   fontHorizontalPadding: string | null
+  fontTopPadding: string | null
+  fontRightPadding: string | null
+  fontBottomPadding: string | null
+  fontLeftPadding: string | null
   fontVerticalMargin: string | null
   fontHorizontalMargin: string | null
   fontStyle: string | null
@@ -101,6 +105,10 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     currentStyles: {},
     fontVerticalPadding: null,
     fontHorizontalPadding: null,
+    fontTopPadding: null,
+    fontRightPadding: null,
+    fontBottomPadding: null,
+    fontLeftPadding: null,
     fontVerticalMargin: null,
     fontHorizontalMargin: null,
     fontStyle: null,
@@ -219,6 +227,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     getFontHorizontalPadding(state: PageBuilderState): string | null {
       return state.fontHorizontalPadding
+    },
+    getFontTopPadding(state: PageBuilderState): string | null {
+      return state.fontTopPadding
+    },
+    getFontRightPadding(state: PageBuilderState): string | null {
+      return state.fontRightPadding
+    },
+    getFontBottomPadding(state: PageBuilderState): string | null {
+      return state.fontBottomPadding
+    },
+    getFontLeftPadding(state: PageBuilderState): string | null {
+      return state.fontLeftPadding
     },
     getFontVerticalMargin(state: PageBuilderState): string | null {
       return state.fontVerticalMargin
@@ -378,6 +398,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     setFontHorizontalPadding(payload: string | null): void {
       this.fontHorizontalPadding = payload
+    },
+    setFontTopPadding(payload: string | null): void {
+      this.fontTopPadding = payload
+    },
+    setFontRightPadding(payload: string | null): void {
+      this.fontRightPadding = payload
+    },
+    setFontBottomPadding(payload: string | null): void {
+      this.fontBottomPadding = payload
+    },
+    setFontLeftPadding(payload: string | null): void {
+      this.fontLeftPadding = payload
     },
     setFontVerticalMargin(payload: string | null): void {
       this.fontVerticalMargin = payload

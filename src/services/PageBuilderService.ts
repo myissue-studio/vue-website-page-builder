@@ -1375,6 +1375,50 @@ export class PageBuilderService {
       'setFontHorizontalPadding',
     )
   }
+  /**
+   * Handles changes to the top padding of the selected element.
+   * @param {string} [userSelectedTopPadding] - The selected top padding class.
+   */
+  public handleTopPadding(userSelectedTopPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedTopPadding,
+      tailwindPaddingAndMargin.topPadding,
+      'setFontTopPadding',
+    )
+  }
+  /**
+   * Handles changes to the right padding of the selected element.
+   * @param {string} [userSelectedRightPadding] - The selected right padding class.
+   */
+  public handleRightPadding(userSelectedRightPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedRightPadding,
+      tailwindPaddingAndMargin.rightPadding,
+      'setFontRightPadding',
+    )
+  }
+  /**
+   * Handles changes to the bottom padding of the selected element.
+   * @param {string} [userSelectedBottomPadding] - The selected bottom padding class.
+   */
+  public handleBottomPadding(userSelectedBottomPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedBottomPadding,
+      tailwindPaddingAndMargin.bottomPadding,
+      'setFontBottomPadding',
+    )
+  }
+  /**
+   * Handles changes to the left padding of the selected element.
+   * @param {string} [userSelectedLeftPadding] - The selected left padding class.
+   */
+  public handleLeftPadding(userSelectedLeftPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedLeftPadding,
+      tailwindPaddingAndMargin.leftPadding,
+      'setFontLeftPadding',
+    )
+  }
 
   /**
    * Handles changes to the vertical margin of the selected element.
@@ -3613,6 +3657,10 @@ export class PageBuilderService {
     this.handleFontStyle(undefined)
     this.handleVerticalPadding(undefined)
     this.handleHorizontalPadding(undefined)
+    this.handleTopPadding(undefined)
+    this.handleRightPadding(undefined)
+    this.handleBottomPadding(undefined)
+    this.handleLeftPadding(undefined)
     this.handleVerticalMargin(undefined)
     this.handleHorizontalMargin(undefined)
 

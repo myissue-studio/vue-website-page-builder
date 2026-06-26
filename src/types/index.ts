@@ -103,6 +103,10 @@ export interface PageBuilderStateStore {
   setFontStyle: (style: string) => void
   setFontVerticalPadding: (padding: string) => void
   setFontHorizontalPadding: (padding: string) => void
+  setFontTopPadding: (padding: string) => void
+  setFontRightPadding: (padding: string) => void
+  setFontBottomPadding: (padding: string) => void
+  setFontLeftPadding: (padding: string) => void
   setFontVerticalMargin: (margin: string) => void
   setFontHorizontalMargin: (margin: string) => void
   setBorderStyle: (style: string) => void
