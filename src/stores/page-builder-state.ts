@@ -42,6 +42,10 @@ interface PageBuilderState {
   fontLeftPadding: string | null
   fontVerticalMargin: string | null
   fontHorizontalMargin: string | null
+  fontTopMargin: string | null
+  fontRightMargin: string | null
+  fontBottomMargin: string | null
+  fontLeftMargin: string | null
   fontStyle: string | null
   fontFamily: string | null
   fontWeight: string | null
@@ -111,6 +115,10 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     fontLeftPadding: null,
     fontVerticalMargin: null,
     fontHorizontalMargin: null,
+    fontTopMargin: null,
+    fontRightMargin: null,
+    fontBottomMargin: null,
+    fontLeftMargin: null,
     fontStyle: null,
     fontFamily: null,
     fontWeight: null,
@@ -245,6 +253,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     getFontHorizontalMargin(state: PageBuilderState): string | null {
       return state.fontHorizontalMargin
+    },
+    getFontTopMargin(state: PageBuilderState): string | null {
+      return state.fontTopMargin
+    },
+    getFontRightMargin(state: PageBuilderState): string | null {
+      return state.fontRightMargin
+    },
+    getFontBottomMargin(state: PageBuilderState): string | null {
+      return state.fontBottomMargin
+    },
+    getFontLeftMargin(state: PageBuilderState): string | null {
+      return state.fontLeftMargin
     },
     getFontFamily(state: PageBuilderState): string | null {
       return state.fontFamily
@@ -416,6 +436,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     setFontHorizontalMargin(payload: string | null): void {
       this.fontHorizontalMargin = payload
+    },
+    setFontTopMargin(payload: string | null): void {
+      this.fontTopMargin = payload
+    },
+    setFontRightMargin(payload: string | null): void {
+      this.fontRightMargin = payload
+    },
+    setFontBottomMargin(payload: string | null): void {
+      this.fontBottomMargin = payload
+    },
+    setFontLeftMargin(payload: string | null): void {
+      this.fontLeftMargin = payload
     },
     setFontStyle(payload: string | null): void {
       this.fontStyle = payload

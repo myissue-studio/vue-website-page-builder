@@ -1442,6 +1442,50 @@ export class PageBuilderService {
       'setFontHorizontalMargin',
     )
   }
+  /**
+   * Handles changes to the top margin of the selected element.
+   * @param {string} [userSelectedTopMargin] - The selected top margin class.
+   */
+  public handleTopMargin(userSelectedTopMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedTopMargin,
+      tailwindPaddingAndMargin.topMargin,
+      'setFontTopMargin',
+    )
+  }
+  /**
+   * Handles changes to the right margin of the selected element.
+   * @param {string} [userSelectedRightMargin] - The selected right margin class.
+   */
+  public handleRightMargin(userSelectedRightMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedRightMargin,
+      tailwindPaddingAndMargin.rightMargin,
+      'setFontRightMargin',
+    )
+  }
+  /**
+   * Handles changes to the bottom margin of the selected element.
+   * @param {string} [userSelectedBottomMargin] - The selected bottom margin class.
+   */
+  public handleBottomMargin(userSelectedBottomMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedBottomMargin,
+      tailwindPaddingAndMargin.bottomMargin,
+      'setFontBottomMargin',
+    )
+  }
+  /**
+   * Handles changes to the left margin of the selected element.
+   * @param {string} [userSelectedLeftMargin] - The selected left margin class.
+   */
+  public handleLeftMargin(userSelectedLeftMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedLeftMargin,
+      tailwindPaddingAndMargin.leftMargin,
+      'setFontLeftMargin',
+    )
+  }
 
   /**
    * Handles changes to the border style of the selected element.
@@ -3663,6 +3707,10 @@ export class PageBuilderService {
     this.handleLeftPadding(undefined)
     this.handleVerticalMargin(undefined)
     this.handleHorizontalMargin(undefined)
+    this.handleTopMargin(undefined)
+    this.handleRightMargin(undefined)
+    this.handleBottomMargin(undefined)
+    this.handleLeftMargin(undefined)
 
     await this.syncCurrentClasses()
     await this.syncCurrentStyles()
