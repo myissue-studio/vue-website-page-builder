@@ -1,1 +1,0 @@
-import{_ as i,o as a,c as n,a6 as e}from"./chunks/framework.CCo7Ul16.js";const o=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"styling.md","filePath":"styling.md"}'),t={name:"styling.md"};function l(p,s,h,k,r,d){return a(),n("div",null,[...s[0]||(s[0]=[e("",11)])])}const c=i(t,[["render",l]]);export{o as __pageData,c as default};
