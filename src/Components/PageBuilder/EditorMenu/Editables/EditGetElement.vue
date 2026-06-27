@@ -750,14 +750,6 @@ const showThemeColorPresetsModal = ref(false)
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
-        <button
-          type="button"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-bg-gray-100 pbx-rounded-xl pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-          :title="translate('Theme Color Presets')"
-          @click.stop="showThemeColorPresetsModal = true"
-        >
-          <span class="material-symbols-outlined"> palette </span>
-        </button>
         <template v-if="getElement && false">
           <div
             @click="pageBuilderService.deleteElementFromDOM"
@@ -1027,8 +1019,21 @@ const showThemeColorPresetsModal = ref(false)
               {{ translate('Delete component') }}
             </div>
           </div>
-
           <!-- delete component end -->
+
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full pbx-cursor-pointer hover:pbx-bg-red-50"
+            @click.stop="showThemeColorPresetsModal = true"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> palette </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Theme Color Presets') }}
+            </div>
+          </div>
 
           <div
             v-if="getElement && getComponent"

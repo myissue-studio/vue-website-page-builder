@@ -260,11 +260,11 @@
     |--------------------------------------------------------------------------
     */
   .pbx-mysearchBarWithOptions {
-    @apply pbx-flex pbx-gap-2 pbx-pl-4 pbx-rounded-full pbx-border pbx-border-gray-200 pbx-bg-myPrimaryLightGrayColor;
+    @apply pbx-flex pbx-gap-2 pbx-pl-4 pbx-rounded-full pbx-border pbx-border-gray-200;
   }
 
   .pbx-myPrimarySearchInput {
-    @apply pbx-myPrimaryInput pbx-text-sm pbx-py-4 pbx-border-none pbx-outline-none pbx-pl-10 pbx-h-full pbx-bg-white focus:pbx-ring-0 focus:pbx-ring-offset-0 focus:pbx-border-none focus:pbx-bg-transparent focus:pbx-outline-none pbx-shadow-none;
+    @apply pbx-myPrimaryInput pbx-text-sm pbx-py-4 pbx-border-none pbx-outline-none pbx-pl-10 pbx-h-full focus:pbx-ring-0 focus:pbx-ring-offset-0 focus:pbx-border-none focus:pbx-bg-transparent focus:pbx-outline-none pbx-shadow-none;
   }
 
   .pbx-myPrimarySearchButton {
@@ -473,6 +473,10 @@
   cursor: pointer;
   line-height: 1.5;
   font-weight: normal;
+  background-color: #fff;
+}
+.pbx-myPrimarySearchInput {
+  background-color: #fff;
 }
 
 .pbx-myPrimarySelect {
@@ -505,14 +509,6 @@
 }
 
 /* input color for color selection  - start */
-#ColorInput {
-  border-color: 1px solid rgb(96, 96, 96);
-  padding: 6px;
-}
-#ColorInput input[type='color' i] {
-  border-color: 1px solid rgb(96, 96, 96);
-  padding: 6px;
-}
 /* input color for color selection  - end */
 
 #pagebuilder-right-menu hr {
@@ -529,7 +525,7 @@
   list-style: disc !important;
   padding: 1rem 0 0 1.4rem;
   margin-left: 1em;
-  line-height: 2rem;
+  line-height: 1rem;
 }
 
 .pbx-headless-dropdown {

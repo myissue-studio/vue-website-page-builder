@@ -229,13 +229,28 @@ export interface User {
 
 // Specific user interface for page builder usage
 export interface PageBuilderUser {
-  name: string
+  /**
+   * Optional stable user identifier.
+   * When provided, theme color presets are stored under a user-scoped localStorage
+   * key (`vueWebsitePageBuilderThemeColorPresets-u{id}`) so every user keeps their
+   * own personalized presets on the same device.  Accepts any string or number that
+   * uniquely identifies the user in the host application (e.g. a database row id).
+   * Also accepts `null` for cases where the DB returns a nullable id column.
+   */
+  id?: string | number | null
+  /**
+   * Display name shown in the builder toolbar.
+   * Optional so consumers can omit it or pass auth-user objects where the name
+   * field may be `username`, `displayName`, etc. — just pick the right field.
+   */
+  name?: string
   image?: string // Optional - allows flexibility for different user contexts
 }
 
 export interface PageSettings {
-  classes: string
+  classes?: string
   style?: string | Record<string, string>
+  [key: string]: unknown
 }
 
 export type ThemeColorPresetId =
@@ -255,6 +270,22 @@ export interface ThemeColorPreset {
   enabled: boolean
 }
 
+/** Flexible input for consumer configs — id accepts any string (e.g. inferred from variables). */
+export interface ThemeColorPresetInput {
+  id: ThemeColorPresetId | (string & {})
+  label?: string
+  color?: string
+  enabled?: boolean
+  [key: string]: unknown
+}
+
+/** Input shape for themeColorPresets in PageBuilderConfig (partial colors are normalized at runtime). */
+export interface ThemeColorPresetSettingsInput {
+  enabled?: boolean
+  colors?: ReadonlyArray<ThemeColorPresetInput>
+  [key: string]: unknown
+}
+
 export interface ThemeColorPresetSettings {
   enabled: boolean
   colors: readonly ThemeColorPreset[]
@@ -263,11 +294,35 @@ export interface ThemeColorPresetSettings {
 // Page Builder Configuration interface
 export interface PageBuilderConfig {
   updateOrCreate: {
-    formType: 'create' | 'update'
+    /**
+     * Whether the builder is creating new content or updating existing content.
+     * Accepts `'create'`, `'update'`, or any other string for dynamic / computed values.
+     * The union with `(string & {})` preserves autocomplete for the two common values
+     * while allowing any string without requiring `as const` or explicit casting.
+     *
+     * @example
+     * // Dynamic value — works without `as const`
+     * formType: hasContent ? 'update' : 'create'
+     */
+    formType: 'create' | 'update' | (string & {})
     formName: FormName | (string & {}) // Provides autocomplete for common values while accepting any string
+    [key: string]: unknown
   }
-  pageBuilderLogo?: { src: string } | null
-  resourceData?: { title: string; id?: number; [key: string]: unknown } | null
+  pageBuilderLogo?: { src: string; [key: string]: unknown } | null
+  resourceData?: {
+    /**
+     * Optional page/resource title shown in the builder toolbar.
+     * Made optional so consumers can pass a resource object without a title
+     * or when the title isn't known yet at the time `startBuilder` is called.
+     */
+    title?: string
+    /**
+     * Accepts both numeric IDs and string-based IDs (e.g. UUIDs).
+     * The service handles both types at runtime when building localStorage keys.
+     */
+    id?: number | string
+    [key: string]: unknown
+  } | null
   userForPageBuilder?: PageBuilderUser // image is already optional on PageBuilderUser
   [key: string]: unknown // Allow any additional properties for forward-compatibility
   userSettings?: {
@@ -279,10 +334,10 @@ export interface PageBuilderConfig {
     autoSave?: boolean
     notifications?: boolean
     fontFamily?: string
-  } | null // Allow null for maximum flexibility
+  } | null // Allow null for maximum flexibility; no [key: string] here so typed UserSettings interfaces assign without error
   settings?: {
     brandColor?: string
-    themeColorPresets?: ThemeColorPresetSettings | null
+    themeColorPresets?: ThemeColorPresetSettingsInput | ThemeColorPresetSettings | null
     [key: string]: unknown
   } | null
   pageSettings?: PageSettings

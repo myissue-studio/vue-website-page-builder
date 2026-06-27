@@ -11,15 +11,15 @@ Your `configPageBuilder` object can include:
 - **`resourceData` (optional):**
   Prefill the builder with initial resource data (e.g., `title`, `id`).
 - **`userForPageBuilder` (optional):**
-  Pass user information (such as `name` and `image`) to display the logged-in user’s details in the builder.
+  Pass user information to display in the builder. The optional `id` field scopes theme color preset storage per user — each user gets their own `localStorage` entry for their personalized colors (see [Theme Color Presets](#theme-color-presets) below).
 - **`pageBuilderLogo` (optional):**
   Display your company logo in the builder toolbar.
 - **`userSettings` (optional):**
   Set user preferences such as language, font family, or auto-save.
 - **`brandColor` (optional):**
-  Set your brand’s primary color for key UI elements (inside the `settings` config).
+  Set your brand's primary color for key UI elements (inside the `settings` config).
 - **`themeColorPresets` (optional):**
-  Pass primary, secondary, and up to six custom hex colors from your backend. Enabled presets appear in the text color and background color menus.
+  Pass primary, secondary, and up to six custom hex colors. User edits to these colors persist automatically in `localStorage` and survive modal close/reopen and page reloads. Enabled presets appear in the text color and background color menus.
 - **`pageSettings` (optional):**
   Apply global classes and inline styles to the main `#pagebuilder` wrapper.
 
@@ -38,7 +38,11 @@ const configPageBuilder = {
     title: 'Demo Article',
     id: 1,
   },
-  userForPageBuilder: { name: 'John Doe', image: '/jon_doe.jpg' },
+  userForPageBuilder: {
+    id: currentUser.id, // Optional — scopes theme color presets to this user in localStorage
+    name: 'John Doe',
+    image: '/jon_doe.jpg',
+  },
   pageBuilderLogo: {
     src: '/logo/logo.svg',
   },
@@ -93,7 +97,7 @@ onMounted(async () => {
 
 ### Theme Color Presets
 
-Use `settings.themeColorPresets` when your app stores brand colors in a database and needs to make them available in the Page Builder color menus.
+Use `settings.themeColorPresets` to provide brand colors that appear in the text color and background color menus. Supported preset IDs are `primary`, `secondary`, and `custom1` through `custom6`.
 
 ```ts
 const configPageBuilder = {
@@ -116,7 +120,90 @@ const configPageBuilder = {
 }
 ```
 
-Supported preset IDs are `primary`, `secondary`, and `custom1` through `custom6`. Disabled presets are saved but hidden from the text color and background color dropdowns. If no presets are passed, the builder uses locally saved presets from the browser.
+Disabled presets are saved but hidden from the color dropdowns. If no presets are passed, the builder uses locally saved presets from the browser.
+
+#### User Personalization — Changes Persist Automatically
+
+When a user changes a color or toggles a preset on/off, the change is **automatically saved to `localStorage`**. These customizations survive modal close/reopen and full page reloads.
+
+The config values you pass serve as **initial defaults only**. Once a user has saved their own presets, the builder always loads the saved version instead of the config values.
+
+#### User-Scoped Storage
+
+Pass `userForPageBuilder.id` to isolate each user's presets under their own `localStorage` key. Without an `id`, all users on the same device share one preset storage entry.
+
+```ts
+const configPageBuilder = {
+  userForPageBuilder: {
+    id: currentUser.id,   // any stable identifier — string or number
+    name: currentUser.name,
+    image: currentUser.avatar,
+  },
+  settings: {
+    themeColorPresets: {
+      enabled: true,
+      colors: [
+        { id: 'primary', label: 'Primary', color: '#482C3D', enabled: true },
+        // ...
+      ],
+    },
+  },
+}
+```
+
+With a user `id` the storage key becomes `vueWebsitePageBuilderThemeColorPresets-u{id}`.
+Without a user `id` the shared key `vueWebsitePageBuilderThemeColorPresets` is used.
+
+#### Reset to Provided Defaults
+
+The builder includes a **"Reset to provided defaults"** button at the bottom of the theme color presets panel. Clicking it shows a confirmation dialog; on confirmation, the user's saved customizations are cleared and the original colors you passed in the config are restored.
+
+#### Clearing Presets on Sign-Out
+
+Call `resetThemeColorPresets()` to programmatically clear the current user's stored presets and restore built-in defaults. This is useful when a user signs out so the next user starts clean.
+
+```ts
+import { resetThemeColorPresets } from '@myissue/vue-website-page-builder'
+
+// Call when the user signs out
+resetThemeColorPresets()
+```
+
+#### Advanced: Reading the Storage Key
+
+Use `buildStorageKey(config)` to get the exact `localStorage` key the builder uses for a given config. Useful for migrating, pre-populating, or debugging stored preset data.
+
+```ts
+import { buildStorageKey } from '@myissue/vue-website-page-builder'
+
+const key = buildStorageKey(config)
+// With id 42:  'vueWebsitePageBuilderThemeColorPresets-u42'
+// Without id:  'vueWebsitePageBuilderThemeColorPresets'
+```
+
+#### Type Flexibility for Consumer Configs
+
+If your color IDs come from a database or are inferred from variables, TypeScript may raise a type error when assigning dynamic strings to the strictly-typed `ThemeColorPresetId`. Use `ThemeColorPresetSettingsInput` (or `ThemeColorPresetInput` for individual colors) to avoid this:
+
+```ts
+import type { ThemeColorPresetSettingsInput } from '@myissue/vue-website-page-builder'
+
+// db colors have id typed as `string` — no TypeScript error with the input type
+const presets: ThemeColorPresetSettingsInput = {
+  enabled: true,
+  colors: dbColors.map((c) => ({
+    id: c.slug,        // any string accepted
+    label: c.name,
+    color: c.hexCode,
+    enabled: c.active,
+  })),
+}
+
+const configPageBuilder = {
+  // ...
+  settings: { themeColorPresets: presets },
+}
+```
 
 ### Editing Saved Content Later
 

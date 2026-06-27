@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
+import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -10,22 +11,95 @@ const { translate } = useTranslations()
 const pageBuilderStateStore = sharedPageBuilderStore
 const getPageBuilderConfig = computed(() => pageBuilderStateStore.getPageBuilderConfig)
 
-const { themeColorPresetSettings, setThemeColorPresetsEnabled, updateThemeColorPreset } =
-  useThemeColorPresets(getPageBuilderConfig)
+const {
+  themeColorPresetSettings,
+  setThemeColorPresetsEnabled,
+  updateThemeColorPreset,
+  resetToConfigDefaults,
+} = useThemeColorPresets(getPageBuilderConfig)
+
+// Local hex text per preset — decouples the text field from the store so the
+// user can freely type or paste without Vue re-renders resetting the field.
+const editingHex = ref<Record<string, string>>({})
+
+function localHex(preset: ThemeColorPreset): string {
+  return editingHex.value[preset.id] ?? preset.color
+}
+
+// Keep the local text in sync when the colour picker (or any external update)
+// changes the stored colour, but only when the field is not currently focused.
+watch(
+  () => themeColorPresetSettings.value.colors,
+  (colors) => {
+    colors.forEach((preset) => {
+      const activeId = (document.activeElement as HTMLInputElement | null)?.id
+      if (activeId !== `color-input-${preset.id}`) {
+        editingHex.value[preset.id] = preset.color
+      }
+    })
+  },
+  { deep: true },
+)
+
+const HEX_RE = /^#?[0-9a-fA-F]{6}$/
+
+function onHexInput(preset: ThemeColorPreset, event: Event): void {
+  const input = event.target as HTMLInputElement
+  const raw = input.value.trim()
+  // Always store what the user typed so Vue won't reset the field mid-edit.
+  editingHex.value[preset.id] = input.value
+  // Only push to the store when the value is a complete, valid hex.
+  if (HEX_RE.test(raw)) {
+    updateThemeColorPreset(preset.id, { color: raw })
+  }
+}
+
+function onHexBlur(preset: ThemeColorPreset): void {
+  // On blur, snap the field back to the stored (normalised) colour.
+  editingHex.value[preset.id] = preset.color
+}
 
 function updatePresetEnabled(id: ThemeColorPresetId, enabled: boolean): void {
   updateThemeColorPreset(id, { enabled })
 }
 
-function updatePresetColor(preset: ThemeColorPreset, color: string): void {
-  updateThemeColorPreset(preset.id, { color })
-}
-
 function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): void {
   const input = event.target
   if (!(input instanceof HTMLInputElement)) return
+  updateThemeColorPreset(preset.id, { color: input.value })
+}
 
-  updatePresetColor(preset, input.value)
+// ---------------------------------------------------------------------------
+// Color swatch popover
+// ---------------------------------------------------------------------------
+const openPickerId = ref<string | null>(null)
+
+function togglePicker(id: string): void {
+  openPickerId.value = openPickerId.value === id ? null : id
+}
+
+function closePicker(): void {
+  openPickerId.value = null
+}
+
+// ---------------------------------------------------------------------------
+// Reset to provided defaults — confirmation modal
+// ---------------------------------------------------------------------------
+const showResetModal = ref(false)
+
+function openResetModal(): void {
+  showResetModal.value = true
+}
+
+function closeResetModal(): void {
+  showResetModal.value = false
+}
+
+function confirmReset(): void {
+  resetToConfigDefaults()
+  // Clear local editing state so fields immediately show the restored values.
+  editingHex.value = {}
+  showResetModal.value = false
 }
 </script>
 
@@ -49,12 +123,16 @@ function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): voi
     </div>
 
     <div class="pbx-grid pbx-grid-cols-1 pbx-gap-3">
-      <div v-for="preset in themeColorPresetSettings.colors" :key="preset.id">
-        <label class="pbx-text-xs pbx-font-semibold pbx-text-gray-500">
+      <div
+        v-for="preset in themeColorPresetSettings.colors"
+        :key="preset.id"
+        class="pbx-myInputGroup"
+      >
+        <label :for="`color-input-${preset.id}`" class="pbx-myPrimaryInputLabel">
           {{ translate(preset.label) }}
         </label>
         <div
-          class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-10 pbx-border pbx-border-gray-200 pbx-py-4 pbx-px-2 pbx-rounded-lg"
+          class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-4 pbx-border pbx-border-gray-200 pbx-py-4 pbx-px-3 pbx-rounded-lg"
         >
           <ToggleInput
             :model-value="preset.enabled"
@@ -62,22 +140,151 @@ function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): voi
           />
 
           <input
-            :value="preset.color"
+            :id="`color-input-${preset.id}`"
+            :value="localHex(preset)"
             type="text"
             maxlength="7"
+            placeholder="#rrggbb"
             class="pbx-myPrimaryInput pbx-w-full"
-            @input="(event) => updatePresetColorFromEvent(preset, event)"
+            @input="(event) => onHexInput(preset, event)"
+            @blur="onHexBlur(preset)"
           />
-          <div id="ColorInput">
-            <input
-              :value="preset.color"
-              type="color"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-p-2 pbx-rounded-full pbx-bg-gray-50"
-              @input="(event) => updatePresetColorFromEvent(preset, event)"
-            />
+
+          <!-- Color swatch button + popover -->
+          <div class="pbx-relative pbx-flex-shrink-0">
+            <!-- Swatch button — the entire circle is clickable -->
+            <button
+              type="button"
+              :title="preset.color"
+              class="pbx-cursor-pointer pbx-border-0 pbx-p-0 pbx-bg-transparent pbx-block pbx-flex-shrink-0"
+              style="width: 2rem; height: 2rem"
+              @click.stop="togglePicker(preset.id)"
+            >
+              <span
+                :style="{ backgroundColor: preset.color }"
+                style="
+                  display: block;
+                  width: 60%;
+                  height: 60%;
+                  border-radius: 9999px;
+                  border: 1px solid rgba(0, 0, 0, 0.1);
+                  box-shadow:
+                    0 1px 4px rgba(0, 0, 0, 0.1),
+                    inset 0 0 0 1px rgba(96, 96, 96, 0.1);
+                  transition:
+                    box-shadow 0.15s,
+                    border-color 0.15s;
+                "
+              ></span>
+            </button>
+
+            <!-- Backdrop — click anywhere outside the popover to close it -->
+            <div
+              v-if="openPickerId === preset.id"
+              class="pbx-fixed pbx-inset-0 pbx-z-40"
+              @click="closePicker"
+            ></div>
+
+            <!-- Color picker popover -->
+            <div
+              v-if="openPickerId === preset.id"
+              class="pbx-absolute pbx-right-0 pbx-z-50 pbx-bg-white pbx-rounded-xl pbx-border pbx-border-gray-100 pbx-overflow-hidden"
+              style="
+                top: calc(100% + 8px);
+                width: 200px;
+                box-shadow:
+                  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -2px rgba(0, 0, 0, 0.07),
+                  0 0 0 1px rgba(0, 0, 0, 0.04);
+              "
+              @click.stop
+            >
+              <!-- Large colour preview strip -->
+              <div
+                :style="{ backgroundColor: preset.color }"
+                style="width: 100%; height: 72px"
+              ></div>
+
+              <div class="pbx-p-3 pbx-flex pbx-flex-col pbx-gap-2">
+                <!-- Current hex value label -->
+                <p
+                  class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-my-0 pbx-text-center pbx-tracking-wider pbx-uppercase"
+                >
+                  {{ preset.color }}
+                </p>
+
+                <!-- Open native colour wheel — plain label/input, no JS ref needed -->
+                <label
+                  :for="'color-wheel-' + preset.id"
+                  class="pbx-myPrimaryButton pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-w-full pbx-cursor-pointer"
+                >
+                  <span class="material-symbols-outlined pbx-text-base pbx-leading-none">
+                    colorize
+                  </span>
+                  {{ translate('Color wheel') }}
+                </label>
+              </div>
+
+              <!-- Hidden native colour input associated with the label above -->
+              <input
+                :id="'color-wheel-' + preset.id"
+                :value="preset.color"
+                type="color"
+                style="
+                  position: absolute;
+                  opacity: 0;
+                  width: 1px;
+                  height: 1px;
+                  pointer-events: none;
+                "
+                @input="(event) => updatePresetColorFromEvent(preset, event)"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Reset to provided defaults button -->
+    <div
+      class="pbx-border-t pbx-border-gray-100 pbx-pt-4 pbx-mt-2 pbx-flex pbx-items-center pbx-justify-between pbx-gap-3"
+    >
+      <div>
+        <p class="pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor pbx-my-0">
+          {{ translate('Reset to provided defaults') }}
+        </p>
+        <p class="pbx-text-xs pbx-text-gray-500 pbx-my-0">
+          {{ translate('Restore the original colors provided to the page builder') }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="pbx-mySecondaryButton pbx-flex pbx-items-center pbx-gap-1 pbx-shrink-0"
+        @click="openResetModal"
+      >
+        <span class="material-symbols-outlined pbx-text-base pbx-leading-none">restart_alt</span>
+        {{ translate('Reset') }}
+      </button>
+    </div>
   </div>
+
+  <!-- Confirmation modal -->
+  <DynamicModalBuilder
+    :showDynamicModalBuilder="showResetModal"
+    type="delete"
+    :gridColumnAmount="2"
+    :title="translate('Reset to provided defaults')"
+    :description="
+      translate(
+        'This will restore the original colors provided to the page builder. Any changes you have made to colors or enabled states will be lost.',
+      )
+    "
+    :firstButtonText="translate('Close')"
+    :thirdButtonText="translate('Reset')"
+    @firstModalButtonFunctionDynamicModalBuilder="closeResetModal"
+    @thirdModalButtonFunctionDynamicModalBuilder="confirmReset"
+  >
+    <header></header>
+    <main></main>
+  </DynamicModalBuilder>
 </template>

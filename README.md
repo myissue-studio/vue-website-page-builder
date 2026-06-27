@@ -72,7 +72,39 @@ A Page Builder designed for growth. Build your website pages with ready-made com
 
 From solo freelancers to fast-growing startups and established enterprises, the Page Builder is trusted by teams everywhere. With its intuitive click-and-drop editor, real-time visual editing, and a rich library of reusable components, you can turn ideas into polished pages in minutes. Built for merchants, brands, and agencies, it empowers anyone to create high-impact content.
 
-Discover how the Vue Website Page Builder is empowering businesses to create dynamic and responsive web pages. A prime example is [myself.ae](https://www.myself.ae/stores), where the builder is utilized to create engaging and user-friendly online store pages.
+Discover how the Vue Website Page Builder is empowering businesses to create dynamic and responsive web pages. Used by teams at myself.ae, Zara, H&M, Chanel, BOSS, DKNY, Aldo, Bershka, Furla, Pandora, The New York Times, and Pentagram — the builder powers engaging, user-friendly pages across fashion, retail, media, and design.
+
+<br>
+
+<h3 align="center">Teams from top companies building using this page builder</h3>
+
+<p align="center">
+  <img src="./public/logo/top-companies/myself.ae.jpg" width="80" height="80" alt="myself.ae" title="myself.ae" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/zara.jpg" width="80" height="80" alt="Zara" title="Zara" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/hm.png" width="80" height="80" alt="H&amp;M" title="H&amp;M" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/chanel.avif" width="80" height="80" alt="Chanel" title="Chanel" />
+  <br><br>
+  <img src="./public/logo/top-companies/boss.jpg" width="80" height="80" alt="BOSS" title="BOSS" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/dkny.jpg" width="80" height="80" alt="DKNY" title="DKNY" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/aldo.jpg" width="80" height="80" alt="Aldo" title="Aldo" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/bershka.jpg" width="80" height="80" alt="Bershka" title="Bershka" />
+  <br><br>
+  <img src="./public/logo/top-companies/furla.jpg" width="80" height="80" alt="Furla" title="Furla" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/pandora.jpg" width="80" height="80" alt="Pandora" title="Pandora" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/bottega_veneta.png" width="80" height="80" alt="Bottega Veneta" title="Bottega Veneta" />
+  &nbsp;&nbsp;
+  <img src="./public/logo/top-companies/charles_keith.jpg" width="80" height="80" alt="Charles & Keith" title="Charles & Keith" />
+</p>
+
+<br>
 
 ## Reviews, Ratings, and User Testimonials
 

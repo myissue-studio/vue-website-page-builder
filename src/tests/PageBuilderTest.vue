@@ -31,6 +31,7 @@ watch(currentTranslations, async () => {
 
   const configPageBuilder = {
     userForPageBuilder: {
+      id: 1, // Optional — scopes theme color presets to this user in localStorage
       name: 'Jane Doe',
       image: '/jane_doe.jpg',
     },
@@ -71,11 +72,11 @@ watch(currentTranslations, async () => {
         ],
       },
     },
-    pageSettings: {
-      classes:
-        'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200',
-      style: 'background:#CBDF90',
-    },
+    // pageSettings: {
+    //   classes:
+    //     'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200',
+    //   style: 'background:#CBDF90',
+    // },
   } as const
 
   await pageBuilderService.startBuilder(configPageBuilder, newComponents)

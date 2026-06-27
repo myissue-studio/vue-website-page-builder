@@ -80,6 +80,7 @@ export class PageBuilderService {
   private pendingMountComponents: BuilderResourceData | null = null
   private globalStylesObserver: MutationObserver | null = null
   private _pendingPageSettings: PageSettings | null = null
+  private _lastKnownPageSettings: { classes: string; style: string } | null = null
   private isPageBuilderMissingOnStart: boolean = false
 
   // Add a class-level WeakMap to track elements and their listeners
@@ -2430,12 +2431,74 @@ export class PageBuilderService {
 
   /**
    * Handles the form submission process, clearing local storage and the DOM.
+   * Global page settings (classes / inline styles on the content wrapper) are
+   * intentionally preserved so they survive a "remove all components" action.
    * @returns {Promise<void>}
    */
   public async handleFormSubmission() {
+    // Capture global page settings BEFORE clearing storage so they are not lost.
+    const savedPageSettings = this.readCurrentPageSettings()
+
+    // Keep an in-memory copy so the current session can restore them when the
+    // first new component is added after a delete-all (at that point the DOM has
+    // no [data-pagebuilder-content] elements left to read from).
+    if (savedPageSettings) {
+      this._lastKnownPageSettings = savedPageSettings
+    }
+
     await this.removeCurrentComponentsFromLocalStorage()
     this.deleteAllComponentsFromDOM()
     this.pageBuilderStateStore.setComponents([])
+
+    // Re-persist the page settings with an empty component list so that global
+    // styles (font, background, etc.) survive the next startBuilder call.
+    if (savedPageSettings) {
+      this.updateLocalStorageItemName()
+      const key = this.getLocalStorageItemName.value
+      if (key) {
+        const dataToSave = {
+          components: [],
+          pageBuilderContentSavedAt: new Date().toISOString(),
+          pageSettings: savedPageSettings,
+        }
+        localStorage.setItem(key, JSON.stringify(dataToSave))
+      }
+    }
+  }
+
+  /**
+   * Reads the current page settings.
+   * Prioritises the live DOM (always current) and falls back to localStorage
+   * if there are no [data-pagebuilder-content] elements.
+   */
+  private readCurrentPageSettings(): { classes: string; style: string } | null {
+    // The live DOM is always the most up-to-date source — read it first.
+    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
+    if (contentEl) {
+      return {
+        classes: contentEl.className || '',
+        style: contentEl.getAttribute('style') || contentEl.style.cssText || '',
+      }
+    }
+
+    // No DOM wrappers exist — fall back to the last persisted localStorage value.
+    this.updateLocalStorageItemName()
+    const key = this.getLocalStorageItemName.value
+    if (key) {
+      try {
+        const raw = localStorage.getItem(key)
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed?.pageSettings) {
+            return parsed.pageSettings
+          }
+        }
+      } catch {
+        // Ignore parse errors.
+      }
+    }
+
+    return null
   }
 
   /**
@@ -3051,11 +3114,15 @@ export class PageBuilderService {
       ) {
         // Capture global page styles from the first styled div BEFORE any DOM
         // manipulation — this is the only moment we can guarantee they are present.
+        // Fall back to _lastKnownPageSettings when all components were just deleted
+        // and no [data-pagebuilder-content] elements exist in the DOM yet.
         const existingStyled = document.querySelector(
           '[data-pagebuilder-content]',
         ) as HTMLElement | null
-        const globalClasses = existingStyled?.getAttribute('class') || ''
-        const globalStyle = existingStyled?.getAttribute('style') || ''
+        const globalClasses =
+          existingStyled?.getAttribute('class') || this._lastKnownPageSettings?.classes || ''
+        const globalStyle =
+          existingStyled?.getAttribute('style') || this._lastKnownPageSettings?.style || ''
 
         // Pause the MutationObserver so it doesn't fire on the divs being removed/recreated.
         this.globalStylesObserver?.disconnect()
@@ -3113,11 +3180,15 @@ export class PageBuilderService {
         }
       } else {
         // Capture styles before push so we can apply to the new div after render.
+        // Fall back to _lastKnownPageSettings when all components were just deleted
+        // and no [data-pagebuilder-content] elements exist in the DOM yet.
         const existingStyled = document.querySelector(
           '[data-pagebuilder-content]',
         ) as HTMLElement | null
-        const globalClasses = existingStyled?.getAttribute('class') || ''
-        const globalStyle = existingStyled?.getAttribute('style') || ''
+        const globalClasses =
+          existingStyled?.getAttribute('class') || this._lastKnownPageSettings?.classes || ''
+        const globalStyle =
+          existingStyled?.getAttribute('style') || this._lastKnownPageSettings?.style || ''
 
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
@@ -3582,13 +3653,24 @@ export class PageBuilderService {
       if (this._pendingPageSettings) {
         const settings = this._pendingPageSettings
         this._pendingPageSettings = null
-        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-          el.removeAttribute('class')
-          el.removeAttribute('style')
-          if (settings.classes) el.setAttribute('class', settings.classes)
-          const styleStr = this.convertStyleObjectToString(settings.style)
-          if (styleStr) el.setAttribute('style', styleStr)
-        })
+        const contentEls = document.querySelectorAll('[data-pagebuilder-content]')
+        if (contentEls.length > 0) {
+          contentEls.forEach((el) => {
+            el.removeAttribute('class')
+            el.removeAttribute('style')
+            if (settings.classes) el.setAttribute('class', settings.classes)
+            const styleStr = this.convertStyleObjectToString(settings.style)
+            if (styleStr) el.setAttribute('style', styleStr)
+          })
+        } else {
+          // No wrapper elements exist (empty page, e.g. after delete-all + page reload).
+          // Preserve the settings in _lastKnownPageSettings so that addComponent can
+          // apply them to the first new wrapper once the user adds a component.
+          this._lastKnownPageSettings = {
+            classes: settings.classes || '',
+            style: this.convertStyleObjectToString(settings.style) || '',
+          }
+        }
       }
 
       await this.addListenersToEditableElements()
