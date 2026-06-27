@@ -170,7 +170,7 @@ const convertToComponentObject = function (comp: {
     </template>
     <div v-if="!isLoading">
       <!-- Search input -->
-      <div class="pbx-mb-4 pbx-px-4">
+      <div class="pbx-mb-4">
         <label class="pbx-myPrimaryInputLabel" for="search-components">{{
           translate('Search components...')
         }}</label>
@@ -286,33 +286,33 @@ const convertToComponentObject = function (comp: {
                 {{ translate(category) }}
               </button>
             </div>
-            <div
-              v-if="filteredHelpers.length"
-              class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
-            >
+            <div class="pbx-min-h-[30rem] pbx-max-h-[30rem] pbx-overflow-y-auto">
               <div
-                v-for="helper in filteredHelpers"
-                :key="helper.title"
-                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl"
-                @click="handleDropComponent(helper)"
+                v-if="filteredHelpers.length"
+                class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
               >
                 <div
-                  class="pbx-max-h-72 pbx-cursor-pointer pbx-object-contain pbx-bg-white pbx-mx-auto"
+                  v-for="helper in filteredHelpers"
+                  :key="helper.title"
+                  class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl pbx-bg-gray-300"
+                  @click="handleDropComponent(helper)"
                 >
-                  <div v-if="false" class="pbx-mr-2" v-html="helper.icon"></div>
-                  <h4 class="pbx-myPrimaryParagraph pbx-text-base pbx-font-medium">
-                    {{ translate(helper.title) }}
-                  </h4>
-                </div>
-                <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
-                  {{ translate('Click to add') }} {{ helper.title.toLowerCase() }}
-                  {{ translate('component') }}
+                  <div class="pbx-max-h-72 pbx-cursor-pointer pbx-object-contain pbx-mx-auto">
+                    <div v-if="false" class="pbx-mr-2" v-html="helper.icon"></div>
+                    <h4 class="pbx-myPrimaryParagraph pbx-text-base pbx-font-medium">
+                      {{ translate(helper.title) }}
+                    </h4>
+                  </div>
+                  <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
+                    {{ translate('Click to add') }} {{ helper.title.toLowerCase() }}
+                    {{ translate('component') }}
+                  </div>
                 </div>
               </div>
+              <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
+                {{ translate('No components found.') }}
+              </p>
             </div>
-            <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
-              {{ translate('No components found.') }}
-            </p>
           </div>
 
           <!-- Regular Components Section -->
