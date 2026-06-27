@@ -260,7 +260,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-mysearchBarWithOptions {
-    @apply pbx-flex pbx-gap-2 pbx-pl-4 pbx-rounded-full pbx-border pbx-border-gray-200 pbx-bg-myPrimaryLightGrayColor;
+    @apply pbx-flex pbx-gap-2 pbx-pl-4 pbx-rounded-full pbx-border pbx-border-gray-200;
   }
 
   .pbx-myPrimarySearchInput {
@@ -473,6 +473,9 @@
   cursor: pointer;
   line-height: 1.5;
   font-weight: normal;
+  background-color: #fff;
+}
+.pbx-myPrimarySearchInput {
   background-color: #fff;
 }
 

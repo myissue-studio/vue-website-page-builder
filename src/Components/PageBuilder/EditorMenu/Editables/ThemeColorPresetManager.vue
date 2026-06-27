@@ -70,6 +70,19 @@ function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): voi
 }
 
 // ---------------------------------------------------------------------------
+// Color swatch popover
+// ---------------------------------------------------------------------------
+const openPickerId = ref<string | null>(null)
+
+function togglePicker(id: string): void {
+  openPickerId.value = openPickerId.value === id ? null : id
+}
+
+function closePicker(): void {
+  openPickerId.value = null
+}
+
+// ---------------------------------------------------------------------------
 // Reset to provided defaults — confirmation modal
 // ---------------------------------------------------------------------------
 const showResetModal = ref(false)
@@ -137,41 +150,92 @@ function confirmReset(): void {
             @blur="onHexBlur(preset)"
           />
 
-          <!-- Custom color swatch — the native picker is invisible but fully covers the swatch -->
-          <div class="pbx-flex pbx-items-center pbx-gap-2">
-            <label class="pbx-myPrimaryInputLabel pbx-m-0 pbx-p-0" :for="'color-' + preset.id">
-              Color
-            </label>
-            <div
-              class="pbx-flex pbx-items-center pbx-justify-center"
-              style="position: relative; flex-shrink: 0; width: 2.5rem; height: 2.5rem"
+          <!-- Color swatch button + popover -->
+          <div class="pbx-relative pbx-flex-shrink-0">
+            <!-- Swatch button — the entire circle is clickable -->
+            <button
+              type="button"
+              :title="preset.color"
+              class="pbx-cursor-pointer pbx-border-0 pbx-p-0 pbx-bg-transparent pbx-block pbx-flex-shrink-0"
+              style="width: 2rem; height: 2rem"
+              @click.stop="togglePicker(preset.id)"
             >
-              <div
+              <span
                 :style="{ backgroundColor: preset.color }"
                 style="
-                  width: 50%;
-                  height: 50%;
+                  display: block;
+                  width: 60%;
+                  height: 60%;
                   border-radius: 9999px;
-                  border: 2px solid #d1d5db;
+                  border: 1px solid rgba(0, 0, 0, 0.1);
                   box-shadow:
-                    0 1px 3px rgba(0, 0, 0, 0.12),
-                    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-                  transition: border-color 0.15s;
+                    0 1px 4px rgba(0, 0, 0, 0.1),
+                    inset 0 0 0 1px rgba(96, 96, 96, 0.1);
+                  transition:
+                    box-shadow 0.15s,
+                    border-color 0.15s;
                 "
+              ></span>
+            </button>
+
+            <!-- Backdrop — click anywhere outside the popover to close it -->
+            <div
+              v-if="openPickerId === preset.id"
+              class="pbx-fixed pbx-inset-0 pbx-z-40"
+              @click="closePicker"
+            ></div>
+
+            <!-- Color picker popover -->
+            <div
+              v-if="openPickerId === preset.id"
+              class="pbx-absolute pbx-right-0 pbx-z-50 pbx-bg-white pbx-rounded-xl pbx-border pbx-border-gray-100 pbx-overflow-hidden"
+              style="
+                top: calc(100% + 8px);
+                width: 200px;
+                box-shadow:
+                  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -2px rgba(0, 0, 0, 0.07),
+                  0 0 0 1px rgba(0, 0, 0, 0.04);
+              "
+              @click.stop
+            >
+              <!-- Large colour preview strip -->
+              <div
+                :style="{ backgroundColor: preset.color }"
+                style="width: 100%; height: 72px"
               ></div>
+
+              <div class="pbx-p-3 pbx-flex pbx-flex-col pbx-gap-2">
+                <!-- Current hex value label -->
+                <p
+                  class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-my-0 pbx-text-center pbx-tracking-wider pbx-uppercase"
+                >
+                  {{ preset.color }}
+                </p>
+
+                <!-- Open native colour wheel — plain label/input, no JS ref needed -->
+                <label
+                  :for="'color-wheel-' + preset.id"
+                  class="pbx-myPrimaryButton pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-w-full pbx-cursor-pointer"
+                >
+                  <span class="material-symbols-outlined pbx-text-base pbx-leading-none">
+                    colorize
+                  </span>
+                  {{ translate('Color wheel') }}
+                </label>
+              </div>
+
+              <!-- Hidden native colour input associated with the label above -->
               <input
-                :id="'color-' + preset.id"
+                :id="'color-wheel-' + preset.id"
                 :value="preset.color"
                 type="color"
                 style="
                   position: absolute;
-                  inset: 0;
                   opacity: 0;
-                  width: 50%;
-                  height: 50%;
-                  cursor: pointer;
-                  padding: 0;
-                  border: 0;
+                  width: 1px;
+                  height: 1px;
+                  pointer-events: none;
                 "
                 @input="(event) => updatePresetColorFromEvent(preset, event)"
               />

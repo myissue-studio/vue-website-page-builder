@@ -222,7 +222,7 @@ const convertToComponentObject = function (comp: {
               <div
                 v-for="theme in filteredThemes"
                 :key="theme.title"
-                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-[30rem]"
+                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
                 @click="handleDropTheme(theme.html_code)"
               >
                 <div
@@ -317,7 +317,7 @@ const convertToComponentObject = function (comp: {
               <div
                 v-for="comp in filteredComponents"
                 :key="comp.title"
-                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96"
+                class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
                 @click="handleDropComponent(convertToComponentObject(comp))"
               >
                 <div

@@ -9,52 +9,41 @@ const props = withDefaults(
     containerHeight?: number
     renderWidth?: number
     /** 'cover': fill container width, clip vertically.
-     *  'contain' (default): scale to always show the full component within the fixed container. */
+     *  'contain' (default): grow container to show the full component at a
+     *  consistent zoom level (widthScale). Content is never clipped. */
     fit?: 'cover' | 'contain'
-    /**
-     * Minimum scale applied in 'contain' mode.
-     * When a component is very tall the height-driven scale can become
-     * unreadably small. This floor keeps thumbnails at a legible zoom level;
-     * any content that still overflows is clipped by the container.
-     * Defaults to 0.20 (20 %).
-     */
-    minScale?: number
   }>(),
   {
     containerHeight: 256,
     renderWidth: 1024,
     fit: 'contain',
-    minScale: 0.2,
   },
 )
 
 const CONTAINER_W = 256
 
-// The width-only scale that maps renderWidth → CONTAINER_W.
-const widthScale = computed(() => CONTAINER_W / props.renderWidth)
+// Scale is always width-driven: the iframe renders at renderWidth and is
+// shrunk to CONTAINER_W. This gives a consistent, readable zoom level
+// regardless of content height.
+const scale = computed(() => CONTAINER_W / props.renderWidth)
 
-// For 'contain' fit: choose the smallest scale so the full component fits in
-// the container, but never go below minScale so the content stays legible.
-// When the component is taller than containerHeight / minScale, the top
-// portion is shown at minScale (like a cover crop at a readable zoom).
-const measuredContentHeight = ref<number | null>(null)
+// For 'contain' fit: measure the rendered content height, then grow the
+// container to fit everything at the fixed scale (no clipping).
+const adaptiveHeight = ref<number | null>(null)
 
-const scale = computed(() => {
-  if (props.fit === 'contain' && measuredContentHeight.value !== null) {
-    const heightScale = props.containerHeight / measuredContentHeight.value
-    return Math.max(Math.min(widthScale.value, heightScale), props.minScale)
-  }
-  return widthScale.value
-})
+const displayHeight = computed(() =>
+  props.fit === 'contain' && adaptiveHeight.value !== null
+    ? adaptiveHeight.value
+    : props.containerHeight,
+)
 
-// During the measurement phase use a tall initial iframe so the content
-// renders fully. After measuring, use the actual content height.
-const iframeHeight = computed(() => {
-  if (props.fit === 'contain') {
-    return measuredContentHeight.value ?? 8192
-  }
-  return Math.ceil(props.containerHeight / widthScale.value)
-})
+// During the measurement phase (adaptiveHeight not yet known) use a tall
+// initial iframe so the content renders fully before we read scrollHeight.
+const iframeHeight = computed(() =>
+  props.fit === 'contain' && adaptiveHeight.value === null
+    ? 8192
+    : Math.ceil(displayHeight.value / scale.value),
+)
 
 const isVisible = ref(false)
 const isLoaded = ref(false)
@@ -99,7 +88,7 @@ function onIframeLoad(event: Event) {
     const measure = () => {
       const contentHeight = iframe.contentDocument?.documentElement?.scrollHeight
       if (contentHeight && contentHeight > 0) {
-        measuredContentHeight.value = contentHeight
+        adaptiveHeight.value = Math.ceil(contentHeight * scale.value)
       }
       isLoaded.value = true
     }
