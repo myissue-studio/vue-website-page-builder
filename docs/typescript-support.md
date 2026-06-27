@@ -50,6 +50,38 @@ import { usePageBuilderModal } from '@myissue/vue-website-page-builder'
 const { closeAddComponentModal, closeMediaLibraryModal } = usePageBuilderModal()
 ```
 
+#### `resetThemeColorPresets()` Function
+
+Clears the current user's saved theme color presets from `localStorage` and restores in-memory state to built-in defaults. Call this when a user signs out so the next user starts with a clean state.
+
+```typescript
+import { resetThemeColorPresets } from '@myissue/vue-website-page-builder'
+
+// On user sign-out
+resetThemeColorPresets()
+```
+
+#### `buildStorageKey(config?)` Function
+
+Returns the `localStorage` key used to persist theme color presets for a given config. Useful for debugging, migrating, or pre-populating stored preset data.
+
+```typescript
+import { buildStorageKey } from '@myissue/vue-website-page-builder'
+import type { PageBuilderConfig } from '@myissue/vue-website-page-builder'
+
+const config: PageBuilderConfig = {
+  updateOrCreate: { formType: 'create', formName: 'article' },
+  userForPageBuilder: { id: 42, name: 'Alice' },
+}
+
+const key = buildStorageKey(config)
+// → 'vueWebsitePageBuilderThemeColorPresets-u42'
+
+// Without a user id:
+const sharedKey = buildStorageKey()
+// → 'vueWebsitePageBuilderThemeColorPresets'
+```
+
 ### Type Interfaces
 
 #### `PageBuilderConfig`
@@ -59,9 +91,11 @@ Configuration object for initializing the page builder.
 **Flexible Types:** All configuration properties accept flexible types for maximum compatibility:
 
 - `formName` accepts any string (not limited to predefined types)
+- `userForPageBuilder.id` accepts any `string` or `number` — use your auth system's user identifier
 - `userForPageBuilder.image` is optional
 - `language.default` accepts any language code string
 - `language.enable` accepts any string array (including readonly arrays from `as const`)
+- `settings.themeColorPresets` accepts `ThemeColorPresetSettingsInput` for database-sourced colors
 - Additional custom properties can be added via index signatures
 - All properties are optional except `updateOrCreate`
 
@@ -81,8 +115,9 @@ const config: PageBuilderConfig = {
     id: 1,
   },
   userForPageBuilder: {
+    id: currentUser.id,        // Optional — scopes theme preset storage per user
     name: 'John Doe',
-    image: '/john_doe.jpg', // Optional
+    image: '/john_doe.jpg',    // Optional
   },
   pageBuilderLogo: {
     src: '/logo/logo.svg',
@@ -101,6 +136,14 @@ const config: PageBuilderConfig = {
   },
   settings: {
     brandColor: '#DB93B0',
+    themeColorPresets: {
+      enabled: true,
+      colors: [
+        { id: 'primary', label: 'Primary', color: '#482C3D', enabled: true },
+        { id: 'secondary', label: 'Secondary', color: '#E5D352', enabled: true },
+        { id: 'custom1', label: 'Custom 1', color: '#AC3931', enabled: true },
+      ],
+    },
   },
 }
 
@@ -115,7 +158,7 @@ const dynamicConfig: PageBuilderConfig = {
     customField: 'any value', // Custom properties allowed
   },
   userForPageBuilder: {
-    name: userName, // Image is optional
+    name: userName, // id and image are both optional
   },
   userSettings: {
     language: {
@@ -154,21 +197,21 @@ const image: ImageObject = {
 
 #### `PageBuilderUser`
 
-User information for display in the builder.
+User information for display in the builder. The optional `id` field scopes each user's theme color preset storage to their own `localStorage` key so personalized colors are never shared between users on the same device.
 
 ```typescript
 import type { PageBuilderUser } from '@myissue/vue-website-page-builder'
 
-// With image
+// Full example — id scopes preset storage per user
 const user: PageBuilderUser = {
+  id: currentUser.id,       // string or number — any stable identifier from your auth system
   name: 'John Doe',
-  image: '/john_doe.jpg', // Optional
+  image: '/john_doe.jpg',   // Optional
 }
 
-// Without image
+// Minimal — no image, no scoped storage (all users share one preset key)
 const minimalUser: PageBuilderUser = {
-  name: 'Jane Doe', // Image is optional
-}
+  name: 'Jane Doe',
 }
 ```
 
@@ -211,6 +254,63 @@ import type { FormName } from '@myissue/vue-website-page-builder'
 // User/Team: 'profile', 'account', 'user', 'member', etc.
 
 const formName: FormName = 'article'
+```
+
+#### `ThemeColorPreset` / `ThemeColorPresetId`
+
+A single normalized preset and its valid ID values.
+
+```typescript
+import type { ThemeColorPreset, ThemeColorPresetId } from '@myissue/vue-website-page-builder'
+
+// ThemeColorPresetId is the union of all supported slot names:
+// 'primary' | 'secondary' | 'custom1' | 'custom2' | 'custom3' | 'custom4' | 'custom5' | 'custom6'
+
+const preset: ThemeColorPreset = {
+  id: 'primary',
+  label: 'Primary',
+  color: '#482C3D', // always a normalized '#rrggbb' string internally
+  enabled: true,
+}
+```
+
+#### `ThemeColorPresetInput` / `ThemeColorPresetSettingsInput`
+
+Flexible input types for consumer configurations. Use these when your color data comes from a database, API, or variable inference — where `id` is typed as a plain `string` rather than the strict `ThemeColorPresetId` union. All fields are optional.
+
+Without these input types, TypeScript would raise an error like:
+> *Type `'string'` is not assignable to type `'ThemeColorPresetId'`.*
+
+```typescript
+import type {
+  ThemeColorPresetInput,
+  ThemeColorPresetSettingsInput,
+} from '@myissue/vue-website-page-builder'
+
+// Individual color from a database row
+const color: ThemeColorPresetInput = {
+  id: dbRow.slug,       // plain string — no type error
+  label: dbRow.name,
+  color: dbRow.hexCode,
+  enabled: dbRow.active,
+}
+
+// Full presets object from an API response
+const presets: ThemeColorPresetSettingsInput = {
+  enabled: true,
+  colors: apiColors.map((c) => ({
+    id: c.slug,
+    label: c.name,
+    color: c.hex,
+    enabled: c.visible,
+  })),
+}
+
+// Pass directly into configPageBuilder — no type assertion needed
+const configPageBuilder = {
+  updateOrCreate: { formType: 'create' as const, formName: 'article' },
+  settings: { themeColorPresets: presets },
+}
 ```
 
 #### `StartBuilderResult`
@@ -272,6 +372,7 @@ import {
   PageBuilder,
   getPageBuilder,
   usePageBuilderModal,
+  resetThemeColorPresets,
   type PageBuilderConfig,
   type ComponentObject,
   type ImageObject,
@@ -294,6 +395,7 @@ const config: PageBuilderConfig = {
     id: 123,
   },
   userForPageBuilder: {
+    id: currentUser.id,   // Scopes theme preset storage to this user
     name: 'Jane Doe',
     image: '/jane_doe.jpg',
   },
@@ -310,6 +412,13 @@ const config: PageBuilderConfig = {
   },
   settings: {
     brandColor: '#DB93B0',
+    themeColorPresets: {
+      enabled: true,
+      colors: [
+        { id: 'primary', label: 'Primary', color: '#482C3D', enabled: true },
+        { id: 'secondary', label: 'Secondary', color: '#E5D352', enabled: true },
+      ],
+    },
   },
 }
 
@@ -322,6 +431,12 @@ onMounted(async () => {
     console.error('Failed to initialize builder:', error)
   }
 })
+
+// Call on sign-out to clear the user's personalized preset storage
+const handleSignOut = () => {
+  resetThemeColorPresets()
+  // ... rest of sign-out logic
+}
 
 // Function to get current components
 const getCurrentComponents = async (): Promise<ComponentObject[]> => {

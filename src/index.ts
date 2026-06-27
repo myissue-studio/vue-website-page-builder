@@ -8,6 +8,13 @@ export { usePageBuilderStateStore } from './stores/page-builder-state'
 // Export composables
 export { usePageBuilderModal } from './composables/usePageBuilderModal'
 
+// Theme color preset utilities
+// resetThemeColorPresets — clears the stored presets for the current user and
+//   resets in-memory state to built-in defaults (useful on sign-out).
+// buildStorageKey        — returns the localStorage key for a given config,
+//   helpful when host apps want to pre-populate or migrate storage entries.
+export { resetThemeColorPresets, buildStorageKey } from './composables/useThemeColorPresets'
+
 // Export types
 export type {
   PageBuilderUser,

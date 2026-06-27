@@ -31,6 +31,7 @@ watch(currentTranslations, async () => {
 
   const configPageBuilder = {
     userForPageBuilder: {
+      id: 1, // Optional — scopes theme color presets to this user in localStorage
       name: 'Jane Doe',
       image: '/jane_doe.jpg',
     },

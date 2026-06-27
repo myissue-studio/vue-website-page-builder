@@ -422,4 +422,146 @@ describe('PageBuilderConfig Type Flexibility', () => {
     const config: PageBuilderConfig = baseConfig
     expect(config.settings?.themeColorPresets?.colors).toHaveLength(8)
   })
+
+  // -------------------------------------------------------------------------
+  // Type flexibility additions — covering the four common real-world gaps that
+  // previously caused TypeScript errors in consumer projects.
+  // -------------------------------------------------------------------------
+
+  it('accepts a dynamic formType without as const (ternary / variable)', () => {
+    // The most common consumer pattern: compute formType from a boolean.
+    // Previously failed: "string is not assignable to 'create' | 'update'".
+    const hasContent = true
+    const config: PageBuilderConfig = {
+      updateOrCreate: {
+        formType: hasContent ? 'update' : 'create', // TypeScript widens to string without as const
+        formName: 'article',
+      },
+    }
+    expect(config.updateOrCreate.formType).toBe('update')
+  })
+
+  it('accepts formType from a plain string variable', () => {
+    const formType = 'create' // TypeScript infers string, not 'create'
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType, formName: 'article' },
+    }
+    expect(config.updateOrCreate.formType).toBe('create')
+  })
+
+  it('accepts userForPageBuilder.id as null (nullable DB column)', () => {
+    // ORMs / databases frequently return null for optional foreign keys.
+    const userId: number | null = null
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userForPageBuilder: { id: userId, name: 'Alice' },
+    }
+    expect(config.userForPageBuilder?.id).toBeNull()
+  })
+
+  it('accepts userForPageBuilder.id as string | null', () => {
+    const userId: string | null = 'usr-abc-123'
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userForPageBuilder: { id: userId, name: 'Bob' },
+    }
+    expect(config.userForPageBuilder?.id).toBe('usr-abc-123')
+  })
+
+  it('accepts resourceData.id as a string (UUID)', () => {
+    // Many modern ORMs use UUID strings as primary keys.
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      resourceData: { title: 'My Page', id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479' },
+    }
+    expect(typeof config.resourceData?.id).toBe('string')
+  })
+
+  it('accepts resourceData.id as a number (integer PK)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      resourceData: { title: 'My Page', id: 42 },
+    }
+    expect(config.resourceData?.id).toBe(42)
+  })
+
+  it('accepts pageBuilderLogo with extra properties (e.g. alt text)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      pageBuilderLogo: { src: '/logo.svg', alt: 'Company Logo', width: 120 },
+    }
+    expect(config.pageBuilderLogo).toHaveProperty('alt')
+  })
+
+  it('accepts pageSettings with only style (classes is now optional)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      pageSettings: { style: 'background:#fff' },
+    }
+    expect(config.pageSettings?.classes).toBeUndefined()
+  })
+
+  it('accepts userForPageBuilder without a name (name is now optional)', () => {
+    // Auth systems often use 'username' or 'displayName' — the consumer just picks the right field.
+    // If unavailable at call time, the whole property can be omitted or passed without name.
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      userForPageBuilder: { id: 99 },  // name intentionally omitted
+    }
+    expect(config.userForPageBuilder?.name).toBeUndefined()
+  })
+
+  it('accepts resourceData without a title (title is now optional)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      resourceData: { id: 42 },  // no title
+    }
+    expect(config.resourceData?.title).toBeUndefined()
+  })
+
+  it('accepts updateOrCreate with extra properties (no excess property error)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article', customMeta: 'value' },
+    }
+    expect(config.updateOrCreate).toHaveProperty('customMeta')
+  })
+
+  it('accepts pageSettings with extra properties (no excess property error)', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      pageSettings: { classes: 'my-class', style: 'color:red', extraMeta: true },
+    }
+    expect(config.pageSettings).toHaveProperty('extraMeta')
+  })
+
+  it('accepts themeColorPresets colors with extra DB fields per color', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      settings: {
+        themeColorPresets: {
+          enabled: true,
+          colors: [
+            { id: 'primary', label: 'Primary', color: '#482C3D', enabled: true, dbId: 1, sortOrder: 0 },
+          ],
+        },
+      },
+    }
+    const colors = config.settings?.themeColorPresets?.colors
+    expect(Array.isArray(colors)).toBe(true)
+  })
+
+  it('accepts themeColorPresets settings with extra metadata fields', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      settings: {
+        themeColorPresets: {
+          enabled: true,
+          colors: [],
+          updatedAt: '2026-01-01',  // extra field
+          source: 'database',        // extra field
+        },
+      },
+    }
+    expect(config.settings?.themeColorPresets).toHaveProperty('updatedAt')
+  })
 })

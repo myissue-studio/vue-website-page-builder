@@ -211,6 +211,20 @@ const getPageBuilderConfig = computed(() => {
                       <td
                         class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
                       >
+                        <div class="pbx-min-w-[30rem] pbx-w-max">ID</div>
+                      </td>
+                      <td
+                        class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
+                      >
+                        <div class="pbx-min-w-[30rem] pbx-w-max">
+                          {{ getPageBuilderConfig.userForPageBuilder.id }}
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
+                      >
                         <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Image') }}</div>
                       </td>
                       <td
