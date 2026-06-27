@@ -20,7 +20,9 @@ export type {
   PageSettings,
   ThemeColorPreset,
   ThemeColorPresetId,
+  ThemeColorPresetInput,
   ThemeColorPresetSettings,
+  ThemeColorPresetSettingsInput,
   FormName,
 } from './types'
 

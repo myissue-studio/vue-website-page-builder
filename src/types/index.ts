@@ -255,6 +255,20 @@ export interface ThemeColorPreset {
   enabled: boolean
 }
 
+/** Flexible input for consumer configs — id accepts any string (e.g. inferred from variables). */
+export interface ThemeColorPresetInput {
+  id: ThemeColorPresetId | (string & {})
+  label?: string
+  color?: string
+  enabled?: boolean
+}
+
+/** Input shape for themeColorPresets in PageBuilderConfig (partial colors are normalized at runtime). */
+export interface ThemeColorPresetSettingsInput {
+  enabled?: boolean
+  colors?: ReadonlyArray<ThemeColorPresetInput>
+}
+
 export interface ThemeColorPresetSettings {
   enabled: boolean
   colors: readonly ThemeColorPreset[]
@@ -282,7 +296,7 @@ export interface PageBuilderConfig {
   } | null // Allow null for maximum flexibility
   settings?: {
     brandColor?: string
-    themeColorPresets?: ThemeColorPresetSettings | null
+    themeColorPresets?: ThemeColorPresetSettingsInput | ThemeColorPresetSettings | null
     [key: string]: unknown
   } | null
   pageSettings?: PageSettings

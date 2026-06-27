@@ -382,4 +382,44 @@ describe('PageBuilderConfig Type Flexibility', () => {
     expect(config.userSettings?.language?.default).toBe('da')
     expect(config.updateOrCreate.formName).toBe('cms-page-home')
   })
+
+  it('accepts themeColorPresets from a pre-built config object (GeoStarter pattern)', () => {
+    interface UserSettings {
+      language?: { default?: string; enable?: readonly string[] }
+      autoSave?: boolean
+    }
+
+    const options = { pageSlug: 'home', pageTitle: 'Home' }
+    const userName = 'Admin'
+    const userSettings: UserSettings = { language: { default: 'da' }, autoSave: true }
+
+    const baseConfig = {
+      updateOrCreate: {
+        formType: 'create' as 'update' | 'create',
+        formName: `cms-page-${options.pageSlug}`,
+      },
+      resourceData: { title: options.pageTitle },
+      userForPageBuilder: { name: userName },
+      userSettings,
+      settings: {
+        brandColor: '#DB93B0',
+        themeColorPresets: {
+          enabled: true,
+          colors: [
+            { id: 'primary', label: 'Primary', color: 'FF4400', enabled: true },
+            { id: 'secondary', label: 'Secondary', color: 'E5D352', enabled: true },
+            { id: 'custom1', label: 'Custom 1', color: 'AC3931', enabled: true },
+            { id: 'custom2', label: 'Custom 2', color: '623CEA', enabled: true },
+            { id: 'custom3', label: 'Custom 3', color: '54426B', enabled: true },
+            { id: 'custom4', label: 'Custom 4', color: '#ffffff', enabled: true },
+            { id: 'custom5', label: 'Custom 5', color: '#ffffff', enabled: false },
+            { id: 'custom6', label: 'Custom 6', color: '#ffffff', enabled: false },
+          ],
+        },
+      },
+    }
+
+    const config: PageBuilderConfig = baseConfig
+    expect(config.settings?.themeColorPresets?.colors).toHaveLength(8)
+  })
 })
