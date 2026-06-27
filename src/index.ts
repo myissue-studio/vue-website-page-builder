@@ -18,6 +18,9 @@ export type {
   BuilderResourceData,
   StartBuilderResult,
   PageSettings,
+  ThemeColorPreset,
+  ThemeColorPresetId,
+  ThemeColorPresetSettings,
   FormName,
 } from './types'
 

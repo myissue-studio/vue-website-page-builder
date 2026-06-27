@@ -731,6 +731,14 @@ export class PageBuilderService {
     return currentCSS
   }
 
+  private removeElementClassesFromArray(element: HTMLElement, classes: string[]): void {
+    classes.forEach((className) => {
+      if (className !== 'none' && element.classList.contains(className)) {
+        element.classList.remove(className)
+      }
+    })
+  }
+
   /**
    * Removes all CSS classes from the main page builder container.
    * @returns {Promise<void>}
@@ -1557,6 +1565,16 @@ export class PageBuilderService {
    * @param {string} [color] - The selected background color class.
    */
   public handleBackgroundColor(color?: string): void {
+    if (color === undefined) {
+      const customColor = this.getElement.value?.style.getPropertyValue('background-color')
+      if (customColor) {
+        this.pageBuilderStateStore.setBackgroundColor(`custom:${customColor}`)
+        return
+      }
+    } else {
+      this.getElement.value?.style.removeProperty('background-color')
+    }
+
     this.applyElementClassChanges(
       color,
       tailwindColors.backgroundColorVariables,
@@ -1564,12 +1582,42 @@ export class PageBuilderService {
     )
   }
 
+  public handleCustomBackgroundColor(color: string): void {
+    const element = this.getElement.value
+    if (!element || !color) return
+
+    this.removeElementClassesFromArray(element, tailwindColors.backgroundColorVariables)
+    element.style.setProperty('background-color', color)
+    this.pageBuilderStateStore.setBackgroundColor(`custom:${color}`)
+    this.pageBuilderStateStore.setElement(element)
+  }
+
   /**
    * Handles changes to the text color of the selected element.
    * @param {string} [color] - The selected text color class.
    */
   public handleTextColor(color?: string): void {
+    if (color === undefined) {
+      const customColor = this.getElement.value?.style.getPropertyValue('color')
+      if (customColor) {
+        this.pageBuilderStateStore.setTextColor(`custom:${customColor}`)
+        return
+      }
+    } else {
+      this.getElement.value?.style.removeProperty('color')
+    }
+
     this.applyElementClassChanges(color, tailwindColors.textColorVariables, 'setTextColor')
+  }
+
+  public handleCustomTextColor(color: string): void {
+    const element = this.getElement.value
+    if (!element || !color) return
+
+    this.removeElementClassesFromArray(element, tailwindColors.textColorVariables)
+    element.style.setProperty('color', color)
+    this.pageBuilderStateStore.setTextColor(`custom:${color}`)
+    this.pageBuilderStateStore.setElement(element)
   }
 
   /**

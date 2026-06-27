@@ -9,6 +9,8 @@ import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
+import ModalBuilder from '../../../Modals/ModalBuilder.vue'
+import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
@@ -545,9 +547,20 @@ const handleDelete = function () {
   }
   // end modal
 }
+
+const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
   <div>
+    <ModalBuilder
+      maxWidth="3xl"
+      :showModalBuilder="showThemeColorPresetsModal"
+      :title="translate('Theme Color Presets')"
+      @closeMainModalBuilder="showThemeColorPresetsModal = false"
+    >
+      <ThemeColorPresetManager></ThemeColorPresetManager>
+    </ModalBuilder>
+
     <DynamicModalBuilder
       :showDynamicModalBuilder="showModalIframeSrc"
       maxWidth="2xl"
@@ -737,6 +750,14 @@ const handleDelete = function () {
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
+        <button
+          type="button"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-bg-gray-100 pbx-rounded-xl pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          :title="translate('Theme Color Presets')"
+          @click.stop="showThemeColorPresetsModal = true"
+        >
+          <span class="material-symbols-outlined"> palette </span>
+        </button>
         <template v-if="getElement && false">
           <div
             @click="pageBuilderService.deleteElementFromDOM"
