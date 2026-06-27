@@ -286,5 +286,20 @@
   "Slider Settings": "スライダー設定",
   "Auto Rotate": "自動回転",
   "Number of images": "画像数",
-  "Rotation Speed (s)": "回転速度 (秒)"
+  "Rotation Speed (s)": "回転速度 (秒)",
+  "Previous": "前へ",
+  "SEO Check Results": "SEOチェック結果",
+  "At least 300 words of content": "コンテンツが300語以上",
+  "Has at least one H2": "H2が少なくとも1つある",
+  "Has at least one H3": "H3が少なくとも1つある",
+  "Has at least one H4": "H4が少なくとも1つある",
+  "Has at least one H5": "H5が少なくとも1つある",
+  "Has at least one H6": "H6が少なくとも1つある",
+  "Heading levels are not skipped": "見出しレベルがスキップされていない",
+  "Page contains at least one image": "ページに少なくとも1つの画像がある",
+  "All images have alt text": "すべての画像にalt属性がある",
+  "Page contains at least one link": "ページに少なくとも1つのリンクがある",
+  "Headings": "見出し",
+  "Media": "メディア",
+  "Links": "リンク"
 }

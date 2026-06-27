@@ -156,7 +156,7 @@ const closeSEO = function () {
                   <h4
                     class="pbx-text-sm pbx-font-semibold pbx-uppercase pbx-tracking-widest pbx-text-gray-400 pbx-mb-3 pbx-px-1"
                   >
-                    {{ group.title }}
+                    {{ translate(group.title) }}
                   </h4>
 
                   <ul class="pbx-space-y-3">
@@ -193,7 +193,7 @@ const closeSEO = function () {
                           class="pbx-text-lg pbx-font-medium"
                           :class="check.passed ? 'pbx-text-green-700' : 'pbx-text-red-700'"
                         >
-                          {{ check.check }}
+                          {{ translate(check.check) }}
                         </p>
                         <p class="pbx-text-sm pbx-text-gray-600">
                           {{ check.details }}

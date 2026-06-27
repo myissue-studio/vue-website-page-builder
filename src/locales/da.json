@@ -286,5 +286,20 @@
   "Slider Settings": "Skyderindstillinger",
   "Auto Rotate": "Automatisk rotation",
   "Number of images": "Antal billeder",
-  "Rotation Speed (s)": "Rotationshastighed (s)"
+  "Rotation Speed (s)": "Rotationshastighed (s)",
+  "Previous": "Forrige",
+  "SEO Check Results": "SEO-tjekresultater",
+  "At least 300 words of content": "Mindst 300 ord indhold",
+  "Has at least one H2": "Har mindst én H2",
+  "Has at least one H3": "Har mindst én H3",
+  "Has at least one H4": "Har mindst én H4",
+  "Has at least one H5": "Har mindst én H5",
+  "Has at least one H6": "Har mindst én H6",
+  "Heading levels are not skipped": "Overskriftsniveauer springes ikke over",
+  "Page contains at least one image": "Siden indeholder mindst ét billede",
+  "All images have alt text": "Alle billeder har alt-tekst",
+  "Page contains at least one link": "Siden indeholder mindst ét link",
+  "Headings": "Overskrifter",
+  "Media": "Medier",
+  "Links": "Links"
 }

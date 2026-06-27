@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import componentHelpers from '../../utils/html-elements/componentHelpers'
 import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
@@ -51,6 +51,26 @@ const filteredComponents = computed(() => {
       : components[0].components.data
   if (!query) return byCategory
   return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))
+})
+
+// ---------------------------------------------------------------------------
+// Pagination for Layout Components
+// ---------------------------------------------------------------------------
+const COMPONENTS_PER_PAGE = 12
+const componentsPage = ref(1)
+
+const componentsTotalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredComponents.value.length / COMPONENTS_PER_PAGE)),
+)
+
+const pagedComponents = computed(() => {
+  const start = (componentsPage.value - 1) * COMPONENTS_PER_PAGE
+  return filteredComponents.value.slice(start, start + COMPONENTS_PER_PAGE)
+})
+
+// Reset to first page whenever the filter or search changes.
+watch([selectedCategory, searchQuery], () => {
+  componentsPage.value = 1
 })
 
 const filteredHelpers = computed(() => {
@@ -184,7 +204,7 @@ const convertToComponentObject = function (comp: {
       </div>
 
       <div
-        class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6 pbx-bg-green-200"
+        class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
       >
         <button
           v-for="category in componentOrThemes"
@@ -206,13 +226,13 @@ const convertToComponentObject = function (comp: {
         </button>
       </div>
 
-      <div class="pbx-bg-red-400 pbx-min-h-[96rem]">
+      <div class="pbx-min-h-[96rem] pbx-mb-12">
         <!-- theme is selected start -->
         <template v-if="selectedThemeSelection === 'Themes'">
           <div class="pbx-mb-8">
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Themes') }}</h3>
             <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6 pbx-bg-green-200"
+              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
             >
               <button
                 v-for="category in themeCategories"
@@ -232,24 +252,15 @@ const convertToComponentObject = function (comp: {
             <div>
               <div
                 v-if="filteredThemes.length"
-                class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-4"
+                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-3 pbx-gap-4"
               >
                 <div
                   v-for="theme in filteredThemes"
                   :key="theme.title"
-                  class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
+                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-min-h-[40rem]"
                   @click="handleDropTheme(theme.html_code)"
                 >
-                  <div
-                    class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
-                  >
-                    <!-- Sandboxed iframe preview -->
-                    <ComponentThumbnail
-                      :htmlCode="theme.html_code"
-                      :containerHeight="384"
-                      fit="contain"
-                    />
-                  </div>
+                  <ComponentThumbnail :htmlCode="theme.html_code" :maxHeight="9999" fit="contain" />
                 </div>
               </div>
               <p
@@ -270,7 +281,7 @@ const convertToComponentObject = function (comp: {
 
             <!-- Helper category filter -->
             <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6 pbx-bg-green-200"
+              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
             >
               <button
                 v-for="category in helperCategories"
@@ -286,7 +297,7 @@ const convertToComponentObject = function (comp: {
                 {{ translate(category) }}
               </button>
             </div>
-            <div class="pbx-min-h-[30rem] pbx-max-h-[30rem] pbx-overflow-y-auto">
+            <div class="pbx-min-h-[10rem] pbx-max-h-[30rem] pbx-overflow-y-auto">
               <div
                 v-if="filteredHelpers.length"
                 class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
@@ -294,7 +305,7 @@ const convertToComponentObject = function (comp: {
                 <div
                   v-for="helper in filteredHelpers"
                   :key="helper.title"
-                  class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl pbx-bg-gray-300"
+                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl pbx-bg-gray-50"
                   @click="handleDropComponent(helper)"
                 >
                   <div class="pbx-max-h-72 pbx-cursor-pointer pbx-object-contain pbx-mx-auto">
@@ -319,7 +330,7 @@ const convertToComponentObject = function (comp: {
           <div class="pbx-px-2">
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Layout Components') }}</h3>
             <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6 pbx-bg-green-200"
+              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
             >
               <button
                 v-for="category in categories"
@@ -338,21 +349,16 @@ const convertToComponentObject = function (comp: {
 
             <div>
               <div
-                v-if="filteredComponents.length"
-                class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-4"
+                v-if="pagedComponents.length"
+                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4"
               >
                 <div
-                  v-for="comp in filteredComponents"
+                  v-for="comp in pagedComponents"
                   :key="comp.title"
-                  class="pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer"
+                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-min-h-[25rem]"
                   @click="handleDropComponent(convertToComponentObject(comp))"
                 >
-                  <div
-                    class="pbx-overflow-hidden pbx-whitespace-pre-line pbx-flex-1 pbx-h-auto pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-py-2 pbx-px-2"
-                  >
-                    <!-- Sandboxed iframe preview -->
-                    <ComponentThumbnail :htmlCode="comp.html_code" fit="contain" />
-                  </div>
+                  <ComponentThumbnail :htmlCode="comp.html_code" fit="contain" />
                 </div>
               </div>
               <p
@@ -361,6 +367,53 @@ const convertToComponentObject = function (comp: {
               >
                 {{ translate('No components found.') }}
               </p>
+
+              <!-- Pagination controls -->
+              <div
+                v-if="componentsTotalPages > 1"
+                class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-3 pbx-mt-6 pbx-pt-4 pbx-border-t pbx-border-gray-200"
+              >
+                <button
+                  type="button"
+                  class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
+                  :disabled="componentsPage === 1"
+                  :class="componentsPage === 1 ? 'pbx-opacity-40 pbx-cursor-not-allowed' : ''"
+                  @click="componentsPage--"
+                >
+                  {{ translate('Previous') }}
+                </button>
+
+                <div class="pbx-flex pbx-items-center pbx-gap-1">
+                  <button
+                    v-for="page in componentsTotalPages"
+                    :key="page"
+                    type="button"
+                    class="pbx-mySecondaryButton pbx-text-xs pbx-w-8 pbx-h-8 pbx-p-0 pbx-flex pbx-items-center pbx-justify-center"
+                    :class="
+                      page === componentsPage
+                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                        : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                    "
+                    @click="componentsPage = page"
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
+                  :disabled="componentsPage === componentsTotalPages"
+                  :class="
+                    componentsPage === componentsTotalPages
+                      ? 'pbx-opacity-40 pbx-cursor-not-allowed'
+                      : ''
+                  "
+                  @click="componentsPage++"
+                >
+                  {{ translate('Next') }}
+                </button>
+              </div>
             </div>
           </div>
         </template>

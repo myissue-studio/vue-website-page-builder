@@ -286,5 +286,20 @@
   "Slider Settings": "Настройки слайдера",
   "Auto Rotate": "Автовращение",
   "Number of images": "Количество изображений",
-  "Rotation Speed (s)": "Скорость вращения (с)"
+  "Rotation Speed (s)": "Скорость вращения (с)",
+  "Previous": "Назад",
+  "SEO Check Results": "Результаты SEO-проверки",
+  "At least 300 words of content": "Не менее 300 слов контента",
+  "Has at least one H2": "Есть хотя бы один H2",
+  "Has at least one H3": "Есть хотя бы один H3",
+  "Has at least one H4": "Есть хотя бы один H4",
+  "Has at least one H5": "Есть хотя бы один H5",
+  "Has at least one H6": "Есть хотя бы один H6",
+  "Heading levels are not skipped": "Уровни заголовков не пропускаются",
+  "Page contains at least one image": "Страница содержит хотя бы одно изображение",
+  "All images have alt text": "Все изображения имеют alt-текст",
+  "Page contains at least one link": "Страница содержит хотя бы одну ссылку",
+  "Headings": "Заголовки",
+  "Media": "Медиа",
+  "Links": "Ссылки"
 }

@@ -286,5 +286,20 @@
   "Slider Settings": "Slider Settings",
   "Auto Rotate": "Auto Rotate",
   "Number of images": "Number of images",
-  "Rotation Speed (s)": "Rotation Speed (s)"
+  "Rotation Speed (s)": "Rotation Speed (s)",
+  "Previous": "Previous",
+  "SEO Check Results": "SEO Check Results",
+  "At least 300 words of content": "At least 300 words of content",
+  "Has at least one H2": "Has at least one H2",
+  "Has at least one H3": "Has at least one H3",
+  "Has at least one H4": "Has at least one H4",
+  "Has at least one H5": "Has at least one H5",
+  "Has at least one H6": "Has at least one H6",
+  "Heading levels are not skipped": "Heading levels are not skipped",
+  "Page contains at least one image": "Page contains at least one image",
+  "All images have alt text": "All images have alt text",
+  "Page contains at least one link": "Page contains at least one link",
+  "Headings": "Headings",
+  "Media": "Media",
+  "Links": "Links"
 }

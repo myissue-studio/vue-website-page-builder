@@ -286,5 +286,20 @@
   "Slider Settings": "स्लाइडर सेटिंग्स",
   "Auto Rotate": "स्वतः घुमाएँ",
   "Number of images": "छवियों की संख्या",
-  "Rotation Speed (s)": "रोटेशन गति (s)"
+  "Rotation Speed (s)": "रोटेशन गति (s)",
+  "Previous": "पिछला",
+  "SEO Check Results": "SEO जांच परिणाम",
+  "At least 300 words of content": "कम से कम 300 शब्दों की सामग्री",
+  "Has at least one H2": "कम से कम एक H2 है",
+  "Has at least one H3": "कम से कम एक H3 है",
+  "Has at least one H4": "कम से कम एक H4 है",
+  "Has at least one H5": "कम से कम एक H5 है",
+  "Has at least one H6": "कम से कम एक H6 है",
+  "Heading levels are not skipped": "शीर्षक स्तर नहीं छोड़े गए हैं",
+  "Page contains at least one image": "पृष्ठ में कम से कम एक छवि है",
+  "All images have alt text": "सभी छवियों में वैकल्पिक पाठ है",
+  "Page contains at least one link": "पृष्ठ में कम से कम एक लिंक है",
+  "Headings": "शीर्षक",
+  "Media": "मीडिया",
+  "Links": "लिंक"
 }

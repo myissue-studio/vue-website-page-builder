@@ -286,5 +286,20 @@
   "Slider Settings": "滑块设置",
   "Auto Rotate": "自动旋转",
   "Number of images": "图片数量",
-  "Rotation Speed (s)": "旋转速度 (秒)"
+  "Rotation Speed (s)": "旋转速度 (秒)",
+  "Previous": "上一页",
+  "SEO Check Results": "SEO检查结果",
+  "At least 300 words of content": "至少300字内容",
+  "Has at least one H2": "至少有一个H2",
+  "Has at least one H3": "至少有一个H3",
+  "Has at least one H4": "至少有一个H4",
+  "Has at least one H5": "至少有一个H5",
+  "Has at least one H6": "至少有一个H6",
+  "Heading levels are not skipped": "标题级别未被跳过",
+  "Page contains at least one image": "页面至少包含一张图片",
+  "All images have alt text": "所有图片都有替代文本",
+  "Page contains at least one link": "页面至少包含一个链接",
+  "Headings": "标题",
+  "Media": "媒体",
+  "Links": "链接"
 }
