@@ -36,8 +36,16 @@ interface PageBuilderState {
   currentStyles: Record<string, string>
   fontVerticalPadding: string | null
   fontHorizontalPadding: string | null
+  fontTopPadding: string | null
+  fontRightPadding: string | null
+  fontBottomPadding: string | null
+  fontLeftPadding: string | null
   fontVerticalMargin: string | null
   fontHorizontalMargin: string | null
+  fontTopMargin: string | null
+  fontRightMargin: string | null
+  fontBottomMargin: string | null
+  fontLeftMargin: string | null
   fontStyle: string | null
   fontFamily: string | null
   fontWeight: string | null
@@ -101,8 +109,16 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     currentStyles: {},
     fontVerticalPadding: null,
     fontHorizontalPadding: null,
+    fontTopPadding: null,
+    fontRightPadding: null,
+    fontBottomPadding: null,
+    fontLeftPadding: null,
     fontVerticalMargin: null,
     fontHorizontalMargin: null,
+    fontTopMargin: null,
+    fontRightMargin: null,
+    fontBottomMargin: null,
+    fontLeftMargin: null,
     fontStyle: null,
     fontFamily: null,
     fontWeight: null,
@@ -220,11 +236,35 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     getFontHorizontalPadding(state: PageBuilderState): string | null {
       return state.fontHorizontalPadding
     },
+    getFontTopPadding(state: PageBuilderState): string | null {
+      return state.fontTopPadding
+    },
+    getFontRightPadding(state: PageBuilderState): string | null {
+      return state.fontRightPadding
+    },
+    getFontBottomPadding(state: PageBuilderState): string | null {
+      return state.fontBottomPadding
+    },
+    getFontLeftPadding(state: PageBuilderState): string | null {
+      return state.fontLeftPadding
+    },
     getFontVerticalMargin(state: PageBuilderState): string | null {
       return state.fontVerticalMargin
     },
     getFontHorizontalMargin(state: PageBuilderState): string | null {
       return state.fontHorizontalMargin
+    },
+    getFontTopMargin(state: PageBuilderState): string | null {
+      return state.fontTopMargin
+    },
+    getFontRightMargin(state: PageBuilderState): string | null {
+      return state.fontRightMargin
+    },
+    getFontBottomMargin(state: PageBuilderState): string | null {
+      return state.fontBottomMargin
+    },
+    getFontLeftMargin(state: PageBuilderState): string | null {
+      return state.fontLeftMargin
     },
     getFontFamily(state: PageBuilderState): string | null {
       return state.fontFamily
@@ -379,11 +419,35 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     setFontHorizontalPadding(payload: string | null): void {
       this.fontHorizontalPadding = payload
     },
+    setFontTopPadding(payload: string | null): void {
+      this.fontTopPadding = payload
+    },
+    setFontRightPadding(payload: string | null): void {
+      this.fontRightPadding = payload
+    },
+    setFontBottomPadding(payload: string | null): void {
+      this.fontBottomPadding = payload
+    },
+    setFontLeftPadding(payload: string | null): void {
+      this.fontLeftPadding = payload
+    },
     setFontVerticalMargin(payload: string | null): void {
       this.fontVerticalMargin = payload
     },
     setFontHorizontalMargin(payload: string | null): void {
       this.fontHorizontalMargin = payload
+    },
+    setFontTopMargin(payload: string | null): void {
+      this.fontTopMargin = payload
+    },
+    setFontRightMargin(payload: string | null): void {
+      this.fontRightMargin = payload
+    },
+    setFontBottomMargin(payload: string | null): void {
+      this.fontBottomMargin = payload
+    },
+    setFontLeftMargin(payload: string | null): void {
+      this.fontLeftMargin = payload
     },
     setFontStyle(payload: string | null): void {
       this.fontStyle = payload

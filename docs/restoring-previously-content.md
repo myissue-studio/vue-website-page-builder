@@ -6,6 +6,36 @@ The Page Builder makes it simple to load previously published content—includin
 
 If you have previously saved or published HTML content (for example, from your database), you can easily restore both the global page styles (classes, inline styles) and all builder components for seamless editing.
 
+The important detail is that a saved page has two parts:
+
+- The outer `<div id="pagebuilder">` stores global page styles.
+- The inner `<section>...</section>` elements store the editable components.
+
+For example, if your saved HTML contains this outer wrapper:
+
+```html
+<div
+  id="pagebuilder"
+  class="pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200 pbx-rounded-full"
+  style="background:#CBDF90"
+>
+  <section data-component-title="Hero">...</section>
+  <section data-component-title="Content">...</section>
+</div>
+```
+
+`parsePageBuilderHTML()` extracts the wrapper styles into:
+
+```ts
+pageSettings: {
+  classes:
+    'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200 pbx-rounded-full',
+  style: 'background:#CBDF90',
+}
+```
+
+Then you pass those extracted `pageSettings` back into the config when opening the builder again.
+
 **Recommended Workflow:**
 
 1. **Parse your saved HTML** using the builder’s helper method to extract both the components and the global page settings:
@@ -38,11 +68,9 @@ If you have previously saved or published HTML content (for example, from your d
      pageSettings: pageSettings,
    }
 
-   const pageBuilderService = getPageBuilder()
-
    // Initialize the Page Builder with `onMounted`
    onMounted(async () => {
-     const result = await pageBuilderService.startBuilder(configPageBuilder)
+     const result = await pageBuilderService.startBuilder(configPageBuilder, components)
      console.info('You may inspect this result for message, status, or error:', result)
    })
    </script>
@@ -56,6 +84,7 @@ If you have previously saved or published HTML content (for example, from your d
 >
 > - Each component’s `html_code` must be wrapped in a `<section>...</section>` tag. This is how the Page Builder defines and separates individual components.
 > - Always pass `pageSettings` directly in the config object (not as `{ pageSettings: { pageSettings } }`).
+> - Always pass the parsed `components` array as the second argument to `startBuilder(configPageBuilder, components)`.
 > - Set `formType: 'update'` to ensure the builder loads your provided content for editing.
 
 This approach ensures your users can seamlessly restore and edit previously published content—including all global styles and layout—providing a smooth and reliable editing experience for existing pages.

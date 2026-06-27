@@ -13,12 +13,65 @@ const configPageBuilder = {
 
   pageSettings: {
     classes: 'max-w-screen-lg mx-auto px-4 bg-white',
-    style: {
-      backgroundColor: 'red',
-      border: '6px solid yellow',
-    },
+    style: 'background:#ffffff;color:#1e293b;border:1px solid #e2e8f0;border-radius:14px;',
   },
 } as const
 ```
 
-You have full control over the page’s appearance at any time—instantly override or clear global st
+You may also pass `style` as an object:
+
+```ts
+pageSettings: {
+  classes: 'max-w-screen-lg mx-auto px-4 bg-white',
+  style: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #e2e8f0',
+  },
+}
+```
+
+You have full control over the page’s appearance at any time. When restoring saved content, these values usually come from the outer `#pagebuilder` wrapper in your saved HTML.
+
+### Getting Page Settings from Saved HTML
+
+When a user edits previously saved content, load the full saved HTML from your database and use `parsePageBuilderHTML()` to extract both the editable components and the global `pageSettings`.
+
+```ts
+import { getPageBuilder } from '@myissue/vue-website-page-builder'
+
+const pageBuilderService = getPageBuilder()
+
+const savedHtmlFromDatabase = `
+  <div
+    id="pagebuilder"
+    class="pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200 pbx-rounded-full"
+    style="background:#CBDF90"
+  >
+    <section data-component-title="Hero">...</section>
+    <section data-component-title="Content">...</section>
+  </div>
+`
+
+const { components, pageSettings } = pageBuilderService.parsePageBuilderHTML(savedHtmlFromDatabase)
+
+// pageSettings now contains the wrapper styles:
+// {
+//   classes:
+//     'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200 pbx-rounded-full',
+//   style: {
+//     background: '#CBDF90',
+//   },
+// }
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'update',
+    formName: 'article',
+  },
+  pageSettings,
+}
+
+await pageBuilderService.startBuilder(configPageBuilder, components)
+```
+
+The key is to save the complete builder HTML, including the outer `<div id="pagebuilder">`. That wrapper is where the Page Builder stores global classes and styles.

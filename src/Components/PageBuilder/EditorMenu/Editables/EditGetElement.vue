@@ -9,9 +9,14 @@ import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
+import ModalBuilder from '../../../Modals/ModalBuilder.vue'
+import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
+const emit = defineEmits<{
+  (event: 'open-global-page-settings'): void
+}>()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -50,6 +55,31 @@ const sliderImageCount = computed(() => {
   const track = container.querySelector('.pbx-isl-t')
   return track ? track.children.length : 3
 })
+
+const componentSettingsTick = ref(0)
+const showComponentSettingsModal = ref(false)
+
+const isSelectedComponentTopElement = computed(() => {
+  void componentSettingsTick.value
+  return pageBuilderService.isSelectedComponentTopElement()
+})
+
+const selectedComponentFullWidth = computed(() => {
+  void componentSettingsTick.value
+  return pageBuilderService.selectedComponentIsFullWidth()
+})
+
+const openComponentSettings = () => {
+  componentSettingsTick.value++
+  showComponentSettingsModal.value = true
+}
+
+const updateSelectedComponentFullWidth = async (enabled: boolean) => {
+  const updatePromise = pageBuilderService.setSelectedComponentFullWidth(enabled)
+  componentSettingsTick.value++
+  await updatePromise
+  componentSettingsTick.value++
+}
 
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
@@ -474,6 +504,11 @@ const handleShowHTMLEditor = async () => {
   pageBuilderStateStore.setShowModalHTMLEditor(true)
 }
 
+const handleOpenGlobalPageSettings = () => {
+  openOptionsMoreOpen.value = false
+  emit('open-global-page-settings')
+}
+
 const showModalDeleteComponent = ref(false)
 // use dynamic model
 const typeModal = ref('')
@@ -512,9 +547,20 @@ const handleDelete = function () {
   }
   // end modal
 }
+
+const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
   <div>
+    <ModalBuilder
+      maxWidth="3xl"
+      :showModalBuilder="showThemeColorPresetsModal"
+      :title="translate('Theme Color Presets')"
+      @closeMainModalBuilder="showThemeColorPresetsModal = false"
+    >
+      <ThemeColorPresetManager></ThemeColorPresetManager>
+    </ModalBuilder>
+
     <DynamicModalBuilder
       :showDynamicModalBuilder="showModalIframeSrc"
       maxWidth="2xl"
@@ -704,12 +750,30 @@ const handleDelete = function () {
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
+        <button
+          type="button"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-bg-gray-100 pbx-rounded-xl pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          :title="translate('Theme Color Presets')"
+          @click.stop="showThemeColorPresetsModal = true"
+        >
+          <span class="material-symbols-outlined"> palette </span>
+        </button>
         <template v-if="getElement && false">
           <div
             @click="pageBuilderService.deleteElementFromDOM"
             class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
           >
             <span class="material-symbols-outlined"> delete </span>
+          </div>
+        </template>
+
+        <template v-if="getElement && getComponent && isSelectedComponentTopElement">
+          <div
+            @click="openComponentSettings"
+            class="pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :title="translate('Component Settings')"
+          >
+            <span class="material-symbols-outlined"> settings </span>
           </div>
         </template>
 
@@ -727,6 +791,42 @@ const handleDelete = function () {
             <span class="material-symbols-outlined"> settings </span>
           </div>
         </template>
+
+        <DynamicModalBuilder
+          v-if="showComponentSettingsModal"
+          :showDynamicModalBuilder="showComponentSettingsModal"
+          :isLoading="false"
+          type="success"
+          :gridColumnAmount="1"
+          :title="translate('Component Settings')"
+          description=""
+          :firstButtonText="translate('Close')"
+          @firstModalButtonFunctionDynamicModalBuilder="showComponentSettingsModal = false"
+        >
+          <header></header>
+          <main>
+            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
+              <div
+                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
+              >
+                <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-4">
+                  <div class="pbx-flex pbx-flex-col pbx-gap-1">
+                    <p class="pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor">
+                      {{ translate('Full-width component') }}
+                    </p>
+                    <p class="pbx-text-xs pbx-text-gray-500 pbx-my-0">
+                      {{ translate('Stretch across browser width') }}
+                    </p>
+                  </div>
+                  <ToggleInput
+                    :model-value="selectedComponentFullWidth"
+                    @update:model-value="updateSelectedComponentFullWidth"
+                  />
+                </div>
+              </div>
+            </div>
+          </main>
+        </DynamicModalBuilder>
 
         <DynamicModalBuilder
           v-if="showSliderModal"
@@ -975,6 +1075,18 @@ const handleDelete = function () {
               <span class="material-symbols-outlined"> deployed_code </span>
             </div>
             <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
+          </div>
+          <div
+            v-if="getElement && getComponent"
+            @click="handleOpenGlobalPageSettings"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> tune </span>
+            </div>
+            <div class="pbx-text-sm">{{ translate('Global Page Styles') }}</div>
           </div>
 
           <!-- content end -->

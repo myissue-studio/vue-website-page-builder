@@ -16,6 +16,10 @@ const fontVerticalPadding = ref<string | null>(null)
 const fontHorizontalPadding = ref<string | null>(null)
 const fontVerticalMargin = ref<string | null>(null)
 const fontHorizontalMargin = ref<string | null>(null)
+const fontTopMargin = ref<string | null>(null)
+const fontRightMargin = ref<string | null>(null)
+const fontBottomMargin = ref<string | null>(null)
+const fontLeftMargin = ref<string | null>(null)
 const getFontVerticalPadding = computed(() => {
   return pageBuilderStateStore.getFontVerticalPadding
 })
@@ -27,6 +31,18 @@ const getFontVerticalMargin = computed(() => {
 })
 const getFontHorizontalMargin = computed(() => {
   return pageBuilderStateStore.getFontHorizontalMargin
+})
+const getFontTopMargin = computed(() => {
+  return pageBuilderStateStore.getFontTopMargin
+})
+const getFontRightMargin = computed(() => {
+  return pageBuilderStateStore.getFontRightMargin
+})
+const getFontBottomMargin = computed(() => {
+  return pageBuilderStateStore.getFontBottomMargin
+})
+const getFontLeftMargin = computed(() => {
+  return pageBuilderStateStore.getFontLeftMargin
 })
 
 watch(
@@ -57,6 +73,38 @@ watch(
   getFontHorizontalMargin,
   async (newValue) => {
     fontHorizontalMargin.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontTopMargin,
+  async (newValue) => {
+    fontTopMargin.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontRightMargin,
+  async (newValue) => {
+    fontRightMargin.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontBottomMargin,
+  async (newValue) => {
+    fontBottomMargin.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontLeftMargin,
+  async (newValue) => {
+    fontLeftMargin.value = newValue
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
@@ -108,6 +156,82 @@ watch(
             :key="horizontalMargin"
           >
             {{ horizontalMargin }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-pt-4 pbx-pb-2">
+        <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
+          {{ translate('Advanced Margin') }}
+        </p>
+      </div>
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="top-margin" class="pbx-myPrimaryInputLabel">{{
+          translate('Top Margin')
+        }}</label>
+        <select
+          id="top-margin"
+          v-model="fontTopMargin"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleTopMargin(fontTopMargin ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option v-for="topMargin in tailwindPaddingPlusMargin.topMargin" :key="topMargin">
+            {{ topMargin }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="right-margin" class="pbx-myPrimaryInputLabel">{{
+          translate('Right Margin')
+        }}</label>
+        <select
+          id="right-margin"
+          v-model="fontRightMargin"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleRightMargin(fontRightMargin ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option v-for="rightMargin in tailwindPaddingPlusMargin.rightMargin" :key="rightMargin">
+            {{ rightMargin }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="bottom-margin" class="pbx-myPrimaryInputLabel">{{
+          translate('Bottom Margin')
+        }}</label>
+        <select
+          id="bottom-margin"
+          v-model="fontBottomMargin"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleBottomMargin(fontBottomMargin ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option
+            v-for="bottomMargin in tailwindPaddingPlusMargin.bottomMargin"
+            :key="bottomMargin"
+          >
+            {{ bottomMargin }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="left-margin" class="pbx-myPrimaryInputLabel">{{
+          translate('Left Margin')
+        }}</label>
+        <select
+          id="left-margin"
+          v-model="fontLeftMargin"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleLeftMargin(fontLeftMargin ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option v-for="leftMargin in tailwindPaddingPlusMargin.leftMargin" :key="leftMargin">
+            {{ leftMargin }}
           </option>
         </select>
       </div>

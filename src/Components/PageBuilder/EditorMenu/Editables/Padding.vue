@@ -15,6 +15,10 @@ const pageBuilderStateStore = sharedPageBuilderStore
 
 const fontVerticalPadding = ref<string | null>(null)
 const fontHorizontalPadding = ref<string | null>(null)
+const fontTopPadding = ref<string | null>(null)
+const fontRightPadding = ref<string | null>(null)
+const fontBottomPadding = ref<string | null>(null)
+const fontLeftPadding = ref<string | null>(null)
 const fontVerticalMargin = ref<string | null>(null)
 const fontHorizontalMargin = ref<string | null>(null)
 const getFontVerticalPadding = computed(() => {
@@ -22,6 +26,18 @@ const getFontVerticalPadding = computed(() => {
 })
 const getFontHorizontalPadding = computed(() => {
   return pageBuilderStateStore.getFontHorizontalPadding
+})
+const getFontTopPadding = computed(() => {
+  return pageBuilderStateStore.getFontTopPadding
+})
+const getFontRightPadding = computed(() => {
+  return pageBuilderStateStore.getFontRightPadding
+})
+const getFontBottomPadding = computed(() => {
+  return pageBuilderStateStore.getFontBottomPadding
+})
+const getFontLeftPadding = computed(() => {
+  return pageBuilderStateStore.getFontLeftPadding
 })
 const getFontVerticalMargin = computed(() => {
   return pageBuilderStateStore.getFontVerticalMargin
@@ -42,6 +58,38 @@ watch(
   getFontHorizontalPadding,
   async (newValue) => {
     fontHorizontalPadding.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontTopPadding,
+  async (newValue) => {
+    fontTopPadding.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontRightPadding,
+  async (newValue) => {
+    fontRightPadding.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontBottomPadding,
+  async (newValue) => {
+    fontBottomPadding.value = newValue
+    await pageBuilderService.initializeElementStyles()
+  },
+  { immediate: true },
+)
+watch(
+  getFontLeftPadding,
+  async (newValue) => {
+    fontLeftPadding.value = newValue
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
@@ -109,6 +157,85 @@ watch(
             :key="horizontalPadding"
           >
             {{ horizontalPadding }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-pt-4 pbx-pb-2">
+        <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
+          {{ translate('Advanced Padding') }}
+        </p>
+      </div>
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="top-padding" class="pbx-myPrimaryInputLabel">{{
+          translate('Top Padding')
+        }}</label>
+        <select
+          id="top-padding"
+          v-model="fontTopPadding"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleTopPadding(fontTopPadding ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option v-for="topPadding in tailwindPaddingPlusMargin.topPadding" :key="topPadding">
+            {{ topPadding }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="right-padding" class="pbx-myPrimaryInputLabel">{{
+          translate('Right Padding')
+        }}</label>
+        <select
+          id="right-padding"
+          v-model="fontRightPadding"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleRightPadding(fontRightPadding ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option
+            v-for="rightPadding in tailwindPaddingPlusMargin.rightPadding"
+            :key="rightPadding"
+          >
+            {{ rightPadding }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="bottom-padding" class="pbx-myPrimaryInputLabel">{{
+          translate('Bottom Padding')
+        }}</label>
+        <select
+          id="bottom-padding"
+          v-model="fontBottomPadding"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleBottomPadding(fontBottomPadding ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option
+            v-for="bottomPadding in tailwindPaddingPlusMargin.bottomPadding"
+            :key="bottomPadding"
+          >
+            {{ bottomPadding }}
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="pbx-my-2 pbx-py-2">
+        <label for="left-padding" class="pbx-myPrimaryInputLabel">{{
+          translate('Left Padding')
+        }}</label>
+        <select
+          id="left-padding"
+          v-model="fontLeftPadding"
+          class="pbx-myPrimarySelect"
+          @change="pageBuilderService.handleLeftPadding(fontLeftPadding ?? undefined)"
+        >
+          <option disabled value="">{{ translate('Select') }}</option>
+          <option v-for="leftPadding in tailwindPaddingPlusMargin.leftPadding" :key="leftPadding">
+            {{ leftPadding }}
           </option>
         </select>
       </div>

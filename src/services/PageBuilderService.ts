@@ -56,6 +56,8 @@ export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
   'it',
 ]
 
+const FULL_WIDTH_COMPONENT_CLASS = 'pbx-full-width-component'
+
 export class PageBuilderService {
   // Class properties with types
   private fontSizeRegex =
@@ -729,6 +731,14 @@ export class PageBuilderService {
     return currentCSS
   }
 
+  private removeElementClassesFromArray(element: HTMLElement, classes: string[]): void {
+    classes.forEach((className) => {
+      if (className !== 'none' && element.classList.contains(className)) {
+        element.classList.remove(className)
+      }
+    })
+  }
+
   /**
    * Removes all CSS classes from the main page builder container.
    * @returns {Promise<void>}
@@ -1025,6 +1035,34 @@ export class PageBuilderService {
     // IMG elements are always selectable even inside no-select zones (e.g. slider)
     if (el.tagName !== 'IMG' && el.closest('[data-pb-no-select]')) return false
     return !this.NoneListernesTags.includes(el.tagName)
+  }
+
+  public getSelectedComponentSection(): HTMLElement | null {
+    const element = this.getElement.value
+    if (!element || !(element instanceof HTMLElement)) return null
+
+    return element.closest('section') as HTMLElement | null
+  }
+
+  public isSelectedComponentTopElement(): boolean {
+    const element = this.getElement.value
+    const section = this.getSelectedComponentSection()
+
+    if (!element || !section) return false
+
+    return element.parentElement === section
+  }
+
+  public selectedComponentIsFullWidth(): boolean {
+    return this.getSelectedComponentSection()?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+  }
+
+  public async setSelectedComponentFullWidth(enabled: boolean): Promise<void> {
+    const section = this.getSelectedComponentSection()
+    if (!section) return
+
+    section.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
+    await this.handleAutoSave()
   }
 
   /**
@@ -1375,6 +1413,50 @@ export class PageBuilderService {
       'setFontHorizontalPadding',
     )
   }
+  /**
+   * Handles changes to the top padding of the selected element.
+   * @param {string} [userSelectedTopPadding] - The selected top padding class.
+   */
+  public handleTopPadding(userSelectedTopPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedTopPadding,
+      tailwindPaddingAndMargin.topPadding,
+      'setFontTopPadding',
+    )
+  }
+  /**
+   * Handles changes to the right padding of the selected element.
+   * @param {string} [userSelectedRightPadding] - The selected right padding class.
+   */
+  public handleRightPadding(userSelectedRightPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedRightPadding,
+      tailwindPaddingAndMargin.rightPadding,
+      'setFontRightPadding',
+    )
+  }
+  /**
+   * Handles changes to the bottom padding of the selected element.
+   * @param {string} [userSelectedBottomPadding] - The selected bottom padding class.
+   */
+  public handleBottomPadding(userSelectedBottomPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedBottomPadding,
+      tailwindPaddingAndMargin.bottomPadding,
+      'setFontBottomPadding',
+    )
+  }
+  /**
+   * Handles changes to the left padding of the selected element.
+   * @param {string} [userSelectedLeftPadding] - The selected left padding class.
+   */
+  public handleLeftPadding(userSelectedLeftPadding?: string): void {
+    this.applyElementClassChanges(
+      userSelectedLeftPadding,
+      tailwindPaddingAndMargin.leftPadding,
+      'setFontLeftPadding',
+    )
+  }
 
   /**
    * Handles changes to the vertical margin of the selected element.
@@ -1396,6 +1478,50 @@ export class PageBuilderService {
       userSelectedHorizontalMargin,
       tailwindPaddingAndMargin.horizontalMargin,
       'setFontHorizontalMargin',
+    )
+  }
+  /**
+   * Handles changes to the top margin of the selected element.
+   * @param {string} [userSelectedTopMargin] - The selected top margin class.
+   */
+  public handleTopMargin(userSelectedTopMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedTopMargin,
+      tailwindPaddingAndMargin.topMargin,
+      'setFontTopMargin',
+    )
+  }
+  /**
+   * Handles changes to the right margin of the selected element.
+   * @param {string} [userSelectedRightMargin] - The selected right margin class.
+   */
+  public handleRightMargin(userSelectedRightMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedRightMargin,
+      tailwindPaddingAndMargin.rightMargin,
+      'setFontRightMargin',
+    )
+  }
+  /**
+   * Handles changes to the bottom margin of the selected element.
+   * @param {string} [userSelectedBottomMargin] - The selected bottom margin class.
+   */
+  public handleBottomMargin(userSelectedBottomMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedBottomMargin,
+      tailwindPaddingAndMargin.bottomMargin,
+      'setFontBottomMargin',
+    )
+  }
+  /**
+   * Handles changes to the left margin of the selected element.
+   * @param {string} [userSelectedLeftMargin] - The selected left margin class.
+   */
+  public handleLeftMargin(userSelectedLeftMargin?: string): void {
+    this.applyElementClassChanges(
+      userSelectedLeftMargin,
+      tailwindPaddingAndMargin.leftMargin,
+      'setFontLeftMargin',
     )
   }
 
@@ -1439,6 +1565,16 @@ export class PageBuilderService {
    * @param {string} [color] - The selected background color class.
    */
   public handleBackgroundColor(color?: string): void {
+    if (color === undefined) {
+      const customColor = this.getElement.value?.style.getPropertyValue('background-color')
+      if (customColor) {
+        this.pageBuilderStateStore.setBackgroundColor(`custom:${customColor}`)
+        return
+      }
+    } else {
+      this.getElement.value?.style.removeProperty('background-color')
+    }
+
     this.applyElementClassChanges(
       color,
       tailwindColors.backgroundColorVariables,
@@ -1446,12 +1582,42 @@ export class PageBuilderService {
     )
   }
 
+  public handleCustomBackgroundColor(color: string): void {
+    const element = this.getElement.value
+    if (!element || !color) return
+
+    this.removeElementClassesFromArray(element, tailwindColors.backgroundColorVariables)
+    element.style.setProperty('background-color', color)
+    this.pageBuilderStateStore.setBackgroundColor(`custom:${color}`)
+    this.pageBuilderStateStore.setElement(element)
+  }
+
   /**
    * Handles changes to the text color of the selected element.
    * @param {string} [color] - The selected text color class.
    */
   public handleTextColor(color?: string): void {
+    if (color === undefined) {
+      const customColor = this.getElement.value?.style.getPropertyValue('color')
+      if (customColor) {
+        this.pageBuilderStateStore.setTextColor(`custom:${customColor}`)
+        return
+      }
+    } else {
+      this.getElement.value?.style.removeProperty('color')
+    }
+
     this.applyElementClassChanges(color, tailwindColors.textColorVariables, 'setTextColor')
+  }
+
+  public handleCustomTextColor(color: string): void {
+    const element = this.getElement.value
+    if (!element || !color) return
+
+    this.removeElementClassesFromArray(element, tailwindColors.textColorVariables)
+    element.style.setProperty('color', color)
+    this.pageBuilderStateStore.setTextColor(`custom:${color}`)
+    this.pageBuilderStateStore.setElement(element)
   }
 
   /**
@@ -3613,8 +3779,16 @@ export class PageBuilderService {
     this.handleFontStyle(undefined)
     this.handleVerticalPadding(undefined)
     this.handleHorizontalPadding(undefined)
+    this.handleTopPadding(undefined)
+    this.handleRightPadding(undefined)
+    this.handleBottomPadding(undefined)
+    this.handleLeftPadding(undefined)
     this.handleVerticalMargin(undefined)
     this.handleHorizontalMargin(undefined)
+    this.handleTopMargin(undefined)
+    this.handleRightMargin(undefined)
+    this.handleBottomMargin(undefined)
+    this.handleLeftMargin(undefined)
 
     await this.syncCurrentClasses()
     await this.syncCurrentStyles()

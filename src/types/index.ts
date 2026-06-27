@@ -103,8 +103,16 @@ export interface PageBuilderStateStore {
   setFontStyle: (style: string) => void
   setFontVerticalPadding: (padding: string) => void
   setFontHorizontalPadding: (padding: string) => void
+  setFontTopPadding: (padding: string) => void
+  setFontRightPadding: (padding: string) => void
+  setFontBottomPadding: (padding: string) => void
+  setFontLeftPadding: (padding: string) => void
   setFontVerticalMargin: (margin: string) => void
   setFontHorizontalMargin: (margin: string) => void
+  setFontTopMargin: (margin: string) => void
+  setFontRightMargin: (margin: string) => void
+  setFontBottomMargin: (margin: string) => void
+  setFontLeftMargin: (margin: string) => void
   setBorderStyle: (style: string) => void
   setBorderWidth: (width: string) => void
   setBorderColor: (color: string) => void
@@ -227,7 +235,29 @@ export interface PageBuilderUser {
 
 export interface PageSettings {
   classes: string
-  style?: Record<string, string>
+  style?: string | Record<string, string>
+}
+
+export type ThemeColorPresetId =
+  | 'primary'
+  | 'secondary'
+  | 'custom1'
+  | 'custom2'
+  | 'custom3'
+  | 'custom4'
+  | 'custom5'
+  | 'custom6'
+
+export interface ThemeColorPreset {
+  id: ThemeColorPresetId
+  label: string
+  color: string
+  enabled: boolean
+}
+
+export interface ThemeColorPresetSettings {
+  enabled: boolean
+  colors: readonly ThemeColorPreset[]
 }
 
 // Page Builder Configuration interface
@@ -252,6 +282,7 @@ export interface PageBuilderConfig {
   } | null // Allow null for maximum flexibility
   settings?: {
     brandColor?: string
+    themeColorPresets?: ThemeColorPresetSettings | null
     [key: string]: unknown
   } | null
   pageSettings?: PageSettings

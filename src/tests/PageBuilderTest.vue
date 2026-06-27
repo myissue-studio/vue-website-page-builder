@@ -23,12 +23,11 @@ const translatedComponents = computed(() => {
 })
 
 watch(currentTranslations, async () => {
-  const { components: newComponents, pageSettings: pageSettings } =
-    pageBuilderService.parsePageBuilderHTML(
-      '<div id="pagebuilder" class="" style="">' +
-        translatedComponents.value.map((c) => c.html_code).join('\n') +
-        '</div>',
-    )
+  const { components: newComponents } = pageBuilderService.parsePageBuilderHTML(
+    '<div id="pagebuilder" class="" style="">' +
+      translatedComponents.value.map((c) => c.html_code).join('\n') +
+      '</div>',
+  )
 
   const configPageBuilder = {
     userForPageBuilder: {
@@ -58,8 +57,25 @@ watch(currentTranslations, async () => {
 
     settings: {
       brandColor: '#DB93B0',
+      themeColorPresets: {
+        enabled: true,
+        colors: [
+          { id: 'primary', label: 'Primary', color: '482C3D', enabled: true },
+          { id: 'secondary', label: 'Secondary', color: 'E5D352', enabled: true },
+          { id: 'custom1', label: 'Custom 1', color: 'AC3931', enabled: true },
+          { id: 'custom2', label: 'Custom 2', color: '623CEA', enabled: true },
+          { id: 'custom3', label: 'Custom 3', color: '54426B', enabled: true },
+          { id: 'custom4', label: 'Custom 4', color: '#ffffff', enabled: true },
+          { id: 'custom5', label: 'Custom 5', color: '#ffffff', enabled: false },
+          { id: 'custom6', label: 'Custom 6', color: '#ffffff', enabled: false },
+        ],
+      },
     },
-    pageSettings: pageSettings,
+    pageSettings: {
+      classes:
+        'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200',
+      style: 'background:#CBDF90',
+    },
   } as const
 
   await pageBuilderService.startBuilder(configPageBuilder, newComponents)
