@@ -31,6 +31,13 @@ const componentOrThemes = computed(() => {
 })
 const selectedCategory = ref('All')
 
+const selectedHelperCategory = ref('All')
+
+const helperCategories = computed(() => {
+  const allCategories = componentHelpers.map((comp) => comp.category)
+  return ['All', ...new Set(allCategories)]
+})
+
 const categories = computed(() => {
   const allCategories = components[0].components.data.map((comp) => comp.category)
   return ['All', ...new Set(allCategories)]
@@ -48,8 +55,12 @@ const filteredComponents = computed(() => {
 
 const filteredHelpers = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
-  if (!query) return componentHelpers
-  return componentHelpers.filter((comp) => comp.title.toLowerCase().includes(query))
+  const byCategory =
+    !query && selectedHelperCategory.value !== 'All'
+      ? componentHelpers.filter((comp) => comp.category === selectedHelperCategory.value)
+      : componentHelpers
+  if (!query) return byCategory
+  return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))
 })
 
 const selectedThemeCategory = ref('All')
@@ -256,6 +267,25 @@ const convertToComponentObject = function (comp: {
           <!-- Helper Components Section -->
           <div class="pbx-mb-8">
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Helper Components') }}</h3>
+
+            <!-- Helper category filter -->
+            <div
+              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6 pbx-bg-green-200"
+            >
+              <button
+                v-for="category in helperCategories"
+                :key="category"
+                @click="selectedHelperCategory = category"
+                class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
+                :class="[
+                  selectedHelperCategory === category
+                    ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                    : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
+                ]"
+              >
+                {{ translate(category) }}
+              </button>
+            </div>
             <div
               v-if="filteredHelpers.length"
               class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
