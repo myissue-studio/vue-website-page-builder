@@ -301,5 +301,10 @@
   "Page contains at least one link": "Page contains at least one link",
   "Headings": "Headings",
   "Media": "Media",
-  "Links": "Links"
+  "Links": "Links",
+  "Delete element": "Delete element",
+  "Delete element?": "Delete element?",
+  "Delete element and component?": "Delete element and component?",
+  "You are about to remove this element. This action cannot be undone.": "You are about to remove this element. This action cannot be undone.",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "Removing this element will leave the component empty, so the entire component will also be removed."
 }

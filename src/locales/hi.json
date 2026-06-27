@@ -301,5 +301,10 @@
   "Page contains at least one link": "पृष्ठ में कम से कम एक लिंक है",
   "Headings": "शीर्षक",
   "Media": "मीडिया",
-  "Links": "लिंक"
+  "Links": "लिंक",
+  "Delete element": "तत्व हटाएं",
+  "Delete element?": "तत्व हटाएं?",
+  "Delete element and component?": "तत्व और घटक हटाएं?",
+  "You are about to remove this element. This action cannot be undone.": "आप इस तत्व को हटाने वाले हैं। यह क्रिया पूर्ववत नहीं की जा सकती।",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "इस तत्व को हटाने से घटक खाली हो जाएगा, इसलिए पूरा घटक भी हटा दिया जाएगा।"
 }

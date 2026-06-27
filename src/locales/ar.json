@@ -301,5 +301,10 @@
   "Page contains at least one link": "الصفحة تحتوي على رابط واحد على الأقل",
   "Headings": "العناوين",
   "Media": "الوسائط",
-  "Links": "الروابط"
+  "Links": "الروابط",
+  "Delete element": "حذف العنصر",
+  "Delete element?": "حذف العنصر؟",
+  "Delete element and component?": "حذف العنصر والمكوّن؟",
+  "You are about to remove this element. This action cannot be undone.": "أنت على وشك إزالة هذا العنصر. لا يمكن التراجع عن هذا الإجراء.",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "ستؤدي إزالة هذا العنصر إلى ترك المكوّن فارغاً، وبالتالي سيتم حذف المكوّن بأكمله أيضاً."
 }

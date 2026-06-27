@@ -301,5 +301,10 @@
   "Page contains at least one link": "Seite enthält mindestens einen Link",
   "Headings": "Überschriften",
   "Media": "Medien",
-  "Links": "Links"
+  "Links": "Links",
+  "Delete element": "Element löschen",
+  "Delete element?": "Element löschen?",
+  "Delete element and component?": "Element und Komponente löschen?",
+  "You are about to remove this element. This action cannot be undone.": "Sie sind dabei, dieses Element zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden.",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "Das Entfernen dieses Elements lässt die Komponente leer, sodass die gesamte Komponente ebenfalls entfernt wird."
 }

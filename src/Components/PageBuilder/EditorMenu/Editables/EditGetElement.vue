@@ -548,6 +548,60 @@ const handleDelete = function () {
   // end modal
 }
 
+// delete individual HTML element (not the whole component)
+const handleDeleteElement = function () {
+  const element = getElement.value
+  if (!element) return
+
+  const parentSection = element.closest('section')
+
+  // Predict whether removing this element would leave the section with no visible content.
+  // We clone the section, remove the selected element from the clone, then check for
+  // any remaining meaningful content — if none is found the whole component will be
+  // cleaned up automatically by deleteElementFromDOM().
+  let willEmptySection = false
+  if (parentSection) {
+    const clone = parentSection.cloneNode(true) as HTMLElement
+    const cloneTarget = clone.querySelector('[selected]')
+    if (cloneTarget) {
+      cloneTarget.remove()
+      const meaningfulSelector =
+        'img, video, iframe, input, button, a, h1, h2, h3, h4, h5, h6, p, li, blockquote, pre, code, table'
+      willEmptySection =
+        !clone.querySelector(meaningfulSelector) && !clone.textContent?.trim()
+    }
+  }
+
+  showModalDeleteComponent.value = true
+  typeModal.value = 'delete'
+  gridColumnModal.value = 2
+
+  if (willEmptySection) {
+    titleModal.value = translate('Delete element and component?')
+    descriptionModal.value = translate(
+      'Removing this element will leave the component empty, so the entire component will also be removed.',
+    )
+  } else {
+    titleModal.value = translate('Delete element?')
+    descriptionModal.value = translate(
+      'You are about to remove this element. This action cannot be undone.',
+    )
+  }
+
+  firstButtonModal.value = translate('Close')
+  secondButtonModal.value = null
+  thirdButtonModal.value = translate('Delete')
+
+  firstModalButtonFunctionDynamicModalBuilder.value = function () {
+    showModalDeleteComponent.value = false
+  }
+
+  thirdModalButtonFunctionDynamicModalBuilder.value = async function () {
+    await pageBuilderService.deleteElementFromDOM()
+    showModalDeleteComponent.value = false
+  }
+}
+
 const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
@@ -750,13 +804,8 @@ const showThemeColorPresetsModal = ref(false)
           <BackgroundColorEditor></BackgroundColorEditor>
         </template>
 
-        <template v-if="getElement && false">
-          <div
-            @click="pageBuilderService.deleteElementFromDOM"
-            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-          >
-            <span class="material-symbols-outlined"> delete </span>
-          </div>
+        <template v-if="false">
+          <!-- delete element (old stub — replaced by the button in the actions panel below) -->
         </template>
 
         <template v-if="getElement && getComponent && isSelectedComponentTopElement">
@@ -1003,6 +1052,23 @@ const showThemeColorPresetsModal = ref(false)
             </div>
           </div>
           <!-- move up and down end -->
+
+          <!-- delete element start -->
+          <div
+            v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
+            @click="handleDeleteElement()"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+            >
+              <span class="material-symbols-outlined"> delete </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Delete element') }}
+            </div>
+          </div>
+          <!-- delete element end -->
 
           <!-- delete component start -->
           <div
