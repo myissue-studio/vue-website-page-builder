@@ -264,7 +264,7 @@
   }
 
   .pbx-myPrimarySearchInput {
-    @apply pbx-myPrimaryInput pbx-text-sm pbx-py-4 pbx-border-none pbx-outline-none pbx-pl-10 pbx-h-full pbx-bg-white focus:pbx-ring-0 focus:pbx-ring-offset-0 focus:pbx-border-none focus:pbx-bg-transparent focus:pbx-outline-none pbx-shadow-none;
+    @apply pbx-myPrimaryInput pbx-text-sm pbx-py-4 pbx-border-none pbx-outline-none pbx-pl-10 pbx-h-full focus:pbx-ring-0 focus:pbx-ring-offset-0 focus:pbx-border-none focus:pbx-bg-transparent focus:pbx-outline-none pbx-shadow-none;
   }
 
   .pbx-myPrimarySearchButton {
@@ -473,6 +473,7 @@
   cursor: pointer;
   line-height: 1.5;
   font-weight: normal;
+  background-color: #fff;
 }
 
 .pbx-myPrimarySelect {
