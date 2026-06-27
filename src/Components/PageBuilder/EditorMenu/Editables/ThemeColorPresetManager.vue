@@ -50,7 +50,10 @@ function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): voi
 
     <div class="pbx-grid pbx-grid-cols-1 pbx-gap-3">
       <div v-for="preset in themeColorPresetSettings.colors" :key="preset.id">
-        <label class="pbx-text-xs pbx-font-semibold pbx-text-gray-500">
+        <label
+          :for="`color-input-${preset.id}`"
+          class="pbx-text-xs pbx-font-semibold pbx-text-gray-500"
+        >
           {{ translate(preset.label) }}
         </label>
         <div
@@ -62,6 +65,7 @@ function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): voi
           />
 
           <input
+            :id="`color-input-${preset.id}`"
             :value="preset.color"
             type="text"
             maxlength="7"
