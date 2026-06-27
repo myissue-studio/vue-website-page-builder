@@ -17,7 +17,7 @@ defineEmits<{
     :aria-checked="modelValue"
   >
     <span
-      :class="modelValue ? 'pbx-translate-x-5' : 'pbx-translate-x-0'"
+      :style="modelValue ? { transform: 'translateX(1.25rem)' } : { transform: 'translateX(0)' }"
       class="pbx-relative pbx-size-5 pbx-rounded-full pbx-bg-white pbx-shadow-sm pbx-ring-1 pbx-ring-gray-900/5 pbx-transition-transform pbx-duration-200 pbx-ease-in-out"
     >
       <!-- X icon shown when off -->

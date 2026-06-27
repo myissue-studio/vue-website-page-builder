@@ -122,9 +122,9 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
             >
               <span class="pbx-sr-only">Use setting</span>
               <span
+                :style="hyperlinkEnable ? { transform: 'translateX(1.25rem)' } : { transform: 'translateX(0)' }"
                 :class="[
-                  hyperlinkEnable ? 'pbx-translate-x-5' : 'pbx-translate-x-0',
-                  'pbx-pointer-events-none pbx-relative pbx-inline-block pbx-h-5 pbx-w-5 pbx-transform pbx-rounded-full pbx-bg-white pbx-shadow pbx-ring-0 pbx-transition pbx-duration-200 pbx-ease-in-out',
+                  'pbx-pointer-events-none pbx-relative pbx-inline-block pbx-h-5 pbx-w-5 pbx-rounded-full pbx-bg-white pbx-shadow pbx-ring-0 pbx-transition pbx-duration-200 pbx-ease-in-out',
                 ]"
               >
                 <span
@@ -263,9 +263,9 @@ const handleToggleOpenHyperlinkInNewTab = async function () {
               >
                 <span class="pbx-sr-only">Use setting</span>
                 <span
+                  :style="openHyperlinkInNewTab ? { transform: 'translateX(1.25rem)' } : { transform: 'translateX(0)' }"
                   :class="[
-                    openHyperlinkInNewTab ? 'pbx-translate-x-5' : 'pbx-translate-x-0',
-                    'pbx-pointer-events-none pbx-relative pbx-inline-block pbx-h-5 pbx-w-5 pbx-transform pbx-rounded-full pbx-bg-white pbx-shadow pbx-ring-0 pbx-transition pbx-duration-200 pbx-ease-in-out',
+                    'pbx-pointer-events-none pbx-relative pbx-inline-block pbx-h-5 pbx-w-5 pbx-rounded-full pbx-bg-white pbx-shadow pbx-ring-0 pbx-transition pbx-duration-200 pbx-ease-in-out',
                   ]"
                 >
                   <span
