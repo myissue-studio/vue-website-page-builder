@@ -404,4 +404,88 @@ describe('Global Page Settings', () => {
     // No throw = success
     expect(() => service.stopGlobalStylesSync()).not.toThrow()
   })
+
+  // -------------------------------------------------------------------------
+  // Regression: global styles preserved after element delete / duplicate
+  // -------------------------------------------------------------------------
+  describe('element delete and duplicate', () => {
+    const GLOBAL_CLASSES = 'pbx-font-jost pbx-text-black pbx-bg-emerald-300'
+
+    function createWipingSetComponentsMock() {
+      return vi.fn().mockImplementation(() => {
+        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+          el.removeAttribute('class')
+          el.removeAttribute('style')
+        })
+      })
+    }
+
+    function setupPageBuilderDom() {
+      document.body.innerHTML = ''
+      const pagebuilder = document.createElement('div')
+      pagebuilder.id = 'pagebuilder'
+      const wrapper = document.createElement('div')
+      wrapper.setAttribute('data-pagebuilder-content', '')
+      wrapper.setAttribute('class', GLOBAL_CLASSES)
+
+      const section = document.createElement('section')
+      section.setAttribute('data-componentid', 'test-abc')
+      section.setAttribute('data-component-title', 'Test')
+
+      const row = document.createElement('div')
+      row.className = 'row-a'
+      row.textContent = 'Row A'
+
+      const rowB = document.createElement('div')
+      rowB.className = 'row-b'
+      rowB.textContent = 'Row B'
+
+      section.appendChild(row)
+      section.appendChild(rowB)
+      wrapper.appendChild(section)
+      pagebuilder.appendChild(wrapper)
+      document.body.appendChild(pagebuilder)
+
+      return { wrapper, section, row, rowB }
+    }
+
+    it('REGRESSION: syncDomToStoreOnly preserves global classes after Vue remount', async () => {
+      setupPageBuilderDom()
+      const mockStore = createMockStore({ setComponents: createWipingSetComponentsMock() })
+      const service = new PageBuilderService(mockStore)
+
+      await service.syncDomToStoreOnly()
+
+      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+    })
+
+    it('REGRESSION: deleteElementFromDOM preserves global classes', async () => {
+      const { row } = setupPageBuilderDom()
+      const mockStore = createMockStore({
+        getElement: row,
+        setComponents: createWipingSetComponentsMock(),
+      })
+      const service = new PageBuilderService(mockStore)
+
+      await service.deleteElementFromDOM()
+
+      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+    })
+
+    it('REGRESSION: duplicateElementInDOM preserves global classes', async () => {
+      const { row } = setupPageBuilderDom()
+      const mockStore = createMockStore({
+        getElement: row,
+        setComponents: createWipingSetComponentsMock(),
+      })
+      const service = new PageBuilderService(mockStore)
+
+      await service.duplicateElementInDOM()
+
+      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+    })
+  })
 })
