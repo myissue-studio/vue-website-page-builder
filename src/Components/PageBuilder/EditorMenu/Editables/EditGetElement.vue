@@ -1013,6 +1013,13 @@ const showThemeColorPresetsModal = ref(false)
       <div class="pbx-overflow-y-scroll pbx-h-[20rem] pbx-max-h-[20rem] pbx-min-h-0">
         <div class="pbx-flex pbx-flex-col">
           <!-- content start -->
+
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Layout & order') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
+          </div>
+          <!-- Title feature end -->
           <!-- move up and down start -->
           <div
             v-if="getElement && getComponent"
@@ -1079,6 +1086,13 @@ const showThemeColorPresetsModal = ref(false)
           </div>
           <!-- reverse layout end -->
 
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Element actions') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
+          </div>
+          <!-- Title feature end -->
+
           <!-- duplicate element start -->
           <div
             v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
@@ -1113,37 +1127,14 @@ const showThemeColorPresetsModal = ref(false)
           </div>
           <!-- delete element end -->
 
-          <!-- delete component start -->
-          <div
-            v-if="getElement && getComponent"
-            @click="handleDelete()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
-          >
-            <div
-              class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-            >
-              <span class="material-symbols-outlined"> delete_forever </span>
-            </div>
-            <div class="pbx-text-sm">
-              {{ translate('Delete component') }}
-            </div>
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Component actions') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
           </div>
-          <!-- delete component end -->
+          <!-- Title feature end -->
 
-          <div
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full pbx-cursor-pointer hover:pbx-bg-red-50"
-            @click.stop="showThemeColorPresetsModal = true"
-          >
-            <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
-            >
-              <span class="material-symbols-outlined"> palette </span>
-            </div>
-            <div class="pbx-text-sm">
-              {{ translate('Theme Color Presets') }}
-            </div>
-          </div>
-
+          <!-- Duplicate component start -->
           <div
             v-if="getElement && getComponent"
             @click="
@@ -1178,6 +1169,53 @@ const showThemeColorPresetsModal = ref(false)
               {{ translate('Duplicate component') }}
             </div>
           </div>
+          <!-- Duplicate component start -->
+
+          <!-- Delete component start -->
+          <div
+            v-if="getElement && getComponent"
+            @click="handleDelete()"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+            >
+              <span class="material-symbols-outlined"> delete_forever </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Delete component') }}
+            </div>
+          </div>
+          <!-- Delete component end -->
+
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Theme & colors') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
+          </div>
+          <!-- Title feature end -->
+
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full pbx-cursor-pointer hover:pbx-bg-red-50"
+            @click.stop="showThemeColorPresetsModal = true"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> palette </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Theme Color Presets') }}
+            </div>
+          </div>
+
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Advanced tools') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
+          </div>
+          <!-- Title feature end -->
+
           <div
             v-if="getElement && getComponent"
             @click="handleShowHTMLEditor"
@@ -1190,6 +1228,13 @@ const showThemeColorPresetsModal = ref(false)
             </div>
             <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
           </div>
+
+          <!-- Title feature start -->
+          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
+            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Page settings') }}</p>
+            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
+          </div>
+          <!-- Title feature end -->
           <div
             v-if="getElement && getComponent"
             @click="handleOpenGlobalPageSettings"
