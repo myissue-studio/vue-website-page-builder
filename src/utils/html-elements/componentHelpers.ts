@@ -11,7 +11,7 @@ const componentHelpers: ComponentHelper[] = [
   {
     html_code: `
     <section>
-    <div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2">
+    <div class="pbx-py-4 pbx-px-4">
     <div class="pbx-mx-auto pbx-max-w-7xl">
     <div>
     <p>
@@ -31,7 +31,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
+    html_code: `<section><div class="pbx-py-4 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
     id: null,
     title: 'Header H2',
     category: 'Text',
@@ -42,7 +42,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h3>Layouts and visual.</h3></div></div></div></section>`,
+    html_code: `<section><div class="pbx-py-4 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h3>Layouts and visual.</h3></div></div></div></section>`,
     id: null,
     title: 'Header H3',
     category: 'Text',
@@ -53,7 +53,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
+    html_code: `<section><div class="pbx-py-4 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
     id: null,
     title: 'Header H4',
     category: 'Text',
@@ -64,7 +64,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
+    html_code: `<section><div class="pbx-py-4 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
     id: null,
     title: 'Header H5',
     category: 'Text',
@@ -75,7 +75,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="md:pbx-pt-4 md:pbx-pb-4 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
+    html_code: `<section><div class="pbx-py-4 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
     id: null,
     title: 'Header H6',
     category: 'Text',
@@ -125,7 +125,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Left Positioned Button',
     category: 'Buttons',
@@ -136,7 +136,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Centered Button',
     category: 'Buttons',
@@ -147,7 +147,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Right Positioned Button',
     category: 'Buttons',
@@ -158,7 +158,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Left Positioned Buttons',
     category: 'Buttons',
@@ -169,7 +169,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Centered Buttons',
     category: 'Buttons',
@@ -180,7 +180,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full md:pbx-pt-2 md:pbx-pb-2 pbx-pt-4 pbx-pb-4 lg:pbx-px-4 pbx-px-2"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-py-4 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-green-600" id="linktree"> <span> <a id="linktree" target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Link to landing page</a> </span> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Right Positioned Buttons',
     category: 'Buttons',
