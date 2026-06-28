@@ -1968,7 +1968,7 @@ export class PageBuilderService {
     container.insertBefore(children[1], children[0])
 
     // Sync the DOM change back to the store and persist.
-    this.syncDomToStoreOnly()
+    await this.syncDomToStoreOnly()
     await nextTick()
     this.saveDomComponentsToLocalStorage()
     await this.handleAutoSave()
@@ -1985,7 +1985,7 @@ export class PageBuilderService {
 
   public async duplicateComponent() {
     // Sync latest DOM changes to the store
-    this.syncDomToStoreOnly()
+    await this.syncDomToStoreOnly()
     await nextTick()
 
     const components = this.pageBuilderStateStore.getComponents
@@ -2009,7 +2009,7 @@ export class PageBuilderService {
       ...components.slice(index + 1),
     ]
 
-    this.pageBuilderStateStore.setComponents(newComponents)
+    await this.setComponentsPreservingPageSettings(newComponents)
 
     // Wait for DOM update and re-attach listeners
     await nextTick()
@@ -2027,7 +2027,7 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async deleteComponentFromDOM() {
-    this.syncDomToStoreOnly()
+    await this.syncDomToStoreOnly()
     await nextTick()
 
     const components = this.pageBuilderStateStore.getComponents
@@ -2050,7 +2050,7 @@ export class PageBuilderService {
       ...components.slice(indexToDelete + 1),
     ]
 
-    this.pageBuilderStateStore.setComponents(newComponents)
+    await this.setComponentsPreservingPageSettings(newComponents)
 
     // Wait for the DOM to update before re-attaching event listeners.
     await nextTick()
@@ -2077,34 +2077,7 @@ export class PageBuilderService {
 
     element.parentNode.insertBefore(clone, element.nextSibling)
 
-    const parentSection = element.closest('section')
-
-    if (parentSection) {
-      const componentId = parentSection.getAttribute('data-componentid')
-      if (componentId) {
-        const components = this.pageBuilderStateStore.getComponents
-        if (components) {
-          const componentIndex = components.findIndex(
-            (c: ComponentObject) => c.id === componentId,
-          )
-          if (componentIndex !== -1) {
-            const updatedComponent = {
-              ...components[componentIndex],
-              html_code: parentSection.outerHTML,
-            }
-            const newComponents = [
-              ...components.slice(0, componentIndex),
-              updatedComponent,
-              ...components.slice(componentIndex + 1),
-            ]
-            this.pageBuilderStateStore.setComponents(newComponents)
-          }
-        }
-      }
-    }
-
-    this.syncDomToStoreOnly()
-    await nextTick()
+    await this.syncDomToStoreOnly()
     await this.addListenersToEditableElements()
 
     this.pageBuilderStateStore.setComponent(null)
@@ -2139,61 +2112,13 @@ export class PageBuilderService {
     } else {
       // If the element is inside a section
       element.remove()
-      // --- Sync DOM to store after DOM mutation ---
-      this.syncDomToStoreOnly()
 
       if (parentSection && this.isSectionEmpty(parentSection)) {
-        const componentId = parentSection.getAttribute('data-componentid')
-        if (componentId) {
-          const components = this.pageBuilderStateStore.getComponents
-          if (components) {
-            const indexToDelete = components.findIndex((c: ComponentObject) => c.id === componentId)
-            if (indexToDelete !== -1) {
-              const newComponents = [
-                ...components.slice(0, indexToDelete),
-                ...components.slice(indexToDelete + 1),
-              ]
-              this.pageBuilderStateStore.setComponents(newComponents)
-              parentSection.remove() // Directly remove from DOM
-              // --- Sync DOM to store again after removing section ---
-              this.syncDomToStoreOnly()
-              // Save after removing the section
-              this.saveDomComponentsToLocalStorage()
-            }
-          }
-        }
-      } else if (parentSection) {
-        // If the section is not empty, update its HTML content in the store
-        const componentId = parentSection.getAttribute('data-componentid')
-        if (componentId) {
-          const components = this.pageBuilderStateStore.getComponents
-          if (components) {
-            const componentIndex = components.findIndex(
-              (c: ComponentObject) => c.id === componentId,
-            )
-            if (componentIndex !== -1) {
-              const updatedComponent = {
-                ...components[componentIndex],
-                html_code: parentSection.outerHTML,
-              }
-              const newComponents = [
-                ...components.slice(0, componentIndex),
-                updatedComponent,
-                ...components.slice(componentIndex + 1),
-              ]
-              this.pageBuilderStateStore.setComponents(newComponents)
-              // --- Sync DOM to store after updating section ---
-              this.syncDomToStoreOnly()
-              // Save after updating the section
-              this.saveDomComponentsToLocalStorage()
-            }
-          }
-        }
-      } else {
-        // If no parentSection, still sync and save
-        this.syncDomToStoreOnly()
-        this.saveDomComponentsToLocalStorage()
+        parentSection.remove()
       }
+
+      await this.syncDomToStoreOnly()
+      this.saveDomComponentsToLocalStorage()
     }
 
     // Clear the selection state.
@@ -2480,14 +2405,9 @@ export class PageBuilderService {
    * Syncs the current DOM state of components to the in-memory store.
    * @private
    */
-  public syncDomToStoreOnly() {
+  public async syncDomToStoreOnly(): Promise<void> {
     const pagebuilder = document.querySelector('#pagebuilder')
     if (!pagebuilder) return
-
-    // Save current page settings before setComponents triggers a full DOM remount
-    const firstContent = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
-    const savedClasses = firstContent?.getAttribute('class') || ''
-    const savedStyle = firstContent?.getAttribute('style') || ''
 
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
@@ -2500,23 +2420,11 @@ export class PageBuilderService {
       })
     })
 
-    this.pageBuilderStateStore.setComponents(componentsToSave)
-
-    // Re-apply page settings after the re-render (setComponents forces components = [] first)
-    if (savedClasses || savedStyle) {
-      nextTick(() => {
-        document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-          if (savedClasses) el.setAttribute('class', savedClasses)
-          else el.removeAttribute('class')
-          if (savedStyle) el.setAttribute('style', savedStyle)
-          else el.removeAttribute('style')
-        })
-      })
-    }
+    await this.setComponentsPreservingPageSettings(componentsToSave)
   }
 
   public async generateHtmlFromComponents(): Promise<string> {
-    this.syncDomToStoreOnly()
+    await this.syncDomToStoreOnly()
     await nextTick()
 
     const components = this.pageBuilderStateStore.getComponents
@@ -2732,6 +2640,73 @@ export class PageBuilderService {
     return null
   }
 
+  /** Applies captured global page classes/styles to every section wrapper. */
+  private applyPageSettingsToAllWrappers(pageSettings: { classes: string; style: string }): void {
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      if (pageSettings.classes) el.setAttribute('class', pageSettings.classes)
+      else el.removeAttribute('class')
+      if (pageSettings.style) el.setAttribute('style', pageSettings.style)
+      else el.removeAttribute('style')
+    })
+    if (pageSettings.classes || pageSettings.style) {
+      this._lastKnownPageSettings = pageSettings
+    }
+  }
+
+  /** Reconnects the global-styles MutationObserver after a Vue remount replaces wrapper nodes. */
+  private reconnectGlobalStylesObserver(): void {
+    if (!this.globalStylesObserver) return
+
+    const firstEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
+    if (!firstEl) return
+
+    const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
+    this.globalStylesObserver.disconnect()
+    this.globalStylesObserver = new MutationObserver(() => {
+      const cls = firstEl.getAttribute('class') ?? ''
+      const style = firstEl.getAttribute('style') ?? ''
+      allContentEls.forEach((el) => {
+        if (el === firstEl) return
+        if (cls) el.setAttribute('class', cls)
+        else el.removeAttribute('class')
+        if (style) el.setAttribute('style', style)
+        else el.removeAttribute('style')
+      })
+    })
+    this.globalStylesObserver.observe(firstEl, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+    })
+  }
+
+  /**
+   * Updates the component store and re-renders the page without losing global page
+   * styles on [data-pagebuilder-content]. setComponents clears wrappers first, so
+   * settings must be captured before the remount and re-applied after Vue renders.
+   */
+  private async setComponentsPreservingPageSettings(
+    components: ComponentObject[],
+  ): Promise<void> {
+    const pageSettings =
+      this.readCurrentPageSettings() ?? this._lastKnownPageSettings ?? null
+
+    const shouldReconnectObserver = this.globalStylesObserver !== null
+    this.globalStylesObserver?.disconnect()
+
+    this.pageBuilderStateStore.setComponents(components)
+
+    await nextTick()
+    await nextTick()
+
+    if (pageSettings && (pageSettings.classes || pageSettings.style)) {
+      this.applyPageSettingsToAllWrappers(pageSettings)
+    }
+
+    if (shouldReconnectObserver) {
+      this.reconnectGlobalStylesObserver()
+    }
+  }
+
   /**
    * Parses a CSS style string into a key-value object.
    * @param {string} style - The style string to parse.
@@ -2876,7 +2851,7 @@ export class PageBuilderService {
   }
 
   public async returnLatestComponents() {
-    this.syncDomToStoreOnly()
+    await this.syncDomToStoreOnly()
     // Wait for Vue to finish DOM updates before attaching event listeners. This ensure elements exist in the DOM.
     await nextTick()
     // Attach event listeners to all editable elements in the Builder
@@ -3358,7 +3333,7 @@ export class PageBuilderService {
         // Pause the MutationObserver so it doesn't fire on the divs being removed/recreated.
         this.globalStylesObserver?.disconnect()
 
-        this.syncDomToStoreOnly()
+        await this.syncDomToStoreOnly()
         await nextTick()
 
         const components = this.pageBuilderStateStore.getComponents || []
