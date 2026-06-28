@@ -114,7 +114,7 @@ function stepVertical(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.verticalMargin
   const cur = fontVerticalMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontVerticalMargin.value = next
   pageBuilderService.handleVerticalMargin(next)
 }
@@ -123,7 +123,7 @@ function stepHorizontal(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.horizontalMargin
   const cur = fontHorizontalMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontHorizontalMargin.value = next
   pageBuilderService.handleHorizontalMargin(next)
 }
@@ -132,7 +132,7 @@ function stepTop(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.topMargin
   const cur = fontTopMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontTopMargin.value = next
   pageBuilderService.handleTopMargin(next)
 }
@@ -141,7 +141,7 @@ function stepRight(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.rightMargin
   const cur = fontRightMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontRightMargin.value = next
   pageBuilderService.handleRightMargin(next)
 }
@@ -150,7 +150,7 @@ function stepBottom(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.bottomMargin
   const cur = fontBottomMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontBottomMargin.value = next
   pageBuilderService.handleBottomMargin(next)
 }
@@ -159,7 +159,7 @@ function stepLeft(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.leftMargin
   const cur = fontLeftMargin.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontLeftMargin.value = next
   pageBuilderService.handleLeftMargin(next)
 }

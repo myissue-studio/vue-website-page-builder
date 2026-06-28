@@ -114,7 +114,7 @@ function stepVertical(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.verticalPadding
   const cur = fontVerticalPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontVerticalPadding.value = next
   pageBuilderService.handleVerticalPadding(next)
 }
@@ -123,7 +123,7 @@ function stepHorizontal(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.horizontalPadding
   const cur = fontHorizontalPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontHorizontalPadding.value = next
   pageBuilderService.handleHorizontalPadding(next)
 }
@@ -132,7 +132,7 @@ function stepTop(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.topPadding
   const cur = fontTopPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontTopPadding.value = next
   pageBuilderService.handleTopPadding(next)
 }
@@ -141,7 +141,7 @@ function stepRight(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.rightPadding
   const cur = fontRightPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontRightPadding.value = next
   pageBuilderService.handleRightPadding(next)
 }
@@ -150,7 +150,7 @@ function stepBottom(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.bottomPadding
   const cur = fontBottomPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontBottomPadding.value = next
   pageBuilderService.handleBottomPadding(next)
 }
@@ -159,7 +159,7 @@ function stepLeft(dir: 1 | -1) {
   const arr = tailwindPaddingPlusMargin.leftPadding
   const cur = fontLeftPadding.value ?? 'none'
   const idx = arr.indexOf(cur)
-  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  const next = arr[Math.max(0, Math.min(arr.length - 1, Math.max(0, idx) + dir))]
   fontLeftPadding.value = next
   pageBuilderService.handleLeftPadding(next)
 }
