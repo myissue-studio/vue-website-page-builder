@@ -2537,6 +2537,50 @@ export class PageBuilderService {
       .join('\n')
   }
 
+  public async generateFullPageHtml(): Promise<string> {
+    await this.syncDomToStoreOnly()
+    await nextTick()
+
+    const components = this.pageBuilderStateStore.getComponents
+
+    if (!Array.isArray(components)) {
+      return ''
+    }
+
+    // Wait for Vue to finish DOM updates before attaching event listeners. This ensure elements exist in the DOM.
+    await nextTick()
+    // Attach event listeners to all editable elements in the Builder
+    await this.addListenersToEditableElements()
+
+    const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
+    const pagebuilder = document.createElement('div')
+    pagebuilder.setAttribute('id', 'pagebuilder')
+
+    if (pageSettings?.classes) {
+      pagebuilder.setAttribute('class', pageSettings.classes)
+    }
+
+    if (pageSettings?.style) {
+      pagebuilder.setAttribute('style', pageSettings.style)
+    }
+
+    components.forEach((comp) => {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(comp.html_code, 'text/html')
+      const section = doc.querySelector('section')
+
+      if (section) {
+        section.removeAttribute('data-componentid')
+        pagebuilder.appendChild(document.importNode(section, true))
+        return
+      }
+
+      pagebuilder.insertAdjacentHTML('beforeend', comp.html_code)
+    })
+
+    return pagebuilder.outerHTML
+  }
+
   /**
    * Saves the current DOM state of components to local storage.
    * @private

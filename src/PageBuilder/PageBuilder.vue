@@ -406,7 +406,7 @@ watch(getShowModalHTMLEditor, async (newVal) => {
       return
     }
 
-    editableComponents.value = await pageBuilderService.generateHtmlFromComponents()
+    editableComponents.value = await pageBuilderService.generateFullPageHtml()
   }
 })
 

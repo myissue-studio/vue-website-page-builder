@@ -198,6 +198,39 @@ describe('Global Page Settings', () => {
     expect(resultEl?.getAttribute('class')).toBe(appliedClasses)
   })
 
+  it('exports full page HTML with global page settings on the #pagebuilder wrapper', async () => {
+    const components: Array<{ html_code: string; id: string | null; title: string }> = []
+    const appliedClasses = 'pbx-font-jost pbx-text-black pbx-bg-emerald-300'
+    const appliedStyle = 'background-color: rgb(52, 211, 153); color: rgb(17, 24, 39);'
+
+    contentEl.setAttribute('id', 'pagebuilder')
+    contentEl.setAttribute('class', appliedClasses)
+    contentEl.setAttribute('style', appliedStyle)
+    contentEl.innerHTML = SECTION_HTML
+
+    const mockStore = createMockStore({
+      setComponents: vi.fn().mockImplementation((nextComponents) => {
+        components.splice(0, components.length, ...nextComponents)
+      }),
+    })
+    Object.defineProperty(mockStore, 'getComponents', {
+      get: () => components,
+    })
+
+    const service = new PageBuilderService(mockStore)
+
+    const html = await service.generateFullPageHtml()
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    const exportedPagebuilder = doc.querySelector('#pagebuilder')
+    const exportedSection = doc.querySelector('section')
+
+    expect(exportedPagebuilder?.getAttribute('class')).toBe(appliedClasses)
+    expect(exportedPagebuilder?.getAttribute('style')).toContain('background-color')
+    expect(exportedPagebuilder?.getAttribute('style')).toContain('color')
+    expect(exportedSection?.getAttribute('data-componentid')).toBeNull()
+    expect(exportedSection?.getAttribute('data-component-title')).toBe('Test')
+  })
+
   it('REGRESSION: preserves inline styles when config has no pageSettings and Vue re-renders', async () => {
     contentEl.setAttribute('style', 'background-color: rgb(52, 211, 153);')
 
