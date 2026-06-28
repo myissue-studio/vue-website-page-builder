@@ -36,6 +36,9 @@
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
+    /* Ensure inner content never touches the browser edge on any viewport */
+    padding-left: clamp(1rem, 4vw, 2rem);
+    padding-right: clamp(1rem, 4vw, 2rem);
   }
   .pbx-myPrimaryModule {
     @apply pbx-max-w-7xl pbx-mx-auto pbx-myModulePyMargin pbx-myModulePadding;
