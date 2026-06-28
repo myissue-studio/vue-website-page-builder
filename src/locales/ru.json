@@ -310,5 +310,6 @@
   "Delete element and component?": "Удалить элемент и компонент?",
   "You are about to remove this element. This action cannot be undone.": "Вы собираетесь удалить этот элемент. Это действие нельзя отменить.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "Удаление этого элемента оставит компонент пустым, поэтому весь компонент также будет удалён.",
-  "Reverse layout": "Обратить макет"
+  "Reverse layout": "Обратить макет",
+  "Applies across all screen sizes": "Применяется ко всем размерам экрана"
 }

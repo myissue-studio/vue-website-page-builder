@@ -310,5 +310,6 @@
   "Delete element and component?": "حذف العنصر والمكوّن؟",
   "You are about to remove this element. This action cannot be undone.": "أنت على وشك إزالة هذا العنصر. لا يمكن التراجع عن هذا الإجراء.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "ستؤدي إزالة هذا العنصر إلى ترك المكوّن فارغاً، وبالتالي سيتم حذف المكوّن بأكمله أيضاً.",
-  "Reverse layout": "عكس التخطيط"
+  "Reverse layout": "عكس التخطيط",
+  "Applies across all screen sizes": "ينطبق على جميع أحجام الشاشة"
 }

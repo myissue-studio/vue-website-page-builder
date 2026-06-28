@@ -117,8 +117,8 @@ watch(
     <template #content>
       <div class="pbx-my-2 pbx-py-2">
         <div class="pbx-pt-4 pbx-pb-2 pbx-mb-4">
-          <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
-            {{ translate('Large Screens Only') }}
+          <p class="pbx-text-xs pbx-text-gray-500 pbx-mb-2">
+            {{ translate('Applies across all screen sizes') }}
           </p>
           <hr />
         </div>

@@ -310,5 +310,6 @@
   "Delete element and component?": "तत्व और घटक हटाएं?",
   "You are about to remove this element. This action cannot be undone.": "आप इस तत्व को हटाने वाले हैं। यह क्रिया पूर्ववत नहीं की जा सकती।",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "इस तत्व को हटाने से घटक खाली हो जाएगा, इसलिए पूरा घटक भी हटा दिया जाएगा।",
-  "Reverse layout": "लेआउट उलटें"
+  "Reverse layout": "लेआउट उलटें",
+  "Applies across all screen sizes": "सभी स्क्रीन आकारों पर लागू होता है"
 }

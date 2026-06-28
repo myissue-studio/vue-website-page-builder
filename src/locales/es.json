@@ -310,5 +310,6 @@
   "Delete element and component?": "¿Eliminar elemento y componente?",
   "You are about to remove this element. This action cannot be undone.": "Estás a punto de eliminar este elemento. Esta acción no se puede deshacer.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "Al eliminar este elemento, el componente quedará vacío, por lo que el componente completo también se eliminará.",
-  "Reverse layout": "Invertir diseño"
+  "Reverse layout": "Invertir diseño",
+  "Applies across all screen sizes": "Se aplica en todos los tamaños de pantalla"
 }

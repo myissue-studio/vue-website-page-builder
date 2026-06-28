@@ -701,6 +701,21 @@ export class PageBuilderService {
         currentHTMLElement.classList.remove(elementClass)
       }
 
+      // Remove any legacy lg:- and md:-prefixed variants that may have been saved before the
+      // padding/margin system was updated to apply at all screen sizes.
+      // Responsive variants sit inside @media blocks in the generated CSS and therefore
+      // win over base utilities regardless of declaration order, so they MUST be removed.
+      CSSArray.forEach((cls) => {
+        if (cls !== 'none') {
+          ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
+            const prefixed = `${bp}:${cls}`
+            if (currentHTMLElement.classList.contains(prefixed)) {
+              currentHTMLElement.classList.remove(prefixed)
+            }
+          })
+        }
+      })
+
       currentHTMLElement.classList.add(cssUserSelection)
       elementClass = cssUserSelection
     } else if (
@@ -709,6 +724,19 @@ export class PageBuilderService {
       elementClass
     ) {
       currentHTMLElement.classList.remove(elementClass)
+
+      // Also clean up any legacy responsive-prefixed variants on reset to 'none'.
+      CSSArray.forEach((cls) => {
+        if (cls !== 'none') {
+          ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
+            const prefixed = `${bp}:${cls}`
+            if (currentHTMLElement.classList.contains(prefixed)) {
+              currentHTMLElement.classList.remove(prefixed)
+            }
+          })
+        }
+      })
+
       elementClass = cssUserSelection
     }
 
@@ -1414,10 +1442,34 @@ export class PageBuilderService {
     )
   }
   /**
+   * Removes every class that appears in any of the given arrays from the currently
+   * selected element. Used to strip conflicting shorthand/directional padding or
+   * margin classes before applying a new value (e.g. remove pbx-py-* when setting
+   * pbx-pt-*, so the shorthand never silently overrides the directional value).
+   */
+  private purgeConflictingClasses(conflictArrays: string[][]): void {
+    const el = this.getElement.value
+    if (!el) return
+    conflictArrays.forEach((arr) => {
+      arr.forEach((cls) => {
+        if (cls !== 'none' && el.classList.contains(cls)) {
+          el.classList.remove(cls)
+        }
+      })
+    })
+  }
+
+  /**
    * Handles changes to the vertical padding of the selected element.
-   * @param {string} [userSelectedVerticalPadding] - The selected vertical padding class.
+   * py-* shorthand: also clear individual pt-* and pb-* so they don't override.
    */
   public handleVerticalPadding(userSelectedVerticalPadding?: string): void {
+    if (userSelectedVerticalPadding !== undefined) {
+      this.purgeConflictingClasses([
+        tailwindPaddingAndMargin.topPadding,
+        tailwindPaddingAndMargin.bottomPadding,
+      ])
+    }
     this.applyElementClassChanges(
       userSelectedVerticalPadding,
       tailwindPaddingAndMargin.verticalPadding,
@@ -1426,9 +1478,15 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the horizontal padding of the selected element.
-   * @param {string} [userSelectedHorizontalPadding] - The selected horizontal padding class.
+   * px-* shorthand: also clear individual pl-* and pr-* so they don't override.
    */
   public handleHorizontalPadding(userSelectedHorizontalPadding?: string): void {
+    if (userSelectedHorizontalPadding !== undefined) {
+      this.purgeConflictingClasses([
+        tailwindPaddingAndMargin.leftPadding,
+        tailwindPaddingAndMargin.rightPadding,
+      ])
+    }
     this.applyElementClassChanges(
       userSelectedHorizontalPadding,
       tailwindPaddingAndMargin.horizontalPadding,
@@ -1437,9 +1495,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the top padding of the selected element.
-   * @param {string} [userSelectedTopPadding] - The selected top padding class.
+   * pt-*: also clear py-* shorthand which also sets padding-top.
    */
   public handleTopPadding(userSelectedTopPadding?: string): void {
+    if (userSelectedTopPadding !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.verticalPadding])
+    }
     this.applyElementClassChanges(
       userSelectedTopPadding,
       tailwindPaddingAndMargin.topPadding,
@@ -1448,9 +1509,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the right padding of the selected element.
-   * @param {string} [userSelectedRightPadding] - The selected right padding class.
+   * pr-*: also clear px-* shorthand which also sets padding-right.
    */
   public handleRightPadding(userSelectedRightPadding?: string): void {
+    if (userSelectedRightPadding !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.horizontalPadding])
+    }
     this.applyElementClassChanges(
       userSelectedRightPadding,
       tailwindPaddingAndMargin.rightPadding,
@@ -1459,9 +1523,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the bottom padding of the selected element.
-   * @param {string} [userSelectedBottomPadding] - The selected bottom padding class.
+   * pb-*: also clear py-* shorthand which also sets padding-bottom.
    */
   public handleBottomPadding(userSelectedBottomPadding?: string): void {
+    if (userSelectedBottomPadding !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.verticalPadding])
+    }
     this.applyElementClassChanges(
       userSelectedBottomPadding,
       tailwindPaddingAndMargin.bottomPadding,
@@ -1470,9 +1537,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the left padding of the selected element.
-   * @param {string} [userSelectedLeftPadding] - The selected left padding class.
+   * pl-*: also clear px-* shorthand which also sets padding-left.
    */
   public handleLeftPadding(userSelectedLeftPadding?: string): void {
+    if (userSelectedLeftPadding !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.horizontalPadding])
+    }
     this.applyElementClassChanges(
       userSelectedLeftPadding,
       tailwindPaddingAndMargin.leftPadding,
@@ -1482,9 +1552,15 @@ export class PageBuilderService {
 
   /**
    * Handles changes to the vertical margin of the selected element.
-   * @param {string} [userSelectedVerticalMargin] - The selected vertical margin class.
+   * my-* shorthand: also clear individual mt-* and mb-*.
    */
   public handleVerticalMargin(userSelectedVerticalMargin?: string): void {
+    if (userSelectedVerticalMargin !== undefined) {
+      this.purgeConflictingClasses([
+        tailwindPaddingAndMargin.topMargin,
+        tailwindPaddingAndMargin.bottomMargin,
+      ])
+    }
     this.applyElementClassChanges(
       userSelectedVerticalMargin,
       tailwindPaddingAndMargin.verticalMargin,
@@ -1493,9 +1569,15 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the horizontal margin of the selected element.
-   * @param {string} [userSelectedHorizontalMargin] - The selected horizontal margin class.
+   * mx-* shorthand: also clear individual ml-* and mr-*.
    */
   public handleHorizontalMargin(userSelectedHorizontalMargin?: string): void {
+    if (userSelectedHorizontalMargin !== undefined) {
+      this.purgeConflictingClasses([
+        tailwindPaddingAndMargin.leftMargin,
+        tailwindPaddingAndMargin.rightMargin,
+      ])
+    }
     this.applyElementClassChanges(
       userSelectedHorizontalMargin,
       tailwindPaddingAndMargin.horizontalMargin,
@@ -1504,9 +1586,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the top margin of the selected element.
-   * @param {string} [userSelectedTopMargin] - The selected top margin class.
+   * mt-*: also clear my-* shorthand.
    */
   public handleTopMargin(userSelectedTopMargin?: string): void {
+    if (userSelectedTopMargin !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.verticalMargin])
+    }
     this.applyElementClassChanges(
       userSelectedTopMargin,
       tailwindPaddingAndMargin.topMargin,
@@ -1515,9 +1600,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the right margin of the selected element.
-   * @param {string} [userSelectedRightMargin] - The selected right margin class.
+   * mr-*: also clear mx-* shorthand.
    */
   public handleRightMargin(userSelectedRightMargin?: string): void {
+    if (userSelectedRightMargin !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.horizontalMargin])
+    }
     this.applyElementClassChanges(
       userSelectedRightMargin,
       tailwindPaddingAndMargin.rightMargin,
@@ -1526,9 +1614,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the bottom margin of the selected element.
-   * @param {string} [userSelectedBottomMargin] - The selected bottom margin class.
+   * mb-*: also clear my-* shorthand.
    */
   public handleBottomMargin(userSelectedBottomMargin?: string): void {
+    if (userSelectedBottomMargin !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.verticalMargin])
+    }
     this.applyElementClassChanges(
       userSelectedBottomMargin,
       tailwindPaddingAndMargin.bottomMargin,
@@ -1537,9 +1628,12 @@ export class PageBuilderService {
   }
   /**
    * Handles changes to the left margin of the selected element.
-   * @param {string} [userSelectedLeftMargin] - The selected left margin class.
+   * ml-*: also clear mx-* shorthand.
    */
   public handleLeftMargin(userSelectedLeftMargin?: string): void {
+    if (userSelectedLeftMargin !== undefined) {
+      this.purgeConflictingClasses([tailwindPaddingAndMargin.horizontalMargin])
+    }
     this.applyElementClassChanges(
       userSelectedLeftMargin,
       tailwindPaddingAndMargin.leftMargin,
