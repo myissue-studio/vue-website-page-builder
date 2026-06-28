@@ -893,7 +893,7 @@ const showThemeColorPresetsModal = ref(false)
                       {{ translate('Stretch across browser width') }}
                     </p>
                   </div>
-                  hii
+                  
                   <ToggleInput
                     :model-value="selectedComponentFullWidth"
                     @update:model-value="updateSelectedComponentFullWidth"
