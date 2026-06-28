@@ -311,5 +311,12 @@
   "You are about to remove this element. This action cannot be undone.": "Sie sind dabei, dieses Element zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "Das Entfernen dieses Elements lässt die Komponente leer, sodass die gesamte Komponente ebenfalls entfernt wird.",
   "Reverse layout": "Layout umkehren",
-  "Applies across all screen sizes": "Gilt für alle Bildschirmgrößen"
+  "Applies across all screen sizes": "Gilt für alle Bildschirmgrößen",
+  "top": "Oben",
+  "bottom": "Unten",
+  "left": "Links",
+  "right": "Rechts",
+  "element": "Element",
+  "Vertical": "Vertikal",
+  "Horizontal": "Horizontal"
 }

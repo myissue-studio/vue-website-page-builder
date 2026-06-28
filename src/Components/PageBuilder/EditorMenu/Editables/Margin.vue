@@ -8,232 +8,348 @@ import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
-
-// Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const fontVerticalPadding = ref<string | null>(null)
-const fontHorizontalPadding = ref<string | null>(null)
 const fontVerticalMargin = ref<string | null>(null)
 const fontHorizontalMargin = ref<string | null>(null)
 const fontTopMargin = ref<string | null>(null)
 const fontRightMargin = ref<string | null>(null)
 const fontBottomMargin = ref<string | null>(null)
 const fontLeftMargin = ref<string | null>(null)
-const getFontVerticalPadding = computed(() => {
-  return pageBuilderStateStore.getFontVerticalPadding
-})
-const getFontHorizontalPadding = computed(() => {
-  return pageBuilderStateStore.getFontHorizontalPadding
-})
-const getFontVerticalMargin = computed(() => {
-  return pageBuilderStateStore.getFontVerticalMargin
-})
-const getFontHorizontalMargin = computed(() => {
-  return pageBuilderStateStore.getFontHorizontalMargin
-})
-const getFontTopMargin = computed(() => {
-  return pageBuilderStateStore.getFontTopMargin
-})
-const getFontRightMargin = computed(() => {
-  return pageBuilderStateStore.getFontRightMargin
-})
-const getFontBottomMargin = computed(() => {
-  return pageBuilderStateStore.getFontBottomMargin
-})
-const getFontLeftMargin = computed(() => {
-  return pageBuilderStateStore.getFontLeftMargin
-})
+
+const getFontVerticalMargin = computed(() => pageBuilderStateStore.getFontVerticalMargin)
+const getFontHorizontalMargin = computed(() => pageBuilderStateStore.getFontHorizontalMargin)
+const getFontTopMargin = computed(() => pageBuilderStateStore.getFontTopMargin)
+const getFontRightMargin = computed(() => pageBuilderStateStore.getFontRightMargin)
+const getFontBottomMargin = computed(() => pageBuilderStateStore.getFontBottomMargin)
+const getFontLeftMargin = computed(() => pageBuilderStateStore.getFontLeftMargin)
 
 watch(
-  getFontVerticalPadding,
-  async (newValue) => {
-    fontVerticalPadding.value = newValue
-    await pageBuilderService.initializeElementStyles()
-  },
-  { immediate: true },
-)
-watch(
-  getFontHorizontalPadding,
-  async (newValue) => {
-    fontHorizontalPadding.value = newValue
-    await pageBuilderService.initializeElementStyles()
-  },
-  { immediate: true },
-)
-watch(
   getFontVerticalMargin,
-  async (newValue) => {
-    fontVerticalMargin.value = newValue
+  async (v) => {
+    fontVerticalMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontHorizontalMargin,
-  async (newValue) => {
-    fontHorizontalMargin.value = newValue
+  async (v) => {
+    fontHorizontalMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontTopMargin,
-  async (newValue) => {
-    fontTopMargin.value = newValue
+  async (v) => {
+    fontTopMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontRightMargin,
-  async (newValue) => {
-    fontRightMargin.value = newValue
+  async (v) => {
+    fontRightMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontBottomMargin,
-  async (newValue) => {
-    fontBottomMargin.value = newValue
+  async (v) => {
+    fontBottomMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontLeftMargin,
-  async (newValue) => {
-    fontLeftMargin.value = newValue
+  async (v) => {
+    fontLeftMargin.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
+
+/** Extract numeric part from a Tailwind class, e.g. "pbx-mt-8" → "8" */
+function displayVal(cls: string | null | undefined): string {
+  if (!cls || cls === 'none') return '–'
+  const m = cls.match(/-(\d[\d.]*)$/)
+  return m ? m[1] : '–'
+}
+
+/** Effective value: prefer directional class, fall back to shorthand */
+function effectiveTop(): string {
+  return displayVal(
+    fontTopMargin.value && fontTopMargin.value !== 'none'
+      ? fontTopMargin.value
+      : fontVerticalMargin.value,
+  )
+}
+function effectiveBottom(): string {
+  return displayVal(
+    fontBottomMargin.value && fontBottomMargin.value !== 'none'
+      ? fontBottomMargin.value
+      : fontVerticalMargin.value,
+  )
+}
+function effectiveLeft(): string {
+  return displayVal(
+    fontLeftMargin.value && fontLeftMargin.value !== 'none'
+      ? fontLeftMargin.value
+      : fontHorizontalMargin.value,
+  )
+}
+function effectiveRight(): string {
+  return displayVal(
+    fontRightMargin.value && fontRightMargin.value !== 'none'
+      ? fontRightMargin.value
+      : fontHorizontalMargin.value,
+  )
+}
+
+function stepVertical(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.verticalMargin
+  const cur = fontVerticalMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontVerticalMargin.value = next
+  pageBuilderService.handleVerticalMargin(next)
+}
+
+function stepHorizontal(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.horizontalMargin
+  const cur = fontHorizontalMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontHorizontalMargin.value = next
+  pageBuilderService.handleHorizontalMargin(next)
+}
+
+function stepTop(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.topMargin
+  const cur = fontTopMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontTopMargin.value = next
+  pageBuilderService.handleTopMargin(next)
+}
+
+function stepRight(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.rightMargin
+  const cur = fontRightMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontRightMargin.value = next
+  pageBuilderService.handleRightMargin(next)
+}
+
+function stepBottom(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.bottomMargin
+  const cur = fontBottomMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontBottomMargin.value = next
+  pageBuilderService.handleBottomMargin(next)
+}
+
+function stepLeft(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.leftMargin
+  const cur = fontLeftMargin.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontLeftMargin.value = next
+  pageBuilderService.handleLeftMargin(next)
+}
 </script>
+
 <template>
   <EditorAccordion>
     <template #title>{{ translate('Margin') }}</template>
     <template #content>
-      <div class="pbx-my-2 pbx-py-2">
-        <div class="pbx-pt-4 pbx-pb-2 pbx-mb-4">
-          <p class="pbx-text-xs pbx-text-gray-500 pbx-mb-2">
-            {{ translate('Applies across all screen sizes') }}
-          </p>
-          <hr />
-        </div>
-        <label for="vertical-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Vertical Margin')
-        }}</label>
-        <select
-          id="vertical-margin"
-          v-model="fontVerticalMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleVerticalMargin(fontVerticalMargin ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="verticalMargin in tailwindPaddingPlusMargin.verticalMargin"
-            :key="verticalMargin"
-          >
-            {{ verticalMargin }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="horizontal-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Horizontal Margin')
-        }}</label>
-        <select
-          id="horizontal-margin"
-          v-model="fontHorizontalMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleHorizontalMargin(fontHorizontalMargin ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="horizontalMargin in tailwindPaddingPlusMargin.horizontalMargin"
-            :key="horizontalMargin"
-          >
-            {{ horizontalMargin }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-pt-4 pbx-pb-2">
-        <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
-          {{ translate('Advanced Margin') }}
+      <div class="pbx-py-3 pbx-px-1">
+        <p class="pbx-text-xs pbx-text-gray-400 pbx-mb-3">
+          {{ translate('Applies across all screen sizes') }}
         </p>
-      </div>
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="top-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Top Margin')
-        }}</label>
-        <select
-          id="top-margin"
-          v-model="fontTopMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleTopMargin(fontTopMargin ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="topMargin in tailwindPaddingPlusMargin.topMargin" :key="topMargin">
-            {{ topMargin }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="right-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Right Margin')
-        }}</label>
-        <select
-          id="right-margin"
-          v-model="fontRightMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleRightMargin(fontRightMargin ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="rightMargin in tailwindPaddingPlusMargin.rightMargin" :key="rightMargin">
-            {{ rightMargin }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="bottom-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Bottom Margin')
-        }}</label>
-        <select
-          id="bottom-margin"
-          v-model="fontBottomMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBottomMargin(fontBottomMargin ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="bottomMargin in tailwindPaddingPlusMargin.bottomMargin"
-            :key="bottomMargin"
+
+        <!-- Shorthand quick-set row -->
+        <div class="pbx-flex pbx-flex-col pbx-gap-2 pbx-mb-4">
+          <!-- Vertical shorthand -->
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
           >
-            {{ bottomMargin }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="left-margin" class="pbx-myPrimaryInputLabel">{{
-          translate('Left Margin')
-        }}</label>
-        <select
-          id="left-margin"
-          v-model="fontLeftMargin"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleLeftMargin(fontLeftMargin ?? undefined)"
+            <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
+              translate('Vertical')
+            }}</span>
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepVertical(-1)"
+              >
+                −
+              </button>
+              <span
+                class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-w-10 pbx-text-center pbx-tabular-nums"
+                >{{ displayVal(fontVerticalMargin) }}</span
+              >
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepVertical(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Horizontal shorthand -->
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
+          >
+            <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
+              translate('Horizontal')
+            }}</span>
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepHorizontal(-1)"
+              >
+                −
+              </button>
+              <span
+                class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-w-10 pbx-text-center pbx-tabular-nums"
+                >{{ displayVal(fontHorizontalMargin) }}</span
+              >
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepHorizontal(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box model visual -->
+        <div
+          class="pbx-relative pbx-rounded-xl pbx-border-2 pbx-border-dashed pbx-border-orange-300 pbx-bg-orange-50 pbx-pt-10 pbx-pb-10 pbx-px-3"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="leftMargin in tailwindPaddingPlusMargin.leftMargin" :key="leftMargin">
-            {{ leftMargin }}
-          </option>
-        </select>
+          <!-- Top side -->
+          <div class="pbx-flex pbx-justify-center pbx-mb-2">
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepTop(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
+                <span class="pbx-text-[10px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                  translate('top')
+                }}</span>
+                <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveTop()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepTop(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Middle row: left | center | right — CSS grid keeps right inside the box -->
+          <div
+            class="pbx-items-center pbx-gap-1"
+            style="display: grid; grid-template-columns: auto 1fr auto"
+          >
+            <!-- Left -->
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepLeft(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
+                <span class="pbx-text-[9px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                  translate('left')
+                }}</span>
+                <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveLeft()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepLeft(1)"
+              >
+                +
+              </button>
+            </div>
+
+            <!-- Center element placeholder -->
+            <div
+              class="pbx-bg-white pbx-border pbx-border-orange-200 pbx-rounded-lg pbx-h-10 pbx-flex pbx-items-center pbx-justify-center pbx-mx-1"
+            >
+              <span class="pbx-text-[10px] pbx-text-gray-300 pbx-select-none">{{
+                translate('element')
+              }}</span>
+            </div>
+
+            <!-- Right -->
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepRight(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
+                <span class="pbx-text-[9px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                  translate('right')
+                }}</span>
+                <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveRight()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepRight(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom side -->
+          <div class="pbx-flex pbx-justify-center pbx-mt-2">
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepBottom(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
+                <span class="pbx-text-[10px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                  translate('bottom')
+                }}</span>
+                <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveBottom()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepBottom(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </EditorAccordion>

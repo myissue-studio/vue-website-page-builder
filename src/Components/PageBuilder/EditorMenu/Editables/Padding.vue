@@ -7,10 +7,7 @@ import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()
-
 const pageBuilderService = getPageBuilder()
-
-// Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
 const fontVerticalPadding = ref<string | null>(null)
@@ -19,225 +16,340 @@ const fontTopPadding = ref<string | null>(null)
 const fontRightPadding = ref<string | null>(null)
 const fontBottomPadding = ref<string | null>(null)
 const fontLeftPadding = ref<string | null>(null)
-const fontVerticalMargin = ref<string | null>(null)
-const fontHorizontalMargin = ref<string | null>(null)
-const getFontVerticalPadding = computed(() => {
-  return pageBuilderStateStore.getFontVerticalPadding
-})
-const getFontHorizontalPadding = computed(() => {
-  return pageBuilderStateStore.getFontHorizontalPadding
-})
-const getFontTopPadding = computed(() => {
-  return pageBuilderStateStore.getFontTopPadding
-})
-const getFontRightPadding = computed(() => {
-  return pageBuilderStateStore.getFontRightPadding
-})
-const getFontBottomPadding = computed(() => {
-  return pageBuilderStateStore.getFontBottomPadding
-})
-const getFontLeftPadding = computed(() => {
-  return pageBuilderStateStore.getFontLeftPadding
-})
-const getFontVerticalMargin = computed(() => {
-  return pageBuilderStateStore.getFontVerticalMargin
-})
-const getFontHorizontalMargin = computed(() => {
-  return pageBuilderStateStore.getFontHorizontalMargin
-})
+
+const getFontVerticalPadding = computed(() => pageBuilderStateStore.getFontVerticalPadding)
+const getFontHorizontalPadding = computed(() => pageBuilderStateStore.getFontHorizontalPadding)
+const getFontTopPadding = computed(() => pageBuilderStateStore.getFontTopPadding)
+const getFontRightPadding = computed(() => pageBuilderStateStore.getFontRightPadding)
+const getFontBottomPadding = computed(() => pageBuilderStateStore.getFontBottomPadding)
+const getFontLeftPadding = computed(() => pageBuilderStateStore.getFontLeftPadding)
 
 watch(
   getFontVerticalPadding,
-  async (newValue) => {
-    fontVerticalPadding.value = newValue
+  async (v) => {
+    fontVerticalPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontHorizontalPadding,
-  async (newValue) => {
-    fontHorizontalPadding.value = newValue
+  async (v) => {
+    fontHorizontalPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontTopPadding,
-  async (newValue) => {
-    fontTopPadding.value = newValue
+  async (v) => {
+    fontTopPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontRightPadding,
-  async (newValue) => {
-    fontRightPadding.value = newValue
+  async (v) => {
+    fontRightPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontBottomPadding,
-  async (newValue) => {
-    fontBottomPadding.value = newValue
+  async (v) => {
+    fontBottomPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontLeftPadding,
-  async (newValue) => {
-    fontLeftPadding.value = newValue
+  async (v) => {
+    fontLeftPadding.value = v
     await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
-watch(
-  getFontVerticalMargin,
-  async (newValue) => {
-    fontVerticalMargin.value = newValue
-    await pageBuilderService.initializeElementStyles()
-  },
-  { immediate: true },
-)
-watch(
-  getFontHorizontalMargin,
-  async (newValue) => {
-    fontHorizontalMargin.value = newValue
-    await pageBuilderService.initializeElementStyles()
-  },
-  { immediate: true },
-)
+
+/** Extract the numeric part from a Tailwind class for display, e.g. "pbx-pt-8" → "8" */
+function displayVal(cls: string | null | undefined): string {
+  if (!cls || cls === 'none') return '–'
+  const m = cls.match(/-(\d[\d.]*)$/)
+  return m ? m[1] : '–'
+}
+
+/** Effective displayed value: prefers the directional class, falls back to shorthand */
+function effectiveTop(): string {
+  return displayVal(
+    fontTopPadding.value && fontTopPadding.value !== 'none'
+      ? fontTopPadding.value
+      : fontVerticalPadding.value,
+  )
+}
+function effectiveBottom(): string {
+  return displayVal(
+    fontBottomPadding.value && fontBottomPadding.value !== 'none'
+      ? fontBottomPadding.value
+      : fontVerticalPadding.value,
+  )
+}
+function effectiveLeft(): string {
+  return displayVal(
+    fontLeftPadding.value && fontLeftPadding.value !== 'none'
+      ? fontLeftPadding.value
+      : fontHorizontalPadding.value,
+  )
+}
+function effectiveRight(): string {
+  return displayVal(
+    fontRightPadding.value && fontRightPadding.value !== 'none'
+      ? fontRightPadding.value
+      : fontHorizontalPadding.value,
+  )
+}
+
+function stepVertical(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.verticalPadding
+  const cur = fontVerticalPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontVerticalPadding.value = next
+  pageBuilderService.handleVerticalPadding(next)
+}
+
+function stepHorizontal(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.horizontalPadding
+  const cur = fontHorizontalPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontHorizontalPadding.value = next
+  pageBuilderService.handleHorizontalPadding(next)
+}
+
+function stepTop(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.topPadding
+  const cur = fontTopPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontTopPadding.value = next
+  pageBuilderService.handleTopPadding(next)
+}
+
+function stepRight(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.rightPadding
+  const cur = fontRightPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontRightPadding.value = next
+  pageBuilderService.handleRightPadding(next)
+}
+
+function stepBottom(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.bottomPadding
+  const cur = fontBottomPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontBottomPadding.value = next
+  pageBuilderService.handleBottomPadding(next)
+}
+
+function stepLeft(dir: 1 | -1) {
+  const arr = tailwindPaddingPlusMargin.leftPadding
+  const cur = fontLeftPadding.value ?? 'none'
+  const idx = arr.indexOf(cur)
+  const next = arr[Math.max(0, Math.min(arr.length - 1, (idx < 0 ? 0 : idx) + dir))]
+  fontLeftPadding.value = next
+  pageBuilderService.handleLeftPadding(next)
+}
 </script>
+
 <template>
   <EditorAccordion>
     <template #title>{{ translate('Padding') }}</template>
     <template #content>
-      <div class="pbx-my-2 pbx-py-2">
-        <div class="pbx-pt-4 pbx-pb-2 pbx-mb-4">
-          <p class="pbx-text-xs pbx-text-gray-500 pbx-mb-2">
-            {{ translate('Applies across all screen sizes') }}
-          </p>
-          <hr />
-        </div>
-        <label for="vertical-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Vertical Padding')
-        }}</label>
-        <select
-          id="vertical-padding"
-          v-model="fontVerticalPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleVerticalPadding(fontVerticalPadding ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="verticalPadding in tailwindPaddingPlusMargin.verticalPadding"
-            :key="verticalPadding"
-          >
-            {{ verticalPadding }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="horizontal-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Horizontal Padding')
-        }}</label>
-        <select
-          id="horizontal-padding"
-          v-model="fontHorizontalPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleHorizontalPadding(fontHorizontalPadding ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="horizontalPadding in tailwindPaddingPlusMargin.horizontalPadding"
-            :key="horizontalPadding"
-          >
-            {{ horizontalPadding }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-pt-4 pbx-pb-2">
-        <p class="pbx-myPrimaryInputLabel pbx-font-medium pbx-italic">
-          {{ translate('Advanced Padding') }}
+      <div class="pbx-py-3 pbx-px-1">
+        <p class="pbx-text-xs pbx-text-gray-400 pbx-mb-3">
+          {{ translate('Applies across all screen sizes') }}
         </p>
-      </div>
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="top-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Top Padding')
-        }}</label>
-        <select
-          id="top-padding"
-          v-model="fontTopPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleTopPadding(fontTopPadding ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="topPadding in tailwindPaddingPlusMargin.topPadding" :key="topPadding">
-            {{ topPadding }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="right-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Right Padding')
-        }}</label>
-        <select
-          id="right-padding"
-          v-model="fontRightPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleRightPadding(fontRightPadding ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="rightPadding in tailwindPaddingPlusMargin.rightPadding"
-            :key="rightPadding"
+
+        <!-- Shorthand quick-set row -->
+        <div class="pbx-flex pbx-flex-col pbx-gap-2 pbx-mb-4">
+          <!-- Vertical shorthand -->
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
           >
-            {{ rightPadding }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="bottom-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Bottom Padding')
-        }}</label>
-        <select
-          id="bottom-padding"
-          v-model="fontBottomPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBottomPadding(fontBottomPadding ?? undefined)"
-        >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="bottomPadding in tailwindPaddingPlusMargin.bottomPadding"
-            :key="bottomPadding"
+            <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
+              translate('Vertical')
+            }}</span>
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepVertical(-1)"
+              >
+                −
+              </button>
+              <span
+                class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-w-10 pbx-text-center pbx-tabular-nums"
+                >{{ displayVal(fontVerticalPadding) }}</span
+              >
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepVertical(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Horizontal shorthand -->
+          <div
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
           >
-            {{ bottomPadding }}
-          </option>
-        </select>
-      </div>
-      <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="left-padding" class="pbx-myPrimaryInputLabel">{{
-          translate('Left Padding')
-        }}</label>
-        <select
-          id="left-padding"
-          v-model="fontLeftPadding"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleLeftPadding(fontLeftPadding ?? undefined)"
+            <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
+              translate('Horizontal')
+            }}</span>
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepHorizontal(-1)"
+              >
+                −
+              </button>
+              <span
+                class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-w-10 pbx-text-center pbx-tabular-nums"
+                >{{ displayVal(fontHorizontalPadding) }}</span
+              >
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepHorizontal(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box model visual -->
+        <div
+          class="pbx-relative pbx-rounded-xl pbx-border-2 pbx-border-dashed pbx-border-green-300 pbx-bg-green-50 pbx-pt-10 pbx-pb-10 pbx-px-3"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="leftPadding in tailwindPaddingPlusMargin.leftPadding" :key="leftPadding">
-            {{ leftPadding }}
-          </option>
-        </select>
+          <!-- Top side -->
+          <div class="pbx-flex pbx-justify-center pbx-mb-2">
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepTop(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
+                <span class="pbx-text-[10px] pbx-text-green-500 pbx-leading-none pbx-mb-0.5">{{
+                  translate('top')
+                }}</span>
+                <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveTop()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepTop(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Middle row: left | center | right — CSS grid keeps right inside the box -->
+          <div
+            class="pbx-items-center pbx-gap-1"
+            style="display: grid; grid-template-columns: auto 1fr auto"
+          >
+            <!-- Left -->
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepLeft(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
+                <span class="pbx-text-[9px] pbx-text-green-500 pbx-leading-none pbx-mb-0.5">{{
+                  translate('left')
+                }}</span>
+                <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveLeft()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepLeft(1)"
+              >
+                +
+              </button>
+            </div>
+
+            <!-- Center element placeholder -->
+            <div
+              class="pbx-bg-white pbx-border pbx-border-green-200 pbx-rounded-lg pbx-h-10 pbx-flex pbx-items-center pbx-justify-center pbx-mx-1"
+            >
+              <span class="pbx-text-[10px] pbx-text-gray-300 pbx-select-none">{{
+                translate('element')
+              }}</span>
+            </div>
+
+            <!-- Right -->
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepRight(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
+                <span class="pbx-text-[9px] pbx-text-green-500 pbx-leading-none pbx-mb-0.5">{{
+                  translate('right')
+                }}</span>
+                <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveRight()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepRight(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom side -->
+          <div class="pbx-flex pbx-justify-center pbx-mt-2">
+            <div class="pbx-flex pbx-items-center pbx-gap-1">
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepBottom(-1)"
+              >
+                −
+              </button>
+              <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
+                <span class="pbx-text-[10px] pbx-text-green-500 pbx-leading-none pbx-mb-0.5">{{
+                  translate('bottom')
+                }}</span>
+                <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
+                  effectiveBottom()
+                }}</span>
+              </div>
+              <button
+                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-green-200 pbx-text-green-700 hover:pbx-bg-green-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                @click="stepBottom(1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </EditorAccordion>

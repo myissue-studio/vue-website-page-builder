@@ -1159,7 +1159,7 @@ onMounted(async () => {
           v-if="getMenuRight"
           aria-label="menu"
           id="pagebuilder-right-menu"
-          class="pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh] pbx-pl-2"
+          class="pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh]"
           :class="[
             getMenuRight
               ? 'pbx-w-80 pbx-bg-myPrimaryLightGrayColor pbx-items-stretch'

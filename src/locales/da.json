@@ -311,5 +311,12 @@
   "You are about to remove this element. This action cannot be undone.": "Du er ved at fjerne dette element. Denne handling kan ikke fortrydes.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "Fjernelse af dette element vil efterlade komponenten tom, så hele komponenten vil også blive fjernet.",
   "Reverse layout": "Vend layout om",
-  "Applies across all screen sizes": "Gælder for alle skærmstørrelser"
+  "Applies across all screen sizes": "Gælder for alle skærmstørrelser",
+  "top": "Top",
+  "bottom": "Bund",
+  "left": "Venstre",
+  "right": "Højre",
+  "element": "element",
+  "Vertical": "Lodret",
+  "Horizontal": "Vandret"
 }
