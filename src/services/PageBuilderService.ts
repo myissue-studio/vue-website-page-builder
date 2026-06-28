@@ -18,6 +18,7 @@ import tailwindFontStyles from '../utils/builder/tailwind-font-styles'
 import tailwindPaddingAndMargin from '../utils/builder/tailwind-padding-margin'
 import tailwindBorderRadius from '../utils/builder/tailwind-border-radius'
 import tailwindBorderStyleWidthPlusColor from '../utils/builder/tailwind-border-style-width-color'
+import tailwindImage from '../utils/builder/tailwind-image'
 import { computed, ref, nextTick } from 'vue'
 import type { ComputedRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
@@ -167,6 +168,7 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   async clearHtmlSelection(): Promise<void> {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     this.pageBuilderStateStore.setComponent(null)
     this.pageBuilderStateStore.setElement(null)
     await this.removeHoveredAndSelected()
@@ -1115,6 +1117,92 @@ export class PageBuilderService {
     await this.handleAutoSave()
   }
 
+  /** Returns true when the currently selected element is an `<img>`. */
+  public isSelectedElementImage(): boolean {
+    return this.getElement.value?.tagName === 'IMG'
+  }
+
+  public setImageSettingsModalOpen(open: boolean): void {
+    this.pageBuilderStateStore.setImageSettingsPanelOpen(open)
+  }
+
+  public isImageSettingsModalOpen(): boolean {
+    return this.pageBuilderStateStore.getImageSettingsPanelOpen
+  }
+
+  private findImageAspectClass(element: HTMLElement): string | null {
+    const known = tailwindImage.aspectRatio.find(
+      (cls) => cls !== 'none' && element.classList.contains(cls),
+    )
+    if (known) return known
+
+    const arbitrary = Array.from(element.classList).find((cls) => cls.startsWith('pbx-aspect-'))
+    return arbitrary ?? null
+  }
+
+  private removeImageAspectClasses(element: HTMLElement): void {
+    Array.from(element.classList).forEach((cls) => {
+      if (cls.startsWith('pbx-aspect-')) {
+        element.classList.remove(cls)
+      }
+    })
+  }
+
+  public handleImageObjectFit(userSelection?: string): void {
+    this.applyElementClassChanges(userSelection, tailwindImage.objectFit, 'setImageObjectFit')
+  }
+
+  public handleImageObjectPosition(userSelection?: string): void {
+    this.applyElementClassChanges(
+      userSelection,
+      tailwindImage.objectPosition,
+      'setImageObjectPosition',
+    )
+  }
+
+  public handleImageAspectRatio(userSelection?: string): void {
+    const element = this.getElement.value
+    if (!element || element.tagName !== 'IMG') return
+
+    if (userSelection === undefined) {
+      const current = this.findImageAspectClass(element)
+      this.pageBuilderStateStore.setImageAspectRatio(current || 'none')
+      return
+    }
+
+    this.removeImageAspectClasses(element)
+
+    if (userSelection !== 'none') {
+      element.classList.add(userSelection)
+    }
+
+    this.pageBuilderStateStore.setImageAspectRatio(userSelection)
+    this.pageBuilderStateStore.setElement(element)
+  }
+
+  public async handleImageAltText(alt?: string): Promise<void> {
+    const element = this.getElement.value
+    if (!element || element.tagName !== 'IMG') return
+
+    if (alt === undefined) return
+
+    const trimmed = alt.trim()
+    if (trimmed) {
+      element.setAttribute('alt', trimmed)
+    } else {
+      element.removeAttribute('alt')
+    }
+
+    this.pageBuilderStateStore.setElement(element)
+    await this.handleAutoSave()
+  }
+
+  public getSelectedImageAltText(): string {
+    const element = this.getElement.value
+    if (!element || element.tagName !== 'IMG') return ''
+    return element.getAttribute('alt') || ''
+  }
+
   /**
    * Attaches click, mouseover, and mouseleave event listeners to all editable elements in the page builder.
    * @private
@@ -1167,6 +1255,8 @@ export class PageBuilderService {
    * @private
    */
   private handleElementClick = async (e: Event, element: HTMLElement): Promise<void> => {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -4077,6 +4167,12 @@ export class PageBuilderService {
     this.handleRightMargin(undefined)
     this.handleBottomMargin(undefined)
     this.handleLeftMargin(undefined)
+
+    if (this.isSelectedElementImage()) {
+      this.handleImageObjectFit(undefined)
+      this.handleImageObjectPosition(undefined)
+      this.handleImageAspectRatio(undefined)
+    }
 
     await this.syncCurrentClasses()
     await this.syncCurrentStyles()

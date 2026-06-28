@@ -59,6 +59,10 @@ interface PageBuilderState {
   component: ComponentObject | null
   components: ComponentObject[]
   basePrimaryImage: string | null
+  imageObjectFit: string | null
+  imageObjectPosition: string | null
+  imageAspectRatio: string | null
+  imageSettingsPanelOpen: boolean
   configPageBuilder: PageBuilderConfig | null
   showModalHTMLEditor: boolean
   toggleGlobalHtmlMode: boolean
@@ -132,6 +136,10 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     component: null,
     components: [],
     basePrimaryImage: null,
+    imageObjectFit: null,
+    imageObjectPosition: null,
+    imageAspectRatio: null,
+    imageSettingsPanelOpen: false,
     configPageBuilder: null,
     showModalHTMLEditor: false,
     toggleGlobalHtmlMode: false,
@@ -301,6 +309,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     getBasePrimaryImage(state: PageBuilderState): string | null {
       return state.basePrimaryImage
+    },
+    getImageObjectFit(state: PageBuilderState): string | null {
+      return state.imageObjectFit
+    },
+    getImageObjectPosition(state: PageBuilderState): string | null {
+      return state.imageObjectPosition
+    },
+    getImageAspectRatio(state: PageBuilderState): string | null {
+      return state.imageAspectRatio
+    },
+    getImageSettingsPanelOpen(state: PageBuilderState): boolean {
+      return state.imageSettingsPanelOpen
     },
 
     getPageBuilderConfig(state: PageBuilderState): PageBuilderConfig | null {
@@ -518,6 +538,18 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
       }
 
       this.basePrimaryImage = payload
+    },
+    setImageObjectFit(payload: string | null): void {
+      this.imageObjectFit = payload
+    },
+    setImageObjectPosition(payload: string | null): void {
+      this.imageObjectPosition = payload
+    },
+    setImageAspectRatio(payload: string | null): void {
+      this.imageAspectRatio = payload
+    },
+    setImageSettingsPanelOpen(payload: boolean): void {
+      this.imageSettingsPanelOpen = payload
     },
     setCurrentLayoutPreview(payload: string): void {
       localStorage.setItem('preview', payload)
