@@ -1,0 +1,82 @@
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    size?: number | string
+  }>(),
+  {
+    size: 16,
+  },
+)
+</script>
+
+<template>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    :width="size"
+    :height="size"
+    viewBox="0 0 12 12"
+    aria-hidden="true"
+  >
+    <title>slider</title>
+    <g fill="none">
+      <line
+        x1="11.25"
+        y1="8.75"
+        x2="6.25"
+        y2="8.75"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></line>
+      <circle
+        cx="4.25"
+        cy="8.75"
+        r="2"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></circle>
+      <line
+        x1="2.25"
+        y1="8.75"
+        x2=".75"
+        y2="8.75"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></line>
+      <line
+        x1=".75"
+        y1="3.25"
+        x2="5.75"
+        y2="3.25"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></line>
+      <circle
+        cx="7.75"
+        cy="3.25"
+        r="2"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></circle>
+      <line
+        x1="9.75"
+        y1="3.25"
+        x2="11.25"
+        y2="3.25"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      ></line>
+    </g>
+  </svg>
+</template>

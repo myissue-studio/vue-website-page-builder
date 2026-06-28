@@ -11,6 +11,7 @@ import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import ModalBuilder from '../../../Modals/ModalBuilder.vue'
 import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
+import SliderIcon from '../../../Icons/SliderIcon.vue'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
@@ -605,6 +606,11 @@ const handleDeleteElement = function () {
   }
 }
 
+// duplicate individual HTML element (not the whole component)
+const handleDuplicateElement = async function () {
+  await pageBuilderService.duplicateElementInDOM()
+}
+
 const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
@@ -817,7 +823,7 @@ const showThemeColorPresetsModal = ref(false)
             class="pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
             :title="translate('Component Settings')"
           >
-            <span class="material-symbols-outlined"> settings </span>
+            <SliderIcon />
           </div>
         </template>
 
@@ -1073,6 +1079,23 @@ const showThemeColorPresetsModal = ref(false)
           </div>
           <!-- reverse layout end -->
 
+          <!-- duplicate element start -->
+          <div
+            v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
+            @click="handleDuplicateElement()"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> content_copy </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Duplicate element') }}
+            </div>
+          </div>
+          <!-- duplicate element end -->
+
           <!-- delete element start -->
           <div
             v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
@@ -1175,7 +1198,7 @@ const showThemeColorPresetsModal = ref(false)
             <div
               class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
             >
-              <span class="material-symbols-outlined"> tune </span>
+              <SliderIcon />
             </div>
             <div class="pbx-text-sm">{{ translate('Global Page Styles') }}</div>
           </div>

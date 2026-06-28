@@ -1949,6 +1949,57 @@ export class PageBuilderService {
   }
 
   /**
+   * Duplicates the currently selected element and inserts the copy immediately
+   * after it in the DOM, then syncs the change to the store.
+   */
+  public async duplicateElementInDOM() {
+    const element = this.getElement.value
+    if (!element || !element.parentNode) return
+
+    element.removeAttribute('selected')
+
+    const clone = element.cloneNode(true) as HTMLElement
+
+    element.parentNode.insertBefore(clone, element.nextSibling)
+
+    const parentSection = element.closest('section')
+
+    if (parentSection) {
+      const componentId = parentSection.getAttribute('data-componentid')
+      if (componentId) {
+        const components = this.pageBuilderStateStore.getComponents
+        if (components) {
+          const componentIndex = components.findIndex(
+            (c: ComponentObject) => c.id === componentId,
+          )
+          if (componentIndex !== -1) {
+            const updatedComponent = {
+              ...components[componentIndex],
+              html_code: parentSection.outerHTML,
+            }
+            const newComponents = [
+              ...components.slice(0, componentIndex),
+              updatedComponent,
+              ...components.slice(componentIndex + 1),
+            ]
+            this.pageBuilderStateStore.setComponents(newComponents)
+          }
+        }
+      }
+    }
+
+    this.syncDomToStoreOnly()
+    await nextTick()
+    await this.addListenersToEditableElements()
+
+    this.pageBuilderStateStore.setComponent(null)
+    this.pageBuilderStateStore.setElement(null)
+
+    this.saveDomComponentsToLocalStorage()
+    await this.handleAutoSave()
+  }
+
+  /**
    * Deletes the currently selected element from the DOM and stores it for potential restoration.
    * @returns {Promise<void>}
    */
