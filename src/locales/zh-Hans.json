@@ -4,6 +4,8 @@
   "Component Settings": "组件设置",
   "Full-width component": "全宽组件",
   "Stretch across browser width": "延伸到浏览器宽度",
+  "Full-width page": "全宽页面",
+  "Stretch all sections across browser width": "将所有部分延伸到浏览器宽度",
   "Theme Color Presets": "主题颜色预设",
   "Enable theme color presets": "启用主题颜色预设",
   "Use saved hex colors in text and background color menus": "在文本和背景颜色菜单中使用保存的十六进制颜色",

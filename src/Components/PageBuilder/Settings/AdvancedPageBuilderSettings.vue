@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import { useTranslations } from '../../../composables/useTranslations'
+import { getPageBuilder } from '../../../composables/builderInstance'
+import ToggleInput from '../../Inputs/ToggleInput.vue'
 import Typography from '../EditorMenu/Editables/Typography.vue'
 import ClassEditor from '../EditorMenu/Editables/ClassEditor.vue'
 import StyleEditor from '../EditorMenu/Editables/StyleEditor.vue'
@@ -24,12 +26,26 @@ defineProps({
 
 const { translate } = useTranslations()
 
+const pageBuilderService = getPageBuilder()
+
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
 })
+
+// Global full-width — reactive tick forces re-read of DOM state after toggle
+const globalFullWidthTick = ref(0)
+const isGlobalFullWidth = computed(() => {
+  void globalFullWidthTick.value
+  return pageBuilderService.isGlobalFullWidth()
+})
+const updateGlobalFullWidth = async (enabled: boolean) => {
+  const promise = pageBuilderService.setGlobalFullWidth(enabled)
+  globalFullWidthTick.value++
+  await promise
+}
 const getComponent = computed(() => {
   return pageBuilderStateStore.getComponent
 })
@@ -350,6 +366,27 @@ function selectTab(tab: string) {
                 )
               }}
             </p>
+
+            <!-- Global full-width toggle -->
+            <div
+              class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3 pbx-mb-6"
+            >
+              <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-4">
+                <div class="pbx-flex pbx-flex-col pbx-gap-1">
+                  <p class="pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor">
+                    {{ translate('Full-width page') }}
+                  </p>
+                  <p class="pbx-text-xs pbx-text-gray-500 pbx-my-0">
+                    {{ translate('Stretch all sections across browser width') }}
+                  </p>
+                </div>
+                <ToggleInput
+                  :model-value="isGlobalFullWidth"
+                  @update:model-value="updateGlobalFullWidth"
+                />
+              </div>
+            </div>
+
             <div
               class="pbx-grid lg:pbx-grid-cols-2 pbx-grid-cols-1 lg:pbx-gap-4 pbx-gap-4 pbx-py-4 pbx-mb-12"
             >

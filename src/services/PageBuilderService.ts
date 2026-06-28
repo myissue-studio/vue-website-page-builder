@@ -1067,6 +1067,27 @@ export class PageBuilderService {
   }
 
   /**
+   * Returns true when the global page wrapper (all [data-pagebuilder-content] elements)
+   * has the full-width class applied, meaning every section's background stretches edge-to-edge.
+   */
+  public isGlobalFullWidth(): boolean {
+    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
+    return contentEl?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+  }
+
+  /**
+   * Toggles the full-width class on every [data-pagebuilder-content] wrapper so that
+   * global background colours stretch across the entire browser viewport.
+   */
+  public async setGlobalFullWidth(enabled: boolean): Promise<void> {
+    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
+      el.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
+    })
+    this.saveDomComponentsToLocalStorage()
+    await this.handleAutoSave()
+  }
+
+  /**
    * Attaches click, mouseover, and mouseleave event listeners to all editable elements in the page builder.
    * @private
    */

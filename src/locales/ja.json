@@ -4,6 +4,8 @@
   "Component Settings": "コンポーネント設定",
   "Full-width component": "全幅コンポーネント",
   "Stretch across browser width": "ブラウザ幅いっぱいに広げる",
+  "Full-width page": "全幅ページ",
+  "Stretch all sections across browser width": "すべてのセクションをブラウザ幅いっぱいに広げる",
   "Theme Color Presets": "テーマカラープリセット",
   "Enable theme color presets": "テーマカラープリセットを有効化",
   "Use saved hex colors in text and background color menus": "保存したHEXカラーをテキストと背景色メニューで使用",
