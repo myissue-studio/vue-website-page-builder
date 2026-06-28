@@ -1803,6 +1803,71 @@ export class PageBuilderService {
    * Duplicate the currently selected component from the DOM and the state.
    * @returns {Promise<void>}
    */
+  /**
+   * Finds the first two-column layout container inside the selected section.
+   * Matches flex-row containers (including responsive variants like lg:pbx-flex-row)
+   * AND grid containers with a grid-cols-2 class, in each case requiring exactly
+   * two direct element children.  Returns the container or null.
+   */
+  public findReverseableContainer(): HTMLElement | null {
+    const section = this.getSelectedComponentSection()
+    if (!section) return null
+
+    const twoColumnSelectors = [
+      '[class*="flex-row"]',
+      '[class*="pbx-flex-row"]',
+      '[class*="grid-cols-2"]',
+      '[class*="pbx-grid-cols-2"]',
+    ]
+
+    for (const selector of twoColumnSelectors) {
+      const candidates = Array.from(section.querySelectorAll(selector)) as HTMLElement[]
+      for (const candidate of candidates) {
+        const children = Array.from(candidate.children).filter(
+          (el) => el instanceof HTMLElement,
+        )
+        if (children.length === 2) {
+          return candidate
+        }
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Reverses the visual order of a two-column layout by physically swapping the
+   * two direct children of the detected container.  This works for both flex-row
+   * and grid-cols-2 layouts and naturally toggles on repeated clicks.
+   * Persists the change to the store and localStorage.
+   */
+  public async reverseComponentLayout(): Promise<void> {
+    const container = this.findReverseableContainer()
+    if (!container) return
+
+    const children = Array.from(container.children) as HTMLElement[]
+    if (children.length !== 2) return
+
+    // insertBefore(second, first) moves second in front of first — one DOM call,
+    // works for both flex and grid, and re-clicking swaps them back.
+    container.insertBefore(children[1], children[0])
+
+    // Sync the DOM change back to the store and persist.
+    this.syncDomToStoreOnly()
+    await nextTick()
+    this.saveDomComponentsToLocalStorage()
+    await this.handleAutoSave()
+
+    // The swap moves DOM nodes so all event listeners are detached.
+    // Clear the stale selection and re-attach listeners so the component
+    // remains fully editable after the reversal.
+    this.pageBuilderStateStore.setComponent(null)
+    this.pageBuilderStateStore.setElement(null)
+    await this.clearHtmlSelection()
+    await nextTick()
+    await this.addListenersToEditableElements()
+  }
+
   public async duplicateComponent() {
     // Sync latest DOM changes to the store
     this.syncDomToStoreOnly()

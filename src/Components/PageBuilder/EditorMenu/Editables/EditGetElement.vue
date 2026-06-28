@@ -33,6 +33,10 @@ const elementTag = computed(() => {
 
 const canMoveUp = computed(() => pageBuilderService.canMoveUp())
 const canMoveDown = computed(() => pageBuilderService.canMoveDown())
+const canReverseLayout = computed(() => {
+  if (!getElement.value || !getComponent.value) return false
+  return !!pageBuilderService.findReverseableContainer()
+})
 
 const autoRotateTick = ref(0)
 const showSliderModal = ref(false)
@@ -567,8 +571,7 @@ const handleDeleteElement = function () {
       cloneTarget.remove()
       const meaningfulSelector =
         'img, video, iframe, input, button, a, h1, h2, h3, h4, h5, h6, p, li, blockquote, pre, code, table'
-      willEmptySection =
-        !clone.querySelector(meaningfulSelector) && !clone.textContent?.trim()
+      willEmptySection = !clone.querySelector(meaningfulSelector) && !clone.textContent?.trim()
     }
   }
 
@@ -1001,7 +1004,7 @@ const showThemeColorPresetsModal = ref(false)
       v-if="openOptionsMoreOpen"
       class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-56"
     >
-      <div>
+      <div class="pbx-overflow-y-scroll pbx-h-[20rem] pbx-max-h-[20rem] pbx-min-h-0">
         <div class="pbx-flex pbx-flex-col">
           <!-- content start -->
           <!-- move up and down start -->
@@ -1052,6 +1055,23 @@ const showThemeColorPresetsModal = ref(false)
             </div>
           </div>
           <!-- move up and down end -->
+
+          <!-- reverse layout start -->
+          <div
+            v-if="canReverseLayout"
+            @click="pageBuilderService.reverseComponentLayout()"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-50 pbx-py-2 pbx-px-2 pbx-rounded-full"
+          >
+            <div
+              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer"
+            >
+              <span class="material-symbols-outlined"> swap_horiz </span>
+            </div>
+            <div class="pbx-text-sm">
+              {{ translate('Reverse layout') }}
+            </div>
+          </div>
+          <!-- reverse layout end -->
 
           <!-- delete element start -->
           <div

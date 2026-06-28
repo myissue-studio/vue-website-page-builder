@@ -306,5 +306,6 @@
   "Delete element?": "Eliminare l'elemento?",
   "Delete element and component?": "Eliminare elemento e componente?",
   "You are about to remove this element. This action cannot be undone.": "Stai per rimuovere questo elemento. Questa azione non può essere annullata.",
-  "Removing this element will leave the component empty, so the entire component will also be removed.": "La rimozione di questo elemento lascerà il componente vuoto, quindi verrà rimosso anche l'intero componente."
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "La rimozione di questo elemento lascerà il componente vuoto, quindi verrà rimosso anche l'intero componente.",
+  "Reverse layout": "Inverti layout"
 }
