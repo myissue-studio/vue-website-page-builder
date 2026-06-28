@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: false,
@@ -22,12 +22,22 @@ defineProps({
       return isValid
     },
   },
+  closeOnOverlayClick: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['closeSidebarPanel'])
 
 const handleClose = () => {
   emit('closeSidebarPanel')
+}
+
+const handleOverlayClick = () => {
+  if (props.closeOnOverlayClick) {
+    handleClose()
+  }
 }
 </script>
 <template>
@@ -37,9 +47,9 @@ const handleClose = () => {
         <!-- Overlay -->
         <div
           class="pbx-fixed pbx-inset-0 pbx-bg-black pbx-opacity-20 pbx-z-40"
-          @click="handleClose"
+          :class="{ 'pbx-pointer-events-none': !closeOnOverlayClick }"
+          @click="handleOverlayClick"
         ></div>
-        <!-- Right-aligned Modal -->
 
         <div
           class="pbx-font-sans pbx-fixed pbx-top-0 pbx-rounded-3xl pbx-py-2 pbx-px-2 pbx-border pbx-border-gray-200 pbx-max-h-[80vh] lg:pbx-min-h-[98%] pbx-min-h-[80vh] lg:pbx-min-w-96 lg:pbx-w-96 pbx-w-[96%] pbx-overflow-y-auto pbx-z-50 pbx-bg-white lg:pbx-mt-2 pbx-mt-2"

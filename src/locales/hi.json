@@ -324,5 +324,19 @@
   "Component actions": "घटक क्रियाएँ",
   "Theme & colors": "थीम और रंग",
   "Advanced tools": "उन्नत उपकरण",
-  "Page settings": "पृष्ठ सेटिंग्स"
+  "Page settings": "पृष्ठ सेटिंग्स",
+  "Image Settings": "छवि सेटिंग्स",
+  "Image fit": "छवि फ़िट",
+  "Cover": "कवर",
+  "Contain": "कंटेन",
+  "Cover fills the frame and may crop. Contain shows the full image.": "कवर फ्रेम भरता है और क्रॉप कर सकता है। कंटेन पूरी छवि दिखाता है।",
+  "Crop focus": "क्रॉप फोकस",
+  "Shape": "आकार",
+  "Auto": "ऑटो",
+  "Square": "वर्ग",
+  "Landscape 16:9": "लैंडस्केप 16:9",
+  "Portrait 9:16": "पोर्ट्रेट 9:16",
+  "Alt text": "Alt पाठ",
+  "Describe this image for accessibility": "पहुंच के लिए इस छवि का वर्णन करें",
+  "Helps screen readers and SEO understand the image content.": "स्क्रीन रीडर और SEO को छवि समझने में मदद करता है।"
 }

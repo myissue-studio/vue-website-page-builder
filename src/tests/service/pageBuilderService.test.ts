@@ -53,6 +53,7 @@ function createMockStore() {
     getBasePrimaryImage: null,
     getPageBuilderConfig: null as unknown,
     getCurrentPreviewImage: null,
+    getImageSettingsPanelOpen: false,
     getBuilderStarted: false,
     getIsLoadingGlobal: false,
     getIsSaving: false,
@@ -115,6 +116,9 @@ function createMockStore() {
     setBasePrimaryImage: vi.fn(),
     setCurrentLayoutPreview: vi.fn(),
     setApplyImageToSelection: vi.fn(),
+    setImageSettingsPanelOpen: vi.fn((payload: boolean) => {
+      base.getImageSettingsPanelOpen = payload
+    }),
     setCurrentPreviewImage: vi.fn(),
     setIsLoadingGlobal: vi.fn(),
     setIsSaving: vi.fn(),
@@ -551,6 +555,56 @@ describe('PageBuilderService', () => {
 
     it('does nothing when no element selected', () => {
       expect(() => service.handleAddStyle('color', 'red')).not.toThrow()
+    })
+  })
+
+  // --- image settings ---
+  describe('image settings', () => {
+    it('getSelectedImageAltText returns alt attribute from selected img', () => {
+      const img = document.createElement('img')
+      img.setAttribute('alt', 'Hero banner')
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      const fresh = new PageBuilderService(mockStore)
+      expect(fresh.getSelectedImageAltText()).toBe('Hero banner')
+    })
+
+    it('handleImageAltText updates alt without remounting components', async () => {
+      const img = document.createElement('img')
+      img.setAttribute('alt', 'Old alt')
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      const fresh = new PageBuilderService(mockStore)
+      const syncSpy = vi.spyOn(fresh, 'syncDomToStoreOnly')
+      const autoSaveSpy = vi.spyOn(fresh, 'handleAutoSave').mockResolvedValue()
+
+      await fresh.handleImageAltText('New alt')
+
+      expect(img.getAttribute('alt')).toBe('New alt')
+      expect(mockStore.setElement).toHaveBeenCalledWith(img)
+      expect(syncSpy).not.toHaveBeenCalled()
+      expect(autoSaveSpy).toHaveBeenCalled()
+    })
+
+    it('handleImageAltText removes alt when empty', async () => {
+      const img = document.createElement('img')
+      img.setAttribute('alt', 'Remove me')
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      const fresh = new PageBuilderService(mockStore)
+      vi.spyOn(fresh, 'handleAutoSave').mockResolvedValue()
+
+      await fresh.handleImageAltText('   ')
+
+      expect(img.hasAttribute('alt')).toBe(false)
+    })
+
+    it('clearHtmlSelection is skipped while image settings panel is open', async () => {
+      const img = document.createElement('img')
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = true
+      const fresh = new PageBuilderService(mockStore)
+
+      await fresh.clearHtmlSelection()
+
+      expect(mockStore.setElement).not.toHaveBeenCalled()
     })
   })
 })

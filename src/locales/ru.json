@@ -324,5 +324,19 @@
   "Component actions": "Действия с компонентом",
   "Theme & colors": "Тема и цвета",
   "Advanced tools": "Расширенные инструменты",
-  "Page settings": "Настройки страницы"
+  "Page settings": "Настройки страницы",
+  "Image Settings": "Настройки изображения",
+  "Image fit": "Подгонка изображения",
+  "Cover": "Заполнить",
+  "Contain": "Вместить",
+  "Cover fills the frame and may crop. Contain shows the full image.": "Заполнить заполняет рамку и может обрезать. Вместить показывает всё изображение.",
+  "Crop focus": "Фокус кадрирования",
+  "Shape": "Форма",
+  "Auto": "Авто",
+  "Square": "Квадрат",
+  "Landscape 16:9": "Альбомная 16:9",
+  "Portrait 9:16": "Портретная 9:16",
+  "Alt text": "Альт-текст",
+  "Describe this image for accessibility": "Опишите изображение для доступности",
+  "Helps screen readers and SEO understand the image content.": "Помогает скринридерам и SEO понять содержание изображения."
 }

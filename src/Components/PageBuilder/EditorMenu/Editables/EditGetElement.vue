@@ -17,6 +17,7 @@ const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
 const emit = defineEmits<{
   (event: 'open-global-page-settings'): void
+  (event: 'open-image-settings'): void
 }>()
 
 // Use shared store instance
@@ -63,6 +64,19 @@ const sliderImageCount = computed(() => {
 
 const componentSettingsTick = ref(0)
 const showComponentSettingsModal = ref(false)
+const imageSettingsTick = ref(0)
+
+const isSelectedImage = computed(() => {
+  void imageSettingsTick.value
+  return pageBuilderService.isSelectedElementImage()
+})
+
+const isImageSettingsOpen = computed(() => pageBuilderStateStore.getImageSettingsPanelOpen)
+
+const openImageSettings = () => {
+  imageSettingsTick.value++
+  emit('open-image-settings')
+}
 
 const isSelectedComponentTopElement = computed(() => {
   void componentSettingsTick.value
@@ -802,6 +816,21 @@ const showThemeColorPresetsModal = ref(false)
           </div>
         </template>
 
+        <template v-if="getElement && isSelectedImage">
+          <div
+            @click="openImageSettings"
+            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :class="
+              isImageSettingsOpen
+                ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor'
+            "
+            :title="translate('Image Settings')"
+          >
+            <SliderIcon />
+          </div>
+        </template>
+
         <template
           v-if="
             getElement &&
@@ -811,10 +840,6 @@ const showThemeColorPresetsModal = ref(false)
           "
         >
           <BackgroundColorEditor></BackgroundColorEditor>
-        </template>
-
-        <template v-if="false">
-          <!-- delete element (old stub — replaced by the button in the actions panel below) -->
         </template>
 
         <template v-if="getElement && getComponent && isSelectedComponentTopElement">
@@ -868,6 +893,7 @@ const showThemeColorPresetsModal = ref(false)
                       {{ translate('Stretch across browser width') }}
                     </p>
                   </div>
+                  hii
                   <ToggleInput
                     :model-value="selectedComponentFullWidth"
                     @update:model-value="updateSelectedComponentFullWidth"

@@ -13,6 +13,8 @@ import { delay } from '../composables/delay'
 import { useDebounce } from '../composables/useDebounce'
 import DynamicModalBuilder from '../Components/Modals/DynamicModalBuilder.vue'
 import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
+import ImageSettingsModal from '../Components/PageBuilder/EditorMenu/Editables/ImageSettingsModal.vue'
+import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
 import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/builderInstance'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
@@ -416,6 +418,7 @@ const isLoading = ref(false)
 const errSaveComponents = ref<string | null>(null)
 const showGlobalPageSettings = ref(false)
 const isLoadingGlobalPageSettings = ref(false)
+const showImageSettingsModal = ref(false)
 
 const openGlobalPageSettings = async () => {
   showGlobalPageSettings.value = true
@@ -441,6 +444,20 @@ const closeGlobalPageSettings = async () => {
 
   showGlobalPageSettings.value = false
   isLoadingGlobalPageSettings.value = false
+}
+
+const openImageSettings = () => {
+  if (showImageSettingsModal.value) {
+    closeImageSettings()
+    return
+  }
+  pageBuilderService.setImageSettingsModalOpen(true)
+  showImageSettingsModal.value = true
+}
+
+const closeImageSettings = () => {
+  showImageSettingsModal.value = false
+  pageBuilderService.setImageSettingsModalOpen(false)
 }
 
 const handleSaveChangesElement = async () => {
@@ -1075,7 +1092,10 @@ onMounted(async () => {
           class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-sm pbx-px-2 pbx-h-0 pbx-min-w-52 pbx-relative"
         >
           <template v-if="getElement">
-            <EditGetElement @open-global-page-settings="openGlobalPageSettings"></EditGetElement>
+            <EditGetElement
+              @open-global-page-settings="openGlobalPageSettings"
+              @open-image-settings="openImageSettings"
+            ></EditGetElement>
           </template>
         </div>
         <!-- Element Popover toolbar end -->
@@ -1233,6 +1253,15 @@ onMounted(async () => {
     <AdvancedPageBuilderSettings :isLoading="isLoadingGlobalPageSettings">
     </AdvancedPageBuilderSettings>
   </ModalBuilder>
+  <FloatingSidePanel
+    :title="translate('Image Settings')"
+    :showSidebarPanel="showImageSettingsModal"
+    position="left"
+    :closeOnOverlayClick="false"
+    @closeSidebarPanel="closeImageSettings"
+  >
+    <ImageSettingsModal :show="showImageSettingsModal" />
+  </FloatingSidePanel>
   <ModalBuilder
     maxWidth="7xl"
     :showModalBuilder="getShowModalHTMLEditor"

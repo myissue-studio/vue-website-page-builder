@@ -324,5 +324,19 @@
   "Component actions": "コンポーネントのアクション",
   "Theme & colors": "テーマと色",
   "Advanced tools": "高度なツール",
-  "Page settings": "ページ設定"
+  "Page settings": "ページ設定",
+  "Image Settings": "画像設定",
+  "Image fit": "画像フィット",
+  "Cover": "カバー",
+  "Contain": "コンテイン",
+  "Cover fills the frame and may crop. Contain shows the full image.": "カバーは枠を埋め、トリミングされる場合があります。コンテインは画像全体を表示します。",
+  "Crop focus": "クロップ位置",
+  "Shape": "形状",
+  "Auto": "自動",
+  "Square": "正方形",
+  "Landscape 16:9": "横 16:9",
+  "Portrait 9:16": "縦 9:16",
+  "Alt text": "代替テキスト",
+  "Describe this image for accessibility": "アクセシビリティのためこの画像を説明",
+  "Helps screen readers and SEO understand the image content.": "スクリーンリーダーとSEOが画像内容を理解するのに役立ちます。"
 }

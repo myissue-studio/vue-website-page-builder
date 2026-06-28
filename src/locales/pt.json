@@ -324,5 +324,19 @@
   "Component actions": "Ações do componente",
   "Theme & colors": "Tema e cores",
   "Advanced tools": "Ferramentas avançadas",
-  "Page settings": "Configurações da página"
+  "Page settings": "Configurações da página",
+  "Image Settings": "Configurações de imagem",
+  "Image fit": "Ajuste da imagem",
+  "Cover": "Cobrir",
+  "Contain": "Conter",
+  "Cover fills the frame and may crop. Contain shows the full image.": "Cobrir preenche o quadro e pode cortar. Conter mostra a imagem inteira.",
+  "Crop focus": "Foco do corte",
+  "Shape": "Forma",
+  "Auto": "Auto",
+  "Square": "Quadrado",
+  "Landscape 16:9": "Paisagem 16:9",
+  "Portrait 9:16": "Retrato 9:16",
+  "Alt text": "Texto alternativo",
+  "Describe this image for accessibility": "Descreva esta imagem para acessibilidade",
+  "Helps screen readers and SEO understand the image content.": "Ajuda leitores de tela e SEO a entender a imagem."
 }
