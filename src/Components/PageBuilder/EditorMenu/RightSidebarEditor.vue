@@ -5,8 +5,8 @@ import ClassEditor from './Editables/ClassEditor.vue'
 import StyleEditor from './Editables/StyleEditor.vue'
 import ImageEditor from './Editables/ImageEditor.vue'
 import OpacityEditor from './Editables/OpacityEditor.vue'
-import Padding from './Editables/Padding.vue'
-import Margin from './Editables/Margin.vue'
+import PaddingControl from './Editables/PaddingControl.vue'
+import MarginControl from './Editables/MarginControl.vue'
 import BorderRadius from './Editables/BorderRadius.vue'
 import Borders from './Editables/Borders.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
@@ -115,10 +115,10 @@ const closeHTMLSettings = async function () {
           <OpacityEditor> </OpacityEditor>
         </article>
         <article class="pbx-my-1">
-          <Padding> </Padding>
+          <PaddingControl> </PaddingControl>
         </article>
         <article class="pbx-my-1">
-          <Margin> </Margin>
+          <MarginControl> </MarginControl>
         </article>
         <article class="pbx-my-1">
           <BorderRadius></BorderRadius>
