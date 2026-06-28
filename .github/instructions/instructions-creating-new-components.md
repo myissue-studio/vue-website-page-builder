@@ -65,26 +65,68 @@ Every component **must** follow this exact outer structure:
 
 ---
 
+## Text Styling — Classes on the Wrapper, Never on Inline Elements
+
+**All text-related classes (`pbx-text-*`, `pbx-font-*`, `pbx-italic`, `pbx-tracking-*`, colour, etc.) must go on the parent `<div>`, not on `<p>`, `<h2>`, `<span>`, or any other inline element.**
+
+TipTap strips class attributes from `<p>`, `<span>`, and heading tags when a user edits and saves. If you put styles on those elements they will silently disappear.
+
+```html
+<!-- CORRECT — style on the wrapper div -->
+<div class="pbx-text-2xl pbx-font-medium pbx-text-gray-900">
+  <p>Some text here</p>
+</div>
+
+<!-- WRONG — TipTap will strip the class on save -->
+<p class="pbx-text-2xl pbx-font-medium">Some text here</p>
+
+<!-- WRONG — TipTap will strip the span on save -->
+<p>$9 <span class="pbx-text-sm pbx-text-gray-500">/ mo</span></p>
+```
+
+**When you need two different text styles side by side** (e.g. a large price and a smaller "/mo" label), use two separate `<div>` wrappers, each with their own classes:
+
+```html
+<!-- CORRECT -->
+<div class="pbx-flex pbx-items-baseline pbx-gap-1">
+  <div class="pbx-text-4xl pbx-font-bold"><p>$29</p></div>
+  <div class="pbx-text-base pbx-text-gray-500"><p>/ mo</p></div>
+</div>
+
+<!-- WRONG — span classes are stripped on save -->
+<div class="pbx-text-4xl pbx-font-bold">
+  <p>$29 <span class="pbx-text-base pbx-text-gray-500">/ mo</span></p>
+</div>
+```
+
+---
+
 ## Placeholder Images
 
 Import and call `getPlaceholderImageDataUrl()` (already defined at the top of `component.ts`) for every image src. This produces an embedded SVG data URL so thumbnails render without any network requests.
 
-```ts
-html_code: `<section>
-  ...
-  <img
-    class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
-    src="${getPlaceholderImageDataUrl()}"
-    alt="description"
-  />
-  ...
-</section>`
+**Always include both an aspect-ratio class and `pbx-object-cover`.** This is critical: when a user replaces a placeholder with a real image (e.g. from Unsplash), TipTap preserves the `class` attribute. Without a fixed aspect ratio the image will take its natural dimensions, so each image in a grid can end up with a different height and break the layout.
+
+```html
+<!-- CORRECT — aspect ratio enforced, image always fills the box consistently -->
+<img
+  class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
+  src="${getPlaceholderImageDataUrl()}"
+  alt="description"
+/>
+
+<!-- WRONG — no aspect ratio, height depends on the image the user picks -->
+<img
+  class="pbx-object-cover pbx-w-full"
+  src="${getPlaceholderImageDataUrl()}"
+  alt="description"
+/>
 ```
 
 Common image aspect ratio classes:
 | Class | Ratio | Use for |
 |---|---|---|
-| `pbx-aspect-square` | 1:1 | Profile photos, product cards |
+| `pbx-aspect-square` | 1:1 | Profile photos, product cards, team members, logos |
 | `aspect-[9/16]` | 9:16 | Portrait / vertical images |
 | `aspect-[16/9]` | 16:9 | Landscape / banner images |
 | `aspect-[4/3]` | 4:3 | Standard photos |
@@ -188,6 +230,7 @@ Match one of these exactly (case-sensitive) so the component appears in the righ
 | `Products` | Product cards or grids |
 | `Cards` | Card layouts (info, testimonial, etc.) |
 | `Sliders` | Image or card sliders |
+| `Contact` | Contact info blocks (email, phone, address) |
 
 To add a new category, just use a new string — it will appear automatically in the UI.
 

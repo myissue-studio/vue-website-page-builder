@@ -78,7 +78,7 @@ const fetchUnsplash = async function () {
 
 const handleImageClick = async function (data: { url: string; user: string }) {
   getIsLoadingImage.value = true
-
+  await delay(200)
   if (data.url) {
     await preloadImage(data.url)
   }
@@ -359,44 +359,43 @@ onMounted(async () => {
           <!-- Sidebar # start -->
           <aside class="md:pbx-w-3/12 pbx-w-6/12 pbx-overflow-y-auto">
             <template v-if="getIsLoadingImage">
-              <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mt-4">
+              <div class="pbx-flex pbx-items-start pbx-justify-center pbx-min-h-[40rem] pbx-pt-12">
                 <div
                   class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-                >
-                  <span
-                    class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-                    >{{ translate('Loading...') }}</span
-                  >
-                </div>
+                ></div>
               </div>
             </template>
             <template v-if="getApplyImageToSelection && !getIsLoadingImage">
-              <img
-                class="pbx-mx-auto pbx-block pbx-w-full pbx-object-cover pbx-object-center pbx-cursor-pointer"
-                :src="`${getApplyImageToSelection}`"
-                alt="file"
-              />
-              <div class="md:pbx-px-3 pbx-px-2">
-                <div>
-                  <p class="pbx-myPrimaryParagraph pbx-font-normal pbx-text-gray-900 pbx-pt-4">
-                    {{ translate('Information') }}
-                  </p>
-                  <dl
-                    class="pbx-mt-2 pbx-border-t pbx-border-b pbx-border-gray-200 pbx-divide-y pbx-divide-gray-200"
-                  >
-                    <div
-                      class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
-                    >
-                      <dt class="pbx-text-gray-500">{{ translate('From:') }}</dt>
-                      <dd class="pbx-text-gray-900">Unsplash</dd>
+              <div>
+                <div class="pbx-min-h-[40rem]">
+                  <img
+                    class="pbx-mx-auto pbx-block pbx-w-full pbx-object-cover pbx-object-center pbx-cursor-pointer"
+                    :src="`${getApplyImageToSelection}`"
+                    alt="file"
+                  />
+                  <div class="md:pbx-px-3 pbx-px-2">
+                    <div>
+                      <p class="pbx-myPrimaryParagraph pbx-font-normal pbx-text-gray-900 pbx-pt-4">
+                        {{ translate('Information') }}
+                      </p>
+                      <dl
+                        class="pbx-mt-2 pbx-border-t pbx-border-b pbx-border-gray-200 pbx-divide-y pbx-divide-gray-200"
+                      >
+                        <div
+                          class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
+                        >
+                          <dt class="pbx-text-gray-500">{{ translate('From:') }}</dt>
+                          <dd class="pbx-text-gray-900">Unsplash</dd>
+                        </div>
+                        <div
+                          class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
+                        >
+                          <dt class="pbx-text-gray-500">{{ translate('By:') }}</dt>
+                          <dd class="pbx-text-gray-900">{{ getCurrentUser }}</dd>
+                        </div>
+                      </dl>
                     </div>
-                    <div
-                      class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
-                    >
-                      <dt class="pbx-text-gray-500">{{ translate('By:') }}</dt>
-                      <dd class="pbx-text-gray-900">{{ getCurrentUser }}</dd>
-                    </div>
-                  </dl>
+                  </div>
                 </div>
                 <div class="pbx-flex pbx-justify-end pbx-mt-4 pbx-w-full">
                   <button
