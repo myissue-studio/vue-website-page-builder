@@ -318,5 +318,11 @@
   "right": "Rechts",
   "element": "Element",
   "Vertical": "Vertikal",
-  "Horizontal": "Horizontal"
+  "Horizontal": "Horizontal",
+  "Layout & order": "Layout & Reihenfolge",
+  "Element actions": "Elementaktionen",
+  "Component actions": "Komponentenaktionen",
+  "Theme & colors": "Theme & Farben",
+  "Advanced tools": "Erweiterte Tools",
+  "Page settings": "Seiteneinstellungen"
 }

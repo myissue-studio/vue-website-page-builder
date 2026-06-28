@@ -318,5 +318,11 @@
   "right": "right",
   "element": "element",
   "Vertical": "Vertical",
-  "Horizontal": "Horizontal"
+  "Horizontal": "Horizontal",
+  "Layout & order": "Layout & order",
+  "Element actions": "Element actions",
+  "Component actions": "Component actions",
+  "Theme & colors": "Theme & colors",
+  "Advanced tools": "Advanced tools",
+  "Page settings": "Page settings"
 }

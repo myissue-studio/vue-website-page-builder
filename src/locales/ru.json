@@ -318,5 +318,11 @@
   "right": "Справа",
   "element": "элемент",
   "Vertical": "Вертикаль",
-  "Horizontal": "Горизонталь"
+  "Horizontal": "Горизонталь",
+  "Layout & order": "Макет и порядок",
+  "Element actions": "Действия с элементом",
+  "Component actions": "Действия с компонентом",
+  "Theme & colors": "Тема и цвета",
+  "Advanced tools": "Расширенные инструменты",
+  "Page settings": "Настройки страницы"
 }

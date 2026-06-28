@@ -318,5 +318,11 @@
   "right": "दाएं",
   "element": "तत्व",
   "Vertical": "ऊर्ध्वाधर",
-  "Horizontal": "क्षैतिज"
+  "Horizontal": "क्षैतिज",
+  "Layout & order": "लेआउट और क्रम",
+  "Element actions": "तत्व क्रियाएँ",
+  "Component actions": "घटक क्रियाएँ",
+  "Theme & colors": "थीम और रंग",
+  "Advanced tools": "उन्नत उपकरण",
+  "Page settings": "पृष्ठ सेटिंग्स"
 }

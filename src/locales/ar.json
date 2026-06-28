@@ -318,5 +318,11 @@
   "right": "يمين",
   "element": "عنصر",
   "Vertical": "عمودي",
-  "Horizontal": "أفقي"
+  "Horizontal": "أفقي",
+  "Layout & order": "التخطيط والترتيب",
+  "Element actions": "إجراءات العنصر",
+  "Component actions": "إجراءات المكون",
+  "Theme & colors": "السمة والألوان",
+  "Advanced tools": "أدوات متقدمة",
+  "Page settings": "إعدادات الصفحة"
 }

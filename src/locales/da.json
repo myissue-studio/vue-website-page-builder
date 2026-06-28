@@ -318,5 +318,11 @@
   "right": "Højre",
   "element": "element",
   "Vertical": "Lodret",
-  "Horizontal": "Vandret"
+  "Horizontal": "Vandret",
+  "Layout & order": "Layout og rækkefølge",
+  "Element actions": "Elementhandlinger",
+  "Component actions": "Komponenthandlinger",
+  "Theme & colors": "Tema og farver",
+  "Advanced tools": "Avancerede værktøjer",
+  "Page settings": "Sideindstillinger"
 }

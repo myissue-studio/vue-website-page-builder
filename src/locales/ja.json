@@ -318,5 +318,11 @@
   "right": "右",
   "element": "要素",
   "Vertical": "縦",
-  "Horizontal": "横"
+  "Horizontal": "横",
+  "Layout & order": "レイアウトと順序",
+  "Element actions": "要素のアクション",
+  "Component actions": "コンポーネントのアクション",
+  "Theme & colors": "テーマと色",
+  "Advanced tools": "高度なツール",
+  "Page settings": "ページ設定"
 }

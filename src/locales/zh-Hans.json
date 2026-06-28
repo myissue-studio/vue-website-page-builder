@@ -318,5 +318,11 @@
   "right": "右",
   "element": "元素",
   "Vertical": "垂直",
-  "Horizontal": "水平"
+  "Horizontal": "水平",
+  "Layout & order": "布局与顺序",
+  "Element actions": "元素操作",
+  "Component actions": "组件操作",
+  "Theme & colors": "主题与颜色",
+  "Advanced tools": "高级工具",
+  "Page settings": "页面设置"
 }
