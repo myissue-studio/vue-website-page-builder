@@ -187,6 +187,7 @@
   "Move down": "Mover hacia abajo",
   "Delete component": "Eliminar componente",
   "Duplicate component": "Duplicar componente",
+  "Duplicate element": "Duplicar elemento",
   "Themes": "Temas",
   "Marketing": "Marketing",
   "Products": "Productos",
@@ -301,5 +302,11 @@
   "Page contains at least one link": "La página contiene al menos un enlace",
   "Headings": "Encabezados",
   "Media": "Medios",
-  "Links": "Enlaces"
+  "Links": "Enlaces",
+  "Delete element": "Eliminar elemento",
+  "Delete element?": "¿Eliminar elemento?",
+  "Delete element and component?": "¿Eliminar elemento y componente?",
+  "You are about to remove this element. This action cannot be undone.": "Estás a punto de eliminar este elemento. Esta acción no se puede deshacer.",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "Al eliminar este elemento, el componente quedará vacío, por lo que el componente completo también se eliminará.",
+  "Reverse layout": "Invertir diseño"
 }

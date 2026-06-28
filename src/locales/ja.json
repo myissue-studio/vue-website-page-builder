@@ -192,6 +192,7 @@
   "Move down": "下に移動",
   "Delete component": "コンポーネントを削除",
   "Duplicate component": "コンポーネントを複製",
+  "Duplicate element": "要素を複製",
   "array": "配列",
   "Content": "コンテンツ",
   "Element": "要素",
@@ -301,5 +302,11 @@
   "Page contains at least one link": "ページに少なくとも1つのリンクがある",
   "Headings": "見出し",
   "Media": "メディア",
-  "Links": "リンク"
+  "Links": "リンク",
+  "Delete element": "要素を削除",
+  "Delete element?": "要素を削除しますか？",
+  "Delete element and component?": "要素とコンポーネントを削除しますか？",
+  "You are about to remove this element. This action cannot be undone.": "この要素を削除しようとしています。この操作は元に戻せません。",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "この要素を削除するとコンポーネントが空になるため、コンポーネント全体も削除されます。",
+  "Reverse layout": "レイアウトを反転"
 }

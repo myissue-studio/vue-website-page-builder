@@ -214,7 +214,7 @@ If you discover a security vulnerability, please send us a message.
 
 ## Get in Touch for Customization or Any Questions
 
-If you have any questions or if you're looking for customization, feel free to connect with our developer.
+If you have any questions or if you're looking for customization, feel free to connect with our developers.
 
 - [Email](mailto:qais.wardag@outlook.com)
 - [LinkedIn](https://www.linkedin.com/in/qaiswardag)

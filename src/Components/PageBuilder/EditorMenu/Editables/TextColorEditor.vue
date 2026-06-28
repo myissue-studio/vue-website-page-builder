@@ -6,6 +6,8 @@ import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
+import ModalBuilder from '../../../Modals/ModalBuilder.vue'
+import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 
 const { translate } = useTranslations()
 
@@ -186,4 +188,12 @@ watch(
       </transition>
     </div>
   </Listbox>
+  <ModalBuilder
+    maxWidth="3xl"
+    :showModalBuilder="showThemeColorPresetsModal"
+    :title="translate('Theme Color Presets')"
+    @closeMainModalBuilder="showThemeColorPresetsModal = false"
+  >
+    <ThemeColorPresetManager></ThemeColorPresetManager>
+  </ModalBuilder>
 </template>

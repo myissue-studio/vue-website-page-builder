@@ -193,6 +193,7 @@
   "Move down": "Flyt ned",
   "Delete component": "Slet komponent",
   "Duplicate component": "Duplikér komponent",
+  "Duplicate element": "Duplikér element",
   "array": "Array",
   "Content": "Indhold",
   "Element": "Element",
@@ -301,5 +302,11 @@
   "Page contains at least one link": "Siden indeholder mindst ét link",
   "Headings": "Overskrifter",
   "Media": "Medier",
-  "Links": "Links"
+  "Links": "Links",
+  "Delete element": "Slet element",
+  "Delete element?": "Slet element?",
+  "Delete element and component?": "Slet element og komponent?",
+  "You are about to remove this element. This action cannot be undone.": "Du er ved at fjerne dette element. Denne handling kan ikke fortrydes.",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "Fjernelse af dette element vil efterlade komponenten tom, så hele komponenten vil også blive fjernet.",
+  "Reverse layout": "Vend layout om"
 }

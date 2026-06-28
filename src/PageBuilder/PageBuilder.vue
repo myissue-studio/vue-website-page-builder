@@ -16,6 +16,7 @@ import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
 import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/builderInstance'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
+import LayersIcon from '../Components/Icons/LayersIcon.vue'
 
 const pageBuilderService = getPageBuilder()
 
@@ -842,7 +843,7 @@ onMounted(async () => {
               <span
                 class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
               >
-                <span class="pbx-myMediumIcon material-symbols-outlined"> add </span>
+                <LayersIcon />
               </span>
               <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden">
                 {{ translate('Add') }}

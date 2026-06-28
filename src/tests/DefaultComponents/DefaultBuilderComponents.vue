@@ -371,7 +371,7 @@ const convertToComponentObject = function (comp: {
               <!-- Pagination controls -->
               <div
                 v-if="componentsTotalPages > 1"
-                class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-3 pbx-mt-6 pbx-pt-4 pbx-border-t pbx-border-gray-200"
+                class="pbx-flex lg:pbx-justify-between pbx-justify-end pbx-items-center pbx-gap-2 pbx-py-2 pbx-px-2 pbx-mb-3 pbx-rounded-full pbx-border-solid pbx-border pbx-border-gray-200 pbx-shadow-sm pbx-mt-6"
               >
                 <button
                   type="button"
@@ -388,7 +388,7 @@ const convertToComponentObject = function (comp: {
                     v-for="page in componentsTotalPages"
                     :key="page"
                     type="button"
-                    class="pbx-mySecondaryButton pbx-text-xs pbx-w-8 pbx-h-8 pbx-p-0 pbx-flex pbx-items-center pbx-justify-center"
+                    class="pbx-mySecondaryButton"
                     :class="
                       page === componentsPage
                         ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'

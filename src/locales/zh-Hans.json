@@ -177,6 +177,7 @@
   "Move down": "下移",
   "Delete component": "删除组件",
   "Duplicate component": "复制组件",
+  "Duplicate element": "复制元素",
   "Link": "链接",
   "Selected HTML": "选定HTML",
   "Overview of Selected Element, Component, and Components. This section provides real-time updates based on your HTML selection.": "选定元素、组件和组件概览。此部分根据您的HTML选择提供实时更新。",
@@ -301,5 +302,11 @@
   "Page contains at least one link": "页面至少包含一个链接",
   "Headings": "标题",
   "Media": "媒体",
-  "Links": "链接"
+  "Links": "链接",
+  "Delete element": "删除元素",
+  "Delete element?": "删除元素？",
+  "Delete element and component?": "删除元素和组件？",
+  "You are about to remove this element. This action cannot be undone.": "您即将删除此元素。此操作无法撤销。",
+  "Removing this element will leave the component empty, so the entire component will also be removed.": "删除此元素将使组件变为空，因此整个组件也将被删除。",
+  "Reverse layout": "反转布局"
 }
