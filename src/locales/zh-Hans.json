@@ -177,6 +177,7 @@
   "Move down": "下移",
   "Delete component": "删除组件",
   "Duplicate component": "复制组件",
+  "Duplicate element": "复制元素",
   "Link": "链接",
   "Selected HTML": "选定HTML",
   "Overview of Selected Element, Component, and Components. This section provides real-time updates based on your HTML selection.": "选定元素、组件和组件概览。此部分根据您的HTML选择提供实时更新。",
