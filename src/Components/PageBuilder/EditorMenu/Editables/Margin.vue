@@ -183,9 +183,11 @@ function stepLeft(dir: 1 | -1) {
             <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
               translate('Vertical')
             }}</span>
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepVertical(-1)"
               >
                 −
@@ -195,7 +197,7 @@ function stepLeft(dir: 1 | -1) {
                 >{{ displayVal(fontVerticalMargin) }}</span
               >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepVertical(1)"
               >
                 +
@@ -210,9 +212,11 @@ function stepLeft(dir: 1 | -1) {
             <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
               translate('Horizontal')
             }}</span>
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepHorizontal(-1)"
               >
                 −
@@ -222,7 +226,7 @@ function stepLeft(dir: 1 | -1) {
                 >{{ displayVal(fontHorizontalMargin) }}</span
               >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-gray-200 pbx-text-gray-600 hover:pbx-bg-gray-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepHorizontal(1)"
               >
                 +
@@ -237,9 +241,11 @@ function stepLeft(dir: 1 | -1) {
         >
           <!-- Top side -->
           <div class="pbx-flex pbx-justify-center pbx-mb-2">
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepTop(-1)"
               >
                 −
@@ -253,7 +259,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepTop(1)"
               >
                 +
@@ -267,9 +273,11 @@ function stepLeft(dir: 1 | -1) {
             style="display: grid; grid-template-columns: auto 1fr auto"
           >
             <!-- Left -->
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepLeft(-1)"
               >
                 −
@@ -283,7 +291,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepLeft(1)"
               >
                 +
@@ -300,9 +308,11 @@ function stepLeft(dir: 1 | -1) {
             </div>
 
             <!-- Right -->
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepRight(-1)"
               >
                 −
@@ -316,7 +326,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-xs pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepRight(1)"
               >
                 +
@@ -326,9 +336,11 @@ function stepLeft(dir: 1 | -1) {
 
           <!-- Bottom side -->
           <div class="pbx-flex pbx-justify-center pbx-mt-2">
-            <div class="pbx-flex pbx-items-center pbx-gap-1">
+            <div
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1"
+            >
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepBottom(-1)"
               >
                 −
@@ -342,7 +354,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-rounded pbx-bg-white pbx-border pbx-border-orange-200 pbx-text-orange-600 hover:pbx-bg-orange-100 pbx-text-sm pbx-font-bold pbx-leading-none pbx-cursor-pointer"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow""
                 @click="stepBottom(1)"
               >
                 +

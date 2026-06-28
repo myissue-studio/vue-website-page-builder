@@ -1162,7 +1162,7 @@ onMounted(async () => {
           class="pbx-z-20 pbx-flex-shrink-0 pbx-overflow-hidden pbx-border-0 pbx-border-solid pbx-border-l-0 pbx-border-l-gray-600 pbx-rounded-l-2xl pbx-h-[100vh]"
           :class="[
             getMenuRight
-              ? 'pbx-w-80 pbx-bg-myPrimaryLightGrayColor pbx-items-stretch'
+              ? 'pbx-w-96 pbx-bg-myPrimaryLightGrayColor pbx-items-stretch'
               : 'bpx-w-0 pbx-mr-0',
           ]"
         >
