@@ -310,5 +310,13 @@
   "Delete element and component?": "删除元素和组件？",
   "You are about to remove this element. This action cannot be undone.": "您即将删除此元素。此操作无法撤销。",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "删除此元素将使组件变为空，因此整个组件也将被删除。",
-  "Reverse layout": "反转布局"
+  "Reverse layout": "反转布局",
+  "Applies across all screen sizes": "适用于所有屏幕尺寸",
+  "top": "上",
+  "bottom": "下",
+  "left": "左",
+  "right": "右",
+  "element": "元素",
+  "Vertical": "垂直",
+  "Horizontal": "水平"
 }

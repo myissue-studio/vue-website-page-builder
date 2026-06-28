@@ -310,5 +310,13 @@
   "Delete element and component?": "Supprimer l'élément et le composant ?",
   "You are about to remove this element. This action cannot be undone.": "Vous êtes sur le point de supprimer cet élément. Cette action est irréversible.",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "La suppression de cet élément laissera le composant vide, et le composant entier sera donc également supprimé.",
-  "Reverse layout": "Inverser la mise en page"
+  "Reverse layout": "Inverser la mise en page",
+  "Applies across all screen sizes": "S'applique à toutes les tailles d'écran",
+  "top": "Haut",
+  "bottom": "Bas",
+  "left": "Gauche",
+  "right": "Droite",
+  "element": "élément",
+  "Vertical": "Vertical",
+  "Horizontal": "Horizontal"
 }

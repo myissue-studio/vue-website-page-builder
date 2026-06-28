@@ -30,7 +30,7 @@ const expanded = ref(false)
           ? 'pbx-block pbx-bg-indigo-50 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-red-50'
           : 'pbx-hidden',
       ]"
-      class="pbx-px-4 pbx-ease-linear pbx-duration-75 pbx-pb-8"
+      class="pbx-pl-2 pbx-pr-4 pbx-ease-linear pbx-duration-75 pbx-pb-8"
     >
       <slot name="content" />
     </div>

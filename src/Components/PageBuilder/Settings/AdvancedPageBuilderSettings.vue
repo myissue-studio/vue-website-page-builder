@@ -7,8 +7,8 @@ import ToggleInput from '../../Inputs/ToggleInput.vue'
 import Typography from '../EditorMenu/Editables/Typography.vue'
 import ClassEditor from '../EditorMenu/Editables/ClassEditor.vue'
 import StyleEditor from '../EditorMenu/Editables/StyleEditor.vue'
-import Padding from '../EditorMenu/Editables/Padding.vue'
-import Margin from '../EditorMenu/Editables/Margin.vue'
+import PaddingControl from '../EditorMenu/Editables/PaddingControl.vue'
+import MarginControl from '../EditorMenu/Editables/MarginControl.vue'
 import BorderRadius from '../EditorMenu/Editables/BorderRadius.vue'
 import BackgroundColorEditor from '../EditorMenu/Editables/BackgroundColorEditor.vue'
 import TextColorEditor from '../EditorMenu/Editables/TextColorEditor.vue'
@@ -414,13 +414,13 @@ function selectTab(tab: string) {
                 <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2 lg:pbx-mt-6 pbx-mt-8">
                   Padding
                 </p>
-                <Padding> </Padding>
+                <PaddingControl> </PaddingControl>
               </article>
               <article class="pbx-my-1 pbx-bg-gray-100 pbx-px-4 pbx-pt-2 pbx-pb-8 pbx-rounded-2xl">
                 <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2 lg:pbx-mt-6 pbx-mt-8">
                   Margin
                 </p>
-                <Margin> </Margin>
+                <MarginControl> </MarginControl>
               </article>
               <article class="pbx-my-1 pbx-bg-gray-100 pbx-px-4 pbx-pt-2 pbx-pb-8 pbx-rounded-2xl">
                 <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2 lg:pbx-mt-6 pbx-mt-8">

@@ -310,5 +310,13 @@
   "Delete element and component?": "要素とコンポーネントを削除しますか？",
   "You are about to remove this element. This action cannot be undone.": "この要素を削除しようとしています。この操作は元に戻せません。",
   "Removing this element will leave the component empty, so the entire component will also be removed.": "この要素を削除するとコンポーネントが空になるため、コンポーネント全体も削除されます。",
-  "Reverse layout": "レイアウトを反転"
+  "Reverse layout": "レイアウトを反転",
+  "Applies across all screen sizes": "すべての画面サイズに適用されます",
+  "top": "上",
+  "bottom": "下",
+  "left": "左",
+  "right": "右",
+  "element": "要素",
+  "Vertical": "縦",
+  "Horizontal": "横"
 }
