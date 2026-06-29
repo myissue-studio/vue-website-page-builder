@@ -24,7 +24,7 @@ const demoPost = computed(() => ({
   id: 1,
   title: 'Demo Article',
   content:
-    '<div id="pagebuilder" class="pbx-bg-gray-50" style="letter-spacing: 0.5px;">' +
+    '<div id="pagebuilder" class="pbx-bg-white" style="letter-spacing: 0.5px;">' +
     translatedComponents.value.map((component) => component.html_code).join('\n') +
     '</div>',
 }))
