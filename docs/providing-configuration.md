@@ -15,7 +15,7 @@ Your `configPageBuilder` object can include:
 - **`pageBuilderLogo` (optional):**
   Display your company logo in the builder toolbar.
 - **`userSettings` (optional):**
-  Set user preferences such as language, font family, or auto-save.
+  Set user preferences such as language, auto-save, default canvas font (`fontFamily`), and per-element font overrides (`elementFonts`).
 - **`brandColor` (optional):**
   Set your brand's primary color for key UI elements (inside the `settings` config).
 - **`themeColorPresets` (optional):**
@@ -51,11 +51,28 @@ const configPageBuilder = {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],
     },
-    // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
-    // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
-    // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
-    // didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
-    fontFamily: 'raleway',
+    // Single font — sets the canvas default; font-family picker shows all fonts.
+    // fontFamily: 'raleway',
+    //
+    // Comma-separated list — first entry is the canvas default; picker is
+    // restricted to the listed fonts (unknown names are silently skipped).
+    // Available fonts: jost, raleway, palantino, arial, helvetica, georgia,
+    // times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet,
+    // garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans,
+    // candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic,
+    // rockwell, baskerville, sans, serif, mono
+    fontFamily: 'raleway, jost, arial',
+    // Per-element font overrides — optional, same format as fontFamily.
+    // First recognised font name wins; unrecognised names are skipped.
+    elementFonts: {
+      h1: 'raleway',
+      h2: 'raleway',
+      h3: 'raleway',
+      h4: 'jost',
+      h5: 'jost',
+      h6: 'jost',
+      p:  'arial',
+    },
     autoSave: true,
   },
   settings: {
@@ -94,6 +111,64 @@ onMounted(async () => {
   <PageBuilder />
 </template>
 ```
+
+### Font Family
+
+Use `userSettings.fontFamily` to control the default canvas font and — optionally — which fonts appear in the font-family picker inside the builder.
+
+#### Single font
+
+Sets the canvas default. The font-family picker still shows all available fonts.
+
+```ts
+userSettings: {
+  fontFamily: 'raleway',
+}
+```
+
+#### Comma-separated list
+
+The **first** entry becomes the canvas default. Every subsequent entry restricts the picker to only the listed fonts. Unknown font names are silently skipped — the first recognised name is used.
+
+```ts
+userSettings: {
+  // Canvas default: Raleway. Picker shows: Raleway, Jost, Arial only.
+  fontFamily: 'raleway, jost, arial',
+}
+```
+
+Available font names: `jost`, `raleway`, `palantino`, `arial`, `helvetica`, `georgia`,
+`times`, `times-new-roman`, `courier`, `courier-new`, `verdana`, `tahoma`, `trebuchet`,
+`garamond`, `bookman`, `comic-sans`, `impact`, `lucida`, `lucida-console`, `lucida-sans`,
+`candara`, `optima`, `avenir`, `futura`, `calibri`, `cambria`, `didot`, `franklin-gothic`,
+`rockwell`, `baskerville`, `sans`, `serif`, `mono`.
+
+### Element Fonts
+
+Use `userSettings.elementFonts` to apply a default font to specific HTML elements (`h1`–`h6` and `p`) across the entire canvas. This is independent from the global `fontFamily` default — you can mix and match.
+
+Each value accepts the same format as `fontFamily`: a single font name, or a comma-separated list where the first recognised name wins.
+
+```ts
+userSettings: {
+  fontFamily: 'raleway, jost, arial',
+  elementFonts: {
+    h1: 'raleway',       // all h1 elements use Raleway
+    h2: 'raleway',
+    h3: 'raleway',
+    h4: 'jost',
+    h5: 'jost',
+    h6: 'jost',
+    p:  'arial',         // all p elements use Arial
+  },
+}
+```
+
+All fields are optional — omit any element to let it inherit from the global `fontFamily`.
+
+::: tip
+`elementFonts` overrides are applied via CSS custom properties on the builder's scroll container, so they never conflict with global page styles set through the builder's *Global Page Styles* panel.
+:::
 
 ### Theme Color Presets
 

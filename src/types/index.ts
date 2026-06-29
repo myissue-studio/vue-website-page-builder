@@ -291,6 +291,22 @@ export interface ThemeColorPresetSettings {
   colors: readonly ThemeColorPreset[]
 }
 
+/**
+ * Per-element font overrides for the builder canvas.
+ * Each value is a font key name or comma-separated list (e.g. `'jost'` or
+ * `'jost, raleway, arial'`). The first recognised font name is applied;
+ * unrecognised names are silently skipped.
+ */
+export interface PageBuilderElementFonts {
+  h1?: string
+  h2?: string
+  h3?: string
+  h4?: string
+  h5?: string
+  h6?: string
+  p?: string
+}
+
 // Page Builder Configuration interface
 export interface PageBuilderConfig {
   updateOrCreate: {
@@ -333,7 +349,29 @@ export interface PageBuilderConfig {
     }
     autoSave?: boolean
     notifications?: boolean
+    /**
+     * Default canvas font and, optionally, the restricted set of fonts shown in
+     * the font-family picker.
+     *
+     * - Single value: `'jost'` — sets the canvas default; picker shows all fonts.
+     * - Comma-separated list: `'jost, raleway, arial'` — first entry is the
+     *   canvas default; picker is restricted to the listed fonts.
+     *
+     * Unknown font names (not in the built-in list) are silently ignored.
+     */
     fontFamily?: string
+    /**
+     * Per-element font overrides applied to the builder canvas.
+     * Each value follows the same format as `fontFamily` — a font key name or
+     * comma-separated list; the first recognised entry is used.
+     *
+     * Available font names: jost, raleway, palantino, arial, helvetica, georgia,
+     * times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet,
+     * garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans,
+     * candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic,
+     * rockwell, baskerville, sans, serif, mono
+     */
+    elementFonts?: PageBuilderElementFonts
   } | null // Allow null for maximum flexibility; no [key: string] here so typed UserSettings interfaces assign without error
   settings?: {
     brandColor?: string

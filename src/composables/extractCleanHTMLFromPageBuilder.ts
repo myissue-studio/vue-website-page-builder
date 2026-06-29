@@ -12,8 +12,8 @@ export function extractCleanHTMLFromPageBuilder(
   const clone = pagebuilder.cloneNode(true) as HTMLElement
   clone.removeAttribute('id')
 
-  // Remove all elements with id="nolocalstorage"
-  clone.querySelectorAll<HTMLElement>('[id="nolocalstorage"]').forEach((el) => {
+  // Remove all builder-only insert-button wrappers
+  clone.querySelectorAll<HTMLElement>('[data-pbx-insert-btn]').forEach((el) => {
     el.remove()
   })
 

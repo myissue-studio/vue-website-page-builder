@@ -43,6 +43,24 @@ const getFontStyle = computed(() => {
   return pageBuilderStateStore.getFontStyle
 })
 
+/**
+ * When userSettings.fontFamily is a comma-separated list of two or more fonts,
+ * restrict the picker to only those entries. A single-font value keeps all fonts
+ * available (it only sets the canvas default, not the picker).
+ */
+const availableFontFamilies = computed(() => {
+  const fontConfig = pageBuilderStateStore.getPageBuilderConfig?.userSettings?.fontFamily
+  if (!fontConfig) return tailwindFontStyles.fontFamily
+  const requested = fontConfig
+    .split(',')
+    .map((f) => f.trim().toLowerCase()) // normalise case so 'Arial' matches 'pbx-font-arial'
+    .filter(Boolean)
+  if (requested.length < 2) return tailwindFontStyles.fontFamily
+  return requested
+    .map((f) => (f.startsWith('pbx-font-') ? f : `pbx-font-${f}`))
+    .filter((f) => tailwindFontStyles.fontFamily.includes(f))
+})
+
 watch(
   getFontBase,
   async (newValue) => {
@@ -209,7 +227,7 @@ watch(
           @change="pageBuilderService.handleFontFamily(fontFamily ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="fontFamily in tailwindFontStyles.fontFamily" :key="fontFamily">
+          <option v-for="fontFamily in availableFontFamilies" :key="fontFamily">
             {{ fontFamily }}
           </option>
         </select>
