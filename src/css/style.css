@@ -31,7 +31,25 @@
   .pbx-myPrimaryWidthScreenModule {
     @apply pbx-myModulePyMargin pbx-myModulePadding;
   }
-  .pbx-full-width-component {
+  /*
+   * Per-component full-width: applied to individual section elements directly.
+   */
+  section.pbx-full-width-component {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /*
+   * Global full-width: when #pagebuilder carries the flag class, every section
+   * breaks out to the viewport edge. Targeting the <section> element (not the
+   * [data-pagebuilder-content] wrapper) means this works in both the live builder
+   * and in exported/published HTML where the wrapper attribute is stripped.
+   * #pagebuilder itself has no width rule here, so it keeps its natural width and
+   * insert buttons (which contain no <section> elements) stay visible.
+   */
+  #pagebuilder.pbx-full-width-component section {
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -40,11 +58,10 @@
 
   /*
    * Mobile-safe horizontal inset for inner content — NOT on the breakout shell,
-   * so nested full-width backgrounds (page + section) stay edge-to-edge without
-   * showing the page bg in a padding gap.
+   * so nested full-width backgrounds stay edge-to-edge without a padding gap.
    * Lives in @layer components so Tailwind pbx-px-* utilities override it when set.
    */
-  [data-pagebuilder-content].pbx-full-width-component > section > div:first-child,
+  #pagebuilder.pbx-full-width-component section > div:first-child,
   section.pbx-full-width-component > div:first-child {
     padding-inline: clamp(1rem, 4vw, 2rem);
   }
