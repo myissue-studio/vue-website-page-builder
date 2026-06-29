@@ -437,7 +437,7 @@ const closeGlobalPageSettings = async () => {
   await pageBuilderService.handleManualSave()
   pageBuilderService.stopGlobalStylesSync()
 
-  const pagebuilder = document.querySelector('[data-pagebuilder-content]')
+  const pagebuilder = document.querySelector('#pagebuilder')
   if (pagebuilder) {
     pagebuilder.removeAttribute('data-global-selected')
   }
@@ -1141,8 +1141,8 @@ onMounted(async () => {
           </div>
 
           <!-- Each section gets its own data-pagebuilder-content wrapper.
-               User global styles land on these wrappers, NOT on #pagebuilder.
-               Insert buttons are siblings (never inside a styled wrapper). -->
+               User global styles land once on #pagebuilder.
+               Insert buttons are siblings of content wrappers. -->
           <template v-for="(component, idx) in getComponents" :key="component.id">
             <div
               v-if="component.html_code"
@@ -1150,7 +1150,7 @@ onMounted(async () => {
               v-html="component.html_code"
               @mouseup="handleSelectComponent(component)"
             ></div>
-            <!-- Insert button — sibling of [data-pagebuilder-content], inherits nothing -->
+            <!-- Insert button — sibling of [data-pagebuilder-content] -->
             <div
               v-if="Array.isArray(getComponents) && getComponents.length != 0"
               id="nolocalstorage"
@@ -1390,9 +1390,8 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
 }
-/* Insert buttons are siblings of [data-pagebuilder-content], so user
-   padding/margin/background/border-radius on those wrappers cannot affect
-   the buttons — no CSS reset needed here. */
+/* Insert buttons are siblings of [data-pagebuilder-content], so section markup
+   remains isolated from builder controls. */
 
 #pagebuilder [element] {
   outline: rgba(255, 255, 255, 0) dashed 3px !important;

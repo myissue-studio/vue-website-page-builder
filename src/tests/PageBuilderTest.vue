@@ -72,11 +72,10 @@ watch(currentTranslations, async () => {
         ],
       },
     },
-    // pageSettings: {
-    //   classes:
-    //     'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200',
-    //   style: 'background:#CBDF90',
-    // },
+    pageSettings: {
+      classes: 'pbx-bg-red-500',
+      style: 'letter-spacing: 2px;',
+    },
   } as const
 
   await pageBuilderService.startBuilder(configPageBuilder, newComponents)

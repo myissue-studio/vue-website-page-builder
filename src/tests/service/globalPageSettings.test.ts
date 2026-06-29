@@ -3,12 +3,12 @@
  * Regression tests for global page settings persistence.
  *
  * Bug fixed: When a user applied global page styles (e.g. custom classes/styles on
- * [data-pagebuilder-content]) and then closed the modal and clicked Publish,
+ * #pagebuilder) and then closed the modal and clicked Publish,
  * the parent app re-called startBuilder() which triggered mountComponentsToDOM()
  * with usePassedPageSettings=true. If config.pageSettings was not set, the DOM
  * element's classes were wiped because _pendingPageSettings was null.
  *
- * Fix: mountComponentsToDOM now reads the current DOM state of [data-pagebuilder-content]
+ * Fix: mountComponentsToDOM now reads the current DOM state of #pagebuilder
  * before remounting and uses it as a fallback when config.pageSettings is absent.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
@@ -144,20 +144,22 @@ const SECTION_HTML =
 // Tests
 // ---------------------------------------------------------------------------
 describe('Global Page Settings', () => {
+  let pagebuilderEl: HTMLElement
   let contentEl: HTMLElement
 
   beforeEach(() => {
     localStorage.clear()
-    // Set up a fresh [data-pagebuilder-content] element before each test
+    pagebuilderEl = document.createElement('div')
+    pagebuilderEl.setAttribute('id', 'pagebuilder')
     contentEl = document.createElement('div')
     contentEl.setAttribute('data-pagebuilder-content', '')
-    document.body.appendChild(contentEl)
+    pagebuilderEl.appendChild(contentEl)
+    document.body.appendChild(pagebuilderEl)
   })
 
   afterEach(() => {
-    // Remove the element after each test to avoid cross-test contamination
-    if (contentEl.parentNode) {
-      contentEl.parentNode.removeChild(contentEl)
+    if (pagebuilderEl.parentNode) {
+      pagebuilderEl.parentNode.removeChild(pagebuilderEl)
     }
     localStorage.clear()
   })
@@ -167,9 +169,9 @@ describe('Global Page Settings', () => {
   // -------------------------------------------------------------------------
   it('REGRESSION: preserves DOM classes when config has no pageSettings and Vue re-renders', async () => {
     const appliedClasses = 'pbx-font-jost pbx-text-black pbx-bg-emerald-300 pbx-border-8'
-    contentEl.setAttribute('class', appliedClasses)
+    pagebuilderEl.setAttribute('class', appliedClasses)
 
-    // Mock setComponents to simulate Vue destroying [data-pagebuilder-content] classes
+    // Mock setComponents to simulate Vue re-rendering content wrappers.
     // (this is what happens in production when setComponents triggers a re-render)
     const mockStore = createMockStore({
       getPageBuilderConfig: {
@@ -177,12 +179,8 @@ describe('Global Page Settings', () => {
         // No pageSettings — this was the bug trigger
       },
       setComponents: vi.fn().mockImplementation(() => {
-        // Simulate Vue re-rendering: removes classes from [data-pagebuilder-content]
-        const el = document.querySelector('[data-pagebuilder-content]')
-        if (el) {
-          el.removeAttribute('class')
-          el.removeAttribute('style')
-        }
+        contentEl.removeAttribute('class')
+        contentEl.removeAttribute('style')
       }),
     })
 
@@ -192,10 +190,9 @@ describe('Global Page Settings', () => {
     await svc.mountComponentsToDOM(SECTION_HTML, true /* usePassedPageSettings */)
     await nextTick()
 
-    // With the fix: classes are read from DOM BEFORE Vue wipes them,
-    // stored as _pendingPageSettings, then re-applied after nextTick.
-    const resultEl = document.querySelector('[data-pagebuilder-content]')
+    const resultEl = document.querySelector('#pagebuilder')
     expect(resultEl?.getAttribute('class')).toBe(appliedClasses)
+    expect(contentEl.hasAttribute('class')).toBe(false)
   })
 
   it('exports full page HTML with global page settings on the #pagebuilder wrapper', async () => {
@@ -203,9 +200,8 @@ describe('Global Page Settings', () => {
     const appliedClasses = 'pbx-font-jost pbx-text-black pbx-bg-emerald-300'
     const appliedStyle = 'background-color: rgb(52, 211, 153); color: rgb(17, 24, 39);'
 
-    contentEl.setAttribute('id', 'pagebuilder')
-    contentEl.setAttribute('class', appliedClasses)
-    contentEl.setAttribute('style', appliedStyle)
+    pagebuilderEl.setAttribute('class', appliedClasses)
+    pagebuilderEl.setAttribute('style', appliedStyle)
     contentEl.innerHTML = SECTION_HTML
 
     const mockStore = createMockStore({
@@ -232,18 +228,15 @@ describe('Global Page Settings', () => {
   })
 
   it('REGRESSION: preserves inline styles when config has no pageSettings and Vue re-renders', async () => {
-    contentEl.setAttribute('style', 'background-color: rgb(52, 211, 153);')
+    pagebuilderEl.setAttribute('style', 'background-color: rgb(52, 211, 153);')
 
     const mockStore = createMockStore({
       getPageBuilderConfig: {
         updateOrCreate: { formType: 'update', formName: 'article' },
       },
       setComponents: vi.fn().mockImplementation(() => {
-        const el = document.querySelector('[data-pagebuilder-content]')
-        if (el) {
-          el.removeAttribute('class')
-          el.removeAttribute('style')
-        }
+        contentEl.removeAttribute('class')
+        contentEl.removeAttribute('style')
       }),
     })
 
@@ -253,26 +246,24 @@ describe('Global Page Settings', () => {
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
 
-    const resultEl = document.querySelector('[data-pagebuilder-content]')
+    const resultEl = document.querySelector('#pagebuilder')
     // Style is converted via parseStyleString → convertStyleObjectToString, so check it's non-empty
     const styleAttr = resultEl?.getAttribute('style') ?? ''
     expect(styleAttr.length).toBeGreaterThan(0)
+    expect(contentEl.hasAttribute('style')).toBe(false)
   })
 
   it('REGRESSION: preserves both classes and styles simultaneously', async () => {
-    contentEl.setAttribute('class', 'pbx-font-jost pbx-bg-black')
-    contentEl.setAttribute('style', 'color: red;')
+    pagebuilderEl.setAttribute('class', 'pbx-font-jost pbx-bg-black')
+    pagebuilderEl.setAttribute('style', 'color: red;')
 
     const mockStore = createMockStore({
       getPageBuilderConfig: {
         updateOrCreate: { formType: 'update', formName: 'article' },
       },
       setComponents: vi.fn().mockImplementation(() => {
-        const el = document.querySelector('[data-pagebuilder-content]')
-        if (el) {
-          el.removeAttribute('class')
-          el.removeAttribute('style')
-        }
+        contentEl.removeAttribute('class')
+        contentEl.removeAttribute('style')
       }),
     })
 
@@ -282,9 +273,11 @@ describe('Global Page Settings', () => {
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
 
-    const resultEl = document.querySelector('[data-pagebuilder-content]')
+    const resultEl = document.querySelector('#pagebuilder')
     expect(resultEl?.getAttribute('class')).toBe('pbx-font-jost pbx-bg-black')
     expect((resultEl?.getAttribute('style') ?? '').length).toBeGreaterThan(0)
+    expect(contentEl.hasAttribute('class')).toBe(false)
+    expect(contentEl.hasAttribute('style')).toBe(false)
   })
 
   // -------------------------------------------------------------------------
@@ -292,7 +285,7 @@ describe('Global Page Settings', () => {
   // -------------------------------------------------------------------------
   it('uses config.pageSettings when explicitly provided (overrides DOM)', async () => {
     // DOM has different classes
-    contentEl.setAttribute('class', 'pbx-some-old-class')
+    pagebuilderEl.setAttribute('class', 'pbx-some-old-class')
 
     const mockStore = createMockStore({
       getPageBuilderConfig: {
@@ -310,16 +303,17 @@ describe('Global Page Settings', () => {
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
 
-    const resultEl = document.querySelector('[data-pagebuilder-content]')
+    const resultEl = document.querySelector('#pagebuilder')
     // config.pageSettings takes precedence
     expect(resultEl?.getAttribute('class')).toBe('pbx-font-raleway pbx-text-white')
+    expect(contentEl.hasAttribute('class')).toBe(false)
   })
 
   // -------------------------------------------------------------------------
   // No classes in DOM — nothing to preserve
   // -------------------------------------------------------------------------
   it('does not apply empty classes when DOM element has none', async () => {
-    // contentEl has NO classes
+    // pagebuilderEl has NO classes
 
     const mockStore = createMockStore({
       getPageBuilderConfig: {
@@ -333,7 +327,7 @@ describe('Global Page Settings', () => {
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
 
-    const resultEl = document.querySelector('[data-pagebuilder-content]')
+    const resultEl = document.querySelector('#pagebuilder')
     // No classes should be set (empty string means no class attribute applied)
     const cls = resultEl?.getAttribute('class')
     expect(!cls || cls === '').toBe(true)
@@ -348,7 +342,7 @@ describe('Global Page Settings', () => {
 
     await service.globalPageStyles()
 
-    expect(mockStore.setElement).toHaveBeenCalledWith(contentEl)
+    expect(mockStore.setElement).toHaveBeenCalledWith(pagebuilderEl)
   })
 
   it('globalPageStyles adds data-global-selected attribute', async () => {
@@ -357,12 +351,11 @@ describe('Global Page Settings', () => {
 
     await service.globalPageStyles()
 
-    expect(contentEl.hasAttribute('data-global-selected')).toBe(true)
+    expect(pagebuilderEl.hasAttribute('data-global-selected')).toBe(true)
   })
 
-  it('globalPageStyles does nothing when no [data-pagebuilder-content] exists', async () => {
-    // Remove the contentEl
-    contentEl.parentNode?.removeChild(contentEl)
+  it('globalPageStyles does nothing when no #pagebuilder exists', async () => {
+    pagebuilderEl.parentNode?.removeChild(pagebuilderEl)
 
     const mockStore = createMockStore()
     const service = new PageBuilderService(mockStore)
@@ -374,45 +367,40 @@ describe('Global Page Settings', () => {
   // -------------------------------------------------------------------------
   // clearClassesFromPage
   // -------------------------------------------------------------------------
-  it('clearClassesFromPage removes all classes from [data-pagebuilder-content]', async () => {
-    contentEl.setAttribute('class', 'pbx-font-jost pbx-text-black')
+  it('clearClassesFromPage removes all classes from #pagebuilder', async () => {
+    pagebuilderEl.setAttribute('class', 'pbx-font-jost pbx-text-black')
     const mockStore = createMockStore()
     const service = new PageBuilderService(mockStore)
 
     await service.clearClassesFromPage()
 
-    expect(contentEl.hasAttribute('class')).toBe(false)
+    expect(pagebuilderEl.hasAttribute('class')).toBe(false)
   })
 
-  it('clearClassesFromPage works on multiple [data-pagebuilder-content] elements', async () => {
-    const contentEl2 = document.createElement('div')
-    contentEl2.setAttribute('data-pagebuilder-content', '')
-    contentEl2.setAttribute('class', 'pbx-bg-black')
-    document.body.appendChild(contentEl2)
-    contentEl.setAttribute('class', 'pbx-font-jost')
+  it('clearClassesFromPage leaves content wrapper classes alone', async () => {
+    pagebuilderEl.setAttribute('class', 'pbx-font-jost')
+    contentEl.setAttribute('class', 'section-local-class')
 
     const mockStore = createMockStore()
     const service = new PageBuilderService(mockStore)
 
     await service.clearClassesFromPage()
 
-    expect(contentEl.hasAttribute('class')).toBe(false)
-    expect(contentEl2.hasAttribute('class')).toBe(false)
-
-    document.body.removeChild(contentEl2)
+    expect(pagebuilderEl.hasAttribute('class')).toBe(false)
+    expect(contentEl.getAttribute('class')).toBe('section-local-class')
   })
 
   // -------------------------------------------------------------------------
   // clearInlineStylesFromPage
   // -------------------------------------------------------------------------
-  it('clearInlineStylesFromPage removes inline styles from [data-pagebuilder-content]', async () => {
-    contentEl.setAttribute('style', 'color: red; background: blue;')
+  it('clearInlineStylesFromPage removes inline styles from #pagebuilder', async () => {
+    pagebuilderEl.setAttribute('style', 'color: red; background: blue;')
     const mockStore = createMockStore()
     const service = new PageBuilderService(mockStore)
 
     await service.clearInlineStylesFromPage()
 
-    expect(contentEl.hasAttribute('style')).toBe(false)
+    expect(pagebuilderEl.hasAttribute('style')).toBe(false)
   })
 
   // -------------------------------------------------------------------------
@@ -457,9 +445,9 @@ describe('Global Page Settings', () => {
       document.body.innerHTML = ''
       const pagebuilder = document.createElement('div')
       pagebuilder.id = 'pagebuilder'
+      pagebuilder.setAttribute('class', GLOBAL_CLASSES)
       const wrapper = document.createElement('div')
       wrapper.setAttribute('data-pagebuilder-content', '')
-      wrapper.setAttribute('class', GLOBAL_CLASSES)
 
       const section = document.createElement('section')
       section.setAttribute('data-componentid', 'test-abc')
@@ -479,7 +467,7 @@ describe('Global Page Settings', () => {
       pagebuilder.appendChild(wrapper)
       document.body.appendChild(pagebuilder)
 
-      return { wrapper, section, row, rowB }
+      return { pagebuilder, wrapper, section, row, rowB }
     }
 
     it('REGRESSION: syncDomToStoreOnly preserves global classes after Vue remount', async () => {
@@ -489,8 +477,10 @@ describe('Global Page Settings', () => {
 
       await service.syncDomToStoreOnly()
 
-      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      const resultEl = document.querySelector('#pagebuilder')
+      const wrapper = document.querySelector('[data-pagebuilder-content]')
       expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+      expect(wrapper?.hasAttribute('class')).toBe(false)
     })
 
     it('REGRESSION: deleteElementFromDOM preserves global classes', async () => {
@@ -503,8 +493,10 @@ describe('Global Page Settings', () => {
 
       await service.deleteElementFromDOM()
 
-      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      const resultEl = document.querySelector('#pagebuilder')
+      const wrapper = document.querySelector('[data-pagebuilder-content]')
       expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+      expect(wrapper?.hasAttribute('class')).toBe(false)
     })
 
     it('REGRESSION: duplicateElementInDOM preserves global classes', async () => {
@@ -517,8 +509,10 @@ describe('Global Page Settings', () => {
 
       await service.duplicateElementInDOM()
 
-      const resultEl = document.querySelector('[data-pagebuilder-content]')
+      const resultEl = document.querySelector('#pagebuilder')
+      const wrapper = document.querySelector('[data-pagebuilder-content]')
       expect(resultEl?.getAttribute('class')).toBe(GLOBAL_CLASSES)
+      expect(wrapper?.hasAttribute('class')).toBe(false)
     })
   })
 })
