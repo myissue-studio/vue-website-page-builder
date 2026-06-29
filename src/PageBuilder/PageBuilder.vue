@@ -151,9 +151,12 @@ const getPageBuilderConfig = computed(() => {
 })
 
 const canvasFontClass = computed(() => {
-  const font = getPageBuilderConfig.value?.userSettings?.fontFamily
-  if (!font) return 'pbx-font-sans'
-  return font.startsWith('pbx-font-') ? font : `pbx-font-${font}`
+  const fontConfig = getPageBuilderConfig.value?.userSettings?.fontFamily
+  if (!fontConfig) return 'pbx-font-sans'
+  // Accept either a single font or a comma-separated list — always use the first entry
+  const first = fontConfig.split(',')[0].trim()
+  if (!first) return 'pbx-font-sans'
+  return first.startsWith('pbx-font-') ? first : `pbx-font-${first}`
 })
 
 const getCurrentLanguage = computed(() => pageBuilderStateStore.getCurrentLanguage)
@@ -1084,7 +1087,7 @@ onMounted(async () => {
       <main
         ref="pbxBuilderWrapper"
         id="page-builder-wrapper"
-        class="pbx-transition-all pbx-duration-300 pbx-font-sans pbx-p-1 pbx-flex pbx-flex-col pbx-grow pbx-rounded-tr-2xl pbx-rounded-tl-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-items-stretch pbx-text-black pbx-h-[100vh] pbx-overflow-y-scroll pbx-relative pbx-pt-16"
+        class="pbx-transition-all pbx-duration-300 pbx-p-1 pbx-flex pbx-flex-col pbx-grow pbx-rounded-tr-2xl pbx-rounded-tl-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-items-stretch pbx-text-black pbx-h-[100vh] pbx-overflow-y-scroll pbx-relative pbx-pt-16"
         :class="[getMenuRight ? 'pbx-w-full' : 'pbx-w-full']"
       >
         <div
