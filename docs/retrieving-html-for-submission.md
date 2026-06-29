@@ -3,6 +3,19 @@
 Retrieving the Latest HTML Content for Form Submission.
 The builder’s auto-save ensures that the data in local storage always reflects the latest state of your page. You can retrieve this data at any time for form submission, publishing, or preview.
 
+`getSavedPageHtml()` returns the complete page HTML, including the outer `#pagebuilder` wrapper. That wrapper stores global `pageSettings`, so save this full string to your database instead of saving only the section/component HTML.
+
+The saved value should look like this:
+
+```html
+<div id="pagebuilder" class="pbx-bg-red-500" style="letter-spacing: 2px;">
+  <section data-component-title="Header">...</section>
+  <section data-component-title="Content">...</section>
+</div>
+```
+
+Later, when the user edits this content again, pass this full HTML string to `parsePageBuilderHTML()` so the builder can restore both `components` and `pageSettings`.
+
 To get the most up-to-date content, use the same `resourceData` (such as `formType` and `formName`) that was used when saving. If these values do not match, the builder may not find the expected content.
 
 **Example:**
@@ -38,13 +51,37 @@ onMounted(async () => {
 })
 
 const getComponents = function () {
-  const storedComponents = pageBuilderService.getSavedPageHtml()
-  yourForm.content = storedComponents
+  const savedPageHtml = pageBuilderService.getSavedPageHtml()
+  yourForm.content = savedPageHtml
 }
 
 // Call getComponents when needed.
 </script>
 ```
+
+### Editing This Saved HTML Later
+
+When opening the builder for an existing post, parse the same saved HTML string:
+
+```ts
+const { components, pageSettings } = pageBuilderService.parsePageBuilderHTML(post.content)
+
+const configPageBuilder = {
+  updateOrCreate: {
+    formType: 'update',
+    formName: 'article',
+  },
+  resourceData: {
+    id: post.id,
+    title: post.title,
+  },
+  pageSettings,
+}
+
+await pageBuilderService.startBuilder(configPageBuilder, components)
+```
+
+Do not manually strip the `#pagebuilder` wrapper before saving. Without it, the builder can still restore sections, but global page styles cannot be recovered from the HTML.
 
 ## Resetting the Builder Content
 

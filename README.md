@@ -7,6 +7,8 @@
 - [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
   - [Demo](#demo)
   - [Guide \& Documentation](#guide--documentation)
+  - [Backend and CMS Integration](#backend-and-cms-integration)
+  - [Why Choose This Vue Page Builder](#why-choose-this-vue-page-builder)
   - [Overview](#overview)
   - [Get Started in Minutes](#get-started-in-minutes)
   - [About](#about)
@@ -44,6 +46,69 @@ Find everything you need to get started, configure, and master the Vue Website P
 This section covers installation, requirements, quick start, advanced usage, and integration tips—so you can build and launch pages with confidence.
 
 [Open Guides & Docs](https://myissue-studio.github.io/vue-website-page-builder/)
+
+## Backend and CMS Integration
+
+This Vue page builder is designed for real CMS, SaaS, marketplace, blog, job board, listing, and ecommerce admin workflows. The editor uses browser local storage for draft recovery and autosave, but production persistence belongs to your backend.
+
+Recommended production flow:
+
+1. Start the builder with your config:
+
+```ts
+await pageBuilderService.startBuilder(configPageBuilder)
+```
+
+2. Save the full page HTML to your backend:
+
+```ts
+const content = pageBuilderService.getSavedPageHtml()
+await api.updatePost(post.id, { content })
+```
+
+3. Edit existing backend content later:
+
+```ts
+const { components, pageSettings } = pageBuilderService.parsePageBuilderHTML(post.content)
+
+await pageBuilderService.startBuilder(
+  {
+    ...configPageBuilder,
+    updateOrCreate: {
+      formType: 'update',
+      formName: 'article',
+    },
+    pageSettings,
+  },
+  components,
+)
+```
+
+Store the complete HTML string, including the outer `#pagebuilder` wrapper:
+
+```html
+<div id="pagebuilder" class="pbx-bg-red-500" style="letter-spacing: 2px;">
+  <section data-component-title="Hero">...</section>
+  <section data-component-title="Content">...</section>
+</div>
+```
+
+The wrapper stores global page styles. The sections store editable components. This makes the builder easy to use with Laravel, Rails, Django, Express, Nuxt, headless CMS platforms, custom admin panels, and any API-backed product.
+
+## Why Choose This Vue Page Builder
+
+Many page builders are heavy, opinionated, or tied to one CMS. This project focuses on a different use case: a lightweight Vue 3 page builder that you can embed inside your own product, connect to your own backend, and style for your own brand.
+
+- **Backend-first persistence**: local storage is used for draft recovery, while your database stores the published full HTML.
+- **Portable HTML output**: saved content is standard HTML with a `#pagebuilder` wrapper and direct `<section>` children.
+- **Works with existing systems**: integrate with custom CMS dashboards, SaaS admin panels, marketplaces, job boards, blogs, and ecommerce content tools.
+- **Vue-native integration**: use the `PageBuilder` component and `getPageBuilder()` service directly in Vue or Nuxt projects.
+- **Bring your own media library**: inject your own media picker, storage URLs, and upload flow instead of being locked into one asset provider.
+- **Global page styles included**: `pageSettings` can be saved and restored with the page, so editing existing posts keeps fonts, colors, backgrounds, and spacing.
+- **No Tailwind setup required**: the package ships the needed prefixed styles and avoids class conflicts with your app.
+- **Open and customizable**: MIT licensed, component-driven, and practical for teams that need control over the editing experience.
+
+This is a general-purpose builder by design. It does not try to replace your backend, authentication, permissions, CDN, or publishing workflow. It gives your product a visual editor while letting your platform stay in charge of data, scale, security, and deployment.
 
 ## Overview
 
@@ -161,7 +226,7 @@ The Page Builder is packed with features:
 - **True Visual Editing**: See your changes in real-time as you make them.
 - **Media Library**: Easily inject your own custom media library component.
 - **Advanced Sliders & Carousels**: Build responsive image and content sliders with autoplay, navigation controls, touch support, and full customization options.
-- **Local Storage & Auto-Save**: Never lose your work—changes are saved as you go.
+- **Draft Recovery & Auto-Save**: Never lose in-progress work—changes are saved locally as a draft while your backend stores published HTML.
 - **Unsplash**: Unsplash integration.
 - **Responsive Editing**: Ensure your site looks great on all devices.
 - **Text Editing**: Edit text content live and in real-time.
@@ -216,8 +281,7 @@ If you discover a security vulnerability, please send us a message.
 
 If you have any questions or if you're looking for customization, feel free to connect with our developers.
 
-- [Email](mailto:qais.wardag@outlook.com)
-- [LinkedIn](https://www.linkedin.com/in/qaiswardag)
+- [Contact](https://mybuilder.dev)
 
 ## Report Issues or Request Features
 

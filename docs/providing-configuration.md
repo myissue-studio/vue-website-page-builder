@@ -249,7 +249,9 @@ const { components, pageSettings } = pageBuilderService.parsePageBuilderHTML(sav
 // {
 //   classes:
 //     'pbx-text-2xl lg:pbx-text-4xl pbx-font-light pbx-font-rockwell pbx-italic pbx-text-amber-200 pbx-rounded-full',
-//   style: 'background:#CBDF90',
+//   style: {
+//     background: '#CBDF90',
+//   },
 // }
 
 const configPageBuilder = {

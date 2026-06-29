@@ -14,13 +14,12 @@ import { PageBuilder, getPageBuilder } from '@myissue/vue-website-page-builder'
 const pageBuilderService = getPageBuilder()
 
 const handlePublish = () => {
-  // Retrieve the latest HTML content (saved by the builder)
+  // Retrieve the latest full page HTML saved by the builder.
+  // Save this full string to your backend so global pageSettings can be restored later.
   const latestHtml = pageBuilderService.getSavedPageHtml()
-  // Submit, publish, or process the content as needed
-  // e.g., send latestHtml to your API or update your form
+  // Example:
+  // await api.updatePost(post.id, { content: latestHtml })
 }
-
-const pageBuilderService = getPageBuilder()
 
 // Initialize the Page Builder with `onMounted`
 onMounted(async () => {
@@ -36,6 +35,17 @@ onMounted(async () => {
 
 - `:showPublishButton="true"` — shows a publish button in the Page Builder toolbar.
 - `@handlePublishPageBuilder="handlePublish"` — emits after the builder auto-saves, so you always get the latest content.
+
+`latestHtml` includes the outer `#pagebuilder` wrapper:
+
+```html
+<div id="pagebuilder" class="pbx-bg-red-500" style="letter-spacing: 2px;">
+  <section data-component-title="Header">...</section>
+  <section data-component-title="Content">...</section>
+</div>
+```
+
+Keep that wrapper when saving to your backend. On edit, use `parsePageBuilderHTML(latestHtml)` to recover both `components` and `pageSettings`.
 
 > **Tip:**
 > You can name your handler function anything you like. This pattern makes it easy to embed the builder in modals, dialogs, or overlays in any Vue app.
