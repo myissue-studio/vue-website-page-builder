@@ -178,7 +178,7 @@ function stepLeft(dir: 1 | -1) {
         <div class="pbx-flex pbx-flex-col pbx-gap-2 pbx-mb-4">
           <!-- Vertical shorthand -->
           <div
-            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-border pbx-border-gray-400 pbx-rounded-lg pbx-px-3 pbx-py-2"
           >
             <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
               translate('Vertical')
@@ -207,7 +207,7 @@ function stepLeft(dir: 1 | -1) {
 
           <!-- Horizontal shorthand -->
           <div
-            class="pbx-flex pbx-items-center pbx-justify-between pbx-bg-gray-50 pbx-rounded-lg pbx-px-3 pbx-py-2"
+            class="pbx-flex pbx-items-center pbx-justify-between pbx-border pbx-border-gray-400 pbx-rounded-lg pbx-px-3 pbx-py-2"
           >
             <span class="pbx-text-xs pbx-text-gray-500 pbx-font-medium pbx-w-20">{{
               translate('Horizontal')
@@ -237,21 +237,29 @@ function stepLeft(dir: 1 | -1) {
 
         <!-- Box model visual -->
         <div
-          class="pbx-relative pbx-rounded-xl pbx-border-2 pbx-border-dashed pbx-border-orange-300 pbx-bg-orange-50 pbx-pt-10 pbx-pb-10 pbx-px-3"
+          class="pbx-relative pbx-rounded-2xl pbx-pt-8 pbx-pb-4 pbx-px-3 pbx-shadow-sm pbx-border pbx-border-gray-400"
         >
+          <span
+            class="pbx-absolute pbx-top-2 pbx-left-3 pbx-inline-flex pbx-items-center pbx-gap-1 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-widest pbx-text-gray-400 pbx-select-none pbx-pointer-events-none"
+          >
+            <span
+              class="pbx-inline-block pbx-w-1.5 pbx-h-1.5 pbx-rounded-full pbx-bg-amber-400"
+            ></span>
+            {{ translate('Margin') }}
+          </span>
           <!-- Top side -->
           <div class="pbx-flex pbx-justify-center pbx-mb-2">
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
             >
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepTop(-1)"
               >
                 <span class="material-symbols-outlined"> remove </span>
               </button>
               <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
-                <span class="pbx-text-[10px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                <span class="pbx-text-[10px] pbx-text-gray-400 pbx-leading-none pbx-mb-0.5">{{
                   translate('top')
                 }}</span>
                 <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
@@ -259,7 +267,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepTop(1)"
               >
                 <span class="material-symbols-outlined"> add </span>
@@ -274,16 +282,16 @@ function stepLeft(dir: 1 | -1) {
           >
             <!-- Left -->
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
             >
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepLeft(-1)"
               >
                 <span class="material-symbols-outlined"> remove </span>
               </button>
               <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
-                <span class="pbx-text-[9px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                <span class="pbx-text-[9px] pbx-text-gray-400 pbx-leading-none pbx-mb-0.5">{{
                   translate('left')
                 }}</span>
                 <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
@@ -291,7 +299,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepLeft(1)"
               >
                 <span class="material-symbols-outlined"> add </span>
@@ -300,25 +308,25 @@ function stepLeft(dir: 1 | -1) {
 
             <!-- Center element placeholder -->
             <div
-              class="pbx-bg-white pbx-border pbx-border-orange-200 pbx-rounded-lg pbx-h-10 pbx-flex pbx-items-center pbx-justify-center pbx-mx-1"
+              class="pbx-bg-gray-50 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-h-10 pbx-flex pbx-items-center pbx-justify-center pbx-mx-1"
             >
-              <span class="pbx-text-[10px] pbx-text-gray-300 pbx-select-none">{{
+              <span class="pbx-text-[10px] pbx-text-gray-300 pbx-select-none pbx-font-medium">{{
                 translate('element')
               }}</span>
             </div>
 
             <!-- Right -->
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
             >
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepRight(-1)"
               >
                 <span class="material-symbols-outlined"> remove </span>
               </button>
               <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-8">
-                <span class="pbx-text-[9px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                <span class="pbx-text-[9px] pbx-text-gray-400 pbx-leading-none pbx-mb-0.5">{{
                   translate('right')
                 }}</span>
                 <span class="pbx-text-xs pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
@@ -326,7 +334,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepRight(1)"
               >
                 <span class="material-symbols-outlined"> add </span>
@@ -337,16 +345,16 @@ function stepLeft(dir: 1 | -1) {
           <!-- Bottom side -->
           <div class="pbx-flex pbx-justify-center pbx-mt-2">
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
             >
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepBottom(-1)"
               >
                 <span class="material-symbols-outlined"> remove </span>
               </button>
               <div class="pbx-flex pbx-flex-col pbx-items-center pbx-w-14">
-                <span class="pbx-text-[10px] pbx-text-orange-400 pbx-leading-none pbx-mb-0.5">{{
+                <span class="pbx-text-[10px] pbx-text-gray-400 pbx-leading-none pbx-mb-0.5">{{
                   translate('bottom')
                 }}</span>
                 <span class="pbx-text-sm pbx-font-semibold pbx-text-gray-700 pbx-tabular-nums">{{
@@ -354,7 +362,7 @@ function stepLeft(dir: 1 | -1) {
                 }}</span>
               </div>
               <button
-                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
                 @click="stepBottom(1)"
               >
                 <span class="material-symbols-outlined"> add </span>

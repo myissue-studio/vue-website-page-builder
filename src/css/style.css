@@ -525,8 +525,7 @@
 #pagebuilder-right-menu hr {
   border: none;
   height: 1px;
-  background: oklch(93.6% 0.032 17.717);
-  box-shadow: oklch(93.6% 0.032 17.717);
+  background: #828282;
 }
 
 #page-builder-editor ol,

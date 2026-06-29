@@ -89,7 +89,7 @@ watch(
         <button
           v-if="globalPageLayout"
           type="button"
-          class="pbx-m-2 pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-xl pbx-border-0 pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          class="pbx-m-2 pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
           :title="translate('Theme Color Presets')"
           @click.stop="showThemeColorPresetsModal = true"
         >
