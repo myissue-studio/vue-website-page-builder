@@ -19,6 +19,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/builderInstance'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
+import { resolveFontFamily } from '../utils/builder/font-family-map'
 
 const pageBuilderService = getPageBuilder()
 
@@ -153,10 +154,33 @@ const getPageBuilderConfig = computed(() => {
 const canvasFontClass = computed(() => {
   const fontConfig = getPageBuilderConfig.value?.userSettings?.fontFamily
   if (!fontConfig) return 'pbx-font-sans'
-  // Accept either a single font or a comma-separated list — always use the first entry
-  const first = fontConfig.split(',')[0].trim()
+  // Accept either a single font or a comma-separated list — always use the first entry.
+  // Normalise to lowercase so 'Arial' and 'arial' both produce 'pbx-font-arial'.
+  const first = fontConfig.split(',')[0].trim().toLowerCase()
   if (!first) return 'pbx-font-sans'
   return first.startsWith('pbx-font-') ? first : `pbx-font-${first}`
+})
+
+/**
+ * Returns CSS custom properties for per-element font overrides, to be bound as
+ * :style on #page-builder-wrapper (the scroll container that wraps #pagebuilder).
+ * Setting them on the wrapper — not on #pagebuilder itself — avoids conflicts with
+ * applyPageSettingsToPage, which rewrites #pagebuilder's style attribute directly.
+ * The style.css rules inside #pagebuilder pick up the variables via CSS cascade.
+ */
+const canvasElementFontStyle = computed((): Record<string, string> => {
+  const elementFonts = getPageBuilderConfig.value?.userSettings?.elementFonts
+  if (!elementFonts) return {}
+  const style: Record<string, string> = {}
+  const tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'] as const
+  for (const tag of tags) {
+    const fontConfig = elementFonts[tag]
+    if (fontConfig) {
+      const resolved = resolveFontFamily(fontConfig)
+      if (resolved) style[`--pbx-el-${tag}-font`] = resolved
+    }
+  }
+  return style
 })
 
 const getCurrentLanguage = computed(() => pageBuilderStateStore.getCurrentLanguage)
@@ -1089,6 +1113,7 @@ onMounted(async () => {
         id="page-builder-wrapper"
         class="pbx-transition-all pbx-duration-300 pbx-p-1 pbx-flex pbx-flex-col pbx-grow pbx-rounded-tr-2xl pbx-rounded-tl-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-items-stretch pbx-text-black pbx-h-[100vh] pbx-overflow-y-scroll pbx-relative pbx-pt-16"
         :class="[getMenuRight ? 'pbx-w-full' : 'pbx-w-full']"
+        :style="canvasElementFontStyle"
       >
         <div
           id="pbxEditToolbar"

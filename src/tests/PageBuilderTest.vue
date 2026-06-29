@@ -65,7 +65,24 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        fontFamily: 'fantasy, jost, raleway, arial', // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
+        // fontFamily — first entry sets the canvas default; subsequent entries restrict the font-family picker.
+        // Unknown names (e.g. 'fantasy') are silently skipped; the first recognised name is used.
+        // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
+        // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
+        // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
+        // didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
+        fontFamily: 'raleway, jost, raleway, arial, fantasy',
+        // elementFonts — optional per-element font overrides for h1–h6 and p.
+        // Same format as fontFamily: first recognised entry wins.
+        elementFonts: {
+          h1: 'raleway, jost, raleway, arial, fantasy',
+          h2: 'raleway, jost, raleway, arial, fantasy',
+          h3: 'raleway, jost, raleway, arial, fantasy',
+          h4: 'raleway, jost, raleway, arial, fantasy',
+          h5: 'raleway, jost, raleway, arial, fantasy',
+          h6: 'raleway, jost, raleway, arial, fantasy',
+          p: 'raleway, jost, raleway, arial, fantasy',
+        },
       },
 
       settings: {

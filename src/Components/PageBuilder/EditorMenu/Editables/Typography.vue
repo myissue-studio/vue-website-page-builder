@@ -53,7 +53,7 @@ const availableFontFamilies = computed(() => {
   if (!fontConfig) return tailwindFontStyles.fontFamily
   const requested = fontConfig
     .split(',')
-    .map((f) => f.trim())
+    .map((f) => f.trim().toLowerCase()) // normalise case so 'Arial' matches 'pbx-font-arial'
     .filter(Boolean)
   if (requested.length < 2) return tailwindFontStyles.fontFamily
   return requested
