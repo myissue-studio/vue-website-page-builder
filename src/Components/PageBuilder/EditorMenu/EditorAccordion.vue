@@ -27,7 +27,7 @@ const expanded = ref(false)
     <div
       :class="[
         expanded
-          ? 'pbx-block pbx-bg-indigo-50 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-red-50'
+          ? 'pbx-block pbx-bg-slate-300 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-red-50'
           : 'pbx-hidden',
       ]"
       class="pbx-pl-2 pbx-pr-4 pbx-ease-linear pbx-duration-75 pbx-pb-8"

@@ -775,9 +775,8 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearClassesFromPage() {
-    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-      el.removeAttribute('class')
-    })
+    const pagebuilder = document.querySelector('#pagebuilder')
+    pagebuilder?.removeAttribute('class')
 
     this.initializeElementStyles()
     await nextTick()
@@ -787,9 +786,8 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearInlineStylesFromPage() {
-    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-      el.removeAttribute('style')
-    })
+    const pagebuilder = document.querySelector('#pagebuilder')
+    pagebuilder?.removeAttribute('style')
 
     this.initializeElementStyles()
     await nextTick()
@@ -800,33 +798,27 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async globalPageStyles() {
-    const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
-    const firstEl = allContentEls[0] as HTMLElement | undefined
-    if (!firstEl) return
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (!pagebuilder) return
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
 
     // Set the element in the store (right sidebar edits this one)
-    this.pageBuilderStateStore.setElement(firstEl)
+    this.pageBuilderStateStore.setElement(pagebuilder)
 
     // Add the data attribute for styling
-    firstEl.setAttribute('data-global-selected', 'true')
+    pagebuilder.setAttribute('data-global-selected', 'true')
 
-    // Sync class/style changes from the first wrapper to all other section wrappers
+    // Keep the latest page-level classes/styles available after Vue remounts.
     if (this.globalStylesObserver) this.globalStylesObserver.disconnect()
     this.globalStylesObserver = new MutationObserver(() => {
-      const cls = firstEl.getAttribute('class') ?? ''
-      const style = firstEl.getAttribute('style') ?? ''
-      allContentEls.forEach((el) => {
-        if (el === firstEl) return
-        if (cls) el.setAttribute('class', cls)
-        else el.removeAttribute('class')
-        if (style) el.setAttribute('style', style)
-        else el.removeAttribute('style')
-      })
+      this._lastKnownPageSettings = {
+        classes: pagebuilder.getAttribute('class') ?? '',
+        style: pagebuilder.getAttribute('style') ?? '',
+      }
     })
-    this.globalStylesObserver.observe(firstEl, {
+    this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
       attributeFilter: ['class', 'style'],
     })
@@ -835,9 +827,8 @@ export class PageBuilderService {
   }
 
   /**
-   * Disconnects the MutationObserver that syncs global page style changes across
-   * all [data-pagebuilder-content] section wrappers. Call when closing the global
-   * styles editor panel.
+   * Disconnects the MutationObserver that tracks global page style changes.
+   * Call when closing the global styles editor panel.
    */
   public stopGlobalStylesSync() {
     if (this.globalStylesObserver) {
@@ -1097,22 +1088,20 @@ export class PageBuilderService {
   }
 
   /**
-   * Returns true when the global page wrapper (all [data-pagebuilder-content] elements)
-   * has the full-width class applied, meaning every section's background stretches edge-to-edge.
+   * Returns true when the global page wrapper has the full-width class applied.
    */
   public isGlobalFullWidth(): boolean {
-    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
-    return contentEl?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    return pagebuilder?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
   }
 
   /**
-   * Toggles the full-width class on every [data-pagebuilder-content] wrapper so that
-   * global background colours stretch across the entire browser viewport.
+   * Toggles the full-width class on the page wrapper so that global background
+   * colours stretch across the entire browser viewport.
    */
   public async setGlobalFullWidth(enabled: boolean): Promise<void> {
-    document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-      el.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
-    })
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    pagebuilder?.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
     this.saveDomComponentsToLocalStorage()
     await this.handleAutoSave()
   }
@@ -2609,10 +2598,9 @@ export class PageBuilderService {
       })
     })
 
-    const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
-    const pageSettings = {
-      classes: contentEl?.className || '',
-      style: contentEl?.getAttribute('style') || contentEl?.style.cssText || '',
+    const pageSettings = this.readCurrentPageSettings() ?? {
+      classes: '',
+      style: '',
     }
 
     const dataToSave = {
@@ -2704,7 +2692,7 @@ export class PageBuilderService {
 
   /**
    * Handles the form submission process, clearing local storage and the DOM.
-   * Global page settings (classes / inline styles on the content wrapper) are
+   * Global page settings (classes / inline styles on the page wrapper) are
    * intentionally preserved so they survive a "remove all components" action.
    * @returns {Promise<void>}
    */
@@ -2713,8 +2701,8 @@ export class PageBuilderService {
     const savedPageSettings = this.readCurrentPageSettings()
 
     // Keep an in-memory copy so the current session can restore them when the
-    // first new component is added after a delete-all (at that point the DOM has
-    // no [data-pagebuilder-content] elements left to read from).
+    // first new component is added after a delete-all (at that point the DOM may
+    // have no #pagebuilder element left to read from).
     if (savedPageSettings) {
       this._lastKnownPageSettings = savedPageSettings
     }
@@ -2741,11 +2729,19 @@ export class PageBuilderService {
 
   /**
    * Reads the current page settings.
-   * Prioritises the live DOM (always current) and falls back to localStorage
-   * if there are no [data-pagebuilder-content] elements.
+   * Prioritises the live #pagebuilder element (always current) and falls back to localStorage.
    */
   private readCurrentPageSettings(): { classes: string; style: string } | null {
     // The live DOM is always the most up-to-date source — read it first.
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (pagebuilder) {
+      return {
+        classes: pagebuilder.className || '',
+        style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
+      }
+    }
+
+    // Backward-compatible fallback for callers/tests that only mount content wrappers.
     const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
     if (contentEl) {
       return {
@@ -2754,7 +2750,7 @@ export class PageBuilderService {
       }
     }
 
-    // No DOM wrappers exist — fall back to the last persisted localStorage value.
+    // No live page element exists — fall back to the last persisted localStorage value.
     this.updateLocalStorageItemName()
     const key = this.getLocalStorageItemName.value
     if (key) {
@@ -2774,40 +2770,43 @@ export class PageBuilderService {
     return null
   }
 
-  /** Applies captured global page classes/styles to every section wrapper. */
-  private applyPageSettingsToAllWrappers(pageSettings: { classes: string; style: string }): void {
+  /** Applies captured global page classes/styles to the page wrapper once. */
+  private applyPageSettingsToPage(pageSettings: { classes: string; style: string }): void {
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (pagebuilder) {
+      if (pageSettings.classes) pagebuilder.setAttribute('class', pageSettings.classes)
+      else pagebuilder.removeAttribute('class')
+      if (pageSettings.style) pagebuilder.setAttribute('style', pageSettings.style)
+      else pagebuilder.removeAttribute('style')
+    }
+
+    // Page settings used to be copied to every content wrapper. Clear those legacy
+    // attributes so padding/background do not repeat around each component.
     document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-      if (pageSettings.classes) el.setAttribute('class', pageSettings.classes)
-      else el.removeAttribute('class')
-      if (pageSettings.style) el.setAttribute('style', pageSettings.style)
-      else el.removeAttribute('style')
+      el.removeAttribute('class')
+      el.removeAttribute('style')
     })
+
     if (pageSettings.classes || pageSettings.style) {
       this._lastKnownPageSettings = pageSettings
     }
   }
 
-  /** Reconnects the global-styles MutationObserver after a Vue remount replaces wrapper nodes. */
+  /** Reconnects the global-styles MutationObserver after a Vue remount replaces nodes. */
   private reconnectGlobalStylesObserver(): void {
     if (!this.globalStylesObserver) return
 
-    const firstEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
-    if (!firstEl) return
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (!pagebuilder) return
 
-    const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
     this.globalStylesObserver.disconnect()
     this.globalStylesObserver = new MutationObserver(() => {
-      const cls = firstEl.getAttribute('class') ?? ''
-      const style = firstEl.getAttribute('style') ?? ''
-      allContentEls.forEach((el) => {
-        if (el === firstEl) return
-        if (cls) el.setAttribute('class', cls)
-        else el.removeAttribute('class')
-        if (style) el.setAttribute('style', style)
-        else el.removeAttribute('style')
-      })
+      this._lastKnownPageSettings = {
+        classes: pagebuilder.getAttribute('class') ?? '',
+        style: pagebuilder.getAttribute('style') ?? '',
+      }
     })
-    this.globalStylesObserver.observe(firstEl, {
+    this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
       attributeFilter: ['class', 'style'],
     })
@@ -2815,8 +2814,8 @@ export class PageBuilderService {
 
   /**
    * Updates the component store and re-renders the page without losing global page
-   * styles on [data-pagebuilder-content]. setComponents clears wrappers first, so
-   * settings must be captured before the remount and re-applied after Vue renders.
+   * styles on #pagebuilder. Settings must be captured before the remount and
+   * re-applied after Vue renders.
    */
   private async setComponentsPreservingPageSettings(
     components: ComponentObject[],
@@ -2833,7 +2832,7 @@ export class PageBuilderService {
     await nextTick()
 
     if (pageSettings && (pageSettings.classes || pageSettings.style)) {
-      this.applyPageSettingsToAllWrappers(pageSettings)
+      this.applyPageSettingsToPage(pageSettings)
     }
 
     if (shouldReconnectObserver) {
@@ -3452,17 +3451,10 @@ export class PageBuilderService {
         typeof placeCompAtLocation === 'number' &&
         placeCompAtLocation >= 0
       ) {
-        // Capture global page styles from the first styled div BEFORE any DOM
-        // manipulation — this is the only moment we can guarantee they are present.
+        // Capture global page styles BEFORE any DOM manipulation.
         // Fall back to _lastKnownPageSettings when all components were just deleted
-        // and no [data-pagebuilder-content] elements exist in the DOM yet.
-        const existingStyled = document.querySelector(
-          '[data-pagebuilder-content]',
-        ) as HTMLElement | null
-        const globalClasses =
-          existingStyled?.getAttribute('class') || this._lastKnownPageSettings?.classes || ''
-        const globalStyle =
-          existingStyled?.getAttribute('style') || this._lastKnownPageSettings?.style || ''
+        // and no #pagebuilder element exists in the DOM yet.
+        const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
 
         // Pause the MutationObserver so it doesn't fire on the divs being removed/recreated.
         this.globalStylesObserver?.disconnect()
@@ -3479,56 +3471,22 @@ export class PageBuilderService {
         this.pageBuilderStateStore.setComponents(newComponents)
         insertedIndex = placeCompAtLocation
 
-        // Wait for Vue to finish rendering the new component list (including the
-        // freshly created [data-pagebuilder-content] div for the new component).
+        // Wait for Vue to finish rendering the new component list.
         await nextTick()
         await nextTick()
 
-        // Apply the captured global styles to every wrapper, including the new div.
-        if (globalClasses || globalStyle) {
-          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-            if (globalClasses) el.setAttribute('class', globalClasses)
-            else el.removeAttribute('class')
-            if (globalStyle) el.setAttribute('style', globalStyle)
-            else el.removeAttribute('style')
-          })
+        if (pageSettings && (pageSettings.classes || pageSettings.style)) {
+          this.applyPageSettingsToPage(pageSettings)
         }
 
-        // Restart the MutationObserver on the (possibly new) first wrapper so that
-        // future style edits continue to sync to all wrappers.
-        const newFirstEl = document.querySelector(
-          '[data-pagebuilder-content]',
-        ) as HTMLElement | null
-        if (newFirstEl && this.globalStylesObserver !== null) {
-          // Observer was active before — reconnect it to the new first element.
-          const allContentEls = document.querySelectorAll('[data-pagebuilder-content]')
-          this.globalStylesObserver = new MutationObserver(() => {
-            const cls = newFirstEl.getAttribute('class') ?? ''
-            const style = newFirstEl.getAttribute('style') ?? ''
-            allContentEls.forEach((el) => {
-              if (el === newFirstEl) return
-              if (cls) el.setAttribute('class', cls)
-              else el.removeAttribute('class')
-              if (style) el.setAttribute('style', style)
-              else el.removeAttribute('style')
-            })
-          })
-          this.globalStylesObserver.observe(newFirstEl, {
-            attributes: true,
-            attributeFilter: ['class', 'style'],
-          })
+        if (this.globalStylesObserver !== null) {
+          this.reconnectGlobalStylesObserver()
         }
       } else {
         // Capture styles before push so we can apply to the new div after render.
         // Fall back to _lastKnownPageSettings when all components were just deleted
-        // and no [data-pagebuilder-content] elements exist in the DOM yet.
-        const existingStyled = document.querySelector(
-          '[data-pagebuilder-content]',
-        ) as HTMLElement | null
-        const globalClasses =
-          existingStyled?.getAttribute('class') || this._lastKnownPageSettings?.classes || ''
-        const globalStyle =
-          existingStyled?.getAttribute('style') || this._lastKnownPageSettings?.style || ''
+        // and no #pagebuilder element exists in the DOM yet.
+        const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
 
         this.pageBuilderStateStore.setPushComponents({
           component: clonedComponent,
@@ -3537,15 +3495,10 @@ export class PageBuilderService {
             : 'push',
         })
 
-        if (globalClasses || globalStyle) {
+        if (pageSettings && (pageSettings.classes || pageSettings.style)) {
           await nextTick()
           await nextTick()
-          document.querySelectorAll('[data-pagebuilder-content]').forEach((el) => {
-            if (globalClasses) el.setAttribute('class', globalClasses)
-            else el.removeAttribute('class')
-            if (globalStyle) el.setAttribute('style', globalStyle)
-            else el.removeAttribute('style')
-          })
+          this.applyPageSettingsToPage(pageSettings)
         }
       }
 
@@ -3909,15 +3862,7 @@ export class PageBuilderService {
       let configPageSettings: PageSettings | null = null
 
       // Capture current DOM page settings before any remount (in case we need to preserve them)
-      const currentContentEl = document.querySelector(
-        '[data-pagebuilder-content]',
-      ) as HTMLElement | null
-      const currentDomPageSettings: PageSettings | null = currentContentEl
-        ? {
-            classes: currentContentEl.getAttribute('class') || '',
-            style: this.parseStyleString(currentContentEl.getAttribute('style') || ''),
-          }
-        : null
+      const currentDomPageSettings = this.readCurrentPageSettings()
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
@@ -3989,27 +3934,22 @@ export class PageBuilderService {
       await this.clearHtmlSelection()
       await nextTick()
 
-      // Apply pending page settings to all [data-pagebuilder-content] wrappers now that Vue has rendered them
+      // Apply pending page settings to #pagebuilder now that Vue has rendered.
       if (this._pendingPageSettings) {
         const settings = this._pendingPageSettings
         this._pendingPageSettings = null
-        const contentEls = document.querySelectorAll('[data-pagebuilder-content]')
-        if (contentEls.length > 0) {
-          contentEls.forEach((el) => {
-            el.removeAttribute('class')
-            el.removeAttribute('style')
-            if (settings.classes) el.setAttribute('class', settings.classes)
-            const styleStr = this.convertStyleObjectToString(settings.style)
-            if (styleStr) el.setAttribute('style', styleStr)
-          })
+        const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+        const pageSettings = {
+          classes: settings.classes || '',
+          style: this.convertStyleObjectToString(settings.style) || '',
+        }
+        if (pagebuilder) {
+          this.applyPageSettingsToPage(pageSettings)
         } else {
-          // No wrapper elements exist (empty page, e.g. after delete-all + page reload).
+          // No page wrapper exists (empty page, e.g. after delete-all + page reload).
           // Preserve the settings in _lastKnownPageSettings so that addComponent can
-          // apply them to the first new wrapper once the user adds a component.
-          this._lastKnownPageSettings = {
-            classes: settings.classes || '',
-            style: this.convertStyleObjectToString(settings.style) || '',
-          }
+          // apply them once the user adds a component.
+          this._lastKnownPageSettings = pageSettings
         }
       }
 

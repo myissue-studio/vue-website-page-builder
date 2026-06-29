@@ -149,7 +149,7 @@ const closeHTMLSettings = async function () {
   <ModalBuilder
     maxWidth="5xl"
     :showModalBuilder="showHTMLSettings"
-    :title="translate('Selected HTML')"
+    :title="translate('Global Page Styles')"
     @closeMainModalBuilder="closeHTMLSettings"
     minHeight=""
     maxHeight=""

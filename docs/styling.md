@@ -12,7 +12,7 @@ const configPageBuilder = {
   // other config options...
 
   pageSettings: {
-    classes: 'max-w-screen-lg mx-auto px-4 bg-white',
+    classes: 'pbx-max-w-screen-lg pbx-mx-auto pbx-px-4 pbx-bg-white',
     style: 'background:#ffffff;color:#1e293b;border:1px solid #e2e8f0;border-radius:14px;',
   },
 } as const
@@ -22,7 +22,7 @@ You may also pass `style` as an object:
 
 ```ts
 pageSettings: {
-  classes: 'max-w-screen-lg mx-auto px-4 bg-white',
+  classes: 'pbx-max-w-screen-lg pbx-mx-auto pbx-px-4 pbx-bg-white',
   style: {
     backgroundColor: '#ffffff',
     border: '1px solid #e2e8f0',

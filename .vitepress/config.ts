@@ -48,11 +48,12 @@ export default defineConfig({
         text: 'Usage',
         items: [
           { text: 'Providing Configuration', link: '/providing-configuration' },
+          { text: 'Backend Integration', link: '/backend-integration' },
           { text: 'TypeScript Support', link: '/typescript-support' },
           { text: 'Language Support', link: '/language-support' },
           { text: 'Automatic Draft Recovery', link: '/automatic-draft-recovery' },
           { text: 'Retrieving HTML for Submission', link: '/retrieving-html-for-submission' },
-          { text: 'Restoring Previously Content', link: '/restoring-previously-content' },
+          { text: 'Restoring Existing Content', link: '/restoring-previously-content' },
           { text: 'Rendering HTML Output', link: '/rendering-html-output' },
           { text: 'Publish Changes', link: '/publish-changes' },
           { text: 'Use in Modal', link: '/use-in-modal' },

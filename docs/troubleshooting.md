@@ -14,6 +14,45 @@ If fonts or Material Icons are not displaying correctly, verify that:
 import '@myissue/vue-website-page-builder/style.css'
 ```
 
+## Global Styles Missing When Editing Existing Content
+
+Global page styles are stored on the outer `#pagebuilder` wrapper in the saved HTML:
+
+```html
+<div id="pagebuilder" class="pbx-bg-red-500" style="letter-spacing: 2px;">
+  <section data-component-title="Header">...</section>
+</div>
+```
+
+When restoring existing content, parse the full saved HTML and pass both values back into the builder:
+
+```ts
+const { components, pageSettings } = pageBuilderService.parsePageBuilderHTML(post.content)
+
+await pageBuilderService.startBuilder(
+  {
+    updateOrCreate: {
+      formType: 'update',
+      formName: 'article',
+    },
+    pageSettings,
+  },
+  components,
+)
+```
+
+If your saved HTML only contains `<section>...</section>` elements, the builder can recover the components but not the global page styles. Save the full HTML returned by `getSavedPageHtml()` to avoid this.
+
+## Published HTML Renders Without Styling
+
+Import the package stylesheet once in the app that renders saved content:
+
+```ts
+import '@myissue/vue-website-page-builder/style.css'
+```
+
+You do not need to mount the Page Builder component just to render saved HTML.
+
 ## Use with `onMounted`
 
 Initialize Page Builder with `onMounted` Troubleshooting.

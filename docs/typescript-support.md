@@ -335,6 +335,12 @@ The `PageBuilderService` class provides the following public methods:
   - Get the current state of all components
 - `generateHtmlFromComponents(): Promise<string>`
   - Generate clean HTML from the current components
+- `generateFullPageHtml(): Promise<string>`
+  - Generate clean full page HTML, including the outer `#pagebuilder` wrapper and global `pageSettings`
+- `getSavedPageHtml(): string | false`
+  - Retrieve the latest saved full page HTML from local storage for publishing or backend submission
+- `parsePageBuilderHTML(htmlString: string): { components: ComponentObject[]; pageSettings: PageSettings }`
+  - Parse saved full page HTML back into editable components and global page settings
 - `applySelectedImage(image: ImageObject): Promise<void>`
   - Apply a selected image to the current element
 

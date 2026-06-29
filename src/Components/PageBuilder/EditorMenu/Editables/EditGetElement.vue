@@ -759,7 +759,7 @@ const showThemeColorPresetsModal = ref(false)
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleModalIframeSrc"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> play_circle </span>
             </div>
@@ -775,7 +775,7 @@ const showThemeColorPresetsModal = ref(false)
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleModalPreviewTiptap"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span>
                 <svg
@@ -809,7 +809,7 @@ const showThemeColorPresetsModal = ref(false)
           <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
             <div
               @click="handleAddImage"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> add_photo_alternate </span>
             </div>
@@ -819,11 +819,11 @@ const showThemeColorPresetsModal = ref(false)
         <template v-if="getElement && isSelectedImage">
           <div
             @click="openImageSettings"
-            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             :class="
               isImageSettingsOpen
                 ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor'
+                : 'pbx-text-myPrimaryDarkGrayColor'
             "
             :title="translate('Image Settings')"
           >
@@ -845,7 +845,7 @@ const showThemeColorPresetsModal = ref(false)
         <template v-if="getElement && getComponent && isSelectedComponentTopElement">
           <div
             @click="openComponentSettings"
-            class="pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             :title="translate('Component Settings')"
           >
             <SliderIcon />
@@ -893,7 +893,7 @@ const showThemeColorPresetsModal = ref(false)
                       {{ translate('Stretch across browser width') }}
                     </p>
                   </div>
-                  
+
                   <ToggleInput
                     :model-value="selectedComponentFullWidth"
                     @update:model-value="updateSelectedComponentFullWidth"
@@ -1015,14 +1015,14 @@ const showThemeColorPresetsModal = ref(false)
 
         <div
           v-if="getElement && getComponent"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
           @click="openOptionsMoreOpen = !openOptionsMoreOpen"
         >
           <span class="material-symbols-outlined"> more_horiz </span>
         </div>
         <div
           v-if="getElement && getComponent"
-          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
           @click="pageBuilderService.clearHtmlSelection()"
         >
           <span class="material-symbols-outlined"> close_small</span>
@@ -1034,7 +1034,7 @@ const showThemeColorPresetsModal = ref(false)
   <transition name="popup-fade">
     <div
       v-if="openOptionsMoreOpen"
-      class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-bg-white pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-56"
+      class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-rounded-2xl pbx-py-2 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-56 pbx-bg-white/90 pbx-backdrop-blur-md"
     >
       <div class="pbx-overflow-y-scroll pbx-h-[20rem] pbx-max-h-[20rem] pbx-min-h-[20rem] pbx-pb-4">
         <div class="pbx-flex pbx-flex-col">
@@ -1051,13 +1051,13 @@ const showThemeColorPresetsModal = ref(false)
             v-if="getElement && getComponent"
             @click="pageBuilderService.reorderComponent(-1)"
             :disabled="!canMoveUp"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
             :class="[
               canMoveUp ? 'pbx-cursor-pointer hover:pbx-bg-gray-50' : 'pbx-cursor-not-allowed',
             ]"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
               :class="[
                 canMoveUp
                   ? 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer'
@@ -1074,13 +1074,13 @@ const showThemeColorPresetsModal = ref(false)
             v-if="getElement && getComponent"
             @click="pageBuilderService.reorderComponent(1)"
             :disabled="!canMoveDown"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
             :class="[
               canMoveDown ? 'pbx-cursor-pointer hover:pbx-bg-gray-50' : 'pbx-cursor-not-allowed ',
             ]"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
               :class="[
                 canMoveDown
                   ? 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border'
@@ -1099,10 +1099,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="canReverseLayout"
             @click="pageBuilderService.reverseComponentLayout()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> swap_horiz </span>
             </div>
@@ -1123,10 +1123,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
             @click="handleDuplicateElement()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> content_copy </span>
             </div>
@@ -1140,10 +1140,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
             @click="handleDeleteElement()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
+              class="ppbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> delete </span>
             </div>
@@ -1169,10 +1169,10 @@ const showThemeColorPresetsModal = ref(false)
                 pageBuilderService.duplicateComponent()
               }
             "
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span>
                 <svg
@@ -1201,10 +1201,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent"
             @click="handleDelete()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="ppbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
+              class="ppbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> delete_forever </span>
             </div>
@@ -1222,11 +1222,11 @@ const showThemeColorPresetsModal = ref(false)
           <!-- Title feature end -->
 
           <div
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-full pbx-cursor-pointer hover:pbx-bg-gray-50"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300 pbx-cursor-pointer hover:pbx-bg-gray-50"
             @click.stop="showThemeColorPresetsModal = true"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-100 pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> palette </span>
             </div>
@@ -1245,10 +1245,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent"
             @click="handleShowHTMLEditor"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> deployed_code </span>
             </div>
@@ -1264,10 +1264,10 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent"
             @click="handleOpenGlobalPageSettings"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-full"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-gray-100 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="pbx-h-10 pbx-w-10 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <SliderIcon />
             </div>
