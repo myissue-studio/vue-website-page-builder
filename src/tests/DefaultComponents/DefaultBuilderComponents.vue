@@ -190,7 +190,9 @@ const convertToComponentObject = function (comp: {
     </template>
     <div v-if="!isLoading">
       <!-- Search input -->
-      <div class="pbx-mb-4">
+      <div
+        class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-4 pbx-border pbx-border-gray-200 pbx-py-4 pbx-px-3 pbx-rounded-lg"
+      >
         <label class="pbx-myPrimaryInputLabel" for="search-components">{{
           translate('Search components...')
         }}</label>

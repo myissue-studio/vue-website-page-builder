@@ -249,7 +249,7 @@ function selectTab(tab: string) {
     <div>
       <!-- tabbar start -->
       <div
-        class="pbx-mb-4 pbx-flex pbx-justify-start pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-x-auto"
+        class="pbx-mb-4 pbx-flex pbx-justify-start pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-x-auto pbx-pt-2"
       >
         <div class="pbx-flex pbx-justify-center pbx-items-center pbx-gap-2">
           <button

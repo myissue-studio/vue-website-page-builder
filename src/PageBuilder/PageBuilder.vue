@@ -1089,7 +1089,7 @@ onMounted(async () => {
       >
         <div
           id="pbxEditToolbar"
-          class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-sm pbx-px-2 pbx-h-0 pbx-min-w-52 pbx-relative pbx-bg-white/50 pbx-backdrop-blur-md"
+          class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-sm pbx-px-2 pbx-h-0 pbx-min-w-52 pbx-relative"
         >
           <template v-if="getElement">
             <EditGetElement
@@ -1257,7 +1257,6 @@ onMounted(async () => {
     :title="translate('Image Settings')"
     :showSidebarPanel="showImageSettingsModal"
     position="left"
-    :closeOnOverlayClick="false"
     @closeSidebarPanel="closeImageSettings"
   >
     <ImageSettingsModal :show="showImageSettingsModal" />
