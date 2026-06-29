@@ -184,7 +184,7 @@ function stepLeft(dir: 1 | -1) {
               translate('Vertical')
             }}</span>
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
@@ -213,7 +213,7 @@ function stepLeft(dir: 1 | -1) {
               translate('Horizontal')
             }}</span>
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-gray-200 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-white"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow"
@@ -250,7 +250,7 @@ function stepLeft(dir: 1 | -1) {
           <!-- Top side -->
           <div class="pbx-flex pbx-justify-center pbx-mb-2">
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
@@ -282,7 +282,7 @@ function stepLeft(dir: 1 | -1) {
           >
             <!-- Left -->
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
@@ -310,14 +310,14 @@ function stepLeft(dir: 1 | -1) {
             <div
               class="pbx-bg-gray-50 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-h-10 pbx-flex pbx-items-center pbx-justify-center pbx-mx-1"
             >
-              <span class="pbx-text-[10px] pbx-text-gray-300 pbx-select-none pbx-font-medium">{{
+              <span class="pbx-text-[10px] pbx-text-gray-800 pbx-select-none pbx-font-medium">{{
                 translate('element')
               }}</span>
             </div>
 
             <!-- Right -->
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
@@ -345,7 +345,7 @@ function stepLeft(dir: 1 | -1) {
           <!-- Bottom side -->
           <div class="pbx-flex pbx-justify-center pbx-mt-2">
             <div
-              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-border pbx-border-solid pbx-border-gray-100 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-bg-gray-50"
+              class="pbx-flex pbx-items-center pbx-justify-center pbx-mb-2 pbx-rounded-xl pbx-py-4 pbx-px-1 pbx-border pbx-border-gray-400"
             >
               <button
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-white pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white pbx-shadow-sm"
