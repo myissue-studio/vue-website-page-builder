@@ -75,13 +75,13 @@ watch(
         // elementFonts — optional per-element font overrides for h1–h6 and p.
         // Same format as fontFamily: first recognised entry wins.
         elementFonts: {
-          h1: 'jost, raleway, arial, fantasy',
-          h2: 'jost, raleway, arial, fantasy',
-          h3: 'jost, raleway, arial, fantasy',
-          h4: 'jost, raleway, arial, fantasy',
-          h5: 'jost, raleway, arial, fantasy',
-          h6: 'jost, raleway, arial, fantasy',
-          p: 'jost, raleway, arial, fantasy',
+          h1: 'fantasy, jost, raleway, arial, fantasy',
+          h2: 'fantasy, jost, raleway, arial, fantasy',
+          h3: 'fantasy, jost, raleway, arial, fantasy',
+          h4: 'arial, fantasy, jost, raleway, arial, fantasy',
+          h5: 'fantasy, jost, raleway, arial, fantasy',
+          h6: 'fantasy, jost, raleway, arial, fantasy',
+          p: 'fantasy, jost, raleway, arial, fantasy',
         },
       },
 
