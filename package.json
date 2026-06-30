@@ -7,14 +7,10 @@
   "module": "./dist/vue-website-page-builder.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "!dist/home",
-    "!dist/logo",
-    "!dist/*.png",
-    "!dist/*.jpg",
-    "!dist/*.ico",
-    "!dist/browserconfig.xml",
-    "!dist/robots.txt",
+    "dist/vue-website-page-builder.js",
+    "dist/vue-website-page-builder.umd.cjs",
+    "dist/style.css",
+    "dist/index.d.ts",
     "README.md",
     "LICENSE"
   ],
@@ -88,6 +84,7 @@
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.58.9",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tailwindcss/forms": "^0.5.8",
     "@tailwindcss/typography": "^0.5.14",
