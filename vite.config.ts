@@ -18,6 +18,9 @@ export default defineConfig(({ mode }) => {
             dts({
               entryRoot: './src',
               tsconfigPath: './tsconfig.app.json',
+              // Bundle all declaration files into a single dist/index.d.ts instead
+              // of mirroring the full src directory tree into dist.
+              bundleTypes: true,
             }),
           ]
         : []),

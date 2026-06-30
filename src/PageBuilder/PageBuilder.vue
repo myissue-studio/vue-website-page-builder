@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, watch, provide } from 'vue'
 import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
-import Preview from './Preview.vue'
+import PageBuilderPreview from './PageBuilderPreview.vue'
 import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/ComponentTopMenu.vue'
 import EditGetElement from '../Components/PageBuilder/EditorMenu/Editables/EditGetElement.vue'
 import BuilderComponents from '../Components/Modals/BuilderComponents.vue'
@@ -197,8 +197,14 @@ const openPageBuilderPreviewModal = ref(false)
 const titleBuilderDesktop = ref('')
 const titleBuilderMobile = ref('')
 
+const savePreviewFontSettings = function () {
+  localStorage.setItem('preview-font-class', canvasFontClass.value)
+  localStorage.setItem('preview-element-fonts', JSON.stringify(canvasElementFontStyle.value))
+}
+
 const previewCurrentDesign = function () {
   pageBuilderService.previewCurrentDesign()
+  savePreviewFontSettings()
 }
 const handlePageBuilderPreview = function () {
   titleBuilderDesktop.value = translate('Preview')
@@ -210,6 +216,7 @@ const openPageBuilderPreviewMobile = ref(false)
 
 const previewCurrentDesignMobile = function () {
   pageBuilderService.previewCurrentDesign()
+  savePreviewFontSettings()
 }
 const handlePageBuilderPreviewMobile = function () {
   titleBuilderMobile.value = translate('Mobile')
@@ -688,7 +695,7 @@ onMounted(async () => {
       @closeMainModalBuilder="firstPageBuilderPreviewModalButton"
       maxWidth="screen"
     >
-      <Preview></Preview>
+      <PageBuilderPreview></PageBuilderPreview>
     </ModalBuilder>
 
     <ModalBuilder
@@ -697,7 +704,7 @@ onMounted(async () => {
       @closeMainModalBuilder="firstPageBuilderPreviewModalButtonMobile"
       maxWidth="lg"
     >
-      <Preview :mobile="true" />
+      <PageBuilderPreview :mobile="true" />
     </ModalBuilder>
 
     <DynamicModalBuilder

@@ -49,6 +49,18 @@
   #pagebuilder p  { font-family: var(--pbx-el-p-font,  inherit); }
 
   /*
+   * Prevent the builder canvas from growing a horizontal scrollbar when
+   * full-width sections use the calc(50% - 50vw) negative-margin breakout.
+   * overflow-y: scroll (set via Tailwind on this element) normally forces
+   * overflow-x to auto, which clips the breakout and adds a scrollbar.
+   * clip suppresses that scrollbar and lets the sections fill the canvas edge
+   * to edge without creating a scroll container on the x-axis.
+   */
+  #page-builder-wrapper {
+    overflow-x: clip;
+  }
+
+  /*
    * Per-component full-width: applied to individual section elements directly.
    */
   section.pbx-full-width-component {

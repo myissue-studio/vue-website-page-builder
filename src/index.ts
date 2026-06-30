@@ -1,6 +1,6 @@
 // Main Page Builder Components
 export { default as PageBuilder } from './PageBuilder/PageBuilder.vue'
-export { default as Preview } from './PageBuilder/Preview.vue'
+export { default as PageBuilderPreview } from './PageBuilder/PageBuilderPreview.vue'
 
 // Export stores (consolidated into single store)
 export { usePageBuilderStateStore } from './stores/page-builder-state'
