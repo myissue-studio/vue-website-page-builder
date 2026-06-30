@@ -61,8 +61,45 @@
   }
 
   /*
-   * Per-component full-width: applied to individual section elements directly.
+   * ── Full-width breakout ────────────────────────────────────────────────────
+   *
+   * Two contexts, different strategies:
+   *
+   * 1. BUILDER EDITOR  — #pagebuilder carries data-builder-canvas (stripped by
+   *    extractCleanHTMLFromPageBuilder before saving).
+   *    We expand individual <section> elements, NOT #pagebuilder itself, so the
+   *    insert buttons (siblings of sections inside #pagebuilder) stay visible.
+   *    overflow-x: clip on #page-builder-wrapper kills the horizontal scrollbar.
+   *
+   * 2. PUBLISHED PAGES — data-builder-canvas is gone; the root div (formerly
+   *    #pagebuilder, id also stripped) just has pbx-full-width-component.
+   *    We expand the root div itself. Sections inside then fill 100% of the
+   *    full-width parent automatically — no individual breakout needed, so
+   *    consumer-app overflow constraints on ancestor elements don't matter.
+   *
+   * 3. PER-COMPONENT — the <section> itself carries pbx-full-width-component
+   *    (data-builder-canvas is never on a <section>), so the :not() selector
+   *    covers both editor and published contexts correctly.
+   * ──────────────────────────────────────────────────────────────────────────
    */
+
+  /* 1. Global full-width — editor only (data-builder-canvas present) */
+  [data-builder-canvas].pbx-full-width-component section {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* 2. Global full-width — published pages only (data-builder-canvas stripped) */
+  .pbx-full-width-component:not([data-builder-canvas]) {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* 3. Per-component full-width — both contexts */
   section.pbx-full-width-component {
     width: 100vw;
     max-width: 100vw;
@@ -71,26 +108,13 @@
   }
 
   /*
-   * Global full-width: when #pagebuilder carries the flag class, every section
-   * breaks out to the viewport edge. Targeting the <section> element (not the
-   * [data-pagebuilder-content] wrapper) means this works in both the live builder
-   * and in exported/published HTML where the wrapper attribute is stripped.
-   * #pagebuilder itself has no width rule here, so it keeps its natural width and
-   * insert buttons (which contain no <section> elements) stay visible.
+   * Mobile-safe horizontal inset for inner content.
+   * Applies to sections that are full-width breakouts (all three cases above)
+   * so their inner content is never flush with the screen edge on mobile.
+   * Lives in @layer components so Tailwind pbx-px-* utilities override it.
    */
-  #pagebuilder.pbx-full-width-component section {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-  }
-
-  /*
-   * Mobile-safe horizontal inset for inner content — NOT on the breakout shell,
-   * so nested full-width backgrounds stay edge-to-edge without a padding gap.
-   * Lives in @layer components so Tailwind pbx-px-* utilities override it when set.
-   */
-  #pagebuilder.pbx-full-width-component section > div:first-child,
+  [data-builder-canvas].pbx-full-width-component section > div:first-child,
+  .pbx-full-width-component section > div:first-child,
   section.pbx-full-width-component > div:first-child {
     padding-inline: clamp(1rem, 4vw, 2rem);
   }
