@@ -7,6 +7,7 @@ import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
+import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -18,26 +19,54 @@ const inlineElement = ref<HTMLElement | null>(null)
 const originalHTML = ref('')
 const isSaving = ref(false)
 const showTypography = ref(false)
+const showModalUrl = ref(false)
+const urlEntered = ref('')
+const urlError = ref<string | null>(null)
 
 const getElement = computed(() => pageBuilderStateStore.getElement)
 const isInlineEditing = computed(() => pageBuilderStateStore.getInlineTipTapEditor)
 
-const setUrl = function () {
+const openUrlModal = function () {
   if (!editor.value) return
 
-  const previousUrl = editor.value.getAttributes('link').href
-  const nextUrl = window.prompt(translate('Enter URL'), previousUrl || 'https://')
+  urlEntered.value = editor.value.getAttributes('link').href || ''
+  urlError.value = null
+  showModalUrl.value = true
+}
 
-  if (nextUrl === null) return
+const closeUrlModal = function () {
+  showModalUrl.value = false
+  urlError.value = null
+}
 
-  if (nextUrl.trim() === '') {
-    editor.value.chain().focus().extendMarkRange('link').unsetLink().run()
-    return
+const removeUrl = function () {
+  editor.value?.chain().focus().extendMarkRange('link').unsetLink().run()
+  closeUrlModal()
+}
+
+const validateUrl = function (): boolean {
+  urlError.value = null
+  const nextUrl = urlEntered.value.trim()
+
+  if (!/^https?:\/\//.test(nextUrl)) {
+    urlError.value =
+      "The provided URL is invalid. Please ensure that it begins with 'https://' for proper formatting and security."
+    return false
   }
 
-  if (!/^https?:\/\//.test(nextUrl)) return
+  return true
+}
 
-  editor.value.chain().focus().extendMarkRange('link').setLink({ href: nextUrl }).run()
+const saveUrl = function () {
+  if (!editor.value || !validateUrl()) return
+
+  editor.value
+    .chain()
+    .focus()
+    .extendMarkRange('link')
+    .setLink({ href: urlEntered.value.trim() })
+    .run()
+  closeUrlModal()
 }
 
 const editorIsActive = function (...args: Parameters<Editor['isActive']>): boolean {
@@ -198,8 +227,12 @@ const handleDocumentMouseDown = function (event: MouseEvent) {
   if (!(event.target instanceof Node)) return
 
   const editorDom = inlineElement.value.querySelector('.ProseMirror')
+  const modalElement =
+    event.target instanceof Element ? event.target.closest('#pbx-modal') : null
+
   if (editorDom?.contains(event.target)) return
   if (toolbarElement.value?.contains(event.target)) return
+  if (modalElement) return
 
   const nextElement = findEditableElement(event.target)
 
@@ -258,9 +291,54 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <div data-pbx-inline-editor-ui>
+    <DynamicModalBuilder
+      maxWidth="4xl"
+      :showDynamicModalBuilder="showModalUrl"
+      type="success"
+      :gridColumnAmount="2"
+      :title="translate('Enter URL')"
+      :description="
+        translate(
+          'Add a valid URL to transform the selected text into a clickable hyperlink that directs users to the specified web address.',
+        )
+      "
+      :firstButtonText="translate('Close')"
+      :secondButtonText="urlEntered ? translate('Remove url') : undefined"
+      :thirdButtonText="translate('Save')"
+      @firstModalButtonFunctionDynamicModalBuilder="closeUrlModal"
+      @secondModalButtonFunctionDynamicModalBuilder="removeUrl"
+      @thirdModalButtonFunctionDynamicModalBuilder="saveUrl"
+    >
+      <main>
+        <div class="pbx-myInputGroup">
+          <label class="pbx-myPrimaryInputLabel" for="inline-tiptap-url">
+            <span>{{ translate('Enter URL') }}</span>
+          </label>
+          <input
+            id="inline-tiptap-url"
+            v-model="urlEntered"
+            class="pbx-myPrimaryInput pbx-mt-1 pbx-w-full"
+            type="url"
+            placeholder="https://"
+          />
+          <div
+            v-if="urlError"
+            class="pbx-min-h-[2.5rem] pbx-flex pbx-items-center pbx-justify-start"
+          >
+            <p class="pbx-myPrimaryInputError pbx-mt-2 pbx-mb-0 pbx-py-0 pbx-self-start">
+              {{ urlError }}
+            </p>
+          </div>
+        </div>
+      </main>
+    </DynamicModalBuilder>
+  </div>
+
   <div
     v-if="isInlineEditing && editor"
     ref="toolbarElement"
+    data-pbx-inline-editor-ui
     class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max"
     @mousedown.prevent.stop
     @click.stop
@@ -324,7 +402,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div
-      @click="setUrl"
+      @click="openUrlModal"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('link') }"
     >

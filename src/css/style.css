@@ -63,6 +63,67 @@
   }
 
   /*
+   * Element-level font classes chosen in the editor should override configured
+   * page defaults and elementFonts. Components usually apply pbx-font-* to the
+   * selected wrapper around h1/h2/p, so descendants must inherit that wrapper.
+   * Only match font-family utilities — not font-weight classes like pbx-font-medium.
+   */
+  #pagebuilder
+    :is(
+      .pbx-font-sans,
+      .pbx-font-serif,
+      .pbx-font-mono,
+      .pbx-font-arial,
+      .pbx-font-helvetica,
+      .pbx-font-georgia,
+      .pbx-font-times,
+      .pbx-font-times-new-roman,
+      .pbx-font-courier,
+      .pbx-font-courier-new,
+      .pbx-font-verdana,
+      .pbx-font-tahoma,
+      .pbx-font-trebuchet,
+      .pbx-font-garamond,
+      .pbx-font-palantino,
+      .pbx-font-bookman,
+      .pbx-font-comic-sans,
+      .pbx-font-impact,
+      .pbx-font-lucida,
+      .pbx-font-lucida-console,
+      .pbx-font-lucida-sans,
+      .pbx-font-candara,
+      .pbx-font-optima,
+      .pbx-font-avenir,
+      .pbx-font-futura,
+      .pbx-font-calibri,
+      .pbx-font-cambria,
+      .pbx-font-didot,
+      .pbx-font-franklin-gothic,
+      .pbx-font-rockwell,
+      .pbx-font-baskerville,
+      .pbx-font-jost,
+      .pbx-font-raleway,
+      .pbx-font-inter,
+      .pbx-font-roboto,
+      .pbx-font-open-sans,
+      .pbx-font-lato,
+      .pbx-font-montserrat,
+      .pbx-font-poppins,
+      .pbx-font-nunito,
+      .pbx-font-merriweather,
+      .pbx-font-playfair-display,
+      .pbx-font-source-sans-3,
+      .pbx-font-noto-sans,
+      .pbx-font-work-sans,
+      .pbx-font-quicksand,
+      .pbx-font-pt-serif,
+      .pbx-font-crimson-text
+    )
+    :is(h1, h2, h3, h4, h5, h6, p) {
+    font-family: inherit;
+  }
+
+  /*
    * Prevent the builder canvas from growing a horizontal scrollbar when
    * full-width sections use the calc(50% - 50vw) negative-margin breakout.
    * overflow-y: scroll (set via Tailwind on this element) normally forces
@@ -683,9 +744,14 @@
 }
 
 #pagebuilder code,
-#pagebuilder pre,
-#pagebuilder em {
+#pagebuilder pre {
   font: inherit;
+  font-weight: inherit;
+}
+
+#pagebuilder em,
+#pagebuilder i {
+  font-style: italic;
   font-weight: inherit;
 }
 /* Page Builder Reset Default Browser Styles End*/

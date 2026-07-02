@@ -1064,10 +1064,10 @@ const showThemeColorPresetsModal = ref(false)
             v-if="getElement && getComponent"
             @click="pageBuilderService.reorderComponent(-1)"
             :disabled="!canMoveUp"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
             :class="[
               canMoveUp
-                ? 'pbx-cursor-pointer hover:pbx-bg-gray-50'
+                ? 'pbx-cursor-pointer'
                 : '!pbx-cursor-not-allowed !pbx-bg-gray-200 !pbx-opacity-40',
               ,
             ]"
@@ -1090,10 +1090,10 @@ const showThemeColorPresetsModal = ref(false)
             v-if="getElement && getComponent"
             @click="pageBuilderService.reorderComponent(1)"
             :disabled="!canMoveDown"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
             :class="[
               canMoveDown
-                ? 'pbx-cursor-pointer hover:pbx-bg-gray-50'
+                ? 'pbx-cursor-pointer'
                 : '!pbx-cursor-not-allowed !pbx-bg-gray-200 !pbx-opacity-40',
               ,
             ]"
@@ -1118,7 +1118,7 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="canReverseLayout"
             @click="pageBuilderService.reverseComponentLayout()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
@@ -1142,7 +1142,7 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent && getElement.tagName !== 'SECTION'"
             @click="handleDuplicateElement()"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
@@ -1188,7 +1188,7 @@ const showThemeColorPresetsModal = ref(false)
                 pageBuilderService.duplicateComponent()
               }
             "
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
@@ -1241,7 +1241,7 @@ const showThemeColorPresetsModal = ref(false)
           <!-- Title feature end -->
 
           <div
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
             @click.stop="showThemeColorPresetsModal = true"
           >
             <div
@@ -1264,7 +1264,7 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent"
             @click="handleShowHTMLEditor"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
@@ -1283,7 +1283,7 @@ const showThemeColorPresetsModal = ref(false)
           <div
             v-if="getElement && getComponent"
             @click="handleOpenGlobalPageSettings"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"

@@ -339,9 +339,14 @@ const handleInlineEditorDocumentPointerDown = function (event: PointerEvent) {
   const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
   const editorElement = inlineElement?.querySelector('.ProseMirror')
   const toolbarElement = document.querySelector('#pbxEditToolbar')
+  const inlineUiElement =
+    event.target instanceof Element ? event.target.closest('[data-pbx-inline-editor-ui]') : null
+  const modalElement = event.target instanceof Element ? event.target.closest('#pbx-modal') : null
 
   if (editorElement?.contains(event.target)) return
   if (toolbarElement?.contains(event.target)) return
+  if (inlineUiElement) return
+  if (modalElement) return
 
   const nextElement = pageBuilderService.findEditableElementFromEventTarget(event.target)
 
