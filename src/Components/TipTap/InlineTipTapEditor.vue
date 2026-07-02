@@ -6,6 +6,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
+import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -16,6 +17,7 @@ const toolbarElement = ref<HTMLElement | null>(null)
 const inlineElement = ref<HTMLElement | null>(null)
 const originalHTML = ref('')
 const isSaving = ref(false)
+const showTypography = ref(false)
 
 const getElement = computed(() => pageBuilderStateStore.getElement)
 const isInlineEditing = computed(() => pageBuilderStateStore.getInlineTipTapEditor)
@@ -42,12 +44,20 @@ const editorIsActive = function (...args: Parameters<Editor['isActive']>): boole
   return editor.value?.isActive(...args) ?? false
 }
 
+const headingIsActive = function (level: 2 | 3 | 4 | 5 | 6): boolean {
+  return editor.value?.isActive('heading', { level }) ?? false
+}
+
 const toggleBold = function () {
   editor.value?.chain().focus().toggleBold().run()
 }
 
 const toggleItalic = function () {
   editor.value?.chain().focus().toggleItalic().run()
+}
+
+const toggleHeading = function (level: 2 | 3 | 4 | 5 | 6) {
+  editor.value?.chain().focus().toggleHeading({ level }).run()
 }
 
 const toggleBulletList = function () {
@@ -63,6 +73,10 @@ const toggleTextAlign = function (alignment: 'left' | 'center' | 'right') {
   }
 
   editor.value.chain().focus().setTextAlign(alignment).run()
+}
+
+const toggleShowTypography = function () {
+  showTypography.value = !showTypography.value
 }
 
 const findEditableElement = function (target: EventTarget | null): HTMLElement | null {
@@ -96,6 +110,7 @@ const teardownEditor = function (html?: string) {
   editor.value = null
   inlineElement.value = null
   originalHTML.value = ''
+  showTypography.value = false
 }
 
 const startEditor = async function () {
@@ -260,9 +275,29 @@ onBeforeUnmount(() => {
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>
 
+    <div class="pbx-relative pbx-flex pbx-items-center">
+      <div
+        @click="toggleShowTypography"
+        class="pbx-h-8 pbx-px-2 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-gap-1 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500 pbx-select-none"
+        :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': showTypography }"
+      >
+        <span class="material-symbols-outlined pbx-text-[18px]"> text_fields </span>
+        <span class="pbx-text-xs">{{ translate('Font') }}</span>
+      </div>
+
+      <div
+        v-if="showTypography"
+        @mousedown.stop
+        @click.stop
+        class="pbx-fixed pbx-z-50 pbx-top-10 pbx-left-4 pbx-w-64 pbx-max-h-[70vh] pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white bx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+      >
+        <TypographyForTipTap></TypographyForTipTap>
+      </div>
+    </div>
+
     <div
       @click="toggleBold"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bold') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_bold </span>
@@ -270,15 +305,27 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleItalic"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('italic') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_italic </span>
     </div>
 
     <div
+      v-for="level in [2, 3, 4, 5, 6] as const"
+      :key="level"
+      @click="toggleHeading(level)"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      :class="{
+        'pbx-bg-myPrimaryLinkColor pbx-text-white': headingIsActive(level),
+      }"
+    >
+      <span class="pbx-text-xs pbx-font-semibold">H{{ level }}</span>
+    </div>
+
+    <div
       @click="setUrl"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('link') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> link </span>
@@ -286,7 +333,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleBulletList"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bulletList') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_list_bulleted </span>
@@ -294,7 +341,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('left')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'left' }) }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_align_left </span>
@@ -302,7 +349,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('center')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'center' }),
       }"
@@ -312,12 +359,14 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('right')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'right' }),
       }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_align_right </span>
     </div>
+
+    <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>
   </div>
 </template>
