@@ -6,6 +6,7 @@ import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
+import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
 import ModalBuilder from '../../../Modals/ModalBuilder.vue'
 import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 
@@ -13,7 +14,6 @@ const { translate } = useTranslations()
 
 const pageBuilderService = getPageBuilder()
 
-// Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
 defineProps({
@@ -32,13 +32,55 @@ const getPageBuilderConfig = computed(() => {
 })
 const { enabledThemeColorPresets } = useThemeColorPresets(getPageBuilderConfig)
 
+const {
+  triggerRef: textColorMenuTriggerRef,
+  popoverRef: textColorMenuPopoverRef,
+  isOpen: isTextColorMenuOpen,
+  popoverStyle: textColorMenuPopoverStyle,
+  close: closeTextColorMenu,
+  toggle: toggleTextColorMenu,
+} = useEditToolbarPopover({ width: 224 })
+
 const selectedCustomTextColor = computed(() => {
   return textColor.value?.startsWith('custom:') ? textColor.value.replace('custom:', '') : ''
+})
+
+const textColorBarClass = computed(() => {
+  if (selectedCustomTextColor.value) return ''
+
+  if (!textColor.value || textColor.value === 'none') {
+    return 'pbx-bg-black'
+  }
+
+  if (textColor.value.startsWith('pbx-text-')) {
+    return `pbx-bg-${textColor.value.replace('pbx-text-', '')}`
+  }
+
+  return 'pbx-bg-black'
+})
+
+const textColorBarStyle = computed(() => {
+  if (selectedCustomTextColor.value) {
+    return { backgroundColor: selectedCustomTextColor.value }
+  }
+
+  return undefined
+})
+
+const tailwindTextColors = computed(() => {
+  return tailwindColors.textColorVariables.filter((color) => color !== 'none')
 })
 
 function applyThemeTextColor(color: string): void {
   textColor.value = `custom:${color}`
   pageBuilderService.handleCustomTextColor(color)
+  closeTextColorMenu()
+}
+
+function selectTailwindTextColor(color: string): void {
+  textColor.value = color
+  pageBuilderService.handleTextColor(color)
+  closeTextColorMenu()
 }
 
 watch(
@@ -52,24 +94,21 @@ watch(
 </script>
 
 <template>
-  <Listbox as="div" v-model="textColor">
+  <Listbox v-if="globalPageLayout" as="div" v-model="textColor">
     <div class="pbx-relative">
-      <div
-        :class="[
-          globalPageLayout
-            ? 'pbx-flex pbx-flex-col pbx-border-solid pbx-border pbx-border-gray-400'
-            : 'pbx-flex pbx-gap-2 pbx-items-center',
-        ]"
-      >
+      <div class="pbx-flex pbx-flex-col pbx-border-solid pbx-border pbx-border-gray-400">
         <ListboxButton
-          v-if="globalPageLayout"
           class="pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor pbx-bg-white hover:pbx-text-black pbx-text-black pbx-font-sans pbx-font-medium pbx-border-0"
         >
           <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
             <div
-              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-sm pbx-bg-none pbx-border-solid"
+              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-sm pbx-border-solid"
               :class="
-                !selectedCustomTextColor ? `pbx-bg-${textColor?.replace('pbx-text-', '')}` : ''
+                selectedCustomTextColor
+                  ? ''
+                  : !textColor || textColor === 'none'
+                    ? 'pbx-bg-black'
+                    : `pbx-bg-${textColor.replace('pbx-text-', '')}`
               "
               :style="
                 selectedCustomTextColor ? { backgroundColor: selectedCustomTextColor } : undefined
@@ -80,10 +119,9 @@ watch(
             </div>
           </div>
 
-          <span v-if="globalPageLayout" class="material-symbols-outlined"> chevron_right </span>
+          <span class="material-symbols-outlined"> chevron_right </span>
         </ListboxButton>
         <button
-          v-if="globalPageLayout"
           type="button"
           class="pbx-m-2 pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
           :title="translate('Theme Color Presets')"
@@ -91,27 +129,6 @@ watch(
         >
           <span class="material-symbols-outlined"> palette </span>
         </button>
-
-        <ListboxButton
-          v-if="!globalPageLayout"
-          as="div"
-          class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
-        >
-          <div class="pbx-flex pbx-flex-col">
-            <div class="pbx-flex pbx-gap-2 pbx-items-center">
-              <span
-                class="material-symbols-outlined"
-                style="text-shadow: rgb(0 0 0 / 10%) 1.5px 1.5px 0px"
-                :class="
-                  !selectedCustomTextColor ? `pbx-text-${textColor?.replace('pbx-text-', '')}` : ''
-                "
-                :style="selectedCustomTextColor ? { color: selectedCustomTextColor } : undefined"
-              >
-                format_color_text
-              </span>
-            </div>
-          </div>
-        </ListboxButton>
       </div>
 
       <transition
@@ -122,6 +139,32 @@ watch(
         <ListboxOptions
           class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-56 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
         >
+          <ListboxOption
+            as="template"
+            value="none"
+            @click="pageBuilderService.handleTextColor('none')"
+            v-slot="{ active }"
+          >
+            <li
+              :class="[
+                active
+                  ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                  : 'pbx-text-myPrimaryDarkGrayColor',
+                'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
+              ]"
+            >
+              <div class="pbx-flex pbx-items-center">
+                <div
+                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-black"
+                ></div>
+                <span class="pbx-ml-3">{{ translate('Default black') }}</span>
+              </div>
+            </li>
+          </ListboxOption>
+          <div
+            v-if="enabledThemeColorPresets.length > 0 || tailwindTextColors.length > 0"
+            class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
+          ></div>
           <template v-if="enabledThemeColorPresets.length > 0">
             <div class="pbx-px-3 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500">
               {{ translate('Theme Color Presets') }}
@@ -152,12 +195,13 @@ watch(
               </li>
             </ListboxOption>
             <div
+              v-if="tailwindTextColors.length > 0"
               class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
             ></div>
           </template>
           <ListboxOption
             as="template"
-            v-for="color in tailwindColors.textColorVariables"
+            v-for="color in tailwindTextColors"
             @click="pageBuilderService.handleTextColor(textColor ?? undefined)"
             :key="color"
             :value="color"
@@ -171,11 +215,7 @@ watch(
                 'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
               ]"
             >
-              <div v-if="color === 'none'" class="pbx-flex pbx-items-center">
-                <span class="material-symbols-outlined"> invert_colors </span>
-                <span class="pbx-ml-3">{{ translate('Default black') }}</span>
-              </div>
-              <div v-if="color !== 'none'" class="pbx-flex pbx-items-center">
+              <div class="pbx-flex pbx-items-center">
                 <div
                   class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
                   :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
@@ -188,6 +228,108 @@ watch(
       </transition>
     </div>
   </Listbox>
+
+  <div v-else class="pbx-shrink-0">
+    <div
+      ref="textColorMenuTriggerRef"
+      :title="translate('Text Color')"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md focus-visible:pbx-ring-0 hover:pbx-scale-105"
+      :class="{
+        'pbx-bg-myPrimaryLinkColor pbx-text-white': isTextColorMenuOpen,
+      }"
+      @click.stop="toggleTextColorMenu"
+    >
+      <span class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-leading-none" aria-hidden="true">
+        <span
+          class="pbx-text-sm pbx-font-bold pbx-leading-none"
+          :class="
+            isTextColorMenuOpen ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
+          "
+        >
+          A
+        </span>
+        <span
+          class="pbx-mt-0.5 pbx-h-1 pbx-w-4 pbx-rounded-full pbx-shrink-0"
+          :class="textColorBarClass"
+          :style="textColorBarStyle"
+        ></span>
+      </span>
+    </div>
+
+    <Teleport to="body">
+      <div
+        v-if="isTextColorMenuOpen"
+        ref="textColorMenuPopoverRef"
+        data-pbx-edit-toolbar-popover
+        data-pbx-text-color-menu-popover
+        :style="textColorMenuPopoverStyle"
+        class="pbx-fixed pbx-z-50 pbx-max-h-56 pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+        @mousedown.stop
+        @pointerdown.stop
+        @click.stop
+      >
+        <button
+          type="button"
+          class="pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          :class="{
+            'pbx-bg-myPrimaryLinkColor pbx-text-white': !textColor || textColor === 'none',
+          }"
+          @click="selectTailwindTextColor('none')"
+        >
+          <div
+            class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-black"
+          ></div>
+          <span>{{ translate('Default black') }}</span>
+        </button>
+        <div
+          v-if="enabledThemeColorPresets.length > 0 || tailwindTextColors.length > 0"
+          class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
+        ></div>
+        <template v-if="enabledThemeColorPresets.length > 0">
+          <div class="pbx-px-2 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500">
+            {{ translate('Theme Color Presets') }}
+          </div>
+          <button
+            v-for="preset in enabledThemeColorPresets"
+            :key="preset.id"
+            type="button"
+            class="pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :class="{
+              'pbx-bg-myPrimaryLinkColor pbx-text-white': textColor === `custom:${preset.color}`,
+            }"
+            @click="applyThemeTextColor(preset.color)"
+          >
+            <div
+              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
+              :style="{ backgroundColor: preset.color }"
+            ></div>
+            <span>{{ translate(preset.label) }}</span>
+          </button>
+          <div
+            v-if="tailwindTextColors.length > 0"
+            class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
+          ></div>
+        </template>
+        <button
+          v-for="color in tailwindTextColors"
+          :key="color"
+          type="button"
+          class="pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          :class="{
+            'pbx-bg-myPrimaryLinkColor pbx-text-white': textColor === color,
+          }"
+          @click="selectTailwindTextColor(color)"
+        >
+          <div
+            class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
+            :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
+          ></div>
+          <span>{{ color }}</span>
+        </button>
+      </div>
+    </Teleport>
+  </div>
+
   <ModalBuilder
     maxWidth="3xl"
     :showModalBuilder="showThemeColorPresetsModal"

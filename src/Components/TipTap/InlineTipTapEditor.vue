@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { Editor } from '@tiptap/vue-3'
+import type { Editor as TiptapCoreEditor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
@@ -8,20 +9,37 @@ import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
+import { sanitizeInlineTipTapHtml } from '../../utils/builder/sanitize-inline-tiptap-html'
+import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
+import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 const { translate } = useTranslations()
 
 const editor = ref<Editor | null>(null)
-const toolbarElement = ref<HTMLElement | null>(null)
 const inlineElement = ref<HTMLElement | null>(null)
 const originalHTML = ref('')
 const isSaving = ref(false)
 const showTypography = ref(false)
+const typographyMenuRef = ref<HTMLElement | null>(null)
+const typographyPopoverRef = ref<HTMLElement | null>(null)
+const TYPOGRAPHY_MENU_WIDTH_PX = 256
+
+const typographyPopoverStyle = ref({
+  top: '0px',
+  left: '0px',
+  width: `${TYPOGRAPHY_MENU_WIDTH_PX}px`,
+})
 const showModalUrl = ref(false)
 const urlEntered = ref('')
 const urlError = ref<string | null>(null)
+
+type InlineEditorHtmlSource = {
+  getHTML(): string
+}
+
+type InlineEditorFocusSource = Pick<TiptapCoreEditor, 'state' | 'commands' | 'chain'>
 
 const getElement = computed(() => pageBuilderStateStore.getElement)
 const isInlineEditing = computed(() => pageBuilderStateStore.getInlineTipTapEditor)
@@ -108,6 +126,130 @@ const toggleShowTypography = function () {
   showTypography.value = !showTypography.value
 }
 
+const updateTypographyMenuPosition = function () {
+  const trigger = typographyMenuRef.value
+  if (!trigger) return
+
+  const rect = trigger.getBoundingClientRect()
+  const margin = 8
+  let left = rect.left + rect.width / 2 - TYPOGRAPHY_MENU_WIDTH_PX / 2
+  left = Math.max(margin, Math.min(left, window.innerWidth - TYPOGRAPHY_MENU_WIDTH_PX - margin))
+
+  typographyPopoverStyle.value = {
+    top: `${Math.round(rect.bottom + 4)}px`,
+    left: `${Math.round(left)}px`,
+    width: `${TYPOGRAPHY_MENU_WIDTH_PX}px`,
+  }
+}
+
+let typographyPositionRaf = 0
+
+const trackTypographyMenuPosition = function () {
+  if (!showTypography.value) {
+    typographyPositionRaf = 0
+    return
+  }
+
+  updateTypographyMenuPosition()
+  typographyPositionRaf = requestAnimationFrame(trackTypographyMenuPosition)
+}
+
+const startTypographyPositionTracking = function () {
+  cancelAnimationFrame(typographyPositionRaf)
+  void nextTick(() => {
+    updateTypographyMenuPosition()
+    typographyPositionRaf = requestAnimationFrame(trackTypographyMenuPosition)
+  })
+}
+
+const stopTypographyPositionTracking = function () {
+  cancelAnimationFrame(typographyPositionRaf)
+  typographyPositionRaf = 0
+}
+
+const attachTypographyPositionListeners = function () {
+  startTypographyPositionTracking()
+}
+
+const detachTypographyPositionListeners = function () {
+  stopTypographyPositionTracking()
+}
+
+let typographySelectInteractionUntil = 0
+
+const markTypographySelectInteraction = function (event: Event) {
+  const target = event.target
+  const active = document.activeElement
+
+  const selectFromTarget =
+    target instanceof HTMLSelectElement && typographyPopoverRef.value?.contains(target)
+      ? target
+      : null
+  const selectFromActive =
+    active instanceof HTMLSelectElement && typographyPopoverRef.value?.contains(active)
+      ? active
+      : null
+
+  if (!selectFromTarget && !selectFromActive) return
+
+  typographySelectInteractionUntil = Date.now() + 500
+}
+
+const closeTypographyOnOutsideClick = function (event: Event) {
+  if (!showTypography.value) return
+  if (!(event.target instanceof Node)) return
+  if (typographyMenuRef.value?.contains(event.target)) return
+  if (typographyPopoverRef.value?.contains(event.target)) return
+  if (Date.now() < typographySelectInteractionUntil) return
+
+  // Native <select> option menus render outside the teleported popover in the DOM.
+  window.setTimeout(() => {
+    if (!showTypography.value) return
+    if (Date.now() < typographySelectInteractionUntil) return
+
+    const active = document.activeElement
+    if (active instanceof Element) {
+      if (typographyPopoverRef.value?.contains(active)) return
+      if (typographyMenuRef.value?.contains(active)) return
+      if (active.closest('[data-pbx-typography-menu-popover]')) return
+    }
+
+    showTypography.value = false
+  }, 0)
+}
+
+const focusEditorAtPrimaryCaretPosition = function (
+  tiptapEditor: InlineEditorFocusSource,
+  target: HTMLElement,
+  contentText?: string,
+) {
+  const { doc } = tiptapEditor.state
+  const rtl = isRtlContentContext(target, {
+    lang: pageBuilderStateStore.getCurrentLanguage,
+    text: contentText ?? doc.textContent,
+  })
+
+  if (!doc.childCount) {
+    tiptapEditor.commands.focus('start')
+    return
+  }
+
+  const lastBlock = doc.lastChild
+  if (!lastBlock?.isTextblock) {
+    tiptapEditor.commands.focus(rtl ? 'start' : 'end')
+    return
+  }
+
+  const lastBlockStart = doc.content.size - lastBlock.nodeSize
+  const $pos = doc.resolve(lastBlockStart + 1)
+  const caretPos = rtl ? $pos.start($pos.depth) : $pos.end($pos.depth)
+  tiptapEditor.chain().focus().setTextSelection(caretPos).run()
+}
+
+const getSanitizedEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): string {
+  return sanitizeInlineTipTapHtml(tiptapEditor.getHTML())
+}
+
 const findEditableElement = function (target: EventTarget | null): HTMLElement | null {
   if (!(target instanceof Element)) return null
 
@@ -129,7 +271,7 @@ const teardownEditor = function (html?: string) {
   const activeEditor = editor.value
 
   if (activeEditor && target) {
-    const finalHTML = html ?? activeEditor.getHTML()
+    const finalHTML = sanitizeInlineTipTapHtml(html ?? activeEditor.getHTML())
     activeEditor.destroy()
     target.innerHTML = finalHTML
     target.removeAttribute('data-pbx-inline-tiptap')
@@ -154,6 +296,11 @@ const startEditor = async function () {
   target.innerHTML = ''
   target.setAttribute('data-pbx-inline-tiptap', '')
 
+  const rtl = isRtlContentContext(target, {
+    lang: pageBuilderStateStore.getCurrentLanguage,
+    text: originalHTML.value,
+  })
+
   const tiptapEditor = new Editor({
     element: target,
     content: originalHTML.value,
@@ -170,6 +317,7 @@ const startEditor = async function () {
     editorProps: {
       attributes: {
         class: 'pbx-inline-tiptap-editor',
+        ...(rtl ? { dir: 'rtl' } : {}),
       },
       handleDOMEvents: {
         mousedown: (_view, event) => {
@@ -182,14 +330,14 @@ const startEditor = async function () {
         },
       },
     },
-    onUpdate: ({ editor }) => {
-      pageBuilderStateStore.setTextAreaVueModel(editor.getHTML())
+    onUpdate: ({ editor: activeEditor }) => {
+      pageBuilderStateStore.setTextAreaVueModel(getSanitizedEditorHtml(activeEditor))
     },
   })
 
   editor.value = tiptapEditor
-  // Place caret at end of content (pencil opens for append/edit-at-end UX).
-  tiptapEditor.commands.focus('end')
+  await nextTick()
+  focusEditorAtPrimaryCaretPosition(tiptapEditor, target, originalHTML.value)
 }
 
 const saveInlineEditor = async function () {
@@ -197,7 +345,7 @@ const saveInlineEditor = async function () {
 
   isSaving.value = true
   const target = inlineElement.value
-  const html = editor.value.getHTML()
+  const html = getSanitizedEditorHtml(editor.value)
   removeDocumentMouseDownListener()
   teardownEditor(html)
   await pageBuilderService.finishInlineTipTapEditor(target)
@@ -209,7 +357,7 @@ const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | nul
 
   isSaving.value = true
   const target = inlineElement.value
-  const html = editor.value.getHTML()
+  const html = getSanitizedEditorHtml(editor.value)
 
   removeDocumentMouseDownListener()
   teardownEditor(html)
@@ -227,12 +375,11 @@ const handleDocumentMouseDown = function (event: MouseEvent) {
   if (!(event.target instanceof Node)) return
 
   const editorDom = inlineElement.value.querySelector('.ProseMirror')
-  const modalElement =
-    event.target instanceof Element ? event.target.closest('#pbx-modal') : null
+  const modalElement = event.target instanceof Element ? event.target.closest('#pbx-modal') : null
 
   if (editorDom?.contains(event.target)) return
-  if (toolbarElement.value?.contains(event.target)) return
   if (modalElement) return
+  if (shouldPreserveInlineEditorForToolbarPopover(event.target)) return
 
   const nextElement = findEditableElement(event.target)
 
@@ -252,8 +399,12 @@ watch(
   [isInlineEditing, getElement],
   async ([active, selectedElement]) => {
     if (active) {
+      if (!selectedElement && (editor.value || inlineElement.value)) {
+        return
+      }
+
       if (editor.value && inlineElement.value !== selectedElement) {
-        teardownEditor(editor.value.getHTML())
+        teardownEditor(getSanitizedEditorHtml(editor.value))
       }
 
       await startEditor()
@@ -261,7 +412,7 @@ watch(
     }
 
     if (editor.value) {
-      teardownEditor(editor.value.getHTML())
+      teardownEditor(getSanitizedEditorHtml(editor.value))
     }
   },
   { immediate: true },
@@ -277,11 +428,30 @@ watch(isInlineEditing, (active) => {
   removeDocumentMouseDownListener()
 })
 
+watch(showTypography, (isOpen) => {
+  if (isOpen) {
+    attachTypographyPositionListeners()
+    document.addEventListener('pointerdown', closeTypographyOnOutsideClick)
+    document.addEventListener('pointerdown', markTypographySelectInteraction, true)
+    document.addEventListener('change', markTypographySelectInteraction, true)
+    return
+  }
+
+  detachTypographyPositionListeners()
+  document.removeEventListener('pointerdown', closeTypographyOnOutsideClick)
+  document.removeEventListener('pointerdown', markTypographySelectInteraction, true)
+  document.removeEventListener('change', markTypographySelectInteraction, true)
+})
+
 onBeforeUnmount(() => {
   removeDocumentMouseDownListener()
+  detachTypographyPositionListeners()
+  document.removeEventListener('pointerdown', closeTypographyOnOutsideClick)
+  document.removeEventListener('pointerdown', markTypographySelectInteraction, true)
+  document.removeEventListener('change', markTypographySelectInteraction, true)
 
   if (editor.value) {
-    teardownEditor(editor.value.getHTML())
+    teardownEditor(getSanitizedEditorHtml(editor.value))
   }
 
   if (pageBuilderStateStore.getInlineTipTapEditor) {
@@ -311,24 +481,26 @@ onBeforeUnmount(() => {
       @thirdModalButtonFunctionDynamicModalBuilder="saveUrl"
     >
       <main>
-        <div class="pbx-myInputGroup">
-          <label class="pbx-myPrimaryInputLabel" for="inline-tiptap-url">
-            <span>{{ translate('Enter URL') }}</span>
-          </label>
-          <input
-            id="inline-tiptap-url"
-            v-model="urlEntered"
-            class="pbx-myPrimaryInput pbx-mt-1 pbx-w-full"
-            type="url"
-            placeholder="https://"
-          />
-          <div
-            v-if="urlError"
-            class="pbx-min-h-[2.5rem] pbx-flex pbx-items-center pbx-justify-start"
-          >
-            <p class="pbx-myPrimaryInputError pbx-mt-2 pbx-mb-0 pbx-py-0 pbx-self-start">
-              {{ urlError }}
-            </p>
+        <div class="pbx-min-h-[8rem]">
+          <div class="pbx-myInputGroup">
+            <label class="pbx-myPrimaryInputLabel" for="inline-tiptap-url">
+              <span>{{ translate('Enter URL') }}</span>
+            </label>
+            <input
+              id="inline-tiptap-url"
+              v-model="urlEntered"
+              class="pbx-myPrimaryInput pbx-mt-1 pbx-w-full"
+              type="url"
+              placeholder="https://"
+            />
+            <div
+              v-if="urlError"
+              class="pbx-min-h-[2.5rem] pbx-flex pbx-items-center pbx-justify-start"
+            >
+              <p class="pbx-myPrimaryInputError pbx-mt-2 pbx-mb-0 pbx-py-0 pbx-self-start">
+                {{ urlError }}
+              </p>
+            </div>
           </div>
         </div>
       </main>
@@ -337,9 +509,7 @@ onBeforeUnmount(() => {
 
   <div
     v-if="isInlineEditing && editor"
-    ref="toolbarElement"
     data-pbx-inline-editor-ui
-    class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max"
     @mousedown.prevent.stop
     @click.stop
   >
@@ -353,23 +523,14 @@ onBeforeUnmount(() => {
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>
 
-    <div class="pbx-relative pbx-flex pbx-items-center">
+    <div class="pbx-shrink-0">
       <div
+        ref="typographyMenuRef"
         @click="toggleShowTypography"
         class="pbx-h-8 pbx-px-2 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-gap-1 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500 pbx-select-none"
         :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': showTypography }"
       >
-        <span class="material-symbols-outlined pbx-text-[18px]"> text_fields </span>
-        <span class="pbx-text-xs">{{ translate('Font') }}</span>
-      </div>
-
-      <div
-        v-if="showTypography"
-        @mousedown.stop
-        @click.stop
-        class="pbx-fixed pbx-z-50 pbx-top-10 pbx-left-4 pbx-w-64 pbx-max-h-[70vh] pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white bx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
-      >
-        <TypographyForTipTap></TypographyForTipTap>
+        <span class="pbx-text-xs pbx-font-semibold">{{ translate('Font') }}</span>
       </div>
     </div>
 
@@ -447,4 +608,20 @@ onBeforeUnmount(() => {
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>
   </div>
+
+  <Teleport to="body">
+    <div
+      v-if="showTypography"
+      ref="typographyPopoverRef"
+      data-pbx-edit-toolbar-popover
+      data-pbx-typography-menu-popover
+      :style="typographyPopoverStyle"
+      class="pbx-fixed pbx-z-50 pbx-max-h-[70vh] pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+      @mousedown.stop
+      @pointerdown.stop
+      @click.stop
+    >
+      <TypographyForTipTap></TypographyForTipTap>
+    </div>
+  </Teleport>
 </template>

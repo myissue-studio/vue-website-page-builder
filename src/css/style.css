@@ -511,31 +511,51 @@
 #pbxEditToolbar {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(0.1rem) scale(0.1);
+  transform: translateY(0.25rem);
+  max-width: calc(100% - 2.5rem);
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  row-gap: 0.25rem;
+  column-gap: 0.5rem;
   transition:
-    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.12s ease-out,
+    transform 0.12s ease-out,
+    top 0.12s ease-out,
+    left 0.12s ease-out;
 }
 
 #pbxEditToolbar.is-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
+  width: fit-content;
   min-width: 4rem;
   padding-right: 2px;
   padding-left: 2px;
-  height: 1.8rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  height: auto;
+  min-height: 1.8rem;
   background: #fff; /* white background */
   /* white outline first, then black border simulated as shadow */
   box-shadow:
     0 0 0 10px #fff,
     /* white outline */ 0 0 0 12px #f8f8f8; /* black border outside */
+}
+
+#pbxEditToolbar.is-visible > *,
+#pbxEditToolbar.is-visible .pbx-select-none,
+#pbxEditToolbar.is-visible .pbx-select-none > .pbx-flex {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#pbxEditToolbar [data-pbx-inline-editor-ui] {
+  display: contents;
 }
 
 /* CSS for content inside page builder # start */
@@ -598,7 +618,7 @@
 }
 
 .pbx-reorder-highlight {
-  animation: pbx-reorder-flash 0.4s ease-in-out;
+  animation: pbx-reorder-flash 0.28s ease-out;
 }
 
 @keyframes pbx-reorder-flash {
@@ -607,8 +627,8 @@
     opacity: 1;
   }
   50% {
-    transform: scale(0.8);
-    opacity: 0.6;
+    transform: scale(0.98);
+    opacity: 0.82;
   }
   100% {
     transform: scale(1);
@@ -617,6 +637,9 @@
 }
 
 .pbx-sibling-highlight {
+  outline: 2px dashed #16a34a;
+  outline-offset: 6px;
+  transition: outline-color 0.3s ease;
 }
 
 .pbx-myPrimaryInput,

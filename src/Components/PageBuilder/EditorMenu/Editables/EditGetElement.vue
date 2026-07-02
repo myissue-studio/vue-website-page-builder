@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, inject, watch } from 'vue'
+import { ref, computed, inject, watch, onBeforeUnmount, nextTick } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import InlineTipTapEditor from '../../../TipTap/InlineTipTapEditor.vue'
@@ -523,6 +523,88 @@ const handleModalIframeSrc = function () {
 }
 
 const openOptionsMoreOpen = ref(false)
+const moreMenuTriggerRef = ref<HTMLElement | null>(null)
+const moreMenuPopoverRef = ref<HTMLElement | null>(null)
+const MORE_MENU_WIDTH_PX = 224
+
+const moreMenuPopoverStyle = ref({
+  top: '0px',
+  left: '0px',
+  width: `${MORE_MENU_WIDTH_PX}px`,
+})
+
+const updateMoreMenuPosition = function () {
+  const trigger = moreMenuTriggerRef.value
+  if (!trigger) return
+
+  const rect = trigger.getBoundingClientRect()
+  const margin = 8
+  let left = rect.left + rect.width / 2 - MORE_MENU_WIDTH_PX / 2
+  left = Math.max(margin, Math.min(left, window.innerWidth - MORE_MENU_WIDTH_PX - margin))
+
+  moreMenuPopoverStyle.value = {
+    top: `${Math.round(rect.bottom + 4)}px`,
+    left: `${Math.round(left)}px`,
+    width: `${MORE_MENU_WIDTH_PX}px`,
+  }
+}
+
+let moreMenuPositionRaf = 0
+
+const trackMoreMenuPosition = function () {
+  if (!openOptionsMoreOpen.value) {
+    moreMenuPositionRaf = 0
+    return
+  }
+
+  updateMoreMenuPosition()
+  moreMenuPositionRaf = requestAnimationFrame(trackMoreMenuPosition)
+}
+
+const startMoreMenuPositionTracking = function () {
+  cancelAnimationFrame(moreMenuPositionRaf)
+  void nextTick(() => {
+    updateMoreMenuPosition()
+    moreMenuPositionRaf = requestAnimationFrame(trackMoreMenuPosition)
+  })
+}
+
+const stopMoreMenuPositionTracking = function () {
+  cancelAnimationFrame(moreMenuPositionRaf)
+  moreMenuPositionRaf = 0
+}
+
+const attachMoreMenuPositionListeners = function () {
+  startMoreMenuPositionTracking()
+}
+
+const detachMoreMenuPositionListeners = function () {
+  stopMoreMenuPositionTracking()
+}
+
+const closeMoreMenuOnOutsideClick = function (event: Event) {
+  if (!openOptionsMoreOpen.value) return
+  if (!(event.target instanceof Node)) return
+  if (moreMenuTriggerRef.value?.contains(event.target)) return
+  if (moreMenuPopoverRef.value?.contains(event.target)) return
+  openOptionsMoreOpen.value = false
+}
+
+watch(openOptionsMoreOpen, (isOpen) => {
+  if (isOpen) {
+    attachMoreMenuPositionListeners()
+    document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+    return
+  }
+
+  detachMoreMenuPositionListeners()
+  document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+})
+
+onBeforeUnmount(() => {
+  detachMoreMenuPositionListeners()
+  document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+})
 
 const handleShowHTMLEditor = async () => {
   pageBuilderStateStore.setToggleGlobalHtmlMode(false)
@@ -635,7 +717,7 @@ const handleDuplicateElement = async function () {
 const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
-  <div>
+  <div class="pbx-max-w-full pbx-min-w-0">
     <ModalBuilder
       maxWidth="3xl"
       :showModalBuilder="showThemeColorPresetsModal"
@@ -753,13 +835,13 @@ const showThemeColorPresetsModal = ref(false)
     >
     </MediaLibraryModal>
 
-    <div class="pbx-select-none">
+    <div class="pbx-select-none pbx-max-w-full pbx-min-w-0">
       <p v-if="false" class="pbx-font-medium pbx-text-[10px] pbx-w-max lg:pbx-block pbx-hidden">
         Editing
         <span class="pbx-lowercase">&lt;{{ elementTag }}&gt;</span>
       </p>
       <div
-        class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2"
+        class="pbx-flex pbx-flex-wrap pbx-items-center pbx-justify-start pbx-gap-x-2 pbx-gap-y-1 pbx-max-w-full pbx-min-w-0"
         :class="{ '': getElement }"
       >
         <template v-if="pageBuilderService.ElOrFirstChildIsIframe()">
@@ -1024,12 +1106,14 @@ const showThemeColorPresetsModal = ref(false)
           </main>
         </DynamicModalBuilder>
 
-        <div
-          v-if="getElement && getComponent"
-          class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
-          @click="openOptionsMoreOpen = !openOptionsMoreOpen"
-        >
-          <span class="material-symbols-outlined"> more_horiz </span>
+        <div v-if="getElement && getComponent" class="pbx-shrink-0">
+          <div
+            ref="moreMenuTriggerRef"
+            class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+            @click="openOptionsMoreOpen = !openOptionsMoreOpen"
+          >
+            <span class="material-symbols-outlined"> more_horiz </span>
+          </div>
         </div>
         <div
           v-if="getElement && getComponent"
@@ -1042,11 +1126,19 @@ const showThemeColorPresetsModal = ref(false)
     </div>
   </div>
 
-  <transition name="popup-fade">
-    <div
-      v-if="openOptionsMoreOpen"
-      class="pbx-absolute pbx-top-10 pbx-transform pbx-select-none pbx-py-2 pbx-px-2 pbx-border pbx-border-solid pbx-border-gray-200 pbx-inset-x-auto pbx-z-40 pbx-w-56 pbx-bg-white pbx-rounded-lg pbx-shadow-lg"
-    >
+  <Teleport to="body">
+    <transition name="popup-fade">
+      <div
+        v-if="openOptionsMoreOpen"
+        ref="moreMenuPopoverRef"
+        data-pbx-edit-toolbar-popover
+        data-pbx-more-menu-popover
+        :style="moreMenuPopoverStyle"
+        class="pbx-fixed pbx-z-50 pbx-select-none pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg"
+        @mousedown.stop
+        @pointerdown.stop
+        @click.stop
+      >
       <div
         class="pbx-overflow-y-scroll pbx-h-[20rem] pbx-max-h-[20rem] pbx-min-h-[20rem] pbx-pr-2 pbx-pb-4 pbx-transform pbx-transition-all"
       >
@@ -1297,5 +1389,6 @@ const showThemeColorPresetsModal = ref(false)
         </div>
       </div>
     </div>
-  </transition>
+    </transition>
+  </Teleport>
 </template>

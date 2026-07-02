@@ -76,11 +76,20 @@ const updateInheritedFontFamily = async () => {
   )
 }
 
+const getInlineTipTapEditor = computed(() => {
+  return pageBuilderStateStore.getInlineTipTapEditor
+})
+
+const syncElementStylesFromStore = async function () {
+  if (getInlineTipTapEditor.value) return
+  await pageBuilderService.initializeElementStyles()
+}
+
 watch(
   getFontBase,
   async (newValue) => {
     fontBase.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -88,7 +97,7 @@ watch(
   getFontDesktop,
   async (newValue) => {
     fontDesktop.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -96,7 +105,7 @@ watch(
   getFontTablet,
   async (newValue) => {
     fontTablet.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -104,7 +113,7 @@ watch(
   getFontMobile,
   async (newValue) => {
     fontMobile.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -112,7 +121,7 @@ watch(
   getFontWeight,
   async (newValue) => {
     fontWeight.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -121,7 +130,7 @@ watch(
   async (newValue) => {
     fontFamily.value = !newValue || newValue === 'none' ? null : newValue
     await updateInheritedFontFamily()
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -130,14 +139,14 @@ watch(
   getFontStyle,
   async (newValue) => {
     fontStyle.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
 </script>
 
 <template>
-  <div>
+  <div data-pbx-typography-menu-popover @mousedown.stop @click.stop>
     <template v-if="false">
       <div class="pbx-my-2 pbx-py-2">
         <label for="font-base" class="pbx-myPrimaryInputLabel">

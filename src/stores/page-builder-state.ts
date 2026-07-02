@@ -505,6 +505,15 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
       this.textColor = payload
     },
     setElement(payload: HTMLElement | null): void {
+      if (payload === this.element) {
+        return
+      }
+
+      if (payload === null) {
+        this.element = null
+        return
+      }
+
       // Force reactivity by setting to null first, then the actual value
       this.element = null
       nextTick(() => {

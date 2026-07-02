@@ -27,6 +27,40 @@ import { isEmptyObject } from '../helpers/isEmptyObject'
 import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
 import { useTranslations } from '../composables/useTranslations'
 
+function scrollContainerToCenterElement(
+  container: HTMLElement,
+  element: HTMLElement,
+  duration = 180,
+): void {
+  const elementRect = element.getBoundingClientRect()
+  const containerRect = container.getBoundingClientRect()
+  const elementTop = elementRect.top - containerRect.top + container.scrollTop
+  const targetScrollTop = elementTop - container.clientHeight / 2 + element.clientHeight / 2
+  const start = container.scrollTop
+  const distance = targetScrollTop - start
+
+  if (Math.abs(distance) < 1) {
+    window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+    return
+  }
+
+  const startTime = performance.now()
+  const step = (now: number) => {
+    const progress = Math.min(1, (now - startTime) / duration)
+    const eased = 1 - (1 - progress) ** 3
+    container.scrollTop = start + distance * eased
+
+    if (progress < 1) {
+      requestAnimationFrame(step)
+      return
+    }
+
+    window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+  }
+
+  requestAnimationFrame(step)
+}
+
 // Define available languages as a type and an array for easy iteration and type safety
 export type AvailableLanguage =
   | 'en'
@@ -762,7 +796,9 @@ export class PageBuilderService {
           mutationName as keyof typeof this.pageBuilderStateStore
         ] as (arg: string) => void
         mutationFunction(elementClass)
-        this.pageBuilderStateStore.setElement(currentHTMLElement)
+        if (!this.pageBuilderStateStore.getInlineTipTapEditor) {
+          this.pageBuilderStateStore.setElement(currentHTMLElement)
+        }
       }
     }
 
@@ -2497,12 +2533,14 @@ export class PageBuilderService {
       }
 
       if (pageBuilderWrapper) {
-        // Scroll to the moved component
-        const topPos = movedComponentElement.offsetTop - pageBuilderWrapper.offsetTop
-        pageBuilderWrapper.scrollTop = topPos - pageBuilderWrapper.clientHeight / 2
+        scrollContainerToCenterElement(pageBuilderWrapper, movedComponentElement)
 
-        // Remove highlights after a delay
-        setTimeout(() => {
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+        })
+
+        // Remove highlights after the animation completes
+        window.setTimeout(() => {
           movedComponentElement.classList.remove('pbx-reorder-highlight')
           if (prevSibling && prevSibling.tagName === 'SECTION') {
             prevSibling.classList.remove('pbx-sibling-highlight')
@@ -2510,7 +2548,7 @@ export class PageBuilderService {
           if (nextSibling && nextSibling.tagName === 'SECTION') {
             nextSibling.classList.remove('pbx-sibling-highlight')
           }
-        }, 200)
+        }, 280)
       }
     }
   }

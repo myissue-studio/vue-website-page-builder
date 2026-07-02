@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, computed, ref, watch, provide } from 'vue'
+import { onBeforeUnmount, onMounted, computed, ref, watch, provide, nextTick } from 'vue'
 import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
 import PageBuilderPreview from './PageBuilderPreview.vue'
 import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/ComponentTopMenu.vue'
@@ -20,6 +20,7 @@ import { getPageBuilder } from '../composables/builderInstance'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
+import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
 const pageBuilderService = getPageBuilder()
 
@@ -338,15 +339,14 @@ const handleInlineEditorDocumentPointerDown = function (event: PointerEvent) {
 
   const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
   const editorElement = inlineElement?.querySelector('.ProseMirror')
-  const toolbarElement = document.querySelector('#pbxEditToolbar')
   const inlineUiElement =
     event.target instanceof Element ? event.target.closest('[data-pbx-inline-editor-ui]') : null
   const modalElement = event.target instanceof Element ? event.target.closest('#pbx-modal') : null
 
   if (editorElement?.contains(event.target)) return
-  if (toolbarElement?.contains(event.target)) return
   if (inlineUiElement) return
   if (modalElement) return
+  if (shouldPreserveInlineEditorForToolbarPopover(event.target)) return
 
   const nextElement = pageBuilderService.findEditableElementFromEventTarget(event.target)
 
@@ -568,16 +568,37 @@ const ensureBuilderInitialized = function () {
 }
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
+let panelPositionRaf = 0
+let panelPositionObserver: MutationObserver | null = null
 
 const hideToolbar = function () {
   const toolbar = document.querySelector('#pbxEditToolbar')
   if (toolbar) {
+    toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')?.style.removeProperty('width')
     toolbar.classList.remove('is-visible')
     toolbar.removeAttribute('style')
   }
 }
 
-function updatePanelPosition() {
+function applyToolbarFlexWidth(toolbar: HTMLElement, maxToolbarWidth: number) {
+  const innerFlex = toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')
+  if (!innerFlex) return
+
+  innerFlex.style.removeProperty('width')
+  innerFlex.style.flexWrap = 'nowrap'
+  void innerFlex.offsetWidth
+  const unwrappedWidth = innerFlex.scrollWidth
+  innerFlex.style.removeProperty('flex-wrap')
+
+  if (unwrappedWidth > maxToolbarWidth) {
+    innerFlex.style.width = `${maxToolbarWidth}px`
+    return
+  }
+
+  innerFlex.style.removeProperty('width')
+}
+
+function updatePanelPositionNow() {
   const container = pbxBuilderWrapper.value
   const editToolbarElement = container && container.querySelector<HTMLElement>('#pbxEditToolbar')
 
@@ -593,37 +614,74 @@ function updatePanelPosition() {
     const selectedRect = targetEl.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
 
-    let left =
-      selectedRect.left -
-      containerRect.left +
-      selectedRect.width / 2 -
-      editToolbarElement.offsetWidth / 2
-
-    // Add margin so toolbar is never flush with the left edge
     const margin = 20 // px
-    left = Math.max(
-      margin,
-      Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
-    )
+    const maxToolbarWidth = container.offsetWidth - margin * 2
+    editToolbarElement.style.maxWidth = `${maxToolbarWidth}px`
+    editToolbarElement.style.removeProperty('width')
+
+    editToolbarElement.style.position = 'absolute'
+    editToolbarElement.classList.add('is-visible')
+    applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
+    // Force layout so inner flex wraps within max-width before measuring size/position.
+    void editToolbarElement.offsetHeight
 
     const GAP = 20 // px
-    const proposedTop =
+    let top =
       selectedRect.top -
       containerRect.top +
       container.scrollTop -
       editToolbarElement.offsetHeight -
       GAP
+    top = Math.max(0, top)
 
-    const top = Math.max(0, proposedTop)
-
-    editToolbarElement.style.position = 'absolute'
-    editToolbarElement.style.left = `${left}px`
+    let left =
+      selectedRect.left -
+      containerRect.left +
+      selectedRect.width / 2 -
+      editToolbarElement.offsetWidth / 2
+    left = Math.max(
+      margin,
+      Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
+    )
     editToolbarElement.style.top = `${top}px`
-    editToolbarElement.classList.add('is-visible')
+    editToolbarElement.style.left = `${left}px`
+    window.dispatchEvent(new CustomEvent('pagebuilder:toolbar-positioned'))
   } else {
     editToolbarElement.classList.remove('is-visible')
     editToolbarElement.removeAttribute('style')
   }
+}
+
+const settleToolbarPosition = function () {
+  updatePanelPositionNow()
+  requestAnimationFrame(updatePanelPositionNow)
+}
+
+function updatePanelPosition() {
+  cancelAnimationFrame(panelPositionRaf)
+  panelPositionRaf = requestAnimationFrame(() => {
+    panelPositionRaf = 0
+    updatePanelPositionNow()
+  })
+}
+
+watch(
+  () => pageBuilderStateStore.getInlineTipTapEditor,
+  () => {
+    void nextTick(settleToolbarPosition)
+  },
+)
+
+watch(getElement, () => {
+  void nextTick(settleToolbarPosition)
+})
+
+watch(getComponents, () => {
+  void nextTick(settleToolbarPosition)
+})
+
+const handlePageBuilderLayoutChange = function () {
+  settleToolbarPosition()
 }
 
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
@@ -644,16 +702,18 @@ onMounted(async () => {
   const container = pbxBuilderWrapper.value
   if (!container) return
 
-  const observer = new MutationObserver(updatePanelPosition)
-  observer.observe(container, {
-    childList: true,
-    subtree: true,
+  panelPositionObserver = new MutationObserver(updatePanelPosition)
+  panelPositionObserver.observe(container, {
     attributes: true,
     attributeFilter: ['selected'],
+    childList: true,
+    subtree: true,
   })
 
-  window.addEventListener('scroll', updatePanelPosition)
+  container.addEventListener('scroll', updatePanelPosition, { passive: true })
+  window.addEventListener('scroll', updatePanelPosition, { passive: true })
   window.addEventListener('resize', updatePanelPosition)
+  window.addEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.addEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
 
   //
@@ -674,8 +734,13 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(panelPositionRaf)
+  panelPositionObserver?.disconnect()
+  panelPositionObserver = null
+  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPosition)
   window.removeEventListener('scroll', updatePanelPosition)
   window.removeEventListener('resize', updatePanelPosition)
+  window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
 })
 </script>
@@ -1162,7 +1227,7 @@ onBeforeUnmount(() => {
       >
         <div
           id="pbxEditToolbar"
-          class="pbx-z-30 pbx-flex pbx-gap-2 pbx-justify-center pbx-items-center pbx-rounded-sm pbx-px-2 pbx-h-0 pbx-min-w-52 pbx-relative"
+          class="pbx-z-30 pbx-flex pbx-flex-wrap pbx-gap-x-2 pbx-gap-y-1 pbx-justify-start pbx-items-center pbx-content-start pbx-rounded-sm pbx-px-2 pbx-py-0 pbx-h-0 pbx-relative pbx-box-border"
         >
           <template v-if="getElement">
             <EditGetElement
