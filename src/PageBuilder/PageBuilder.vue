@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, ref, watch, provide } from 'vue'
+import { onBeforeUnmount, onMounted, computed, ref, watch, provide } from 'vue'
 import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
 import PageBuilderPreview from './PageBuilderPreview.vue'
 import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/ComponentTopMenu.vue'
@@ -328,6 +328,30 @@ const handleSelectComponent = function (
   pageBuilderStateStore.setComponent(componentObject)
 }
 
+const handleCanvasDoubleClick = async function (event: MouseEvent) {
+  await pageBuilderService.openInlineTipTapFromEvent(event)
+}
+
+const handleInlineEditorDocumentPointerDown = function (event: PointerEvent) {
+  if (!pageBuilderStateStore.getInlineTipTapEditor) return
+  if (!(event.target instanceof Node)) return
+
+  const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
+  const editorElement = inlineElement?.querySelector('.ProseMirror')
+  const toolbarElement = document.querySelector('#pbxEditToolbar')
+
+  if (editorElement?.contains(event.target)) return
+  if (toolbarElement?.contains(event.target)) return
+
+  const nextElement = pageBuilderService.findEditableElementFromEventTarget(event.target)
+
+  event.preventDefault()
+  event.stopPropagation()
+  event.stopImmediatePropagation()
+
+  void pageBuilderService.finishActiveInlineTipTapEditorFromDom(nextElement)
+}
+
 const getIsLoadingGlobal = computed(() => {
   return pageBuilderStateStore.getIsLoadingGlobal
 })
@@ -625,6 +649,7 @@ onMounted(async () => {
 
   window.addEventListener('scroll', updatePanelPosition)
   window.addEventListener('resize', updatePanelPosition)
+  document.addEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
 
   //
   //
@@ -641,6 +666,12 @@ onMounted(async () => {
   // Re-check again if Builder started
   await delay(10000)
   ensureBuilderInitialized()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updatePanelPosition)
+  window.removeEventListener('resize', updatePanelPosition)
+  document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
 })
 </script>
 
@@ -1137,7 +1168,12 @@ onMounted(async () => {
         </div>
         <!-- Element Popover toolbar end -->
 
-        <div id="pagebuilder" data-builder-canvas :class="[canvasFontClass, 'pbx-text-black']">
+        <div
+          id="pagebuilder"
+          data-builder-canvas
+          :class="[canvasFontClass, 'pbx-text-black']"
+          @dblclick.capture="handleCanvasDoubleClick"
+        >
           <!-- Insert button when empty of componenets -->
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"

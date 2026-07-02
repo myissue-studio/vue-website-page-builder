@@ -83,6 +83,8 @@ export class PageBuilderService {
   private _pendingPageSettings: PageSettings | null = null
   private _lastKnownPageSettings: { classes: string; style: string } | null = null
   private isPageBuilderMissingOnStart: boolean = false
+  private canvasClickCaptureListener: EventListener | null = null
+  private canvasDblClickCaptureListener: EventListener | null = null
 
   // Add a class-level WeakMap to track elements and their listeners
   // Use class-level WeakMap from being a local variable inside addListenersToEditableElements to a private class-level property.
@@ -91,7 +93,12 @@ export class PageBuilderService {
   // This prevents multiple event listeners being attached to the same HTML elements
   private elementsWithListeners = new WeakMap<
     Element,
-    { click: EventListener; mouseover: EventListener; mouseleave: EventListener }
+    {
+      click: EventListener
+      dblclick: EventListener
+      mouseover: EventListener
+      mouseleave: EventListener
+    }
   >()
 
   private translate: (key: string) => string
@@ -1261,6 +1268,8 @@ export class PageBuilderService {
     // Wait for the next DOM update cycle to ensure all elements are rendered.
     await nextTick()
 
+    this.attachCanvasInlineEditListeners(pagebuilder)
+
     pagebuilder.querySelectorAll('section *').forEach((element) => {
       if (this.isEditableElement(element)) {
         const htmlElement = element as HTMLElement
@@ -1270,6 +1279,7 @@ export class PageBuilderService {
           const listeners = this.elementsWithListeners.get(htmlElement)
           if (listeners) {
             htmlElement.removeEventListener('click', listeners.click)
+            htmlElement.removeEventListener('dblclick', listeners.dblclick)
             htmlElement.removeEventListener('mouseover', listeners.mouseover)
             htmlElement.removeEventListener('mouseleave', listeners.mouseleave)
           }
@@ -1277,22 +1287,119 @@ export class PageBuilderService {
 
         // Define new listener functions.
         const clickListener = (e: Event) => this.handleElementClick(e, htmlElement)
+        const dblclickListener = (e: Event) => this.handleElementDoubleClick(e, htmlElement)
         const mouseoverListener = (e: Event) => this.handleMouseOver(e, htmlElement)
         const mouseleaveListener = (e: Event) => this.handleMouseLeave(e)
 
         // Add the new event listeners.
         htmlElement.addEventListener('click', clickListener)
+        htmlElement.addEventListener('dblclick', dblclickListener)
         htmlElement.addEventListener('mouseover', mouseoverListener)
         htmlElement.addEventListener('mouseleave', mouseleaveListener)
 
         // Store the new listeners in the WeakMap to track them.
         this.elementsWithListeners.set(htmlElement, {
           click: clickListener,
+          dblclick: dblclickListener,
           mouseover: mouseoverListener,
           mouseleave: mouseleaveListener,
         })
       }
     })
+  }
+
+  private attachCanvasInlineEditListeners(pagebuilder: Element): void {
+    if (this.canvasClickCaptureListener) {
+      pagebuilder.removeEventListener('click', this.canvasClickCaptureListener, true)
+    }
+
+    if (this.canvasDblClickCaptureListener) {
+      pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
+    }
+
+    this.canvasClickCaptureListener = (event: Event) => {
+      void this.handleCanvasClickCapture(event)
+    }
+    this.canvasDblClickCaptureListener = (event: Event) => {
+      void this.handleCanvasDoubleClickCapture(event)
+    }
+
+    pagebuilder.addEventListener('click', this.canvasClickCaptureListener, true)
+    pagebuilder.addEventListener('dblclick', this.canvasDblClickCaptureListener, true)
+  }
+
+  public findEditableElementFromEventTarget(target: EventTarget | null): HTMLElement | null {
+    if (!(target instanceof Element)) return null
+
+    const pagebuilder = document.querySelector('#pagebuilder')
+    let current: Element | null = target
+
+    while (current && current !== pagebuilder) {
+      if (current instanceof HTMLElement && this.isEditableElement(current)) {
+        return current
+      }
+
+      current = current.parentElement
+    }
+
+    return null
+  }
+
+  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+  }
+
+  private handleCanvasDoubleClickCapture = async (e: Event): Promise<void> => {
+    await this.openInlineTipTapFromEvent(e)
+  }
+
+  public async openInlineTipTapFromEvent(e: Event): Promise<void> {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
+    const element = this.findEditableElementFromEventTarget(e.target)
+    if (!element || !this.isValidTextElement(element)) return
+
+    e.preventDefault()
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+
+    await this.openInlineTipTapForElement(element)
+  }
+
+  private hasInlineTipTapElement(): boolean {
+    return Boolean(document.querySelector('#pagebuilder [data-pbx-inline-tiptap]'))
+  }
+
+  public async finishActiveInlineTipTapEditorFromDom(
+    nextElement: HTMLElement | null = null,
+  ): Promise<void> {
+    const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
+
+    if (!inlineElement) {
+      await this.toggleInlineTipTapEditor(false)
+      return
+    }
+
+    const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
+    const html = prosemirror?.innerHTML ?? inlineElement.innerHTML
+
+    inlineElement.innerHTML = html
+    inlineElement.removeAttribute('data-pbx-inline-tiptap')
+    this.pageBuilderStateStore.setTextAreaVueModel(html)
+    this.pageBuilderStateStore.setElement(inlineElement)
+
+    await this.finishInlineTipTapEditor(inlineElement)
+
+    if (nextElement && nextElement !== inlineElement) {
+      await this.selectEditableElement(nextElement)
+    }
   }
 
   /**
@@ -1309,6 +1416,35 @@ export class PageBuilderService {
     e.stopPropagation()
 
     await this.selectEditableElement(element)
+  }
+
+  /**
+   * Opens inline rich-text editing when a valid text element is double-clicked.
+   * @param {Event} e - The double-click event.
+   * @param {HTMLElement} element - The double-clicked element.
+   * @private
+   */
+  private handleElementDoubleClick = async (e: Event, element: HTMLElement): Promise<void> => {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+    if (!this.isValidTextElement(element)) return
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    await this.openInlineTipTapForElement(element)
+  }
+
+  private async openInlineTipTapForElement(element: HTMLElement): Promise<void> {
+    if (!this.isValidTextElement(element)) return
+
+    await this.selectEditableElement(element, false)
+
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
+
+    await nextTick()
+    await this.addListenersToEditableElements()
   }
 
   /**

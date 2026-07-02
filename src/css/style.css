@@ -40,13 +40,27 @@
    * Default is `inherit` so elements follow the canvas-level pbx-font-* class
    * when no override is configured.
    */
-  #pagebuilder h1 { font-family: var(--pbx-el-h1-font, inherit); }
-  #pagebuilder h2 { font-family: var(--pbx-el-h2-font, inherit); }
-  #pagebuilder h3 { font-family: var(--pbx-el-h3-font, inherit); }
-  #pagebuilder h4 { font-family: var(--pbx-el-h4-font, inherit); }
-  #pagebuilder h5 { font-family: var(--pbx-el-h5-font, inherit); }
-  #pagebuilder h6 { font-family: var(--pbx-el-h6-font, inherit); }
-  #pagebuilder p  { font-family: var(--pbx-el-p-font,  inherit); }
+  #pagebuilder h1 {
+    font-family: var(--pbx-el-h1-font, inherit);
+  }
+  #pagebuilder h2 {
+    font-family: var(--pbx-el-h2-font, inherit);
+  }
+  #pagebuilder h3 {
+    font-family: var(--pbx-el-h3-font, inherit);
+  }
+  #pagebuilder h4 {
+    font-family: var(--pbx-el-h4-font, inherit);
+  }
+  #pagebuilder h5 {
+    font-family: var(--pbx-el-h5-font, inherit);
+  }
+  #pagebuilder h6 {
+    font-family: var(--pbx-el-h6-font, inherit);
+  }
+  #pagebuilder p {
+    font-family: var(--pbx-el-p-font, inherit);
+  }
 
   /*
    * Prevent the builder canvas from growing a horizontal scrollbar when
@@ -684,23 +698,18 @@
 }
 
 ::-webkit-scrollbar {
-  height: 2px; /* horizontal scrollbar height */
+  width: 12px; /* vertical scrollbar thickness */
+  height: 12px; /* horizontal scrollbar thickness */
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* or a color */
+  background: #d2c6c652;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 0px;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-::-webkit-scrollbar {
-  width: 8px; /* vertical */
-  height: 8px; /* horizontal */
+  background: rgba(0, 0, 0, 0.3);
 }
