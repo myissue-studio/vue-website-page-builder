@@ -2,6 +2,7 @@
 import { ref, computed, inject, watch } from 'vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
+import InlineTipTapEditor from '../../../TipTap/InlineTipTapEditor.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
@@ -326,6 +327,8 @@ const getShowModalTipTap = computed(() => {
   return result
 })
 
+const getInlineTipTapEditor = computed(() => pageBuilderStateStore.getInlineTipTapEditor)
+
 const getComponent = computed(() => {
   return pageBuilderStateStore.getComponent
 })
@@ -363,6 +366,10 @@ const handleModalPreviewTiptap = function () {
   thirdModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
     pageBuilderService.toggleTipTapModal(true)
   }
+}
+
+const handleInlineTipTapEditor = async function () {
+  await pageBuilderService.toggleInlineTipTapEditor(true)
 }
 
 // handle image
@@ -772,9 +779,13 @@ const showThemeColorPresetsModal = ref(false)
             !pageBuilderService.ElOrFirstChildIsIframe()
           "
         >
-          <div class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max">
+          <InlineTipTapEditor></InlineTipTapEditor>
+          <div
+            v-if="!getInlineTipTapEditor"
+            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-w-max"
+          >
             <div
-              @click="handleModalPreviewTiptap"
+              @click="handleInlineTipTapEditor"
               class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
             >
               <span>

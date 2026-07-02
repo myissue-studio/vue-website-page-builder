@@ -323,6 +323,8 @@ watch(getElementAttributes, async (newAttributes, oldAttributes) => {
 const handleSelectComponent = function (
   componentObject: Parameters<typeof pageBuilderStateStore.setComponent>[0],
 ) {
+  if (pageBuilderStateStore.getInlineTipTapEditor) return
+
   pageBuilderStateStore.setComponent(componentObject)
 }
 
@@ -1463,6 +1465,32 @@ onMounted(async () => {
   padding: 0px 0px 10px 16px;
   margin-bottom: 20px;
   padding-bottom: 100px;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] {
+  cursor: text;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] > .tiptap {
+  outline: none !important;
+  min-height: 1em;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] .ProseMirror {
+  outline: none !important;
+  min-height: 1em;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] .ProseMirror > *:first-child {
+  margin-top: 0;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] .ProseMirror > *:last-child {
+  margin-bottom: 0;
+}
+
+#pagebuilder [data-pbx-inline-tiptap] .ProseMirror-focused {
+  caret-color: currentColor;
 }
 .slide-right-enter-from,
 .slide-right-leave-to {

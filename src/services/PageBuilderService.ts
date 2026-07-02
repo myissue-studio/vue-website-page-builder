@@ -987,6 +987,60 @@ export class PageBuilderService {
   }
 
   /**
+   * Toggles direct, in-canvas rich text editing for the selected element.
+   * @param {boolean} status - Whether to enable inline Tiptap editing.
+   * @returns {Promise<void>}
+   */
+  public async toggleInlineTipTapEditor(status: boolean): Promise<void> {
+    if (status && !this.isValidTextElement(this.getElement.value)) return
+
+    this.pageBuilderStateStore.setInlineTipTapEditor(status)
+
+    await nextTick()
+    await this.addListenersToEditableElements()
+
+    if (!status) {
+      await this.handleAutoSave()
+    }
+  }
+
+  /**
+   * Restores normal builder selection after an inline TipTap editor has been torn down.
+   * @param {HTMLElement | null} element - The element that was edited inline.
+   * @param {boolean} shouldAutoSave - Whether to autosave the restored element HTML.
+   * @returns {Promise<void>}
+   */
+  public async finishInlineTipTapEditor(
+    element: HTMLElement | null,
+    shouldAutoSave: boolean = true,
+  ): Promise<void> {
+    this.pageBuilderStateStore.setInlineTipTapEditor(false)
+
+    await nextTick()
+
+    if (element) {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      pagebuilder?.querySelectorAll('[hovered]').forEach((el) => el.removeAttribute('hovered'))
+      pagebuilder?.querySelectorAll('[selected]').forEach((el) => {
+        if (el !== element) el.removeAttribute('selected')
+      })
+
+      element.removeAttribute('data-pbx-inline-tiptap')
+      element.setAttribute('selected', '')
+      this.pageBuilderStateStore.setElement(element)
+    }
+
+    await nextTick()
+    await this.addListenersToEditableElements()
+    await this.initializeElementStyles()
+    await this.addListenersToEditableElements()
+
+    if (shouldAutoSave) {
+      await this.handleAutoSave()
+    }
+  }
+
+  /**
    * Wraps an element in a div if it's an excluded tag and adjacent to an image.
    * @param {HTMLElement} element - The element to potentially wrap.
    * @private
@@ -1012,6 +1066,8 @@ export class PageBuilderService {
    * @private
    */
   private handleMouseOver = (e: Event, element: HTMLElement): void => {
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -1035,6 +1091,8 @@ export class PageBuilderService {
    * @private
    */
   private handleMouseLeave = (e: Event): void => {
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -1245,10 +1303,24 @@ export class PageBuilderService {
    */
   private handleElementClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
 
     e.preventDefault()
     e.stopPropagation()
 
+    await this.selectEditableElement(element)
+  }
+
+  /**
+   * Selects an editable builder element and syncs builder state.
+   * @param {HTMLElement} element - The element to select.
+   * @param {boolean} shouldAutoSave - Whether to autosave after selection.
+   * @returns {Promise<void>}
+   */
+  public async selectEditableElement(
+    element: HTMLElement,
+    shouldAutoSave: boolean = true,
+  ): Promise<void> {
     const pagebuilder = document.querySelector('#pagebuilder')
 
     if (!pagebuilder) return
@@ -1266,7 +1338,9 @@ export class PageBuilderService {
 
     this.pageBuilderStateStore.setElement(element)
 
-    await this.handleAutoSave()
+    if (shouldAutoSave) {
+      await this.handleAutoSave()
+    }
   }
 
   private getHistoryBaseKey(): string | null {
@@ -1287,6 +1361,9 @@ export class PageBuilderService {
    */
   public handleAutoSave = async () => {
     this.startEditing()
+
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
 
     // Check if config is set
@@ -2392,26 +2469,24 @@ export class PageBuilderService {
     }
   }
   /**
-   * Checks if the selected element is a valid text container (i.e., does not contain images or divs).
-   * @returns {boolean | undefined} True if it's a valid text element, otherwise undefined.
+   * Checks whether an element can be edited with inline TipTap (no images/div-only children).
+   * @param {HTMLElement | null | undefined} element - The element to validate.
+   * @returns {boolean} True when inline rich-text editing is allowed.
    */
-  public isSelectedElementValidText() {
+  public isValidTextElement(element: HTMLElement | null | undefined): boolean {
+    if (!element) return false
+
+    if (element.tagName === 'IMG' || element.firstElementChild?.tagName === 'IFRAME') {
+      return false
+    }
+
+    const childElements = element.children
+    if (!childElements.length) return false
+
     let reachedElseStatement = false
 
-    // Get all child elements of the parentDiv
-    const childElements = this.getElement.value?.children
-    if (
-      this.getElement.value?.tagName === 'IMG' ||
-      this.getElement.value?.firstElementChild?.tagName === 'IFRAME'
-    ) {
-      return
-    }
-    if (!childElements) {
-      return
-    }
-
-    Array.from(childElements).forEach((element) => {
-      if (element?.tagName === 'IMG' || element?.tagName === 'DIV') {
+    Array.from(childElements).forEach((child) => {
+      if (child.tagName === 'IMG' || child.tagName === 'DIV') {
         reachedElseStatement = false
       } else {
         reachedElseStatement = true
@@ -2419,6 +2494,14 @@ export class PageBuilderService {
     })
 
     return reachedElseStatement
+  }
+
+  /**
+   * Checks if the selected element is a valid text container (i.e., does not contain images or divs).
+   * @returns {boolean} True if it's a valid text element, otherwise false.
+   */
+  public isSelectedElementValidText(): boolean {
+    return this.isValidTextElement(this.getElement.value)
   }
 
   /**

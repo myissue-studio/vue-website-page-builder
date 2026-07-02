@@ -13,6 +13,7 @@ interface PageBuilderState {
   componentArrayAddMethod: string | null
   localStorageItemName: string | null
   showModalTipTap: boolean
+  inlineTipTapEditor: boolean
   menuRight: boolean
   borderStyle: string | null
   borderWidth: string | null
@@ -90,6 +91,7 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     componentArrayAddMethod: null,
     localStorageItemName: null,
     showModalTipTap: false,
+    inlineTipTapEditor: false,
     menuRight: true,
     borderStyle: null,
     borderWidth: null,
@@ -170,6 +172,9 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     getShowModalTipTap(state: PageBuilderState): boolean {
       return state.showModalTipTap
+    },
+    getInlineTipTapEditor(state: PageBuilderState): boolean {
+      return state.inlineTipTapEditor
     },
     getMenuRight(state: PageBuilderState): boolean {
       return state.menuRight
@@ -362,6 +367,9 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
     setShowModalTipTap(payload: boolean): void {
       this.showModalTipTap = payload
+    },
+    setInlineTipTapEditor(payload: boolean): void {
+      this.inlineTipTapEditor = payload
     },
     setMenuRight(payload: boolean): void {
       this.menuRight = payload
