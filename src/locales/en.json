@@ -110,6 +110,7 @@
   "value": "Value",
   "Close": "Close",
   "Editing": "Editing",
+  "Properties": "Properties",
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.",
   "Update Page Styles": "Update Page Styles",
   "Download HTML": "Download HTML",

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useTranslations } from '../../composables/useTranslations'
+
+const { translate } = useTranslations()
 
 const props = defineProps({
   title: {
@@ -94,7 +97,7 @@ const maxWidthClass = computed(() => {
             ]"
           >
             <h3
-              as="h3"
+              id="dialog-title"
               class="pbx-myQuaternaryHeader pbx-my-0 pbx-py-0"
               :class="[
                 type === 'success' ? 'pbx-text-black' : '',
@@ -105,12 +108,14 @@ const maxWidthClass = computed(() => {
             >
               {{ title }}
             </h3>
-            <div
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black"
+            <button
+              type="button"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
+              :aria-label="translate('Close')"
               @click="handleClose"
             >
-              <span class="material-symbols-outlined"> close </span>
-            </div>
+              <span class="material-symbols-outlined" aria-hidden="true"> close </span>
+            </button>
           </div>
           <div class="pbx-px-4 pbx-min-h-32">
             <slot></slot>

@@ -541,8 +541,8 @@ function handleDownloadHTML() {
                           class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
                           :class="
                             getPageBuilderConfig.userSettings.autoSave
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              ? 'pbx-bg-green-100 pbx-text-green-800'
+                              : 'pbx-bg-red-100 pbx-text-red-800'
                           "
                         >
                           {{
@@ -570,8 +570,8 @@ function handleDownloadHTML() {
                           class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
                           :class="
                             getPageBuilderConfig.userSettings.notifications
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              ? 'pbx-bg-green-100 pbx-text-green-800'
+                              : 'pbx-bg-red-100 pbx-text-red-800'
                           "
                         >
                           {{
@@ -724,8 +724,8 @@ function handleDownloadHTML() {
                           class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
                           :class="
                             getPageBuilderConfig.updateOrCreate.formType === 'create'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-blue-100 text-blue-800'
+                              ? 'pbx-bg-green-100 pbx-text-green-800'
+                              : 'pbx-bg-blue-100 pbx-text-blue-800'
                           "
                         >
                           <span

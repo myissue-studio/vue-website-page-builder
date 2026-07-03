@@ -63,6 +63,11 @@ const elementSrc = computed(() => {
   return (element as HTMLImageElement).src || '—'
 })
 
+const prettifiedElementHtml = computed(() => {
+  if (!getElement.value) return ''
+  return prettifyHtml(getElement.value.outerHTML)
+})
+
 function setActiveTab(tab: ContentTab) {
   activeTab.value = tab
 }
@@ -137,7 +142,9 @@ function setActiveTab(tab: ContentTab) {
           <template v-else>
             <div class="pbx-inspectorField">
               <span class="pbx-inspectorFieldLabel">{{ translate('Selected HTML:') }}</span>
-              <pre class="pbx-inspectorCodeRaw">{{ getElement.outerHTML }}</pre>
+              <pre
+                class="pbx-inspectorCodeBlock"
+              ><code class="pbx-font-sans" v-html="prettifiedElementHtml"></code></pre>
             </div>
 
             <div v-if="elementSrc !== null" class="pbx-inspectorField">

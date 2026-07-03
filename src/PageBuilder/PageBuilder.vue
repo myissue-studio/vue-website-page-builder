@@ -6,7 +6,6 @@ import PageLayoutToolbar from '../Components/PageBuilder/EditorMenu/Editables/Pa
 import SelectedElementToolbar from '../Components/PageBuilder/EditorMenu/Editables/SelectedElementToolbar.vue'
 import ComponentLibraryModal from '../Components/Modals/ComponentLibraryModal.vue'
 import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSidebarEditor.vue'
-import PageDesignEditor from '../Components/PageBuilder/EditorMenu/Editables/PageDesignEditor.vue'
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
 import { sleep } from '../utils/sleep'
@@ -481,35 +480,7 @@ const handleCloseHTMLEditor = () => {
 
 const isLoading = ref(false)
 const errSaveComponents = ref<string | null>(null)
-const showGlobalPageSettings = ref(false)
-const isLoadingGlobalPageSettings = ref(false)
 const showImageSettingsModal = ref(false)
-
-const openGlobalPageSettings = async () => {
-  showGlobalPageSettings.value = true
-  isLoadingGlobalPageSettings.value = true
-  hideToolbar()
-  await sleep(200)
-  pageBuilderStateStore.setToggleGlobalHtmlMode(true)
-  await pageBuilderService.globalPageStyles()
-  hideToolbar()
-  isLoadingGlobalPageSettings.value = false
-}
-
-const closeGlobalPageSettings = async () => {
-  isLoadingGlobalPageSettings.value = true
-  await sleep(200)
-  await pageBuilderService.handleManualSave()
-  pageBuilderService.stopGlobalStylesSync()
-
-  const pagebuilder = document.querySelector('#pagebuilder')
-  if (pagebuilder) {
-    pagebuilder.removeAttribute('data-global-selected')
-  }
-
-  showGlobalPageSettings.value = false
-  isLoadingGlobalPageSettings.value = false
-}
 
 const openImageSettings = () => {
   if (showImageSettingsModal.value) {
@@ -1323,7 +1294,7 @@ onBeforeUnmount(() => {
           :class="[
             getMenuRight
               ? 'pbx-w-96 pbx-bg-myPrimaryLightGrayColor pbx-items-stretch'
-              : 'bpx-w-0 pbx-mr-0',
+              : 'pbx-w-0 pbx-mr-0',
           ]"
         >
           <RightSidebarEditor @closeEditor="pageBuilderStateStore.setMenuRight(false)">
@@ -1382,16 +1353,6 @@ onBeforeUnmount(() => {
     </div>
     <!-- Page Builder Main End -->
   </div>
-  <BaseModal
-    maxWidth="5xl"
-    :showModalBuilder="showGlobalPageSettings"
-    :title="translate('Page Design')"
-    @closeMainModalBuilder="closeGlobalPageSettings"
-    minHeight=""
-    maxHeight=""
-  >
-    <PageDesignEditor :isLoading="isLoadingGlobalPageSettings" />
-  </BaseModal>
   <FloatingSidePanel
     :title="translate('Image Settings')"
     :showSidebarPanel="showImageSettingsModal"

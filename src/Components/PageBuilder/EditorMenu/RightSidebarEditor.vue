@@ -119,8 +119,13 @@ const closeHTMLSettings = async function () {
         <span class="material-symbols-outlined"> close </span>
       </button>
       <p class="pbx-font-medium pbx-text-sm">
-        {{ translate('Editing') }}
-        <span class="pbx-lowercase">&lt;{{ elementTag }}&gt;</span>
+        <template v-if="hasEditableSelection">
+          {{ translate('Editing') }}
+          <span class="pbx-lowercase">&lt;{{ elementTag }}&gt;</span>
+        </template>
+        <template v-else>
+          {{ translate('Properties') }}
+        </template>
       </p>
     </div>
 

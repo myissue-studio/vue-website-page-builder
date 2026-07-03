@@ -1115,3 +1115,19 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
+
+/* Vue transition hooks for package popovers (toolbar more menu, image panel, TipTap). */
+.popup-fade-enter-active,
+.popup-fade-leave-active {
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.popup-fade-enter-from,
+.popup-fade-leave-to {
+  transform: scale(0.95);
+  opacity: 0;
+}
+.popup-fade-enter-to,
+.popup-fade-leave-from {
+  transform: scale(1);
+  opacity: 1;
+}
