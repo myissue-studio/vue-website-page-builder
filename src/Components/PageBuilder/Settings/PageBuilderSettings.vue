@@ -4,6 +4,7 @@ import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import { isEmptyObject } from '../../../utils/is-empty-object'
 import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
+import { useToast } from '../../../composables/useToast'
 import { extractCleanHTMLFromPageBuilder } from '../../../utils/builder/extract-clean-html'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
 
@@ -19,6 +20,7 @@ const props = defineProps<{
 }>()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const isEmbedded = computed(() => Boolean(props.embeddedSection))
 
@@ -150,6 +152,7 @@ function handleDownloadHTML() {
 
   html = tempDiv.innerHTML
   generateHTML('downloaded_html.html', html)
+  showToast(translate('HTML file downloaded'), 'success')
 }
 </script>
 

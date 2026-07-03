@@ -26,10 +26,7 @@ const { themeColorPresetSettings, updateThemeColorPreset } =
 function saveToPreset(id: ThemeColorPresetId): void {
   const preset = themeColorPresetSettings.value.colors.find((item) => item.id === id)
   updateThemeColorPreset(id, { color: props.color, enabled: true })
-  showToast(
-    `${translate('Color saved to')} ${translate(preset?.label ?? id)}`,
-    'success',
-  )
+  showToast(`${translate('Color saved to')} ${translate(preset?.label ?? id)}`, 'success')
   emit('saved', id)
   emit('close')
 }
@@ -43,7 +40,7 @@ function saveToPreset(id: ThemeColorPresetId): void {
     :z-index="10004"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-min-h-[45rem] pbx-py-6">
+    <div class="pbx-min-h-[45rem]">
       <p class="pbx-myPrimaryParagraph pbx-mt-0">
         {{
           translate(

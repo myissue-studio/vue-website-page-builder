@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
 const props = defineProps<{
   value?: string | number | null
@@ -24,15 +25,12 @@ const displayId = computed(() => {
 
 async function copyId() {
   if (!normalizedValue.value) return
-
-  try {
-    await navigator.clipboard.writeText(normalizedValue.value)
+  const didCopy = await copyTextWithToast(normalizedValue.value)
+  if (didCopy) {
     copied.value = true
     globalThis.setTimeout(() => {
       copied.value = false
     }, 2000)
-  } catch {
-    // Clipboard unavailable — title attribute still shows full ID on hover.
   }
 }
 </script>

@@ -4,10 +4,12 @@ import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { ref, computed } from 'vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 import { sleep } from '../../../../utils/sleep'
 import FloatingSidePanel from '../../../../Components/Overlays/FloatingSidePanel.vue'
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const pageBuilderService = getPageBuilder()
 
@@ -48,6 +50,7 @@ const handleDeleteComponentsFromDOM = function () {
 
     showModalDeleteAllComponents.value = false
     isDeletingLayout.value = false
+    showToast(translate('All components removed'), 'success')
   }
 }
 

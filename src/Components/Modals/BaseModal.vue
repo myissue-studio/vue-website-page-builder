@@ -122,7 +122,7 @@ const maxWidthClass = computed(() => {
             </button>
           </div>
           <div class="pbx-min-h-0 pbx-flex-1 pbx-overflow-y-auto pbx-px-4">
-            <div class="pbx-min-h-32">
+            <div class="pbx-min-h-32 pbx-py-6">
               <slot></slot>
             </div>
           </div>

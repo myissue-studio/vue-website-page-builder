@@ -5,6 +5,7 @@ import HexColorPicker from '../../../Inputs/HexColorPicker.vue'
 import SaveThemeColorPresetModal from './SaveThemeColorPresetModal.vue'
 import { normalizeCssColorToHex } from '../../../../utils/builder/color-utils'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 
 const props = defineProps<{
   show: boolean
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 const draftHex = ref(normalizeCssColorToHex(props.initialColor || '') ?? '#000000')
 const appliedHex = ref<string | null>(null)
 const initialHex = ref<string | null>(normalizeCssColorToHex(props.initialColor || '#000000'))
@@ -82,6 +84,7 @@ function applyDraft(): void {
   draftHex.value = normalized
   appliedHex.value = normalized
   emit('apply', normalized)
+  showToast(translate('Color applied'), 'success')
 }
 
 function onEnterKey(event: KeyboardEvent): void {
@@ -108,7 +111,7 @@ function closeSaveModal(): void {
     :show-actions="canSaveToTheme"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-min-h-[45rem] pbx-py-6">
+    <div class="pbx-min-h-[55rem]">
       <div class="pbx-customColorModal">
         <p class="pbx-customColorModalIntro">
           {{

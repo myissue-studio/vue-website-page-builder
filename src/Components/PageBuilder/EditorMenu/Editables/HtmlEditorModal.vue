@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import BaseModal from '../../../Modals/BaseModal.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
 const props = defineProps<{
   show: boolean
@@ -31,15 +32,12 @@ function onHtmlInput(event: Event) {
 
 async function copyHtml() {
   if (!props.html) return
-
-  try {
-    await navigator.clipboard.writeText(props.html)
+  const didCopy = await copyTextWithToast(props.html)
+  if (didCopy) {
     copied.value = true
     globalThis.setTimeout(() => {
       copied.value = false
     }, 2000)
-  } catch {
-    // Clipboard unavailable.
   }
 }
 </script>
