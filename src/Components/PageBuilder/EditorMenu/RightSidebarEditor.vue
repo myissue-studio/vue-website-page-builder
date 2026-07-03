@@ -10,14 +10,14 @@ import MarginControl from './Editables/MarginControl.vue'
 import BorderRadius from './Editables/BorderRadius.vue'
 import BorderControls from './Editables/BorderControls.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
-import GlobalPageStylesSettingsEditor from './Editables/GlobalPageStylesSettingsEditor.vue'
+import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
 import PageBuilderOverviewSettingsEditor from './Editables/PageBuilderOverviewSettingsEditor.vue'
 import PageBuilderDownloadHtmlSettingsEditor from './Editables/PageBuilderDownloadHtmlSettingsEditor.vue'
 import PageBuilderSelectedHtmlSettingsEditor from './Editables/PageBuilderSelectedHtmlSettingsEditor.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
 import { useTranslations } from '../../../composables/useTranslations'
 import ModalBuilder from '../../Modals/ModalBuilder.vue'
-import AdvancedPageBuilderSettings from '../Settings/AdvancedPageBuilderSettings.vue'
+import PageDesignEditor from './Editables/PageDesignEditor.vue'
 import { delay } from '../../../composables/delay'
 
 const { translate } = useTranslations()
@@ -203,7 +203,7 @@ const closeHTMLSettings = async function () {
 
       <div v-show="activeTab === 'settings'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <ThemeColorSettingsEditor />
-        <GlobalPageStylesSettingsEditor @open="openHTMLSettings" />
+        <PageDesignSettingsEditor @open="openHTMLSettings" />
       </div>
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
@@ -216,11 +216,11 @@ const closeHTMLSettings = async function () {
   <ModalBuilder
     maxWidth="5xl"
     :showModalBuilder="showHTMLSettings"
-    :title="translate('Global Page Styles')"
+    :title="translate('Page Design')"
     @closeMainModalBuilder="closeHTMLSettings"
     minHeight=""
     maxHeight=""
   >
-    <AdvancedPageBuilderSettings :isLoading="isLoading"> </AdvancedPageBuilderSettings>
+    <PageDesignEditor :isLoading="isLoading" />
   </ModalBuilder>
 </template>

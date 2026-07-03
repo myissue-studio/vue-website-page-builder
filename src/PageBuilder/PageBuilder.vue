@@ -6,7 +6,7 @@ import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/Com
 import EditGetElement from '../Components/PageBuilder/EditorMenu/Editables/EditGetElement.vue'
 import BuilderComponents from '../Components/Modals/BuilderComponents.vue'
 import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSidebarEditor.vue'
-import AdvancedPageBuilderSettings from '../Components/PageBuilder/Settings/AdvancedPageBuilderSettings.vue'
+import PageDesignEditor from '../Components/PageBuilder/EditorMenu/Editables/PageDesignEditor.vue'
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
 import { delay } from '../composables/delay'
@@ -1385,13 +1385,12 @@ onBeforeUnmount(() => {
   <ModalBuilder
     maxWidth="5xl"
     :showModalBuilder="showGlobalPageSettings"
-    :title="translate('Global Page Styles')"
+    :title="translate('Page Design')"
     @closeMainModalBuilder="closeGlobalPageSettings"
     minHeight=""
     maxHeight=""
   >
-    <AdvancedPageBuilderSettings :isLoading="isLoadingGlobalPageSettings">
-    </AdvancedPageBuilderSettings>
+    <PageDesignEditor :isLoading="isLoadingGlobalPageSettings" />
   </ModalBuilder>
   <FloatingSidePanel
     :title="translate('Image Settings')"
