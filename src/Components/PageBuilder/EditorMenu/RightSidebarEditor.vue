@@ -3,6 +3,7 @@ import { computed, ref, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import ClassEditor from './Editables/ClassEditor.vue'
 import StyleEditor from './Editables/StyleEditor.vue'
+import ElementHtmlEditorSettingsEditor from './Editables/ElementHtmlEditorSettingsEditor.vue'
 import ImageEditor from './Editables/ImageEditor.vue'
 import OpacityEditor from './Editables/OpacityEditor.vue'
 import PaddingControl from './Editables/PaddingControl.vue'
@@ -195,6 +196,7 @@ const closeHTMLSettings = async function () {
           <BorderControls />
           <ClassEditor />
           <StyleEditor />
+          <ElementHtmlEditorSettingsEditor />
         </div>
 
         <div

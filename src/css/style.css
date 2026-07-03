@@ -537,6 +537,51 @@
     @apply pbx-shrink-0 pbx-text-lg pbx-text-gray-400;
   }
 
+  /*
+    |--------------------------------------------------------------------------
+    | Toolbar more menu
+    |--------------------------------------------------------------------------
+    */
+  .pbx-toolbarMoreMenu {
+    @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-[min(24rem,calc(100vh-2rem))] pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
+  }
+
+  .pbx-toolbarMoreMenuSection {
+    @apply pbx-flex pbx-flex-col pbx-gap-0.5;
+  }
+
+  .pbx-toolbarMoreMenuSection + .pbx-toolbarMoreMenuSection {
+    @apply pbx-mt-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-pt-1;
+  }
+
+  .pbx-toolbarMoreMenuSectionLabel {
+    @apply pbx-m-0 pbx-px-2.5 pbx-py-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400;
+  }
+
+  .pbx-toolbarMoreMenuItem {
+    @apply pbx-flex pbx-w-full pbx-items-center pbx-gap-2.5 pbx-rounded-lg pbx-border-0 pbx-bg-transparent pbx-px-2.5 pbx-py-2 pbx-text-left pbx-font-sans pbx-transition-colors hover:pbx-bg-gray-50 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 disabled:pbx-cursor-not-allowed disabled:pbx-opacity-40 disabled:hover:pbx-bg-transparent;
+  }
+
+  .pbx-toolbarMoreMenuItem--danger {
+    @apply hover:pbx-bg-red-50;
+  }
+
+  .pbx-toolbarMoreMenuItem--danger .pbx-toolbarMoreMenuItemIcon {
+    @apply pbx-text-red-500;
+  }
+
+  .pbx-toolbarMoreMenuItem--danger:hover .pbx-toolbarMoreMenuItemLabel {
+    @apply pbx-text-red-700;
+  }
+
+  .pbx-toolbarMoreMenuItemIcon {
+    @apply pbx-flex pbx-h-7 pbx-w-7 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-md pbx-bg-gray-100 pbx-text-[18px] pbx-text-gray-600;
+  }
+
+  .pbx-toolbarMoreMenuItemLabel {
+    @apply pbx-min-w-0 pbx-flex-1 pbx-text-sm pbx-font-medium pbx-text-gray-700;
+  }
+
   .pbx-pageDesignEditor {
     @apply pbx-pb-8;
   }
