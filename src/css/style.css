@@ -183,6 +183,21 @@
   }
 
   /*
+   * Builder editor only — use canvas width instead of the vw breakout.
+   * The wrapper sets overflow-x: clip to hide breakout scrollbars; at browser
+   * zoom the calc(50% - 50vw) shift can push section content past the left
+   * clip edge so headings/text (e.g. "Din …") become uneditable.
+   * Published HTML strips data-builder-canvas and keeps the vw rules above.
+   */
+  [data-builder-canvas].pbx-full-width-component section,
+  [data-builder-canvas] section.pbx-full-width-component {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /*
    * Mobile-safe horizontal inset for inner content.
    * Applies to sections that are full-width breakouts (all three cases above)
    * so their inner content is never flush with the screen edge on mobile.

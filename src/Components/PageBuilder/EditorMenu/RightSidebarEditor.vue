@@ -133,7 +133,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'styles'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'styles'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
@@ -147,7 +147,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'settings'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'settings'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
@@ -161,7 +161,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'tools'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'tools'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
