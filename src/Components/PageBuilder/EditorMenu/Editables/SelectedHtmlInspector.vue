@@ -101,7 +101,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'element'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'element' }"
           @click="setActiveTab('element')"
         >
@@ -111,7 +111,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'component'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'component' }"
           @click="setActiveTab('component')"
         >
@@ -121,7 +121,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'components'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'components' }"
           @click="setActiveTab('components')"
         >
