@@ -5,7 +5,7 @@ import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type { ComponentObject } from '../../types'
-import { getPageBuilder } from '../../composables/builderInstance'
+import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 

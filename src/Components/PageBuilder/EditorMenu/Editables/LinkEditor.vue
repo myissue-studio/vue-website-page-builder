@@ -3,7 +3,7 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import { Switch } from '@headlessui/vue'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 const pageBuilderService = getPageBuilder()
 const { translate } = useTranslations()

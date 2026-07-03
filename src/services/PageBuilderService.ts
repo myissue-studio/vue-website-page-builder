@@ -12,7 +12,7 @@ import type {
 import type { usePageBuilderStateStore } from '../stores/page-builder-state'
 
 import tailwindFontSizes from '../utils/builder/tailwind-font-sizes'
-import tailwindColors from '../utils/builder/tailwaind-colors'
+import tailwindColors from '../utils/builder/tailwind-colors'
 import tailwindOpacities from '../utils/builder/tailwind-opacities'
 import tailwindFontStyles from '../utils/builder/tailwind-font-styles'
 import tailwindPaddingAndMargin from '../utils/builder/tailwind-padding-margin'
@@ -22,9 +22,9 @@ import tailwindImage from '../utils/builder/tailwind-image'
 import { computed, ref, nextTick } from 'vue'
 import type { ComputedRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { delay } from '../composables/delay'
-import { isEmptyObject } from '../helpers/isEmptyObject'
-import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
+import { sleep } from '../utils/sleep'
+import { isEmptyObject } from '../utils/is-empty-object'
+import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { useTranslations } from '../composables/useTranslations'
 
@@ -574,7 +574,7 @@ export class PageBuilderService {
    */
   async completeBuilderInitialization(passedComponentsArray?: BuilderResourceData): Promise<void> {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await delay(400)
+    await sleep(400)
 
     // Always clear DOM and store before mounting new resource
     this.deleteAllComponentsFromDOM()
@@ -604,7 +604,7 @@ export class PageBuilderService {
         if (passedComponentsArray && localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
           await this.completeMountProcess(htmlString, true)
-          await delay(500)
+          await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           return
         }
@@ -638,7 +638,7 @@ export class PageBuilderService {
         if (localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
           await this.completeMountProcess(htmlString, true)
-          await delay(500)
+          await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           this.pendingMountComponents = null
           return
@@ -1559,7 +1559,7 @@ export class PageBuilderService {
           // Deselect any selected or hovered elements in the builder UI
           //
           this.saveDomComponentsToLocalStorage()
-          await delay(400)
+          await sleep(400)
         } catch (err) {
           console.error('Error trying auto save.', err)
         } finally {
@@ -1571,7 +1571,7 @@ export class PageBuilderService {
       try {
         this.pageBuilderStateStore.setIsSaving(true)
         this.saveDomComponentsToLocalStorage()
-        await delay(400)
+        await sleep(400)
       } catch (err) {
         console.error('Error trying saving.', err)
       } finally {
@@ -1590,7 +1590,7 @@ export class PageBuilderService {
     }
     this.startEditing()
     this.saveDomComponentsToLocalStorage()
-    await delay(300)
+    await sleep(300)
     this.pageBuilderStateStore.setIsSaving(false)
   }
 
@@ -2189,7 +2189,7 @@ export class PageBuilderService {
 
   public async undo() {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await delay(300)
+    await sleep(300)
     const baseKey = this.getHistoryBaseKey()
     if (!baseKey) return
 
@@ -2208,7 +2208,7 @@ export class PageBuilderService {
 
   public async redo() {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await delay(300)
+    await sleep(300)
     const baseKey = this.getHistoryBaseKey()
     if (!baseKey) return
 
@@ -3205,7 +3205,7 @@ export class PageBuilderService {
     const localStorageData = this.getSavedPageHtml()
 
     if (localStorageData) {
-      await delay(400)
+      await sleep(400)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(true)
       await this.mountComponentsToDOM(localStorageData)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(false)
@@ -3227,7 +3227,7 @@ export class PageBuilderService {
     this.updateLocalStorageItemName()
 
     this.pageBuilderStateStore.setIsRestoring(true)
-    await delay(400)
+    await sleep(400)
 
     // Restore the original content if available
     if (Array.isArray(this.originalComponents)) {

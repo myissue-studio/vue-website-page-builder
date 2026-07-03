@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide } from 'vue'
 import DefaultMediaLibraryComponent from '../../tests/DefaultComponents/DefaultMediaLibraryComponent.vue'
-import ModalBuilder from './ModalBuilder.vue'
+import BaseModal from './BaseModal.vue'
 
 defineProps({
   title: {
@@ -45,7 +45,7 @@ provide('closeMediaLibraryModal', closeMediaLibraryModal)
 </script>
 
 <template>
-  <ModalBuilder
+  <BaseModal
     :title="title"
     :showModalBuilder="open"
     @closeMainModalBuilder="firstButton"
@@ -58,5 +58,5 @@ provide('closeMediaLibraryModal', closeMediaLibraryModal)
     <div v-else>
       <DefaultMediaLibraryComponent />
     </div>
-  </ModalBuilder>
+  </BaseModal>
 </template>

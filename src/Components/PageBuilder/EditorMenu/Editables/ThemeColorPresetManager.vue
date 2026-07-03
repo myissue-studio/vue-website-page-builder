@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import HexColorPicker from '../../../Inputs/HexColorPicker.vue'
-import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -229,7 +229,7 @@ function confirmReset(): void {
   </div>
 
   <!-- Confirmation modal -->
-  <DynamicModalBuilder
+  <ConfirmActionModal
     :showDynamicModalBuilder="showResetModal"
     type="delete"
     :gridColumnAmount="2"
@@ -246,5 +246,5 @@ function confirmReset(): void {
   >
     <header></header>
     <main></main>
-  </DynamicModalBuilder>
+  </ConfirmActionModal>
 </template>

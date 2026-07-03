@@ -2,9 +2,9 @@
 import { ref, onMounted } from 'vue'
 const unsplashKey = import.meta.env.VITE_UNSPLASH_KEY
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
-import { delay } from '../../composables/delay'
-import { preloadImage } from '../../composables/preloadImage'
-import { getPageBuilder } from '../../composables/builderInstance'
+import { sleep } from '../../utils/sleep'
+import { preloadImage } from '../../utils/preload-image'
+import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 const { translate } = useTranslations()
 
@@ -35,7 +35,7 @@ const getUnsplashImages = ref<UnsplashResponse | null>(null)
 
 const fetchUnsplash = async function () {
   getIsLoading.value = true
-  await delay(300)
+  await sleep(300)
   localStorage.setItem('unsplash-query', getSearchTerm.value)
   localStorage.setItem('unsplash-page', String(getCurrentPageNumber.value))
 
@@ -78,12 +78,12 @@ const fetchUnsplash = async function () {
 
 const handleImageClick = async function (data: { url: string; user: string }) {
   getIsLoadingImage.value = true
-  await delay(200)
+  await sleep(200)
   if (data.url) {
     await preloadImage(data.url)
   }
 
-  await delay(100)
+  await sleep(100)
   getApplyImageToSelection.value = data.url || ''
 
   getIsLoadingImage.value = false

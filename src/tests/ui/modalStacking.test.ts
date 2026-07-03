@@ -21,7 +21,7 @@
  *
  * WHAT WE TEST
  * ------------
- * 1. ModalBuilder  — correctly teleports to <body>  ✅ (should PASS)
+ * 1. BaseModal  — correctly teleports to <body>  ✅ (should PASS)
  * 2. FloatingSidePanel — correctly teleports to <body>  ✅ (should PASS)
  * 3. GlobalLoader  — does NOT teleport to <body>  ❌ BUG (should FAIL)
  *    → When the page builder is inside a parent modal with `transform`, the
@@ -31,7 +31,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { createApp, h, nextTick, defineComponent } from 'vue'
-import ModalBuilder from '../../Components/Modals/ModalBuilder.vue'
+import BaseModal from '../../Components/Modals/BaseModal.vue'
 import FloatingSidePanel from '../../Components/Overlays/FloatingSidePanel.vue'
 import GlobalLoader from '../../Components/Loaders/GlobalLoader.vue'
 
@@ -68,11 +68,11 @@ function cleanUp(app: ReturnType<typeof createApp>, container: HTMLElement) {
 }
 
 // ---------------------------------------------------------------------------
-// ModalBuilder — must teleport to body
+// BaseModal — must teleport to body
 // ---------------------------------------------------------------------------
-describe('ModalBuilder — teleport to body', () => {
+describe('BaseModal — teleport to body', () => {
   it('renders the modal overlay at document.body level, not inside the mount container', async () => {
-    const { app, container } = await mountInto(ModalBuilder, {
+    const { app, container } = await mountInto(BaseModal, {
       title: 'Test Modal',
       showModalBuilder: true,
     })
@@ -104,7 +104,7 @@ describe('ModalBuilder — teleport to body', () => {
     const app = createApp(
       defineComponent({
         render() {
-          return h(ModalBuilder, { title: 'Inner Modal', showModalBuilder: true }, {})
+          return h(BaseModal, { title: 'Inner Modal', showModalBuilder: true }, {})
         },
       }),
     )
@@ -124,7 +124,7 @@ describe('ModalBuilder — teleport to body', () => {
   })
 
   it('does not render the modal markup when showModalBuilder is false', async () => {
-    const { app, container } = await mountInto(ModalBuilder, {
+    const { app, container } = await mountInto(BaseModal, {
       title: 'Hidden Modal',
       showModalBuilder: false,
     })
@@ -250,7 +250,7 @@ describe('GlobalLoader — teleport to body (BUG: currently trapped in mount con
 // Integration: full parent-modal scenario
 // ---------------------------------------------------------------------------
 describe('Integration — page builder inside user parent modal', () => {
-  it('ModalBuilder child modal escapes the parent stacking context', async () => {
+  it('BaseModal child modal escapes the parent stacking context', async () => {
     // User wraps page builder in a modal (common pattern with JS frameworks)
     const userModal = document.createElement('div')
     userModal.setAttribute('data-user-modal', '')
@@ -267,8 +267,8 @@ describe('Integration — page builder inside user parent modal', () => {
     const app = createApp(
       defineComponent({
         render() {
-          // ModalBuilder is one of the page builder's internal modals (e.g. image picker)
-          return h(ModalBuilder, { title: 'Image Picker', showModalBuilder: true }, {})
+          // BaseModal is one of the page builder's internal modals (e.g. image picker)
+          return h(BaseModal, { title: 'Image Picker', showModalBuilder: true }, {})
         },
       }),
     )
@@ -298,12 +298,12 @@ describe('Integration — page builder inside user parent modal', () => {
     const pbRoot = document.createElement('div')
     userModal.appendChild(pbRoot)
 
-    // Simulate both ModalBuilder (open) + FloatingSidePanel (open) simultaneously
+    // Simulate both BaseModal (open) + FloatingSidePanel (open) simultaneously
     const app = createApp(
       defineComponent({
         render() {
           return h('div', [
-            h(ModalBuilder, { title: 'Settings', showModalBuilder: true }),
+            h(BaseModal, { title: 'Settings', showModalBuilder: true }),
             h(FloatingSidePanel, { title: 'Styles', showSidebarPanel: true, position: 'right' }),
           ])
         },

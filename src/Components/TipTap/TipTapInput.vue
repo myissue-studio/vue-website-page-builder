@@ -3,9 +3,9 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import type { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
-import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../Modals/ConfirmActionModal.vue'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
-import { getPageBuilder } from '../../composables/builderInstance'
+import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
@@ -228,7 +228,7 @@ onMounted(() => {
 </script>
 <template>
   <div>
-    <DynamicModalBuilder
+    <ConfirmActionModal
       maxWidth="4xl"
       :showDynamicModalBuilder="showModalUrl"
       :type="typeModal"
@@ -269,7 +269,7 @@ onMounted(() => {
           </div>
         </div>
       </main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
 
     <div class="pbx-blockease-linear pbx-duration-200 pbx-block pbx-ease-linear">
       <div v-if="pageBuilderService.isSelectedElementValidText() && editor">

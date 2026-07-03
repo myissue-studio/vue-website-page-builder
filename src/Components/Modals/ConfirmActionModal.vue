@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ModalBuilder from './ModalBuilder.vue'
+import BaseModal from './BaseModal.vue'
 
 defineProps({
   showDynamicModalBuilder: {
@@ -80,7 +80,7 @@ const thirdButtonBuilder = function () {
 </script>
 
 <template>
-  <ModalBuilder
+  <BaseModal
     :title="title"
     :showModalBuilder="showDynamicModalBuilder"
     :type="type"
@@ -167,7 +167,7 @@ const thirdButtonBuilder = function () {
         </div>
       </template>
     </div>
-  </ModalBuilder>
+  </BaseModal>
 </template>
 
 <style scope>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { SEOSummary } from '../../../../types'
-import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { ref, computed } from 'vue'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
-import { delay } from '../../../../composables/delay'
+import { sleep } from '../../../../utils/sleep'
 import FloatingSidePanel from '../../../../Components/Overlays/FloatingSidePanel.vue'
 
 const { translate } = useTranslations()
@@ -44,7 +44,7 @@ const handleDeleteComponentsFromDOM = function () {
     isDeletingLayout.value = true
     await pageBuilderService.clearHtmlSelection()
     await pageBuilderService.handleFormSubmission()
-    await delay(500)
+    await sleep(500)
 
     showModalDeleteAllComponents.value = false
     isDeletingLayout.value = false
@@ -216,7 +216,7 @@ const closeSEO = function () {
       </div>
     </div>
 
-    <DynamicModalBuilder
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalDeleteAllComponents"
       :type="typeModal"
       :gridColumnAmount="gridColumnModal"
@@ -238,6 +238,6 @@ const closeSEO = function () {
     >
       <header></header>
       <main></main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
   </div>
 </template>

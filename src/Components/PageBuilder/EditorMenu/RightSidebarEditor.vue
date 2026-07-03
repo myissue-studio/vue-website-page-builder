@@ -7,18 +7,18 @@ import ImageEditor from './Editables/ImageEditor.vue'
 import OpacityEditor from './Editables/OpacityEditor.vue'
 import PaddingControl from './Editables/PaddingControl.vue'
 import MarginControl from './Editables/MarginControl.vue'
-import BorderRadius from './Editables/BorderRadius.vue'
+import BorderRadiusControl from './Editables/BorderRadiusControl.vue'
 import BorderControls from './Editables/BorderControls.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
 import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
-import PageBuilderOverviewSettingsEditor from './Editables/PageBuilderOverviewSettingsEditor.vue'
-import PageBuilderDownloadHtmlSettingsEditor from './Editables/PageBuilderDownloadHtmlSettingsEditor.vue'
-import PageBuilderSelectedHtmlSettingsEditor from './Editables/PageBuilderSelectedHtmlSettingsEditor.vue'
-import { getPageBuilder } from '../../../composables/builderInstance'
+import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
+import DownloadHtmlSettingsSection from './Editables/DownloadHtmlSettingsSection.vue'
+import SelectedHtmlSettingsSection from './Editables/SelectedHtmlSettingsSection.vue'
+import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
-import ModalBuilder from '../../Modals/ModalBuilder.vue'
+import BaseModal from '../../Modals/BaseModal.vue'
 import PageDesignEditor from './Editables/PageDesignEditor.vue'
-import { delay } from '../../../composables/delay'
+import { sleep } from '../../../utils/sleep'
 
 const { translate } = useTranslations()
 
@@ -83,7 +83,7 @@ const isLoading = ref(false)
 const openHTMLSettings = async function () {
   showHTMLSettings.value = true
   isLoading.value = true
-  await delay(200)
+  await sleep(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
   isLoading.value = false
@@ -91,7 +91,7 @@ const openHTMLSettings = async function () {
 
 const closeHTMLSettings = async function () {
   isLoading.value = true
-  await delay(200)
+  await sleep(200)
   await pageBuilderService.handleManualSave()
 
   pageBuilderService.stopGlobalStylesSync()
@@ -185,7 +185,7 @@ const closeHTMLSettings = async function () {
           <OpacityEditor />
           <PaddingControl />
           <MarginControl />
-          <BorderRadius />
+          <BorderRadiusControl />
           <BorderControls />
           <ClassEditor />
           <StyleEditor />
@@ -207,13 +207,13 @@ const closeHTMLSettings = async function () {
       </div>
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
-        <PageBuilderOverviewSettingsEditor />
-        <PageBuilderDownloadHtmlSettingsEditor />
-        <PageBuilderSelectedHtmlSettingsEditor />
+        <OverviewSettingsSection />
+        <DownloadHtmlSettingsSection />
+        <SelectedHtmlSettingsSection />
       </div>
     </div>
   </div>
-  <ModalBuilder
+  <BaseModal
     maxWidth="5xl"
     :showModalBuilder="showHTMLSettings"
     :title="translate('Page Design')"
@@ -222,5 +222,5 @@ const closeHTMLSettings = async function () {
     maxHeight=""
   >
     <PageDesignEditor :isLoading="isLoading" />
-  </ModalBuilder>
+  </BaseModal>
 </template>

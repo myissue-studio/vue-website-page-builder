@@ -3,8 +3,8 @@ import { computed, ref, inject, watch, onMounted, nextTick } from 'vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { preloadImage } from '../../../../composables/preloadImage'
-import { delay } from '../../../../composables/delay'
+import { preloadImage } from '../../../../utils/preload-image'
+import { sleep } from '../../../../utils/sleep'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()
@@ -81,7 +81,7 @@ const loadingImage = async function (imageURL: string) {
 
   if (imageURL && typeof imageURL === 'string' && imageURL.length > 2) {
     await preloadImage(imageURL)
-    await delay(200)
+    await sleep(200)
     getIsLoadingImage.value = false
   }
 }

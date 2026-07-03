@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ModalBuilder from '../Modals/ModalBuilder.vue'
+import BaseModal from '../Modals/BaseModal.vue'
 import DefaultBuilderComponents from '../../tests/DefaultComponents/DefaultBuilderComponents.vue'
 import { inject } from 'vue'
 const customMediaComponent = inject<object | null>('CustomMediaComponent', null)
@@ -31,7 +31,7 @@ const firstButtonBuilder = function () {
 </script>
 
 <template>
-  <ModalBuilder
+  <BaseModal
     :title="title"
     maxWidth="6xl"
     :showModalBuilder="show"
@@ -52,5 +52,5 @@ const firstButtonBuilder = function () {
         </div>
       </div>
     </div>
-  </ModalBuilder>
+  </BaseModal>
 </template>

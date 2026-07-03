@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useTranslations } from '../../../../composables/useTranslations'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
-import Typography from './Typography.vue'
+import TypographyControl from './TypographyControl.vue'
 import ClassEditor from './ClassEditor.vue'
 import StyleEditor from './StyleEditor.vue'
 import PaddingControl from './PaddingControl.vue'
 import MarginControl from './MarginControl.vue'
-import BorderRadius from './BorderRadius.vue'
+import BorderRadiusControl from './BorderRadiusControl.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BorderControls from './BorderControls.vue'
@@ -82,7 +82,7 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
       <section class="pbx-pageDesignSection">
         <h4 class="pbx-pageDesignSectionTitle">{{ translate('Typographies') }}</h4>
         <div class="pbx-pageDesignCard pbx-pageDesignCardWide">
-          <Typography />
+          <TypographyControl />
         </div>
       </section>
 
@@ -119,7 +119,7 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
         <div class="pbx-pageDesignGrid">
           <div class="pbx-pageDesignCard">
             <p class="pbx-pageDesignCardLabel">{{ translate('Border Radius') }}</p>
-            <BorderRadius />
+            <BorderRadiusControl />
           </div>
           <div class="pbx-pageDesignCard">
             <p class="pbx-pageDesignCardLabel">{{ translate('Border') }}</p>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
-import { delay } from '@/composables/delay'
+import { sleep } from '@/utils/sleep'
 
 const props = defineProps<{
   show: boolean
@@ -88,7 +88,7 @@ async function setAspectRatio(aspectClass: string) {
 async function saveAltText() {
   if (!altTextDirty.value || isSavingAlt.value) return
   isSavingAlt.value = true
-  await delay(400)
+  await sleep(400)
   try {
     await pageBuilderService.handleImageAltText(imageAltText.value)
     savedAltText.value = imageAltText.value.trim()

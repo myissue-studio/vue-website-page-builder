@@ -1,4 +1,4 @@
-import type { PageBuilderConfig } from '../types'
+import type { PageBuilderConfig } from '../../types'
 
 export function extractCleanHTMLFromPageBuilder(
   pagebuilder: HTMLElement | null,

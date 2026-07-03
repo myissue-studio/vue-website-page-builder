@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import tailwindOpacities from '../../../../utils/builder/tailwind-opacities'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 const pageBuilderService = getPageBuilder()
 const { translate } = useTranslations()

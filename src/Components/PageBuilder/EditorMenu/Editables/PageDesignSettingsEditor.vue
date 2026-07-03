@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EditorAccordion from '../EditorAccordion.vue'
+import SliderIcon from '../../../Icons/SliderIcon.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 defineOptions({
@@ -21,14 +22,8 @@ defineEmits<{
         {{ translate('Page design description') }}
       </p>
 
-      <button
-        type="button"
-        class="pbx-pageDesignOpenButton"
-        @click="$emit('open')"
-      >
-        <span class="pbx-pageDesignOpenButtonIcon material-symbols-outlined" aria-hidden="true">
-          tune
-        </span>
+      <button type="button" class="pbx-pageDesignOpenButton" @click="$emit('open')">
+        <SliderIcon></SliderIcon>
         <span class="pbx-pageDesignOpenButtonText">
           <span class="pbx-pageDesignOpenButtonLabel">{{ translate('Open page design') }}</span>
           <span class="pbx-pageDesignOpenButtonHint">
