@@ -65,15 +65,19 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        // fontFamily — first entry sets the canvas default; subsequent entries restrict the font-family picker.
-        // Unknown names (e.g. 'fantasy') are silently skipped; the first recognised name is used.
+        // fontFamily — first recognised entry sets the canvas default.
+        // The editor font-family picker remains a broad override palette and is not restricted by this list.
+        // Unknown names are skipped until a recognised font or CSS generic family is found.
         // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
         // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
         // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
-        // didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
+        // didot, franklin-gothic, rockwell, baskerville, inter, roboto, open-sans, lato, montserrat,
+        // poppins, nunito, merriweather, playfair-display, source-sans-3, noto-sans, work-sans,
+        // quicksand, pt-serif, crimson-text, sans, serif, mono
         fontFamily: 'jost, raleway, arial, fantasy',
         // elementFonts — optional per-element font overrides for h1–h6 and p.
         // Same format as fontFamily: first recognised entry wins.
+        // An explicit font class picked in the editor on an element overrides both fontFamily and elementFonts.
         elementFonts: {
           h1: 'jost, raleway, arial, fantasy',
           h2: 'jost, raleway, arial, fantasy',

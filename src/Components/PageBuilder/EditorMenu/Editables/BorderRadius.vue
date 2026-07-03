@@ -78,10 +78,10 @@ watch(
   <EditorAccordion>
     <template #title>{{ translate('Border Radius') }}</template>
     <template #content>
-      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-py-0 pbx-my-4">
+      <p class="pbx-editorSectionTitle">
         {{ translate('Global') }}
       </p>
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="global-border-radius" class="pbx-myPrimaryInputLabel">{{
           translate('Border Radius')
         }}</label>
@@ -101,10 +101,10 @@ watch(
         </select>
       </div>
       <hr />
-      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-py-0 pbx-my-4">
+      <p class="pbx-editorSectionTitle">
         {{ translate('Specific') }}
       </p>
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-radius-top-left" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius top left') }}
         </label>
@@ -124,7 +124,7 @@ watch(
         </select>
       </div>
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-radius-top-right" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius top right') }}
         </label>
@@ -144,7 +144,7 @@ watch(
         </select>
       </div>
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-radius-bottom-left" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius bottom left') }}
         </label>
@@ -166,7 +166,7 @@ watch(
         </select>
       </div>
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-radius-bottom-right" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius bottom right') }}
         </label>

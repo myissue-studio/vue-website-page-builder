@@ -39,6 +39,21 @@ const fontFamilyMap: Record<string, string> = {
   'franklin-gothic': '"Franklin Gothic Medium", "Franklin Gothic", Arial, sans-serif',
   rockwell: 'Rockwell, serif',
   baskerville: 'Baskerville, serif',
+  inter: 'Inter, Arial, sans-serif',
+  roboto: 'Roboto, Arial, sans-serif',
+  'open-sans': '"Open Sans", Arial, sans-serif',
+  lato: 'Lato, Arial, sans-serif',
+  montserrat: 'Montserrat, Arial, sans-serif',
+  poppins: 'Poppins, Arial, sans-serif',
+  nunito: 'Nunito, Arial, sans-serif',
+  merriweather: 'Merriweather, Georgia, serif',
+  'playfair-display': '"Playfair Display", Georgia, serif',
+  'source-sans-3': '"Source Sans 3", Arial, sans-serif',
+  'noto-sans': '"Noto Sans", Arial, sans-serif',
+  'work-sans': '"Work Sans", Arial, sans-serif',
+  quicksand: 'Quicksand, Arial, sans-serif',
+  'pt-serif': '"PT Serif", Georgia, serif',
+  'crimson-text': '"Crimson Text", Georgia, serif',
 }
 
 /**

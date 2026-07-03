@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
+import type { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
@@ -37,8 +38,8 @@ const getElement = computed(() => {
 const textContentVueModel = ref('')
 
 const textContent = computed(() => {
-  if (editor.value) {
-    return editor.value.getHTML()
+  if (editor?.value) {
+    return editor?.value.getHTML()
   }
   return null
 })
@@ -93,8 +94,8 @@ watch(textContent, async (newValue) => {
 const TipTapSetContent = function () {
   if (!pageBuilderService.isSelectedElementValidText()) return
 
-  if (editor.value && getElement.value) {
-    editor.value.commands.setContent(getElement.value.innerHTML)
+  if (editor?.value && getElement.value) {
+    editor?.value.commands.setContent(getElement.value.innerHTML)
   }
 }
 
@@ -111,7 +112,7 @@ watch(urlEnteret, (newVal) => {
   newUpdatedExistingURL.value = newVal
 })
 const handleURL = function () {
-  urlEnteret.value = editor.value?.getAttributes('link').href
+  urlEnteret.value = editor?.value?.getAttributes('link').href
 
   showModalUrl.value = true
   typeModal.value = 'success'
@@ -132,7 +133,7 @@ const handleURL = function () {
 
   // handle click
   secondModalButtonFunctionDynamicModalBuilder.value = function () {
-    editor.value?.chain().focus().extendMarkRange('link').unsetLink().run()
+    editor?.value?.chain().focus().extendMarkRange('link').unsetLink().run()
     showModalUrl.value = false
   }
 
@@ -172,7 +173,7 @@ const validateURL = function () {
 }
 const setEnteretURL = function () {
   // update link
-  editor.value
+  editor?.value
     ?.chain()
     .focus()
     .extendMarkRange('link')
@@ -186,8 +187,39 @@ const toggleShowTypography = function () {
   showTypography.value = !showTypography.value
 }
 
+const editorIsActive = function (...args: Parameters<Editor['isActive']>): boolean {
+  return editor.value?.isActive(...args) ?? false
+}
+
+const headingIsActive = function (level: 2 | 3 | 4 | 5 | 6): boolean {
+  return editor.value?.isActive('heading', { level }) ?? false
+}
+
+const toggleBold = function () {
+  editor.value?.chain().focus().toggleBold().run()
+}
+
+const toggleHeading = function (level: 2 | 3 | 4 | 5 | 6) {
+  editor.value?.chain().focus().toggleHeading({ level }).run()
+}
+
+const toggleBulletList = function () {
+  editor.value?.chain().focus().toggleBulletList().run()
+}
+
+const toggleTextAlign = function (alignment: 'left' | 'center' | 'right') {
+  if (!editor.value) return
+
+  if (editor.value.isActive({ textAlign: alignment })) {
+    editor.value.chain().focus().unsetTextAlign().run()
+    return
+  }
+
+  editor.value.chain().focus().setTextAlign(alignment).run()
+}
+
 onBeforeMount(() => {
-  editor.value?.destroy()
+  editor?.value?.destroy()
 })
 
 onMounted(() => {
@@ -258,11 +290,11 @@ onMounted(() => {
             <!-- Bold -->
 
             <div
-              @click="editor.chain().focus().toggleBold().run()"
+              @click="toggleBold"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('bold'),
+                  editorIsActive('bold'),
               }"
             >
               <span class="material-symbols-outlined"> format_bold </span>
@@ -275,7 +307,7 @@ onMounted(() => {
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('link'),
+                  editorIsActive('link'),
               }"
             >
               <span class="material-symbols-outlined"> link </span>
@@ -284,13 +316,11 @@ onMounted(() => {
             <!-- H2 -->
 
             <div
-              @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+              @click="toggleHeading(2)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('heading', {
-                    level: 2,
-                  }),
+                  headingIsActive(2),
               }"
             >
               <div class="pbx-font-semibold pbx-text-sm">H2</div>
@@ -299,13 +329,11 @@ onMounted(() => {
             <!-- H3 -->
 
             <div
-              @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+              @click="toggleHeading(3)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('heading', {
-                    level: 3,
-                  }),
+                  headingIsActive(3),
               }"
             >
               <div class="pbx-font-semibold pbx-text-sm">H3</div>
@@ -314,13 +342,11 @@ onMounted(() => {
             <!-- H4 -->
 
             <div
-              @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+              @click="toggleHeading(4)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('heading', {
-                    level: 4,
-                  }),
+                  headingIsActive(4),
               }"
             >
               <div class="pbx-font-semibold pbx-text-sm">H4</div>
@@ -329,13 +355,11 @@ onMounted(() => {
             <!-- H5 -->
 
             <div
-              @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+              @click="toggleHeading(5)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('heading', {
-                    level: 5,
-                  }),
+                  headingIsActive(5),
               }"
             >
               <div class="pbx-font-semibold pbx-text-sm">H5</div>
@@ -344,13 +368,11 @@ onMounted(() => {
             <!-- H6 -->
 
             <div
-              @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+              @click="toggleHeading(6)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('heading', {
-                    level: 6,
-                  }),
+                  headingIsActive(6),
               }"
             >
               <div class="pbx-font-semibold pbx-text-sm">H6</div>
@@ -359,15 +381,11 @@ onMounted(() => {
             <!-- Left Align -->
 
             <div
-              @click="
-                editor.isActive({ textAlign: 'left' })
-                  ? editor.chain().focus().unsetTextAlign().run()
-                  : editor.chain().focus().setTextAlign('left').run()
-              "
+              @click="toggleTextAlign('left')"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive({ textAlign: 'left' }),
+                  editorIsActive({ textAlign: 'left' }),
               }"
             >
               <span class="material-symbols-outlined"> format_align_left </span>
@@ -376,15 +394,11 @@ onMounted(() => {
             <!-- Center Align -->
 
             <div
-              @click="
-                editor.isActive({ textAlign: 'center' })
-                  ? editor.chain().focus().unsetTextAlign().run()
-                  : editor.chain().focus().setTextAlign('center').run()
-              "
+              @click="toggleTextAlign('center')"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive({ textAlign: 'center' }),
+                  editorIsActive({ textAlign: 'center' }),
               }"
             >
               <span class="material-symbols-outlined"> format_align_center </span>
@@ -393,26 +407,22 @@ onMounted(() => {
             <!-- Right Align -->
 
             <div
-              @click="
-                editor.isActive({ textAlign: 'right' })
-                  ? editor.chain().focus().unsetTextAlign().run()
-                  : editor.chain().focus().setTextAlign('right').run()
-              "
+              @click="toggleTextAlign('right')"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive({ textAlign: 'right' }),
+                  editorIsActive({ textAlign: 'right' }),
               }"
             >
               <span class="material-symbols-outlined"> format_align_right </span>
             </div>
 
             <div
-              @click="editor.chain().focus().toggleBulletList().run()"
+              @click="toggleBulletList"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  editor.isActive('bulletList'),
+                  editorIsActive('bulletList'),
               }"
             >
               <span class="material-symbols-outlined"> format_list_bulleted </span>

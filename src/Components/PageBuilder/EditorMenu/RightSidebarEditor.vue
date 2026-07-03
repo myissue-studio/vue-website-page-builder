@@ -8,7 +8,12 @@ import OpacityEditor from './Editables/OpacityEditor.vue'
 import PaddingControl from './Editables/PaddingControl.vue'
 import MarginControl from './Editables/MarginControl.vue'
 import BorderRadius from './Editables/BorderRadius.vue'
-import Borders from './Editables/Borders.vue'
+import BorderControls from './Editables/BorderControls.vue'
+import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
+import GlobalPageStylesSettingsEditor from './Editables/GlobalPageStylesSettingsEditor.vue'
+import PageBuilderOverviewSettingsEditor from './Editables/PageBuilderOverviewSettingsEditor.vue'
+import PageBuilderDownloadHtmlSettingsEditor from './Editables/PageBuilderDownloadHtmlSettingsEditor.vue'
+import PageBuilderSelectedHtmlSettingsEditor from './Editables/PageBuilderSelectedHtmlSettingsEditor.vue'
 import { getPageBuilder } from '../../../composables/builderInstance'
 import { useTranslations } from '../../../composables/useTranslations'
 import ModalBuilder from '../../Modals/ModalBuilder.vue'
@@ -22,6 +27,10 @@ const pageBuilderStateStore = sharedPageBuilderStore
 
 defineEmits(['closeEditor'])
 
+type SidebarTab = 'styles' | 'settings' | 'tools'
+
+const activeTab = ref<SidebarTab>('styles')
+
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
 })
@@ -30,15 +39,20 @@ const elementTag = computed(() => {
   return getElement.value?.tagName
 })
 
+const hasEditableSelection = computed(() => {
+  const element = getElement.value
+  return Boolean(element && pageBuilderService.isEditableElement(element))
+})
+
 const scrollContainer = ref<HTMLElement | null>(null)
 let lastScrollTop = 0
 
-// Watch for changes that cause re-render (e.g. dropdown value in store)
 watch(
-  // or the specific value that triggers re-render
   () => pageBuilderStateStore.getElement,
-  () => {
-    // Restore scroll after DOM updates
+  (element) => {
+    if (element?.tagName === 'IMG') {
+      activeTab.value = 'styles'
+    }
     nextTick(() => {
       if (scrollContainer.value) {
         scrollContainer.value.scrollTop = lastScrollTop
@@ -47,11 +61,20 @@ watch(
   },
 )
 
-// Save scroll position before update
 function onScroll() {
   if (scrollContainer.value) {
     lastScrollTop = scrollContainer.value.scrollTop
   }
+}
+
+function setActiveTab(tab: SidebarTab) {
+  activeTab.value = tab
+  nextTick(() => {
+    if (scrollContainer.value) {
+      scrollContainer.value.scrollTop = 0
+      lastScrollTop = 0
+    }
+  })
 }
 
 const showHTMLSettings = ref(false)
@@ -71,10 +94,8 @@ const closeHTMLSettings = async function () {
   await delay(200)
   await pageBuilderService.handleManualSave()
 
-  // Stop syncing global style changes across section wrappers
   pageBuilderService.stopGlobalStylesSync()
 
-  // Remove global highlight if present
   const pagebuilder = document.querySelector('[data-pagebuilder-content]')
   if (pagebuilder) {
     pagebuilder.removeAttribute('data-global-selected')
@@ -102,48 +123,94 @@ const closeHTMLSettings = async function () {
       </p>
     </div>
 
+    <div class="pbx-px-4 pbx-mb-3">
+      <div
+        class="pbx-grid pbx-grid-cols-3 pbx-gap-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
+        role="tablist"
+        :aria-label="translate('Styles')"
+      >
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === 'styles'"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          :class="
+            activeTab === 'styles'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+              : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
+          "
+          @click="setActiveTab('styles')"
+        >
+          {{ translate('Styles') }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === 'settings'"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          :class="
+            activeTab === 'settings'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+              : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
+          "
+          @click="setActiveTab('settings')"
+        >
+          {{ translate('Settings') }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === 'tools'"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          :class="
+            activeTab === 'tools'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+              : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
+          "
+          @click="setActiveTab('tools')"
+        >
+          {{ translate('Tools') }}
+        </button>
+      </div>
+    </div>
+
     <div
       ref="scrollContainer"
       @scroll="onScroll"
-      class="pbx-pl-3 pbx-pr-3 pbx-mb-4 pbx-overflow-y-scroll"
+      class="pbx-pl-3 pbx-pr-3 pbx-mb-4 pbx-flex-1 pbx-overflow-y-scroll"
     >
-      <div v-show="getElement && pageBuilderService.isEditableElement(getElement)">
-        <article class="pbx-mb-1">
-          <ImageEditor> </ImageEditor>
-        </article>
-        <article class="pbx-my-1">
-          <OpacityEditor> </OpacityEditor>
-        </article>
-        <article class="pbx-my-1">
-          <PaddingControl> </PaddingControl>
-        </article>
-        <article class="pbx-my-1">
-          <MarginControl> </MarginControl>
-        </article>
-        <article class="pbx-my-1">
-          <BorderRadius></BorderRadius>
-        </article>
-        <article class="pbx-my-1">
-          <Borders></Borders>
-        </article>
-        <article class="pbx-my-1">
-          <ClassEditor></ClassEditor>
-        </article>
-        <article class="pbx-my-1">
-          <StyleEditor></StyleEditor>
-        </article>
-        <div class="pbx-w-full pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-my-6"></div>
+      <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
+        <div v-if="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
+          <ImageEditor />
+          <OpacityEditor />
+          <PaddingControl />
+          <MarginControl />
+          <BorderRadius />
+          <BorderControls />
+          <ClassEditor />
+          <StyleEditor />
+        </div>
+
+        <div
+          v-else
+          class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-4 pbx-py-8 pbx-text-center"
+        >
+          <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-500 pbx-my-0">
+            {{ translate('No Element selected') }}
+          </p>
+        </div>
       </div>
 
-      <button
-        @click="openHTMLSettings"
-        type="button"
-        class="pbx-my-1 pbx-border pbx-border-gray-900 pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-black pbx-text-white hover:pbx-bg-myPrimaryLightGrayColor hover:pbx-text-black pbx-select-none pbx-w-full"
-      >
-        <p class="pbx-font-medium pbx-my-0 pbx-py-0">
-          {{ translate('Global Page Styles') }}
-        </p>
-      </button>
+      <div v-show="activeTab === 'settings'" class="pbx-flex pbx-flex-col pbx-gap-2">
+        <ThemeColorSettingsEditor />
+        <GlobalPageStylesSettingsEditor @open="openHTMLSettings" />
+      </div>
+
+      <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
+        <PageBuilderOverviewSettingsEditor />
+        <PageBuilderDownloadHtmlSettingsEditor />
+        <PageBuilderSelectedHtmlSettingsEditor />
+      </div>
     </div>
   </div>
   <ModalBuilder

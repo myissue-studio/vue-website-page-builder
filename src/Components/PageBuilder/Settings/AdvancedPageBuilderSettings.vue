@@ -11,7 +11,7 @@ import MarginControl from '../EditorMenu/Editables/MarginControl.vue'
 import BorderRadius from '../EditorMenu/Editables/BorderRadius.vue'
 import BackgroundColorEditor from '../EditorMenu/Editables/BackgroundColorEditor.vue'
 import TextColorEditor from '../EditorMenu/Editables/TextColorEditor.vue'
-import Borders from '../EditorMenu/Editables/Borders.vue'
+import BorderControls from '../EditorMenu/Editables/BorderControls.vue'
 import HTMLEditor from '../EditorMenu/Editables/HTMLEditor.vue'
 
 defineProps({
@@ -141,7 +141,7 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
               <p class="pbx-myPrimaryParagraph pbx-italic pbx-pb-2 lg:pbx-mt-6 pbx-mt-8">
                 Border style
               </p>
-              <Borders></Borders>
+              <BorderControls />
             </article>
             <article
               class="pbx-my-1 pbx-bg-gray-50 pbx-px-4 pbx-pt-2 pbx-pb-8 pbx-border pbx-border-gray-400"

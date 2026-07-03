@@ -60,7 +60,7 @@ const handleAddStyle = async () => {
   <EditorAccordion>
     <template #title>{{ translate('Inline Styles') }}</template>
     <template #content>
-      <p class="pbx-myPrimaryInputLabel pbx-my-4">
+      <p class="pbx-editorSectionDesc">
         {{
           translate(
             'These are the inline styles applied by the builder. Add your own styles and press Enter to apply them to the selected element.',
@@ -68,7 +68,7 @@ const handleAddStyle = async () => {
         }}
       </p>
 
-      <div class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-2 pbx-mt-2 pbx-mb-4">
+      <div class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-2 pbx-mb-4">
         <div
           v-for="(value, key) in currentStyles"
           :key="key"
@@ -87,15 +87,16 @@ const handleAddStyle = async () => {
       </div>
 
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="custom-style-property" class="pbx-myPrimaryInputLabel">
-          {{ translate('Add your own style.') }}
-        </label>
+      <p class="pbx-editorSectionTitle">
+        {{ translate('Add your own style.') }}
+      </p>
+      <div class="pbx-editorFieldGroup">
         <div class="pbx-flex pbx-gap-2 pbx-flex-col pbx-item-center">
           <input
             id="custom-style-property"
             v-model="inputProperty"
             type="text"
+            :aria-label="translate('property')"
             :placeholder="translate('property')"
             @keydown.enter.prevent="handleEnterOnProperty"
             autocomplete="off"
@@ -106,6 +107,7 @@ const handleAddStyle = async () => {
             ref="valueInputRef"
             v-model="inputValue"
             type="text"
+            :aria-label="translate('value')"
             :placeholder="translate('value')"
             @keydown.enter="handleAddStyle"
             autocomplete="off"

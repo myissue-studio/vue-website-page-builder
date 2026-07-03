@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import tailwindFontSizes from '../../../../utils/builder/tailwind-font-sizes'
 import tailwindFontStyles from '../../../../utils/builder/tailwind-font-styles'
+import { resolveInheritedFontFamily } from '../../../../utils/builder/resolve-inherited-font-family'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 
@@ -19,7 +20,11 @@ const fontTablet = ref<string | null>(null)
 const fontMobile = ref<string | null>(null)
 const fontWeight = ref<string | null>(null)
 const fontFamily = ref<string | null>(null)
+const inheritedFontFamily = ref('')
 const fontStyle = ref<string | null>(null)
+const getElement = computed(() => {
+  return pageBuilderStateStore.getElement
+})
 const getFontBase = computed(() => {
   return pageBuilderStateStore.getFontBase
 })
@@ -41,25 +46,50 @@ const getFontFamily = computed(() => {
 const getFontStyle = computed(() => {
   return pageBuilderStateStore.getFontStyle
 })
+const getPageBuilderConfig = computed(() => {
+  return pageBuilderStateStore.getPageBuilderConfig
+})
 
 const availableFontFamilies = computed(() => {
-  const fontConfig = pageBuilderStateStore.getPageBuilderConfig?.userSettings?.fontFamily
-  if (!fontConfig) return tailwindFontStyles.fontFamily
-  const requested = fontConfig
-    .split(',')
-    .map((f) => f.trim().toLowerCase()) // normalise case so 'Arial' matches 'pbx-font-arial'
-    .filter(Boolean)
-  if (requested.length < 2) return tailwindFontStyles.fontFamily
-  return requested
-    .map((f) => (f.startsWith('pbx-font-') ? f : `pbx-font-${f}`))
-    .filter((f) => tailwindFontStyles.fontFamily.includes(f))
+  return tailwindFontStyles.fontFamily
 })
+
+const hasExplicitFontFamily = computed(() => {
+  return Boolean(fontFamily.value && fontFamily.value !== 'none')
+})
+
+const handleFontFamilyChange = function () {
+  pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
+}
+
+const updateInheritedFontFamily = async () => {
+  await nextTick()
+
+  if (!(getElement.value instanceof HTMLElement)) {
+    inheritedFontFamily.value = ''
+    return
+  }
+
+  inheritedFontFamily.value = resolveInheritedFontFamily(
+    getElement.value,
+    getPageBuilderConfig.value,
+  )
+}
+
+const getInlineTipTapEditor = computed(() => {
+  return pageBuilderStateStore.getInlineTipTapEditor
+})
+
+const syncElementStylesFromStore = async function () {
+  if (getInlineTipTapEditor.value) return
+  await pageBuilderService.initializeElementStyles()
+}
 
 watch(
   getFontBase,
   async (newValue) => {
     fontBase.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -67,7 +97,7 @@ watch(
   getFontDesktop,
   async (newValue) => {
     fontDesktop.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -75,7 +105,7 @@ watch(
   getFontTablet,
   async (newValue) => {
     fontTablet.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -83,7 +113,7 @@ watch(
   getFontMobile,
   async (newValue) => {
     fontMobile.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
@@ -91,30 +121,32 @@ watch(
   getFontWeight,
   async (newValue) => {
     fontWeight.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
 watch(
   getFontFamily,
   async (newValue) => {
-    fontFamily.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    fontFamily.value = !newValue || newValue === 'none' ? null : newValue
+    await updateInheritedFontFamily()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
+watch(getElement, updateInheritedFontFamily, { immediate: true, flush: 'post' })
 watch(
   getFontStyle,
   async (newValue) => {
     fontStyle.value = newValue
-    await pageBuilderService.initializeElementStyles()
+    await syncElementStylesFromStore()
   },
   { immediate: true },
 )
 </script>
 
 <template>
-  <div>
+  <div data-pbx-typography-menu-popover @mousedown.stop @click.stop>
     <template v-if="false">
       <div class="pbx-my-2 pbx-py-2">
         <label for="font-base" class="pbx-myPrimaryInputLabel">
@@ -212,13 +244,19 @@ watch(
         id="font-family"
         v-model="fontFamily"
         class="pbx-myPrimarySelect"
-        @change="pageBuilderService.handleFontFamily(fontFamily ?? undefined)"
+        @change="handleFontFamilyChange"
       >
-        <option disabled value="">{{ translate('Select') }}</option>
+        <option :value="null">{{ translate('No font family') }}</option>
         <option v-for="fontFamily in availableFontFamilies" :key="fontFamily">
           {{ fontFamily }}
         </option>
       </select>
+      <p
+        v-if="!hasExplicitFontFamily && inheritedFontFamily"
+        class="pbx-mt-2 pbx-mb-0 pbx-text-xs pbx-text-gray-500"
+      >
+        {{ translate('Inherited') }}: {{ inheritedFontFamily }}
+      </p>
     </div>
     <hr />
 

@@ -64,6 +64,7 @@ function createMockStore() {
     getHistoryIndex: 0,
     getHistoryLength: 0,
     getToggleGlobalHtmlMode: false,
+    getInlineTipTapEditor: false,
     // Actions
     setBuilderStarted: vi.fn(),
     setPageBuilderConfig: vi.fn((cfg: unknown) => {
@@ -109,7 +110,9 @@ function createMockStore() {
     setFontMobile: vi.fn(),
     setBackgroundColor: vi.fn(),
     setTextColor: vi.fn(),
-    setElement: vi.fn(),
+    setElement: vi.fn((payload: HTMLElement | null) => {
+      base.getElement = payload
+    }),
     setComponent: vi.fn(),
     setComponents: vi.fn(),
     setPushComponents: vi.fn(),
@@ -127,6 +130,9 @@ function createMockStore() {
     setIsRestoring: vi.fn(),
     setCurrentLanguage: vi.fn(),
     setToggleGlobalHtmlMode: vi.fn(),
+    setInlineTipTapEditor: vi.fn((payload: boolean) => {
+      base.getInlineTipTapEditor = payload
+    }),
   }
   return base as unknown as ReturnType<typeof usePageBuilderStateStore>
 }
@@ -605,6 +611,58 @@ describe('PageBuilderService', () => {
       await fresh.clearHtmlSelection()
 
       expect(mockStore.setElement).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('inline text editing', () => {
+    it('opens inline TipTap editor when double-clicking a valid text element', async () => {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-component-title="Header H2">
+          <div class="pbx-py-4 pbx-px-4">
+            <div class="pbx-mx-auto pbx-max-w-7xl">
+              <div
+                id="editable-text"
+                class="pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium"
+              >
+                <h2>Demo Content</h2>
+              </div>
+            </div>
+          </div>
+        </section>
+      `
+      const element = pagebuilder.querySelector<HTMLElement>('#editable-text')
+      const heading = pagebuilder.querySelector<HTMLElement>('h2')
+      expect(element).not.toBeNull()
+      expect(heading).not.toBeNull()
+      if (!element || !heading) return
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      heading.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 1 }))
+      await Promise.resolve()
+
+      expect(element.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(element)
+      expect(mockStore.setInlineTipTapEditor).not.toHaveBeenCalledWith(true)
+
+      heading.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+      await Promise.resolve()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(element.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(element)
+      expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(true)
     })
   })
 })

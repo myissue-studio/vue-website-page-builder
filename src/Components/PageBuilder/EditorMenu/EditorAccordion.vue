@@ -2,37 +2,46 @@
 import { ref } from 'vue'
 
 const expanded = ref(false)
+
+function toggleExpanded() {
+  expanded.value = !expanded.value
+}
+
+function open() {
+  expanded.value = true
+}
+
+function close() {
+  expanded.value = false
+}
+
+defineExpose({ open, close, toggle: toggleExpanded })
 </script>
 
 <template>
   <div
-    class="pbx-flex pbx-flex-col pbx-border-solid pbx-border pbx-border-gray-400"
-    :class="{ '': expanded }"
+    class="pbx-editorAccordion pbx-flex pbx-flex-col pbx-overflow-visible pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200"
   >
     <div
-      class="pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 pbx-bg-white hover:pbx-bg-myPrimaryLightGrayColor pbx-select-none"
-      @click="expanded = !expanded"
+      class="pbx-flex pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-bg-white pbx-px-4 pbx-py-4 pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor"
+      @click="toggleExpanded"
     >
-      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-my-0 pbx-py-0">
+      <p class="pbx-myPrimaryParagraph pbx-my-0 pbx-py-0 pbx-text-sm pbx-font-medium">
         <slot name="title" />
       </p>
 
-      <template v-if="expanded">
-        <span class="material-symbols-outlined"> keyboard_arrow_down </span>
-      </template>
-      <template v-if="!expanded">
-        <span class="material-symbols-outlined"> chevron_right </span>
-      </template>
+      <span class="material-symbols-outlined pbx-text-gray-400">
+        {{ expanded ? 'keyboard_arrow_down' : 'chevron_right' }}
+      </span>
     </div>
-    <div
-      :class="[
-        expanded
-          ? 'pbx-block pbx-bg-slate-300 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-red-50'
-          : 'pbx-hidden',
-      ]"
-      class="pbx-pl-2 pbx-pr-4 pbx-ease-linear pbx-duration-75 pbx-pb-8"
-    >
+    <div :class="[expanded ? 'pbx-block' : 'pbx-hidden', 'pbx-editorAccordionContent']">
       <slot name="content" />
     </div>
   </div>
 </template>
+
+<style scoped>
+.pbx-editorAccordionContent :deep(hr) {
+  @apply pbx-my-4 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200;
+}
+</style>

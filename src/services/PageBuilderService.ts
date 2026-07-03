@@ -25,7 +25,42 @@ import { v4 as uuidv4 } from 'uuid'
 import { delay } from '../composables/delay'
 import { isEmptyObject } from '../helpers/isEmptyObject'
 import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
+import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { useTranslations } from '../composables/useTranslations'
+
+function scrollContainerToCenterElement(
+  container: HTMLElement,
+  element: HTMLElement,
+  duration = 180,
+): void {
+  const elementRect = element.getBoundingClientRect()
+  const containerRect = container.getBoundingClientRect()
+  const elementTop = elementRect.top - containerRect.top + container.scrollTop
+  const targetScrollTop = elementTop - container.clientHeight / 2 + element.clientHeight / 2
+  const start = container.scrollTop
+  const distance = targetScrollTop - start
+
+  if (Math.abs(distance) < 1) {
+    window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+    return
+  }
+
+  const startTime = performance.now()
+  const step = (now: number) => {
+    const progress = Math.min(1, (now - startTime) / duration)
+    const eased = 1 - (1 - progress) ** 3
+    container.scrollTop = start + distance * eased
+
+    if (progress < 1) {
+      requestAnimationFrame(step)
+      return
+    }
+
+    window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+  }
+
+  requestAnimationFrame(step)
+}
 
 // Define available languages as a type and an array for easy iteration and type safety
 export type AvailableLanguage =
@@ -83,6 +118,8 @@ export class PageBuilderService {
   private _pendingPageSettings: PageSettings | null = null
   private _lastKnownPageSettings: { classes: string; style: string } | null = null
   private isPageBuilderMissingOnStart: boolean = false
+  private canvasClickCaptureListener: EventListener | null = null
+  private canvasDblClickCaptureListener: EventListener | null = null
 
   // Add a class-level WeakMap to track elements and their listeners
   // Use class-level WeakMap from being a local variable inside addListenersToEditableElements to a private class-level property.
@@ -91,7 +128,12 @@ export class PageBuilderService {
   // This prevents multiple event listeners being attached to the same HTML elements
   private elementsWithListeners = new WeakMap<
     Element,
-    { click: EventListener; mouseover: EventListener; mouseleave: EventListener }
+    {
+      click: EventListener
+      dblclick: EventListener
+      mouseover: EventListener
+      mouseleave: EventListener
+    }
   >()
 
   private translate: (key: string) => string
@@ -755,7 +797,9 @@ export class PageBuilderService {
           mutationName as keyof typeof this.pageBuilderStateStore
         ] as (arg: string) => void
         mutationFunction(elementClass)
-        this.pageBuilderStateStore.setElement(currentHTMLElement)
+        if (!this.pageBuilderStateStore.getInlineTipTapEditor) {
+          this.pageBuilderStateStore.setElement(currentHTMLElement)
+        }
       }
     }
 
@@ -987,6 +1031,60 @@ export class PageBuilderService {
   }
 
   /**
+   * Toggles direct, in-canvas rich text editing for the selected element.
+   * @param {boolean} status - Whether to enable inline Tiptap editing.
+   * @returns {Promise<void>}
+   */
+  public async toggleInlineTipTapEditor(status: boolean): Promise<void> {
+    if (status && !this.isValidTextElement(this.getElement.value)) return
+
+    this.pageBuilderStateStore.setInlineTipTapEditor(status)
+
+    await nextTick()
+    await this.addListenersToEditableElements()
+
+    if (!status) {
+      await this.handleAutoSave()
+    }
+  }
+
+  /**
+   * Restores normal builder selection after an inline TipTap editor has been torn down.
+   * @param {HTMLElement | null} element - The element that was edited inline.
+   * @param {boolean} shouldAutoSave - Whether to autosave the restored element HTML.
+   * @returns {Promise<void>}
+   */
+  public async finishInlineTipTapEditor(
+    element: HTMLElement | null,
+    shouldAutoSave: boolean = true,
+  ): Promise<void> {
+    this.pageBuilderStateStore.setInlineTipTapEditor(false)
+
+    await nextTick()
+
+    if (element) {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      pagebuilder?.querySelectorAll('[hovered]').forEach((el) => el.removeAttribute('hovered'))
+      pagebuilder?.querySelectorAll('[selected]').forEach((el) => {
+        if (el !== element) el.removeAttribute('selected')
+      })
+
+      element.removeAttribute('data-pbx-inline-tiptap')
+      element.setAttribute('selected', '')
+      this.pageBuilderStateStore.setElement(element)
+    }
+
+    await nextTick()
+    await this.addListenersToEditableElements()
+    await this.initializeElementStyles()
+    await this.addListenersToEditableElements()
+
+    if (shouldAutoSave) {
+      await this.handleAutoSave()
+    }
+  }
+
+  /**
    * Wraps an element in a div if it's an excluded tag and adjacent to an image.
    * @param {HTMLElement} element - The element to potentially wrap.
    * @private
@@ -1012,6 +1110,8 @@ export class PageBuilderService {
    * @private
    */
   private handleMouseOver = (e: Event, element: HTMLElement): void => {
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -1035,6 +1135,8 @@ export class PageBuilderService {
    * @private
    */
   private handleMouseLeave = (e: Event): void => {
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -1203,6 +1305,8 @@ export class PageBuilderService {
     // Wait for the next DOM update cycle to ensure all elements are rendered.
     await nextTick()
 
+    this.attachCanvasInlineEditListeners(pagebuilder)
+
     pagebuilder.querySelectorAll('section *').forEach((element) => {
       if (this.isEditableElement(element)) {
         const htmlElement = element as HTMLElement
@@ -1212,6 +1316,7 @@ export class PageBuilderService {
           const listeners = this.elementsWithListeners.get(htmlElement)
           if (listeners) {
             htmlElement.removeEventListener('click', listeners.click)
+            htmlElement.removeEventListener('dblclick', listeners.dblclick)
             htmlElement.removeEventListener('mouseover', listeners.mouseover)
             htmlElement.removeEventListener('mouseleave', listeners.mouseleave)
           }
@@ -1219,22 +1324,121 @@ export class PageBuilderService {
 
         // Define new listener functions.
         const clickListener = (e: Event) => this.handleElementClick(e, htmlElement)
+        const dblclickListener = (e: Event) => this.handleElementDoubleClick(e, htmlElement)
         const mouseoverListener = (e: Event) => this.handleMouseOver(e, htmlElement)
         const mouseleaveListener = (e: Event) => this.handleMouseLeave(e)
 
         // Add the new event listeners.
         htmlElement.addEventListener('click', clickListener)
+        htmlElement.addEventListener('dblclick', dblclickListener)
         htmlElement.addEventListener('mouseover', mouseoverListener)
         htmlElement.addEventListener('mouseleave', mouseleaveListener)
 
         // Store the new listeners in the WeakMap to track them.
         this.elementsWithListeners.set(htmlElement, {
           click: clickListener,
+          dblclick: dblclickListener,
           mouseover: mouseoverListener,
           mouseleave: mouseleaveListener,
         })
       }
     })
+  }
+
+  private attachCanvasInlineEditListeners(pagebuilder: Element): void {
+    if (this.canvasClickCaptureListener) {
+      pagebuilder.removeEventListener('click', this.canvasClickCaptureListener, true)
+    }
+
+    if (this.canvasDblClickCaptureListener) {
+      pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
+    }
+
+    this.canvasClickCaptureListener = (event: Event) => {
+      void this.handleCanvasClickCapture(event)
+    }
+    this.canvasDblClickCaptureListener = (event: Event) => {
+      void this.handleCanvasDoubleClickCapture(event)
+    }
+
+    pagebuilder.addEventListener('click', this.canvasClickCaptureListener, true)
+    pagebuilder.addEventListener('dblclick', this.canvasDblClickCaptureListener, true)
+  }
+
+  public findEditableElementFromEventTarget(target: EventTarget | null): HTMLElement | null {
+    if (!(target instanceof Element)) return null
+
+    const pagebuilder = document.querySelector('#pagebuilder')
+    let current: Element | null = target
+
+    while (current && current !== pagebuilder) {
+      if (current instanceof HTMLElement && this.isEditableElement(current)) {
+        return current
+      }
+
+      current = current.parentElement
+    }
+
+    return null
+  }
+
+  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+  }
+
+  private handleCanvasDoubleClickCapture = async (e: Event): Promise<void> => {
+    await this.openInlineTipTapFromEvent(e)
+  }
+
+  public async openInlineTipTapFromEvent(e: Event): Promise<void> {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
+    const element = this.findEditableElementFromEventTarget(e.target)
+    if (!element || !this.isValidTextElement(element)) return
+
+    e.preventDefault()
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+
+    await this.openInlineTipTapForElement(element)
+  }
+
+  private hasInlineTipTapElement(): boolean {
+    return Boolean(document.querySelector('#pagebuilder [data-pbx-inline-tiptap]'))
+  }
+
+  public async finishActiveInlineTipTapEditorFromDom(
+    nextElement: HTMLElement | null = null,
+  ): Promise<void> {
+    const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
+
+    if (!inlineElement) {
+      await this.toggleInlineTipTapEditor(false)
+      return
+    }
+
+    const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
+    const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
+    const html = finalizeInlineTipTapHtml(prosemirror?.innerHTML ?? inlineElement.innerHTML, originalHtml)
+
+    inlineElement.innerHTML = html
+    inlineElement.removeAttribute('data-pbx-inline-tiptap')
+    inlineElement.removeAttribute('data-pbx-inline-original-html')
+    this.pageBuilderStateStore.setTextAreaVueModel(html)
+    this.pageBuilderStateStore.setElement(inlineElement)
+
+    await this.finishInlineTipTapEditor(inlineElement)
+
+    if (nextElement && nextElement !== inlineElement) {
+      await this.selectEditableElement(nextElement)
+    }
   }
 
   /**
@@ -1245,10 +1449,53 @@ export class PageBuilderService {
    */
   private handleElementClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
 
     e.preventDefault()
     e.stopPropagation()
 
+    await this.selectEditableElement(element)
+  }
+
+  /**
+   * Opens inline rich-text editing when a valid text element is double-clicked.
+   * @param {Event} e - The double-click event.
+   * @param {HTMLElement} element - The double-clicked element.
+   * @private
+   */
+  private handleElementDoubleClick = async (e: Event, element: HTMLElement): Promise<void> => {
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+    if (!this.isValidTextElement(element)) return
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    await this.openInlineTipTapForElement(element)
+  }
+
+  private async openInlineTipTapForElement(element: HTMLElement): Promise<void> {
+    if (!this.isValidTextElement(element)) return
+
+    await this.selectEditableElement(element, false)
+
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
+
+    await nextTick()
+    await this.addListenersToEditableElements()
+  }
+
+  /**
+   * Selects an editable builder element and syncs builder state.
+   * @param {HTMLElement} element - The element to select.
+   * @param {boolean} shouldAutoSave - Whether to autosave after selection.
+   * @returns {Promise<void>}
+   */
+  public async selectEditableElement(
+    element: HTMLElement,
+    shouldAutoSave: boolean = true,
+  ): Promise<void> {
     const pagebuilder = document.querySelector('#pagebuilder')
 
     if (!pagebuilder) return
@@ -1266,7 +1513,12 @@ export class PageBuilderService {
 
     this.pageBuilderStateStore.setElement(element)
 
-    await this.handleAutoSave()
+    await nextTick()
+    await this.initializeElementStyles()
+
+    if (shouldAutoSave) {
+      await this.handleAutoSave()
+    }
   }
 
   private getHistoryBaseKey(): string | null {
@@ -1287,6 +1539,9 @@ export class PageBuilderService {
    */
   public handleAutoSave = async () => {
     this.startEditing()
+
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+
     const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
 
     // Check if config is set
@@ -2284,12 +2539,14 @@ export class PageBuilderService {
       }
 
       if (pageBuilderWrapper) {
-        // Scroll to the moved component
-        const topPos = movedComponentElement.offsetTop - pageBuilderWrapper.offsetTop
-        pageBuilderWrapper.scrollTop = topPos - pageBuilderWrapper.clientHeight / 2
+        scrollContainerToCenterElement(pageBuilderWrapper, movedComponentElement)
 
-        // Remove highlights after a delay
-        setTimeout(() => {
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
+        })
+
+        // Remove highlights after the animation completes
+        window.setTimeout(() => {
           movedComponentElement.classList.remove('pbx-reorder-highlight')
           if (prevSibling && prevSibling.tagName === 'SECTION') {
             prevSibling.classList.remove('pbx-sibling-highlight')
@@ -2297,7 +2554,7 @@ export class PageBuilderService {
           if (nextSibling && nextSibling.tagName === 'SECTION') {
             nextSibling.classList.remove('pbx-sibling-highlight')
           }
-        }, 200)
+        }, 280)
       }
     }
   }
@@ -2392,26 +2649,24 @@ export class PageBuilderService {
     }
   }
   /**
-   * Checks if the selected element is a valid text container (i.e., does not contain images or divs).
-   * @returns {boolean | undefined} True if it's a valid text element, otherwise undefined.
+   * Checks whether an element can be edited with inline TipTap (no images/div-only children).
+   * @param {HTMLElement | null | undefined} element - The element to validate.
+   * @returns {boolean} True when inline rich-text editing is allowed.
    */
-  public isSelectedElementValidText() {
+  public isValidTextElement(element: HTMLElement | null | undefined): boolean {
+    if (!element) return false
+
+    if (element.tagName === 'IMG' || element.firstElementChild?.tagName === 'IFRAME') {
+      return false
+    }
+
+    const childElements = element.children
+    if (!childElements.length) return false
+
     let reachedElseStatement = false
 
-    // Get all child elements of the parentDiv
-    const childElements = this.getElement.value?.children
-    if (
-      this.getElement.value?.tagName === 'IMG' ||
-      this.getElement.value?.firstElementChild?.tagName === 'IFRAME'
-    ) {
-      return
-    }
-    if (!childElements) {
-      return
-    }
-
-    Array.from(childElements).forEach((element) => {
-      if (element?.tagName === 'IMG' || element?.tagName === 'DIV') {
+    Array.from(childElements).forEach((child) => {
+      if (child.tagName === 'IMG' || child.tagName === 'DIV') {
         reachedElseStatement = false
       } else {
         reachedElseStatement = true
@@ -2419,6 +2674,14 @@ export class PageBuilderService {
     })
 
     return reachedElseStatement
+  }
+
+  /**
+   * Checks if the selected element is a valid text container (i.e., does not contain images or divs).
+   * @returns {boolean} True if it's a valid text element, otherwise false.
+   */
+  public isSelectedElementValidText(): boolean {
+    return this.isValidTextElement(this.getElement.value)
   }
 
   /**
