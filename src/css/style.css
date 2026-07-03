@@ -687,6 +687,7 @@
     */
   .pbx-toolbarMoreMenu {
     @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-[min(24rem,calc(100vh-2rem))] pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
+    will-change: top, left;
   }
 
   .pbx-toolbarMoreMenuSection {
@@ -1041,15 +1042,14 @@
   column-gap: 0.5rem;
   transition:
     opacity 0.12s ease-out,
-    transform 0.12s ease-out,
-    top 0.12s ease-out,
-    left 0.12s ease-out;
+    transform 0.12s ease-out;
 }
 
 #pbxEditToolbar.is-visible {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+  will-change: top, left;
   width: fit-content;
   min-width: 4rem;
   padding-right: 2px;

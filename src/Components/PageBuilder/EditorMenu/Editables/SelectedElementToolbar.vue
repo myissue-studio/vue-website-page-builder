@@ -591,28 +591,41 @@ const closeMoreMenu = () => {
   openOptionsMoreOpen.value = false
 }
 
-const handleMoveComponentUp = () => {
-  pageBuilderService.reorderComponent(-1)
+const syncMoreMenuPosition = () => {
+  if (!openOptionsMoreOpen.value) return
+  updateMoreMenuPosition()
 }
 
-const handleMoveComponentDown = () => {
-  pageBuilderService.reorderComponent(1)
+const handleMoveComponentUp = async () => {
+  await pageBuilderService.reorderComponent(-1)
+  syncMoreMenuPosition()
+}
+
+const handleMoveComponentDown = async () => {
+  await pageBuilderService.reorderComponent(1)
+  syncMoreMenuPosition()
 }
 
 watch(openOptionsMoreOpen, (isOpen) => {
   if (isOpen) {
     attachMoreMenuPositionListeners()
     document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+    window.addEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
+    window.addEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
     return
   }
 
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+  window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
+  window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
 })
 
 onBeforeUnmount(() => {
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+  window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
+  window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
 })
 
 const showModalDeleteComponent = ref(false)

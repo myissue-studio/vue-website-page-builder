@@ -50,6 +50,7 @@ function scrollContainerToCenterElement(
     const progress = Math.min(1, (now - startTime) / duration)
     const eased = 1 - (1 - progress) ** 3
     container.scrollTop = start + distance * eased
+    window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
 
     if (progress < 1) {
       requestAnimationFrame(step)
@@ -2540,10 +2541,6 @@ export class PageBuilderService {
 
       if (pageBuilderWrapper) {
         scrollContainerToCenterElement(pageBuilderWrapper, movedComponentElement)
-
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new CustomEvent('pagebuilder:layout-change'))
-        })
 
         // Remove highlights after the animation completes
         window.setTimeout(() => {
