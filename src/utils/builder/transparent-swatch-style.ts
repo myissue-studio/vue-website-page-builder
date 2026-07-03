@@ -1,7 +1,8 @@
-export const transparentSwatchStyle = {
-  backgroundColor: '#ffffff',
+import type { StyleValue } from 'vue'
+
+/** Diagonal slash — modern “no fill” swatch indicator. */
+export const transparentSwatchStyle: StyleValue = {
+  backgroundColor: '#f8fafc',
   backgroundImage:
-    'linear-gradient(45deg, #d1d5db 25%, transparent 25%), linear-gradient(-45deg, #d1d5db 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d5db 75%), linear-gradient(-45deg, transparent 75%, #d1d5db 75%)',
-  backgroundSize: '6px 6px',
-  backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0px',
+    'linear-gradient(135deg, transparent 46%, #cbd5e1 46%, #cbd5e1 54%, transparent 54%)',
 }
