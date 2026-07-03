@@ -4,6 +4,7 @@ import { hexToHsv, hsvToHex, normalizeHexColor } from '../../utils/builder/color
 
 const props = defineProps<{
   modelValue: string
+  showHexInput?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -207,11 +208,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="pbx-flex pbx-flex-col pbx-gap-3">
+  <div class="pbx-flex pbx-w-full pbx-flex-col pbx-gap-3">
     <div class="pbx-relative pbx-w-full">
       <div
-        class="pbx-relative pbx-overflow-hidden pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200"
-        :style="{ width: `${PICKER_WIDTH}px`, height: `${PICKER_HEIGHT}px` }"
+        class="pbx-relative pbx-w-full pbx-overflow-hidden pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200"
+        :style="{ aspectRatio: `${PICKER_WIDTH} / ${PICKER_HEIGHT}` }"
       >
         <canvas
           ref="canvasRef"
@@ -229,8 +230,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        class="pbx-relative pbx-mt-1 pbx-py-2 pbx-cursor-pointer pbx-touch-none"
-        :style="{ width: `${PICKER_WIDTH}px` }"
+        class="pbx-relative pbx-mt-1 pbx-w-full pbx-py-2 pbx-cursor-pointer pbx-touch-none"
         @pointerdown="startHueDrag"
       >
         <div
@@ -259,7 +259,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="pbx-flex pbx-items-center pbx-gap-2">
+    <div v-if="showHexInput !== false" class="pbx-flex pbx-items-center pbx-gap-2">
       <div
         class="pbx-h-9 pbx-w-9 pbx-shrink-0 pbx-rounded-md pbx-border pbx-border-solid pbx-border-gray-200"
         :style="previewStyle"

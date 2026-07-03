@@ -34,6 +34,10 @@ const props = defineProps({
     type: Number,
     default: 9999,
   },
+  showActions: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['closeMainModalBuilder'])
@@ -80,7 +84,7 @@ const maxWidthClass = computed(() => {
         ></div>
 
         <div
-          class="pbx-relative pbx-inline-block pbx-bg-white pbx-rounded-3xl pbx-text-left pbx-shadow-xl pbx-transform pbx-transition-all pbx-max-w-[96vh] lg:pbx-max-h-[98vh] pbx-max-h-[85vh] pbx-w-full pbx-overflow-y-scroll"
+          class="pbx-relative pbx-flex pbx-flex-col pbx-bg-white pbx-rounded-3xl pbx-text-left pbx-shadow-xl pbx-transform pbx-transition-all pbx-max-w-[96vh] lg:pbx-max-h-[98vh] pbx-max-h-[85vh] pbx-w-full pbx-overflow-hidden"
           :class="[
             maxWidthClass ? maxWidthClass : '',
             minHeight ? minHeight : '',
@@ -88,7 +92,7 @@ const maxWidthClass = computed(() => {
           ]"
         >
           <div
-            class="pbx-h-16 pbx-px-4 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-2 pbx-flex pbx-items-center pbx-justify-between"
+            class="pbx-h-16 pbx-shrink-0 pbx-px-4 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-between"
             :class="[
               type === 'success' ? 'pbx-bg-white' : '',
               type === 'warning' ? 'pbx-bg-white' : '',
@@ -117,8 +121,20 @@ const maxWidthClass = computed(() => {
               <span class="material-symbols-outlined" aria-hidden="true"> close </span>
             </button>
           </div>
-          <div class="pbx-px-4 pbx-min-h-32">
-            <slot></slot>
+          <div class="pbx-min-h-0 pbx-flex-1 pbx-overflow-y-auto pbx-px-4">
+            <div class="pbx-min-h-32">
+              <slot></slot>
+            </div>
+          </div>
+          <div
+            v-if="$slots.actions && showActions"
+            class="pbx-shrink-0 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-bg-white pbx-px-4 pbx-py-4"
+          >
+            <div
+              class="pbx-flex pbx-w-full pbx-flex-row pbx-items-center pbx-justify-end pbx-gap-2"
+            >
+              <slot name="actions"></slot>
+            </div>
           </div>
         </div>
       </div>

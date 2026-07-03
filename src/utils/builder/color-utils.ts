@@ -8,6 +8,24 @@ export function normalizeHexColor(value: string): string | null {
   return `#${match[1].toLowerCase()}`
 }
 
+export function normalizeCssColorToHex(value: string): string | null {
+  const normalizedHex = normalizeHexColor(value)
+  if (normalizedHex) return normalizedHex
+
+  const rgbMatch =
+    /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/i.exec(
+      value.trim(),
+    )
+  if (!rgbMatch) return null
+
+  const channels = rgbMatch.slice(1, 4).map((channel) => Number.parseInt(channel, 10))
+  if (channels.some((channel) => Number.isNaN(channel) || channel < 0 || channel > 255)) {
+    return null
+  }
+
+  return rgbToHex({ r: channels[0], g: channels[1], b: channels[2] })
+}
+
 export function hexToRgb(hex: string): RgbColor | null {
   const normalized = normalizeHexColor(hex)
   if (!normalized) return null
