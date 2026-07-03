@@ -47,7 +47,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/myissue-studio/vue-website-page-builder.git"
+    "url": "git+https://github.com/myissue-studio/vue-website-page-builder.git"
   },
   "bugs": {
     "url": "https://github.com/myissue-studio/vue-website-page-builder/issues"
