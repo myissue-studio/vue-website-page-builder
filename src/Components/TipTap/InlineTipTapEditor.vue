@@ -9,7 +9,10 @@ import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 import ConfirmActionModal from '../Modals/ConfirmActionModal.vue'
-import { sanitizeInlineTipTapHtml, finalizeInlineTipTapHtml } from '../../utils/builder/sanitize-inline-tiptap-html'
+import {
+  sanitizeInlineTipTapHtml,
+  finalizeInlineTipTapHtml,
+} from '../../utils/builder/sanitize-inline-tiptap-html'
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
@@ -275,10 +278,7 @@ const teardownEditor = function (html?: string) {
   const activeEditor = editor.value
 
   if (activeEditor && target) {
-    const finalHTML = finalizeInlineTipTapHtml(
-      html ?? activeEditor.getHTML(),
-      originalHTML.value,
-    )
+    const finalHTML = finalizeInlineTipTapHtml(html ?? activeEditor.getHTML(), originalHTML.value)
     activeEditor.destroy()
     target.innerHTML = finalHTML
     target.removeAttribute('data-pbx-inline-tiptap')
@@ -545,7 +545,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleBold"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bold') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_bold </span>
@@ -553,7 +553,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleItalic"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('italic') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_italic </span>
@@ -563,7 +563,7 @@ onBeforeUnmount(() => {
       v-for="level in [2, 3, 4, 5, 6] as const"
       :key="level"
       @click="toggleHeading(level)"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': headingIsActive(level),
       }"
@@ -573,7 +573,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="openUrlModal"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('link') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> link </span>
@@ -581,7 +581,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleBulletList"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bulletList') }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_list_bulleted </span>
@@ -589,7 +589,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('left')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'left' }) }"
     >
       <span class="material-symbols-outlined pbx-text-[18px]"> format_align_left </span>
@@ -597,7 +597,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('center')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'center' }),
       }"
@@ -607,7 +607,7 @@ onBeforeUnmount(() => {
 
     <div
       @click="toggleTextAlign('right')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'right' }),
       }"

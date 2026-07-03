@@ -26,8 +26,6 @@ const isOverviewSlice = computed(() =>
   ['overviewApp', 'overviewUser', 'overviewConfig'].includes(props.embeddedSection ?? ''),
 )
 
-const overviewSectionSpacing = computed(() => (isEmbedded.value ? 'pbx-mt-4' : 'pbx-mt-8'))
-
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
@@ -240,9 +238,13 @@ function handleDownloadHTML() {
         }}
       </p>
 
-      <div v-if="showOverviewApp" class="pbx-px-2">
-        <div :class="showOverviewIntro ? overviewSectionSpacing : ''">
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+      <div
+        v-if="showOverviewApp"
+        class="pbx-px-2 pbx-settingsSectionGroup"
+        :class="showOverviewIntro && !isEmbedded ? 'pbx-mt-8' : ''"
+      >
+        <div class="pbx-settingsSection">
+          <h4 class="pbx-settingsSectionTitle">
             {{ translate('Version Information') }}
           </h4>
           <div
@@ -296,12 +298,12 @@ function handleDownloadHTML() {
 
         <!-- Resource Data Table - start -->
         <div
-          class="pbx-mt-4"
+          class="pbx-settingsSection"
           v-if="
             getPageBuilderConfig?.resourceData && !isEmptyObject(getPageBuilderConfig.resourceData)
           "
         >
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+          <h4 class="pbx-settingsSectionTitle">
             {{ translate('Resource Data') }}
           </h4>
           <div
@@ -360,18 +362,185 @@ function handleDownloadHTML() {
           </div>
         </div>
         <!-- Resource Data Table - end -->
+
+        <!-- Page Builder Logo Table - start -->
+        <div
+          class="pbx-settingsSection"
+          v-if="
+            getPageBuilderConfig &&
+            getPageBuilderConfig.pageBuilderLogo &&
+            !isEmptyObject(getPageBuilderConfig.pageBuilderLogo)
+          "
+        >
+          <h4 class="pbx-settingsSectionTitle">
+            {{ translate('Logo Configuration') }}
+          </h4>
+          <div
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
+          >
+            <div class="pbx-overflow-x-auto">
+              <table class="pbx-min-w-full">
+                <thead class="pbx-bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
+                    >
+                      {{ translate('Property') }}
+                    </th>
+                    <th
+                      scope="col"
+                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
+                    >
+                      {{ translate('Value') }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="pbx-bg-white pbx-divide-y pbx-divide-gray-200">
+                  <tr>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo') }}</div>
+                    </td>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        <div class="pbx-flex pbx-items-center pbx-space-x-3">
+                          <img
+                            class="pbx-h-4"
+                            :src="getPageBuilderConfig.pageBuilderLogo.src"
+                            alt="Logo"
+                          />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo URL') }}</div>
+                    </td>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        <span class="pbx-whitespace-nowrap">{{
+                          getPageBuilderConfig.pageBuilderLogo.src
+                        }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Page Builder Logo Table - end -->
+
+        <!-- Form Type Table - start -->
+        <div
+          class="pbx-settingsSection"
+          v-if="
+            getPageBuilderConfig?.updateOrCreate &&
+            !isEmptyObject(getPageBuilderConfig.updateOrCreate)
+          "
+        >
+          <h4 class="pbx-settingsSectionTitle">
+            {{ translate('Form Type') }}
+          </h4>
+          <div
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
+          >
+            <div class="pbx-overflow-x-auto">
+              <table class="pbx-w-max pbx-min-w-full">
+                <thead class="pbx-bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
+                    >
+                      {{ translate('Mode') }}
+                    </th>
+                    <th
+                      scope="col"
+                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
+                    >
+                      {{ translate('Description') }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="pbx-bg-white pbx-divide-y pbx-divide-gray-200">
+                  <tr>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        {{ translate('Form Type') }}
+                      </div>
+                    </td>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        <span
+                          class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
+                          :class="
+                            getPageBuilderConfig.updateOrCreate.formType === 'create'
+                              ? 'pbx-bg-green-100 pbx-text-green-800'
+                              : 'pbx-bg-blue-100 pbx-text-blue-800'
+                          "
+                        >
+                          {{ getPageBuilderConfig.updateOrCreate.formType }}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    v-if="
+                      getPageBuilderConfig.updateOrCreate.formName &&
+                      getPageBuilderConfig.updateOrCreate.formName.length > 0
+                    "
+                  >
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        {{ translate('Form Name') }}
+                      </div>
+                    </td>
+                    <td
+                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
+                    >
+                      <div class="pbx-min-w-[30rem] pbx-w-max">
+                        <span
+                          class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
+                        >
+                          {{ getPageBuilderConfig.updateOrCreate.formName }}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Form Type Table - end -->
       </div>
 
-      <div v-if="showOverviewUser" class="pbx-px-2">
+      <div v-if="showOverviewUser" class="pbx-px-2 pbx-settingsSectionGroup">
         <!-- User Information Table - start -->
         <div
-          :class="overviewSectionSpacing"
+          class="pbx-settingsSection"
           v-if="
             getPageBuilderConfig?.userForPageBuilder &&
             !isEmptyObject(getPageBuilderConfig.userForPageBuilder)
           "
         >
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+          <h4 class="pbx-settingsSectionTitle">
             {{ translate('User Information') }}
           </h4>
           <div
@@ -481,12 +650,12 @@ function handleDownloadHTML() {
 
         <!-- User Settings Table - start -->
         <div
-          class="pbx-mt-4"
+          class="pbx-settingsSection"
           v-if="
             getPageBuilderConfig?.userSettings && !isEmptyObject(getPageBuilderConfig.userSettings)
           "
         >
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
+          <h4 class="pbx-settingsSectionTitle">
             {{ translate('User Settings') }}
           </h4>
           <div
@@ -591,197 +760,11 @@ function handleDownloadHTML() {
         <!-- User Settings Table - end -->
       </div>
 
-      <div v-if="showOverviewApp" class="pbx-px-2">
-        <!-- Page Builder Logo Table - start -->
-        <div
-          class="pbx-mt-4"
-          v-if="
-            getPageBuilderConfig &&
-            getPageBuilderConfig.pageBuilderLogo &&
-            !isEmptyObject(getPageBuilderConfig.pageBuilderLogo)
-          "
-        >
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
-            {{ translate('Logo Configuration') }}
-          </h4>
-          <div
-            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
-          >
-            <div class="pbx-overflow-x-auto">
-              <table class="pbx-min-w-full">
-                <thead class="pbx-bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
-                    >
-                      {{ translate('Property') }}
-                    </th>
-                    <th
-                      scope="col"
-                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
-                    >
-                      {{ translate('Value') }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="pbx-bg-white pbx-divide-y pbx-divide-gray-200">
-                  <tr>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo') }}</div>
-                    </td>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        <div class="pbx-flex pbx-items-center pbx-space-x-3">
-                          <img
-                            class="pbx-h-4"
-                            :src="getPageBuilderConfig.pageBuilderLogo.src"
-                            alt="Logo"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">{{ translate('Logo URL') }}</div>
-                    </td>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        <div class="pbx-flex pbx-items-center pbx-space-x-3">
-                          <div class="pbx-pr-6">
-                            <div class="pbx-flex pbx-items-center pbx-space-x-3">
-                              <span class="pbx-whitespace-nowrap">{{
-                                getPageBuilderConfig.pageBuilderLogo.src
-                              }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <!-- Page Builder Logo Table - end -->
-
-        <!-- Form Type Table - start -->
-        <div
-          class="pbx-mt-4"
-          v-if="
-            getPageBuilderConfig?.updateOrCreate &&
-            !isEmptyObject(getPageBuilderConfig.updateOrCreate)
-          "
-        >
-          <h4 class="pbx-myQuaternaryHeader pbx-text-sm pbx-mb-2">
-            {{ translate('Form Type') }}
-          </h4>
-          <div
-            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
-          >
-            <div class="pbx-overflow-x-auto">
-              <table class="pbx-w-max pbx-min-w-full">
-                <thead class="pbx-bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
-                    >
-                      {{ translate('Mode') }}
-                    </th>
-                    <th
-                      scope="col"
-                      class="pbx-px-6 pbx-py-3 pbx-text-left pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wider"
-                    >
-                      {{ translate('Description') }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="pbx-bg-white pbx-divide-y pbx-divide-gray-200">
-                  <tr>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        {{ translate('Form Type') }}
-                      </div>
-                    </td>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        <span
-                          class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
-                          :class="
-                            getPageBuilderConfig.updateOrCreate.formType === 'create'
-                              ? 'pbx-bg-green-100 pbx-text-green-800'
-                              : 'pbx-bg-blue-100 pbx-text-blue-800'
-                          "
-                        >
-                          <span
-                            v-if="
-                              getPageBuilderConfig &&
-                              getPageBuilderConfig.updateOrCreate.formType === 'create'
-                            "
-                          >
-                            {{ getPageBuilderConfig.updateOrCreate.formType }}
-                          </span>
-                          <span
-                            v-if="
-                              getPageBuilderConfig &&
-                              getPageBuilderConfig.updateOrCreate.formType === 'update'
-                            "
-                          >
-                            {{ getPageBuilderConfig.updateOrCreate.formType }}
-                          </span>
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr
-                    v-if="
-                      getPageBuilderConfig.updateOrCreate.formName &&
-                      getPageBuilderConfig.updateOrCreate.formName.length > 0
-                    "
-                  >
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-font-medium pbx-text-gray-900"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        {{ translate('Form Name') }}
-                      </div>
-                    </td>
-                    <td
-                      class="pbx-px-6 pbx-py-4 pbx-whitespace-nowrap pbx-text-sm pbx-text-gray-500"
-                    >
-                      <div class="pbx-min-w-[30rem] pbx-w-max">
-                        <span
-                          class="pbx-inline-flex pbx-items-center pbx-px-2.5 pbx-py-0.5 pbx-rounded-full pbx-text-xs pbx-font-medium"
-                        >
-                          {{ getPageBuilderConfig.updateOrCreate.formName }}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <!-- Form Type Table - end -->
-      </div>
-
-      <div v-if="showOverviewConfig" :class="showOverviewIntro ? 'pbx-mt-12' : ''">
+      <div
+        v-if="showOverviewConfig"
+        class="pbx-settingsSectionGroup"
+        :class="showOverviewIntro ? 'pbx-mt-12' : ''"
+      >
         <div v-if="showOverviewIntro" class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
           <h3 class="pbx-myQuaternaryHeader">{{ translate('Complete Configuration Overview') }}</h3>
           <p class="pbx-myPrimaryParagraph pbx-text-xs">
@@ -794,7 +777,7 @@ function handleDownloadHTML() {
         </div>
 
         <div
-          class="pbx-mt-4 pbx-whitespace-pre-wrap pbx-text-white pbx-overflow-hidden pbx-bg-gray-900"
+          class="pbx-settingsSection pbx-whitespace-pre-wrap pbx-text-white pbx-overflow-hidden pbx-bg-gray-900"
         >
           <div class="pbx-flex bg-gray-800/40 pbx-ring-1 ring-white/5">
             <div

@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useTranslations } from '../../../../composables/useTranslations'
-import { prettifyHtml } from '../../../../utils/builder/prettify-html'
+import { useHtmlCodeViewer } from '../../../../composables/useHtmlCodeViewer'
+import { useHtmlCodeEditor } from '../../../../composables/useHtmlCodeEditor'
+import { extractClassesFromHtml } from '../../../../utils/builder/extract-classes-from-html'
 import type { ComponentObject } from '../../../../types'
+import InspectorIdValue from './InspectorIdValue.vue'
+import HtmlActionButton from './HtmlActionButton.vue'
+import ClassTagsList from './ClassTagsList.vue'
 
 const { translate } = useTranslations()
+const { openHtmlViewer } = useHtmlCodeViewer()
+const { openHtmlEditor } = useHtmlCodeEditor()
 
 const pageBuilderStateStore = sharedPageBuilderStore
 
@@ -17,6 +24,48 @@ type ContentTab = 'element' | 'component' | 'components'
 const activeTab = ref<ContentTab>('element')
 
 const componentsCount = computed(() => getComponents.value?.length ?? 0)
+
+const componentsListOpen = ref(false)
+const openComponentCards = ref<Set<string>>(new Set())
+
+function toggleComponentsList() {
+  if (!componentsCount.value) return
+  componentsListOpen.value = !componentsListOpen.value
+}
+
+function componentCardKey(component: ComponentObject, index: number): string {
+  return String(component.id ?? component.title ?? index)
+}
+
+function isComponentCardOpen(component: ComponentObject, index: number): boolean {
+  return openComponentCards.value.has(componentCardKey(component, index))
+}
+
+function toggleComponentCard(component: ComponentObject, index: number) {
+  const key = componentCardKey(component, index)
+  const next = new Set(openComponentCards.value)
+
+  if (next.has(key)) {
+    next.delete(key)
+  } else {
+    next.add(key)
+  }
+
+  openComponentCards.value = next
+}
+
+watch(componentsListOpen, (isOpen) => {
+  if (!isOpen) {
+    openComponentCards.value = new Set()
+  }
+})
+
+watch(activeTab, (tab) => {
+  if (tab !== 'components') {
+    componentsListOpen.value = false
+    openComponentCards.value = new Set()
+  }
+})
 
 function formatElementType(element: HTMLElement | null): string {
   if (!element) return '—'
@@ -51,10 +100,15 @@ const typeRows = computed(() => [
   },
 ])
 
-const elementClasses = computed(() => {
+const elementClassList = computed(() => {
   const element = getElement.value
-  if (!element?.classList?.length) return '—'
-  return Array.from(element.classList).join(' ')
+  if (!element?.classList?.length) return []
+  return Array.from(element.classList)
+})
+
+const componentClassList = computed(() => {
+  if (!getComponent.value?.html_code) return []
+  return extractClassesFromHtml(getComponent.value.html_code)
 })
 
 const elementSrc = computed(() => {
@@ -63,13 +117,34 @@ const elementSrc = computed(() => {
   return (element as HTMLImageElement).src || '—'
 })
 
-const prettifiedElementHtml = computed(() => {
-  if (!getElement.value) return ''
-  return prettifyHtml(getElement.value.outerHTML)
-})
-
 function setActiveTab(tab: ContentTab) {
   activeTab.value = tab
+}
+
+function openElementHtmlEditor() {
+  if (!getElement.value) return
+  openHtmlEditor(translate('Element HTML'), getElement.value.outerHTML, 'element')
+}
+
+function openElementHtmlViewer() {
+  if (!getElement.value) return
+  openHtmlViewer(translate('Element HTML'), getElement.value.outerHTML)
+}
+
+function openComponentHtmlViewer(component: ComponentObject, index?: number) {
+  const label =
+    component.title ||
+    (index !== undefined ? `${translate('Component')} #${index + 1}` : translate('Component'))
+  openHtmlViewer(`${label} · ${translate('HTML')}`, component.html_code || '')
+}
+
+function openSelectedComponentHtmlViewer() {
+  if (!getComponent.value) return
+  openComponentHtmlViewer(getComponent.value)
+}
+
+function getComponentClassList(component: ComponentObject): string[] {
+  return extractClassesFromHtml(component.html_code || '')
 }
 </script>
 
@@ -140,21 +215,30 @@ function setActiveTab(tab: ContentTab) {
             {{ translate('No Element selected') }}
           </p>
           <template v-else>
-            <div class="pbx-inspectorField">
-              <span class="pbx-inspectorFieldLabel">{{ translate('Selected HTML:') }}</span>
-              <pre
-                class="pbx-inspectorCodeBlock"
-              ><code class="pbx-font-sans" v-html="prettifiedElementHtml"></code></pre>
+            <div class="pbx-inspectorMeta pbx-mb-3">
+              <div v-if="elementSrc !== null" class="pbx-inspectorMetaRow">
+                <span class="pbx-inspectorFieldLabel">{{ translate('Element src:') }}</span>
+                <span class="pbx-inspectorValue pbx-inspectorValueBreak">{{ elementSrc }}</span>
+              </div>
+              <div class="pbx-inspectorMetaRow pbx-inspectorMetaRowStacked">
+                <span class="pbx-inspectorFieldLabel">{{ translate('Element classes:') }}</span>
+                <ClassTagsList :classes="elementClassList" empty-placeholder />
+              </div>
             </div>
 
-            <div v-if="elementSrc !== null" class="pbx-inspectorField">
-              <span class="pbx-inspectorFieldLabel">{{ translate('Element src:') }}</span>
-              <p class="pbx-inspectorValue pbx-inspectorValueBreak">{{ elementSrc }}</p>
-            </div>
-
-            <div class="pbx-inspectorField">
-              <span class="pbx-inspectorFieldLabel">{{ translate('Element classes:') }}</span>
-              <p class="pbx-inspectorValue pbx-inspectorValueBreak">{{ elementClasses }}</p>
+            <div class="pbx-inspectorActionStack">
+              <HtmlActionButton
+                icon="visibility"
+                :label="translate('View element HTML')"
+                :hint="translate('Preview selected element markup')"
+                @click="openElementHtmlViewer"
+              />
+              <HtmlActionButton
+                icon="deployed_code"
+                :label="translate('Open element HTML editor')"
+                :hint="translate('Edit selected element markup')"
+                @click="openElementHtmlEditor"
+              />
             </div>
           </template>
         </div>
@@ -164,77 +248,113 @@ function setActiveTab(tab: ContentTab) {
             {{ translate('No Component selected') }}
           </p>
           <template v-else>
-            <div class="pbx-inspectorMeta">
+            <div class="pbx-inspectorMeta pbx-mb-3">
               <div class="pbx-inspectorMetaRow">
                 <span class="pbx-inspectorFieldLabel">{{ translate('ID:') }}</span>
-                <span class="pbx-inspectorValue">{{ getComponent.id ?? '—' }}</span>
+                <InspectorIdValue :value="getComponent.id" />
               </div>
               <div class="pbx-inspectorMetaRow">
                 <span class="pbx-inspectorFieldLabel">{{ translate('Title:') }}</span>
                 <span class="pbx-inspectorValue">{{ getComponent.title || '—' }}</span>
               </div>
+              <div class="pbx-inspectorMetaRow pbx-inspectorMetaRowStacked">
+                <span class="pbx-inspectorFieldLabel">{{ translate('Component classes:') }}</span>
+                <ClassTagsList :classes="componentClassList" empty-placeholder />
+              </div>
             </div>
 
-            <div class="pbx-inspectorField">
-              <span class="pbx-inspectorFieldLabel">{{ translate('HTML Code:') }}</span>
-              <pre
-                class="pbx-inspectorCodeRaw"
-              ><code class="pbx-font-sans" v-html="prettifyHtml(getComponent.html_code)"></code></pre>
-            </div>
+            <HtmlActionButton
+              icon="visibility"
+              :label="translate('View component HTML')"
+              :hint="translate('Preview component markup')"
+              @click="openSelectedComponentHtmlViewer"
+            />
           </template>
         </div>
 
         <div v-if="activeTab === 'components'" role="tabpanel">
-          <div
-            class="pbx-inspectorComponentsSummary"
-            :class="{ 'pbx-inspectorComponentsSummaryEmpty': !componentsCount }"
+          <button
+            v-if="componentsCount"
+            type="button"
+            class="pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryToggle"
+            :class="{ 'pbx-inspectorComponentsSummaryOpen': componentsListOpen }"
+            :aria-expanded="componentsListOpen"
+            :aria-label="translate('Components')"
+            @click="toggleComponentsList"
           >
-            <template v-if="componentsCount">
+            <span class="pbx-inspectorComponentsSummaryContent">
               <span>{{ translate('You have added') }}</span>
-              <span :aria-label="`${componentsCount} ${translate('Components')}`">
+              <span
+                class="pbx-inspectorCountBadge"
+                :aria-label="`${componentsCount} ${translate('Components')}`"
+              >
                 {{ componentsCount }}
               </span>
               <span>{{ translate('Components') }}</span>
-            </template>
-            <template v-else>
-              {{ translate('No Components added yet') }}
-            </template>
+            </span>
+            <span
+              class="pbx-inspectorComponentsSummaryChevron material-symbols-outlined"
+              aria-hidden="true"
+            >
+              {{ componentsListOpen ? 'expand_less' : 'expand_more' }}
+            </span>
+          </button>
+          <div
+            v-else
+            class="pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryEmpty"
+          >
+            {{ translate('No Components added yet') }}
           </div>
 
-          <div v-if="componentsCount" class="pbx-inspectorList">
-            <details
+          <div v-show="componentsCount && componentsListOpen" class="pbx-inspectorList">
+            <article
               v-for="(component, index) in getComponents"
               :key="String(component.id ?? component.title ?? index)"
-              class="pbx-inspectorListItem"
-              :open="index === 0"
+              class="pbx-inspectorComponentCard"
             >
-              <summary class="pbx-inspectorListSummary">
-                <span class="pbx-inspectorListIndex">#{{ index + 1 }}</span>
-                <span class="pbx-inspectorListTitle">
-                  {{ component.title || component.id || translate('Component') }}
+              <button
+                type="button"
+                class="pbx-inspectorComponentCardToggle"
+                :aria-expanded="isComponentCardOpen(component, index)"
+                :aria-label="component.title || translate('Component')"
+                @click="toggleComponentCard(component, index)"
+              >
+                <span class="pbx-inspectorComponentCardTitleContent">
+                  <span class="pbx-inspectorListIndex">#{{ index + 1 }}</span>
+                  <span class="pbx-inspectorListTitle">
+                    {{ component.title || translate('Component') }}
+                  </span>
                 </span>
-              </summary>
+                <span
+                  class="pbx-inspectorComponentsSummaryChevron material-symbols-outlined"
+                  aria-hidden="true"
+                >
+                  {{ isComponentCardOpen(component, index) ? 'expand_less' : 'expand_more' }}
+                </span>
+              </button>
 
-              <div class="pbx-inspectorListBody">
-                <div class="pbx-inspectorMeta">
+              <div v-show="isComponentCardOpen(component, index)" class="pbx-inspectorComponentCardBody">
+                <div class="pbx-inspectorMeta pbx-inspectorComponentCardMeta">
                   <div class="pbx-inspectorMetaRow">
                     <span class="pbx-inspectorFieldLabel">{{ translate('ID:') }}</span>
-                    <span class="pbx-inspectorValue">{{ component.id ?? '—' }}</span>
+                    <InspectorIdValue :value="component.id" />
                   </div>
-                  <div class="pbx-inspectorMetaRow">
-                    <span class="pbx-inspectorFieldLabel">{{ translate('Title:') }}</span>
-                    <span class="pbx-inspectorValue">{{ component.title || '—' }}</span>
+                  <div class="pbx-inspectorMetaRow pbx-inspectorMetaRowStacked">
+                    <span class="pbx-inspectorFieldLabel">{{ translate('Component classes:') }}</span>
+                    <ClassTagsList :classes="getComponentClassList(component)" empty-placeholder />
                   </div>
                 </div>
 
-                <div class="pbx-inspectorField">
-                  <span class="pbx-inspectorFieldLabel">{{ translate('HTML Code:') }}</span>
-                  <pre
-                    class="pbx-inspectorCodeRaw"
-                  ><code class="pbx-font-sans" v-html="prettifyHtml(component.html_code)"></code></pre>
+                <div class="pbx-inspectorComponentCardFooter">
+                  <HtmlActionButton
+                    icon="visibility"
+                    :label="translate('View component HTML')"
+                    :hint="translate('Preview component markup')"
+                    @click="openComponentHtmlViewer(component, index)"
+                  />
                 </div>
               </div>
-            </details>
+            </article>
           </div>
         </div>
       </div>

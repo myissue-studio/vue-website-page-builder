@@ -25,12 +25,12 @@ defineExpose({ open, close, toggle: toggleExpanded })
   >
     <button
       type="button"
-      class="pbx-flex pbx-w-full pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-border-0 pbx-bg-white pbx-px-4 pbx-py-4 pbx-text-left pbx-font-sans pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-inset focus-visible:pbx-ring-myPrimaryLinkColor/30"
+      class="pbx-flex pbx-w-full pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-border-0 pbx-bg-white pbx-px-4 pbx-py-4 pbx-text-left pbx-font-sans pbx-duration-200 hover:pbx-bg-gray-200 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-inset focus-visible:pbx-ring-myPrimaryLinkColor/30"
       :aria-expanded="expanded"
       :aria-controls="contentId"
       @click="toggleExpanded"
     >
-      <span class="pbx-myPrimaryParagraph pbx-my-0 pbx-py-0 pbx-text-sm pbx-font-medium">
+      <span class="pbx-myPrimaryParagraph pbx-my-0 pbx-py-0 pbx-px-2 pbx-text-sm pbx-font-medium">
         <slot name="title" />
       </span>
 

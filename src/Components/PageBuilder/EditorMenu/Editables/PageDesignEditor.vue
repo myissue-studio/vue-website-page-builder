@@ -79,7 +79,6 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
       </section>
 
       <section class="pbx-pageDesignSection">
-        <h4 class="pbx-pageDesignSectionTitle">{{ translate('Typographies') }}</h4>
         <div class="pbx-pageDesignCard pbx-pageDesignCardWide">
           <TypographyControl />
         </div>
@@ -89,11 +88,11 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
         <h4 class="pbx-pageDesignSectionTitle">{{ translate('Colors') }}</h4>
         <div class="pbx-pageDesignGrid">
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Text Color') }}</p>
+            <p class="pbx-pageDesignCardLabel pbx-px-2">{{ translate('Text Color') }}</p>
             <TextColorEditor :globalPageLayout="true" />
           </div>
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Background Color') }}</p>
+            <p class="pbx-pageDesignCardLabel pbx-px-2">{{ translate('Background Color') }}</p>
             <BackgroundColorEditor :globalPageLayout="true" />
           </div>
         </div>
@@ -103,11 +102,9 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
         <h4 class="pbx-pageDesignSectionTitle">{{ translate('Spacing') }}</h4>
         <div class="pbx-pageDesignGrid">
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Padding') }}</p>
             <PaddingControl />
           </div>
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Margin') }}</p>
             <MarginControl />
           </div>
         </div>
@@ -117,11 +114,9 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
         <h4 class="pbx-pageDesignSectionTitle">{{ translate('Borders') }}</h4>
         <div class="pbx-pageDesignGrid">
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Border Radius') }}</p>
             <BorderRadiusControl />
           </div>
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Border') }}</p>
             <BorderControls />
           </div>
         </div>
@@ -131,11 +126,9 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
         <h4 class="pbx-pageDesignSectionTitle">{{ translate('Advanced') }}</h4>
         <div class="pbx-pageDesignGrid">
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Generated CSS') }}</p>
             <ClassEditor />
           </div>
           <div class="pbx-pageDesignCard">
-            <p class="pbx-pageDesignCardLabel">{{ translate('Inline Styles') }}</p>
             <StyleEditor />
           </div>
         </div>
