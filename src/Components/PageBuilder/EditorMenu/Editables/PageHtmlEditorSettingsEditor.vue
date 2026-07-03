@@ -25,9 +25,7 @@ const openPageHtmlEditor = () => {
       </p>
 
       <button type="button" class="pbx-pageDesignOpenButton" @click="openPageHtmlEditor">
-        <span class="pbx-pageDesignOpenButtonIcon material-symbols-outlined" aria-hidden="true">
-          code
-        </span>
+        <span class="material-symbols-outlined"> deployed_code </span>
         <span class="pbx-pageDesignOpenButtonText">
           <span class="pbx-pageDesignOpenButtonLabel">{{ translate('Open HTML editor') }}</span>
           <span class="pbx-pageDesignOpenButtonHint">
