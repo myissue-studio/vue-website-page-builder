@@ -63,6 +63,11 @@ const elementSrc = computed(() => {
   return (element as HTMLImageElement).src || '—'
 })
 
+const prettifiedElementHtml = computed(() => {
+  if (!getElement.value) return ''
+  return prettifyHtml(getElement.value.outerHTML)
+})
+
 function setActiveTab(tab: ContentTab) {
   activeTab.value = tab
 }
@@ -101,7 +106,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'element'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'element' }"
           @click="setActiveTab('element')"
         >
@@ -111,7 +116,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'component'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'component' }"
           @click="setActiveTab('component')"
         >
@@ -121,7 +126,7 @@ function setActiveTab(tab: ContentTab) {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'components'"
-          class="pbx-inspectorTab"
+          class="pbx-inspectorTab pbx-font-sans"
           :class="{ 'pbx-inspectorTabActive': activeTab === 'components' }"
           @click="setActiveTab('components')"
         >
@@ -137,7 +142,9 @@ function setActiveTab(tab: ContentTab) {
           <template v-else>
             <div class="pbx-inspectorField">
               <span class="pbx-inspectorFieldLabel">{{ translate('Selected HTML:') }}</span>
-              <pre class="pbx-inspectorCodeRaw">{{ getElement.outerHTML }}</pre>
+              <pre
+                class="pbx-inspectorCodeBlock"
+              ><code class="pbx-font-sans" v-html="prettifiedElementHtml"></code></pre>
             </div>
 
             <div v-if="elementSrc !== null" class="pbx-inspectorField">

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, useId } from 'vue'
 
 const expanded = ref(false)
+const contentId = useId()
 
 function toggleExpanded() {
   expanded.value = !expanded.value
@@ -22,19 +23,25 @@ defineExpose({ open, close, toggle: toggleExpanded })
   <div
     class="pbx-editorAccordion pbx-flex pbx-flex-col pbx-overflow-visible pbx-border pbx-border-solid pbx-border-gray-200"
   >
-    <div
-      class="pbx-flex pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-bg-white pbx-px-4 pbx-py-4 pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor"
+    <button
+      type="button"
+      class="pbx-flex pbx-w-full pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-border-0 pbx-bg-white pbx-px-4 pbx-py-4 pbx-text-left pbx-font-sans pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-inset focus-visible:pbx-ring-myPrimaryLinkColor/30"
+      :aria-expanded="expanded"
+      :aria-controls="contentId"
       @click="toggleExpanded"
     >
-      <p class="pbx-myPrimaryParagraph pbx-my-0 pbx-py-0 pbx-text-sm pbx-font-medium">
+      <span class="pbx-myPrimaryParagraph pbx-my-0 pbx-py-0 pbx-text-sm pbx-font-medium">
         <slot name="title" />
-      </p>
+      </span>
 
-      <span class="material-symbols-outlined pbx-text-gray-400">
+      <span class="material-symbols-outlined pbx-text-gray-400" aria-hidden="true">
         {{ expanded ? 'keyboard_arrow_down' : 'chevron_right' }}
       </span>
-    </div>
-    <div :class="[expanded ? 'pbx-block' : 'pbx-hidden', 'pbx-editorAccordionContent']">
+    </button>
+    <div
+      :id="contentId"
+      :class="[expanded ? 'pbx-block' : 'pbx-hidden', 'pbx-editorAccordionContent']"
+    >
       <slot name="content" />
     </div>
   </div>

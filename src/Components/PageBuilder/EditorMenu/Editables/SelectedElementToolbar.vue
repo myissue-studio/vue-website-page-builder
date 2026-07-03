@@ -1235,7 +1235,7 @@ const handleDuplicateElement = async function () {
             class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="ppbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> delete </span>
             </div>
@@ -1296,7 +1296,7 @@ const handleDuplicateElement = async function () {
             class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-red-200 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
           >
             <div
-              class="ppbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor pbx-border pbx-border-gray-500"
             >
               <span class="material-symbols-outlined"> delete_forever </span>
             </div>
