@@ -26,11 +26,7 @@ watch(
 </script>
 
 <template>
-  <div class="pbx-my-2 pbx-py-2">
-    <label for="bg-opacity" class="pbx-myPrimaryInputLabel">
-      {{ translate('Background Opacity') }}</label
-    >
-
+  <div class="pbx-editorFieldGroup">
     <Listbox as="div" v-model="opacityVueModel">
       <div class="pbx-relative">
         <ListboxButton class="pbx-myPrimarySelect" id="bg-opacity">

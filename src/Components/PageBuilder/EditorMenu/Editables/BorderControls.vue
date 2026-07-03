@@ -7,10 +7,13 @@ import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 
+defineOptions({
+  name: 'BorderControls',
+})
+
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
 
-// Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
 const borderStyle = ref<string | null>(null)
@@ -56,11 +59,11 @@ watch(
   <EditorAccordion>
     <template #title>{{ translate('Border Style, Width & Color') }}</template>
     <template #content>
-      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-py-0 pbx-my-4">
+      <p class="pbx-editorSectionTitle">
         {{ translate('Border') }}
       </p>
 
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-style" class="pbx-myPrimaryInputLabel">{{
           translate('Border Style')
         }}</label>
@@ -72,15 +75,15 @@ watch(
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
-            v-for="borderStyle in tailwindBorderStyleWidthPlusColor.borderStyle"
-            :key="borderStyle"
+            v-for="style in tailwindBorderStyleWidthPlusColor.borderStyle"
+            :key="style"
           >
-            {{ borderStyle }}
+            {{ style }}
           </option>
         </select>
       </div>
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-width" class="pbx-myPrimaryInputLabel">{{
           translate('Border Width')
         }}</label>
@@ -92,20 +95,23 @@ watch(
         >
           <option disabled value="">{{ translate('Select') }}</option>
           <option
-            v-for="borderWidth in tailwindBorderStyleWidthPlusColor.borderWidth"
-            :key="borderWidth"
+            v-for="width in tailwindBorderStyleWidthPlusColor.borderWidth"
+            :key="width"
           >
-            {{ borderWidth }}
+            {{ width }}
           </option>
         </select>
       </div>
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
+      <div class="pbx-editorFieldGroup">
         <label for="border-color" class="pbx-myPrimaryInputLabel">{{
           translate('Border Color')
         }}</label>
-        <Listbox as="div" v-model="borderColor">
-          <div class="pbx-relative pbx-mt-2">
+        <Listbox as="div" v-model="borderColor" v-slot="{ open }">
+          <div
+            class="pbx-relative pbx-mt-2"
+            :class="open ? 'pbx-z-50' : 'pbx-z-0'"
+          >
             <ListboxButton class="pbx-myPrimarySelect" id="border-color">
               <span class="pbx-flex pbx-items-center pbx-gap-2">
                 <div v-if="getBorderColor === 'none'">
@@ -128,7 +134,7 @@ watch(
               leave-to-class="pbx-opacity-0"
             >
               <ListboxOptions
-                class="pbx-absolute pbx-z-10 pbx-mt-1 pbx-max-h-56 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0"
+                class="pbx-headless-dropdown pbx-absolute pbx-z-50 pbx-mt-1 pbx-max-h-56 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0"
               >
                 <ListboxOption
                   as="template"
@@ -136,7 +142,7 @@ watch(
                   @click="pageBuilderService.handleBorderColor(borderColor ?? undefined)"
                   :key="color"
                   :value="color"
-                  v-slot="{ active, borderColor }"
+                  v-slot="{ active }"
                 >
                   <li
                     :class="[

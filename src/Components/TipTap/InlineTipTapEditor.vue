@@ -9,7 +9,7 @@ import { getPageBuilder } from '../../composables/builderInstance'
 import { useTranslations } from '../../composables/useTranslations'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
-import { sanitizeInlineTipTapHtml } from '../../utils/builder/sanitize-inline-tiptap-html'
+import { sanitizeInlineTipTapHtml, finalizeInlineTipTapHtml } from '../../utils/builder/sanitize-inline-tiptap-html'
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
@@ -250,6 +250,10 @@ const getSanitizedEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): 
   return sanitizeInlineTipTapHtml(tiptapEditor.getHTML())
 }
 
+const getFinalEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): string {
+  return finalizeInlineTipTapHtml(tiptapEditor.getHTML(), originalHTML.value)
+}
+
 const findEditableElement = function (target: EventTarget | null): HTMLElement | null {
   if (!(target instanceof Element)) return null
 
@@ -271,10 +275,14 @@ const teardownEditor = function (html?: string) {
   const activeEditor = editor.value
 
   if (activeEditor && target) {
-    const finalHTML = sanitizeInlineTipTapHtml(html ?? activeEditor.getHTML())
+    const finalHTML = finalizeInlineTipTapHtml(
+      html ?? activeEditor.getHTML(),
+      originalHTML.value,
+    )
     activeEditor.destroy()
     target.innerHTML = finalHTML
     target.removeAttribute('data-pbx-inline-tiptap')
+    target.removeAttribute('data-pbx-inline-original-html')
     pageBuilderStateStore.setTextAreaVueModel(finalHTML)
   }
 
@@ -295,6 +303,7 @@ const startEditor = async function () {
   inlineElement.value = target
   target.innerHTML = ''
   target.setAttribute('data-pbx-inline-tiptap', '')
+  target.setAttribute('data-pbx-inline-original-html', originalHTML.value)
 
   const rtl = isRtlContentContext(target, {
     lang: pageBuilderStateStore.getCurrentLanguage,
@@ -345,7 +354,7 @@ const saveInlineEditor = async function () {
 
   isSaving.value = true
   const target = inlineElement.value
-  const html = getSanitizedEditorHtml(editor.value)
+  const html = getFinalEditorHtml(editor.value)
   removeDocumentMouseDownListener()
   teardownEditor(html)
   await pageBuilderService.finishInlineTipTapEditor(target)
@@ -357,7 +366,7 @@ const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | nul
 
   isSaving.value = true
   const target = inlineElement.value
-  const html = getSanitizedEditorHtml(editor.value)
+  const html = getFinalEditorHtml(editor.value)
 
   removeDocumentMouseDownListener()
   teardownEditor(html)
@@ -404,7 +413,7 @@ watch(
       }
 
       if (editor.value && inlineElement.value !== selectedElement) {
-        teardownEditor(getSanitizedEditorHtml(editor.value))
+        teardownEditor(getFinalEditorHtml(editor.value))
       }
 
       await startEditor()
@@ -412,7 +421,7 @@ watch(
     }
 
     if (editor.value) {
-      teardownEditor(getSanitizedEditorHtml(editor.value))
+      teardownEditor(getFinalEditorHtml(editor.value))
     }
   },
   { immediate: true },
@@ -451,7 +460,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('change', markTypographySelectInteraction, true)
 
   if (editor.value) {
-    teardownEditor(getSanitizedEditorHtml(editor.value))
+    teardownEditor(getFinalEditorHtml(editor.value))
   }
 
   if (pageBuilderStateStore.getInlineTipTapEditor) {

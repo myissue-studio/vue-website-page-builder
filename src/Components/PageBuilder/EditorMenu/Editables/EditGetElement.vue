@@ -10,14 +10,11 @@ import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
-import ModalBuilder from '../../../Modals/ModalBuilder.vue'
-import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 
 const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
 const emit = defineEmits<{
-  (event: 'open-global-page-settings'): void
   (event: 'open-image-settings'): void
 }>()
 
@@ -612,11 +609,6 @@ const handleShowHTMLEditor = async () => {
   pageBuilderStateStore.setShowModalHTMLEditor(true)
 }
 
-const handleOpenGlobalPageSettings = () => {
-  openOptionsMoreOpen.value = false
-  emit('open-global-page-settings')
-}
-
 const showModalDeleteComponent = ref(false)
 // use dynamic model
 const typeModal = ref('')
@@ -713,20 +705,9 @@ const handleDeleteElement = function () {
 const handleDuplicateElement = async function () {
   await pageBuilderService.duplicateElementInDOM()
 }
-
-const showThemeColorPresetsModal = ref(false)
 </script>
 <template v-if="getElement">
   <div class="pbx-max-w-full pbx-min-w-0">
-    <ModalBuilder
-      maxWidth="3xl"
-      :showModalBuilder="showThemeColorPresetsModal"
-      :title="translate('Theme Color Presets')"
-      @closeMainModalBuilder="showThemeColorPresetsModal = false"
-    >
-      <ThemeColorPresetManager></ThemeColorPresetManager>
-    </ModalBuilder>
-
     <DynamicModalBuilder
       :showDynamicModalBuilder="showModalIframeSrc"
       maxWidth="2xl"
@@ -1327,27 +1308,6 @@ const showThemeColorPresetsModal = ref(false)
 
           <!-- Title feature start -->
           <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
-            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Theme & colors') }}</p>
-            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
-          </div>
-          <!-- Title feature end -->
-
-          <div
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
-            @click.stop="showThemeColorPresetsModal = true"
-          >
-            <div
-              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
-            >
-              <span class="material-symbols-outlined"> palette </span>
-            </div>
-            <div class="pbx-text-sm">
-              {{ translate('Theme Color Presets') }}
-            </div>
-          </div>
-
-          <!-- Title feature start -->
-          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
             <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Advanced tools') }}</p>
             <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
           </div>
@@ -1364,25 +1324,6 @@ const showThemeColorPresetsModal = ref(false)
               <span class="material-symbols-outlined"> deployed_code </span>
             </div>
             <div class="pbx-text-sm">{{ translate('HTML Editor') }}</div>
-          </div>
-
-          <!-- Title feature start -->
-          <div class="pbx-mt-6 pbx-mb-2 pbx-w-full">
-            <p class="pbx-myPrimaryParagraph pbx-text-xs">{{ translate('Page settings') }}</p>
-            <div class="pbx-border-t pbx-border-gray-300 pbx-w-full"></div>
-          </div>
-          <!-- Title feature end -->
-          <div
-            v-if="getElement && getComponent"
-            @click="handleOpenGlobalPageSettings"
-            class="pbx-flex pbx-items-center pbx-justify-start pbx-gap-2 pbx-cursor-pointer hover:pbx-bg-emerald-400 pbx-py-2 pbx-px-2 pbx-rounded-none pbx-mt-1 pbx-border pbx-border-gray-300"
-          >
-            <div
-              class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 hover:pbx-scale-105"
-            >
-              <SliderIcon />
-            </div>
-            <div class="pbx-text-sm">{{ translate('Global Page Styles') }}</div>
           </div>
 
           <!-- content end -->

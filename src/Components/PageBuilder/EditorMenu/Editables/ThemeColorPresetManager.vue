@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
+import HexColorPicker from '../../../Inputs/HexColorPicker.vue'
 import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useTranslations } from '../../../../composables/useTranslations'
 import type { ThemeColorPreset, ThemeColorPresetId } from '../../../../types'
+
+defineProps<{
+  embedded?: boolean
+}>()
 
 const { translate } = useTranslations()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -63,10 +68,8 @@ function updatePresetEnabled(id: ThemeColorPresetId, enabled: boolean): void {
   updateThemeColorPreset(id, { enabled })
 }
 
-function updatePresetColorFromEvent(preset: ThemeColorPreset, event: Event): void {
-  const input = event.target
-  if (!(input instanceof HTMLInputElement)) return
-  updateThemeColorPreset(preset.id, { color: input.value })
+function updatePresetColor(preset: ThemeColorPreset, color: string): void {
+  updateThemeColorPreset(preset.id, { color })
 }
 
 // ---------------------------------------------------------------------------
@@ -104,7 +107,7 @@ function confirmReset(): void {
 </script>
 
 <template>
-  <div class="pbx-flex pbx-flex-col pbx-gap-4 pbx-mb-20">
+  <div class="pbx-flex pbx-flex-col pbx-gap-4" :class="embedded ? '' : 'pbx-mb-20'">
     <div
       class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
     >
@@ -188,56 +191,13 @@ function confirmReset(): void {
             <!-- Color picker popover -->
             <div
               v-if="openPickerId === preset.id"
-              class="pbx-absolute pbx-right-0 pbx-z-50 pbx-bg-white pbx-rounded-xl pbx-border pbx-border-gray-100 pbx-overflow-hidden"
-              style="
-                top: calc(100% + 8px);
-                width: 200px;
-                box-shadow:
-                  0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                  0 2px 4px -2px rgba(0, 0, 0, 0.07),
-                  0 0 0 1px rgba(0, 0, 0, 0.04);
-              "
+              class="pbx-absolute pbx-right-0 pbx-z-50 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-shadow-lg"
+              style="top: calc(100% + 8px); width: 266px"
               @click.stop
             >
-              <!-- Large colour preview strip -->
-              <div
-                :style="{ backgroundColor: preset.color }"
-                style="width: 100%; height: 72px"
-              ></div>
-
-              <div class="pbx-p-3 pbx-flex pbx-flex-col pbx-gap-2">
-                <!-- Current hex value label -->
-                <p
-                  class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-my-0 pbx-text-center pbx-tracking-wider pbx-uppercase"
-                >
-                  {{ preset.color }}
-                </p>
-
-                <!-- Open native colour wheel — plain label/input, no JS ref needed -->
-                <label
-                  :for="'color-wheel-' + preset.id"
-                  class="pbx-myPrimaryButton pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-w-full pbx-cursor-pointer"
-                >
-                  <span class="material-symbols-outlined pbx-text-base pbx-leading-none">
-                    colorize
-                  </span>
-                  {{ translate('Color wheel') }}
-                </label>
-              </div>
-
-              <!-- Hidden native colour input associated with the label above -->
-              <input
-                :id="'color-wheel-' + preset.id"
-                :value="preset.color"
-                type="color"
-                style="
-                  position: absolute;
-                  opacity: 0;
-                  width: 1px;
-                  height: 1px;
-                  pointer-events: none;
-                "
-                @input="(event) => updatePresetColorFromEvent(preset, event)"
+              <HexColorPicker
+                :model-value="preset.color"
+                @update:model-value="(color) => updatePresetColor(preset, color)"
               />
             </div>
           </div>

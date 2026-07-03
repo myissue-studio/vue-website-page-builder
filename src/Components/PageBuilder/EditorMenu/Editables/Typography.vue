@@ -142,7 +142,7 @@ watch(
     <template #title>{{ translate('Typographies') }}</template>
     <template #content>
       <!-- FONT SIZES -->
-      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-py-0 pbx-my-4">
+      <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-pt-6">
         {{ translate('Font Appearance') }}
       </p>
       <template v-if="false">

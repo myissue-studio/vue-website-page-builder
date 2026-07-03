@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { delay } from '../composables/delay'
 import { isEmptyObject } from '../helpers/isEmptyObject'
 import { extractCleanHTMLFromPageBuilder } from '../composables/extractCleanHTMLFromPageBuilder'
+import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { useTranslations } from '../composables/useTranslations'
 
 function scrollContainerToCenterElement(
@@ -1424,10 +1425,12 @@ export class PageBuilderService {
     }
 
     const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
-    const html = prosemirror?.innerHTML ?? inlineElement.innerHTML
+    const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
+    const html = finalizeInlineTipTapHtml(prosemirror?.innerHTML ?? inlineElement.innerHTML, originalHtml)
 
     inlineElement.innerHTML = html
     inlineElement.removeAttribute('data-pbx-inline-tiptap')
+    inlineElement.removeAttribute('data-pbx-inline-original-html')
     this.pageBuilderStateStore.setTextAreaVueModel(html)
     this.pageBuilderStateStore.setElement(inlineElement)
 
@@ -1509,6 +1512,9 @@ export class PageBuilderService {
     element.setAttribute('selected', '')
 
     this.pageBuilderStateStore.setElement(element)
+
+    await nextTick()
+    await this.initializeElementStyles()
 
     if (shouldAutoSave) {
       await this.handleAutoSave()

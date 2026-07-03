@@ -7,8 +7,6 @@ import { getPageBuilder } from '../../../../composables/builderInstance'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
-import ModalBuilder from '../../../Modals/ModalBuilder.vue'
-import ThemeColorPresetManager from './ThemeColorPresetManager.vue'
 
 const { translate } = useTranslations()
 
@@ -23,7 +21,6 @@ defineProps({
 })
 
 const textColor = ref<string | null>(null)
-const showThemeColorPresetsModal = ref(false)
 const getTextColor = computed(() => {
   return pageBuilderStateStore.getTextColor
 })
@@ -121,14 +118,6 @@ watch(
 
           <span class="material-symbols-outlined"> chevron_right </span>
         </ListboxButton>
-        <button
-          type="button"
-          class="pbx-m-2 pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-          :title="translate('Theme Color Presets')"
-          @click.stop="showThemeColorPresetsModal = true"
-        >
-          <span class="material-symbols-outlined"> palette </span>
-        </button>
       </div>
 
       <transition
@@ -157,7 +146,7 @@ watch(
                 <div
                   class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-black"
                 ></div>
-                <span class="pbx-ml-3">{{ translate('Default black') }}</span>
+                <span class="pbx-ml-3 hover:pbx-text-white">{{ translate('Default black') }}</span>
               </div>
             </li>
           </ListboxOption>
@@ -199,6 +188,12 @@ watch(
               class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
             ></div>
           </template>
+          <div
+            v-if="tailwindTextColors.length > 0"
+            class="pbx-px-3 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500"
+          >
+            {{ translate('Built-in colors') }}
+          </div>
           <ListboxOption
             as="template"
             v-for="color in tailwindTextColors"
@@ -239,12 +234,13 @@ watch(
       }"
       @click.stop="toggleTextColorMenu"
     >
-      <span class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-leading-none" aria-hidden="true">
+      <span
+        class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-leading-none"
+        aria-hidden="true"
+      >
         <span
           class="pbx-text-sm pbx-font-bold pbx-leading-none"
-          :class="
-            isTextColorMenuOpen ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
-          "
+          :class="isTextColorMenuOpen ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'"
         >
           A
         </span>
@@ -279,7 +275,7 @@ watch(
           <div
             class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-black"
           ></div>
-          <span>{{ translate('Default black') }}</span>
+          <span class="pbx-text-black hover:pbx-text-white">{{ translate('Default black') }}</span>
         </button>
         <div
           v-if="enabledThemeColorPresets.length > 0 || tailwindTextColors.length > 0"
@@ -310,6 +306,12 @@ watch(
             class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
           ></div>
         </template>
+        <div
+          v-if="tailwindTextColors.length > 0"
+          class="pbx-px-2 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500"
+        >
+          {{ translate('Built-in colors') }}
+        </div>
         <button
           v-for="color in tailwindTextColors"
           :key="color"
@@ -329,13 +331,4 @@ watch(
       </div>
     </Teleport>
   </div>
-
-  <ModalBuilder
-    maxWidth="3xl"
-    :showModalBuilder="showThemeColorPresetsModal"
-    :title="translate('Theme Color Presets')"
-    @closeMainModalBuilder="showThemeColorPresetsModal = false"
-  >
-    <ThemeColorPresetManager></ThemeColorPresetManager>
-  </ModalBuilder>
 </template>

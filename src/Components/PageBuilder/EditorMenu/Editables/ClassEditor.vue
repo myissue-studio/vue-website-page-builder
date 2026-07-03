@@ -55,7 +55,7 @@ const handleAddClasses = async () => {
   <EditorAccordion>
     <template #title>{{ translate('Generated CSS') }}</template>
     <template #content>
-      <p class="pbx-myPrimaryInputLabel pbx-my-4">
+      <p class="pbx-editorSectionDesc">
         {{
           translate(
             'This is the CSS applied by the builder. Add your own CSS and press Enter to apply it to the selected element.',
@@ -63,7 +63,7 @@ const handleAddClasses = async () => {
         }}
       </p>
 
-      <div class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-2 pbx-mt-2 pbx-mb-4">
+      <div class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-2 pbx-mb-4">
         <div
           v-for="className in currentClasses"
           :key="className"
@@ -84,17 +84,19 @@ const handleAddClasses = async () => {
       </div>
 
       <hr />
-      <div class="pbx-my-2 pbx-py-2">
-        <label for="custom-css" class="pbx-myPrimaryInputLabel">
-          {{ translate('Add your CSS.') }}
-          <br />
+      <p class="pbx-editorSectionTitle">
+        {{ translate('Add your CSS.') }}
+      </p>
+      <div class="pbx-editorFieldGroup">
+        <p class="pbx-editorSectionDesc pbx-mb-2">
           {{ translate('The pbx- prefix is added automatically.') }}
-        </label>
+        </p>
         <div class="pbx-flex pbx-gap-2 pbx-item-center">
           <input
             id="custom-css"
             v-model="inputClass"
             type="text"
+            :aria-label="translate('Add your CSS.')"
             :placeholder="translate('Type class')"
             @keydown.enter="handleAddClasses()"
             autocomplete="off"

@@ -1231,7 +1231,6 @@ onBeforeUnmount(() => {
         >
           <template v-if="getElement">
             <EditGetElement
-              @open-global-page-settings="openGlobalPageSettings"
               @open-image-settings="openImageSettings"
             ></EditGetElement>
           </template>

@@ -641,6 +641,7 @@ describe('PageBuilderService', () => {
       if (!element || !heading) return
 
       vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
       await (
         service as unknown as {
           addListenersToEditableElements: () => Promise<void>
@@ -656,6 +657,8 @@ describe('PageBuilderService', () => {
 
       heading.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
       await Promise.resolve()
+      await Promise.resolve()
+      await new Promise((resolve) => setTimeout(resolve, 0))
 
       expect(element.hasAttribute('selected')).toBe(true)
       expect(mockStore.setElement).toHaveBeenCalledWith(element)

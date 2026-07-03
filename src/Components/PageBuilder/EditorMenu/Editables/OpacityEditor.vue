@@ -11,8 +11,14 @@ const { translate } = useTranslations()
   <EditorAccordion>
     <template #title>{{ translate('Opacity & Transparency') }}</template>
     <template #content>
+      <p class="pbx-editorSectionTitle">
+        {{ translate('Opacity') }}
+      </p>
       <ManageOpacity></ManageOpacity>
       <hr />
+      <p class="pbx-editorSectionTitle">
+        {{ translate('Background Opacity') }}
+      </p>
       <ManageBackgroundOpacity></ManageBackgroundOpacity>
     </template>
   </EditorAccordion>
