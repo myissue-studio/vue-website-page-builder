@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import BaseModal from '../../../Modals/BaseModal.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
 const props = defineProps<{
   show: boolean
@@ -31,15 +32,12 @@ function onHtmlInput(event: Event) {
 
 async function copyHtml() {
   if (!props.html) return
-
-  try {
-    await navigator.clipboard.writeText(props.html)
+  const didCopy = await copyTextWithToast(props.html)
+  if (didCopy) {
     copied.value = true
     globalThis.setTimeout(() => {
       copied.value = false
     }, 2000)
-  } catch {
-    // Clipboard unavailable.
   }
 }
 </script>
@@ -88,35 +86,27 @@ async function copyHtml() {
       <p v-if="error" class="pbx-myPrimaryParagraphError">Error: {{ error }}</p>
     </div>
 
-    <div
-      class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-flex pbx-items-center pbx-justify-end"
-    >
-      <div class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center">
-        <div
-          class="sm:pbx-grid-cols-2 sm:pbx-items-end sm:pbx-justify-end pbx-flex pbx-flex-row pbx-myPrimaryGap pbx-w-full"
-        >
-          <template v-if="!isLoading">
-            <button type="button" class="pbx-mySecondaryButton" @click="$emit('close')">
-              {{ translate('Close') }}
-            </button>
-            <button type="button" class="pbx-myPrimaryButton" @click="$emit('save')">
-              {{ translate('Save') }}
-            </button>
-          </template>
-          <template v-else>
-            <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
-              <div
-                class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-              >
-                <span
-                  class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-                  >Loading...</span
-                >
-              </div>
-            </div>
-          </template>
+    <template #actions>
+      <template v-if="!isLoading">
+        <button type="button" class="pbx-mySecondaryButton" @click="$emit('close')">
+          {{ translate('Close') }}
+        </button>
+        <button type="button" class="pbx-myPrimaryButton" @click="$emit('save')">
+          {{ translate('Save') }}
+        </button>
+      </template>
+      <template v-else>
+        <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
+          <div
+            class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
+          >
+            <span
+              class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
+              >Loading...</span
+            >
+          </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </template>
   </BaseModal>
 </template>

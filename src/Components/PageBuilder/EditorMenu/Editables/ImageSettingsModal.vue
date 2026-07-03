@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 import { sleep } from '@/utils/sleep'
 
 const props = defineProps<{
@@ -10,6 +11,7 @@ const props = defineProps<{
 }>()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 
@@ -93,6 +95,7 @@ async function saveAltText() {
     await pageBuilderService.handleImageAltText(imageAltText.value)
     savedAltText.value = imageAltText.value.trim()
     settingsTick.value++
+    showToast(translate('Image settings saved'), 'success')
   } finally {
     isSavingAlt.value = false
   }

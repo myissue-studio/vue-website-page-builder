@@ -7,6 +7,8 @@ import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
+import ColorMenuCustomSection from './ColorMenuCustomSection.vue'
+import CustomHexColorModal from './CustomHexColorModal.vue'
 
 const { translate } = useTranslations()
 
@@ -37,6 +39,8 @@ const {
   close: closeTextColorMenu,
   toggle: toggleTextColorMenu,
 } = useEditToolbarPopover({ width: 224 })
+
+const showCustomHexModal = ref(false)
 
 const selectedCustomTextColor = computed(() => {
   return textColor.value?.startsWith('custom:') ? textColor.value.replace('custom:', '') : ''
@@ -78,6 +82,20 @@ function selectTailwindTextColor(color: string): void {
   textColor.value = color
   pageBuilderService.handleTextColor(color)
   closeTextColorMenu()
+}
+
+function applyCustomHexColor(color: string): void {
+  textColor.value = `custom:${color}`
+  pageBuilderService.handleCustomTextColor(color)
+}
+
+function openCustomHexModal(): void {
+  closeTextColorMenu()
+  showCustomHexModal.value = true
+}
+
+function closeCustomHexModal(): void {
+  showCustomHexModal.value = false
 }
 
 watch(
@@ -150,6 +168,13 @@ watch(
               </div>
             </li>
           </ListboxOption>
+          <div
+            class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
+          ></div>
+          <ColorMenuCustomSection
+            :model-value="selectedCustomTextColor"
+            @open="openCustomHexModal"
+          />
           <div
             v-if="enabledThemeColorPresets.length > 0 || tailwindTextColors.length > 0"
             class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
@@ -277,6 +302,8 @@ watch(
           ></div>
           <span class="pbx-text-black hover:pbx-text-white">{{ translate('Default black') }}</span>
         </button>
+        <div class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
+        <ColorMenuCustomSection :model-value="selectedCustomTextColor" @open="openCustomHexModal" />
         <div
           v-if="enabledThemeColorPresets.length > 0 || tailwindTextColors.length > 0"
           class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
@@ -291,7 +318,8 @@ watch(
             type="button"
             class="pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
             :class="{
-              'pbx-bg-myPrimaryLinkColor pbx-text-white': textColor === `custom:${preset.color}`,
+              'pbx-bg-myPrimaryLinkColor pbx-text-myPrimaryDarkGrayColor':
+                textColor === `custom:${preset.color}`,
             }"
             @click="applyThemeTextColor(preset.color)"
           >
@@ -331,4 +359,12 @@ watch(
       </div>
     </Teleport>
   </div>
+
+  <CustomHexColorModal
+    :show="showCustomHexModal"
+    :initial-color="selectedCustomTextColor"
+    :title="translate('Text Color')"
+    @close="closeCustomHexModal"
+    @apply="applyCustomHexColor"
+  />
 </template>

@@ -2,6 +2,8 @@ import { ref } from 'vue'
 import { formatHtml } from '../utils/builder/prettify-html'
 import { getPageBuilder } from './usePageBuilder'
 import { sleep } from '../utils/sleep'
+import { useToast } from './useToast'
+import { useTranslations } from './useTranslations'
 
 export type HtmlEditorMode = 'element' | 'page'
 
@@ -34,6 +36,8 @@ export function useHtmlCodeEditor() {
 
   async function saveHtmlEditor() {
     const pageBuilderService = getPageBuilder()
+    const { showToast } = useToast()
+    const { translate } = useTranslations()
     isLoading.value = true
     error.value = null
     await sleep(300)
@@ -45,10 +49,12 @@ export function useHtmlCodeEditor() {
 
     if (saveError) {
       error.value = saveError
+      showToast(saveError, 'error')
       isLoading.value = false
       return
     }
 
+    showToast(translate('HTML updated successfully'), 'success')
     show.value = false
     isLoading.value = false
   }

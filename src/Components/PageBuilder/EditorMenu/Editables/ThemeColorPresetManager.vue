@@ -6,6 +6,7 @@ import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 import type { ThemeColorPreset, ThemeColorPresetId } from '../../../../types'
 
 defineProps<{
@@ -13,6 +14,7 @@ defineProps<{
 }>()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 const pageBuilderStateStore = sharedPageBuilderStore
 const getPageBuilderConfig = computed(() => pageBuilderStateStore.getPageBuilderConfig)
 
@@ -100,9 +102,9 @@ function closeResetModal(): void {
 
 function confirmReset(): void {
   resetToConfigDefaults()
-  // Clear local editing state so fields immediately show the restored values.
   editingHex.value = {}
   showResetModal.value = false
+  showToast(translate('Theme colors reset to defaults'), 'success')
 }
 </script>
 

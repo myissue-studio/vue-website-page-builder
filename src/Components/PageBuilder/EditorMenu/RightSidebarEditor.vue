@@ -18,11 +18,13 @@ import DownloadHtmlSettingsSection from './Editables/DownloadHtmlSettingsSection
 import SelectedHtmlSettingsSection from './Editables/SelectedHtmlSettingsSection.vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
+import { useToast } from '../../../composables/useToast'
 import BaseModal from '../../Modals/BaseModal.vue'
 import PageDesignEditor from './Editables/PageDesignEditor.vue'
 import { sleep } from '../../../utils/sleep'
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -94,7 +96,12 @@ const openHTMLSettings = async function () {
 const closeHTMLSettings = async function () {
   isLoading.value = true
   await sleep(200)
-  await pageBuilderService.handleManualSave()
+  try {
+    await pageBuilderService.handleManualSave()
+    showToast(translate('Page saved successfully'), 'success')
+  } catch {
+    showToast(translate('Could not save page'), 'error')
+  }
 
   pageBuilderService.stopGlobalStylesSync()
 

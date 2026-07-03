@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import BaseModal from '../../../Modals/BaseModal.vue'
 import { prettifyHtml } from '../../../../utils/builder/prettify-html'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
 const props = defineProps<{
   show: boolean
@@ -26,15 +27,12 @@ const lineCount = computed(() => {
 
 async function copyHtml() {
   if (!props.html) return
-
-  try {
-    await navigator.clipboard.writeText(props.html)
+  const didCopy = await copyTextWithToast(props.html)
+  if (didCopy) {
     copied.value = true
     globalThis.setTimeout(() => {
       copied.value = false
     }, 2000)
-  } catch {
-    // Clipboard unavailable.
   }
 }
 </script>
@@ -47,7 +45,7 @@ async function copyHtml() {
     :z-index="10001"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-py-6">
+    <div>
       <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
 
       <div v-else class="pbx-htmlCodeViewer">

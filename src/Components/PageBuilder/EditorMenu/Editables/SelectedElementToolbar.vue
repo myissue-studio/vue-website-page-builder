@@ -10,9 +10,11 @@ import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 const pageBuilderService = getPageBuilder()
 const emit = defineEmits<{
   (event: 'open-image-settings'): void
@@ -661,7 +663,7 @@ const handleDelete = function () {
   // handle click
   thirdModalButtonFunctionDynamicModalBuilder.value = async function () {
     await pageBuilderService.deleteComponentFromDOM()
-
+    showToast(translate('Component deleted'), 'success')
     showModalDeleteComponent.value = false
   }
   // end modal
@@ -716,6 +718,10 @@ const handleDeleteElement = function () {
 
   thirdModalButtonFunctionDynamicModalBuilder.value = async function () {
     await pageBuilderService.deleteElementFromDOM()
+    showToast(
+      translate(willEmptySection ? 'Element and component deleted' : 'Element deleted'),
+      'success',
+    )
     showModalDeleteComponent.value = false
   }
 }
@@ -723,6 +729,12 @@ const handleDeleteElement = function () {
 // duplicate individual HTML element (not the whole component)
 const handleDuplicateElement = async function () {
   await pageBuilderService.duplicateElementInDOM()
+  showToast(translate('Element duplicated'), 'success')
+}
+
+const handleDuplicateComponent = async function () {
+  await pageBuilderService.duplicateComponent()
+  showToast(translate('Component duplicated'), 'success')
 }
 </script>
 <template v-if="getElement">
@@ -1237,7 +1249,7 @@ const handleDuplicateElement = async function () {
             @click="
               () => {
                 closeMoreMenu()
-                pageBuilderService.duplicateComponent()
+                handleDuplicateComponent()
               }
             "
           >

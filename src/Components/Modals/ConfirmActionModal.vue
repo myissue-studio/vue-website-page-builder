@@ -103,12 +103,10 @@ const thirdButtonBuilder = function () {
       </div>
     </div>
 
-    <div
-      class="pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-mt-4 pbx-flex pbx-items-center pbx-justify-end"
-    >
+    <template #actions>
       <div
         v-if="simpleModal !== true && !isLoading"
-        class="pbx-py-4 pbx-flex sm:pbx-justify-end pbx-justify-center"
+        class="pbx-flex sm:pbx-justify-end pbx-justify-center"
       >
         <slot name="footer" />
         <div
@@ -155,7 +153,7 @@ const thirdButtonBuilder = function () {
       </div>
 
       <template v-if="isLoading">
-        <div class="pbx-flex pbx-items-center pbx-my-2 pbx-py-4 pbx-px-2 pbx-justify-end">
+        <div class="pbx-flex pbx-items-center pbx-my-2 pbx-px-2 pbx-justify-end">
           <div
             class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
           >
@@ -166,7 +164,7 @@ const thirdButtonBuilder = function () {
           </div>
         </div>
       </template>
-    </div>
+    </template>
   </BaseModal>
 </template>
 

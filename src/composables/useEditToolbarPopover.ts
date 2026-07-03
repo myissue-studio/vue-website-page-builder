@@ -62,6 +62,7 @@ export function useEditToolbarPopover(options: UseEditToolbarPopoverOptions = {}
     if (!(event.target instanceof Node)) return
     if (triggerRef.value?.contains(event.target)) return
     if (popoverRef.value?.contains(event.target)) return
+    if (event.target instanceof Element && event.target.closest('#pbx-modal')) return
     isOpen.value = false
   }
 

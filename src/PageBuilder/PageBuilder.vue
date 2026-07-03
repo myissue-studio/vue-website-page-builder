@@ -20,8 +20,10 @@ import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
 import HtmlCodeViewerModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlCodeViewerModal.vue'
 import HtmlEditorModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
+import ToastContainer from '../Components/Toast/ToastContainer.vue'
 import { useHtmlCodeViewer } from '../composables/useHtmlCodeViewer'
 import { useHtmlCodeEditor } from '../composables/useHtmlCodeEditor'
+import { useToast } from '../composables/useToast'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
@@ -65,6 +67,7 @@ const props = defineProps({
 })
 
 const { translate, loadTranslations } = useTranslations()
+const { showToast } = useToast()
 
 // Use shared Pinia instance for PageBuilder package
 const internalPinia = sharedPageBuilderPinia
@@ -126,9 +129,23 @@ const acceptClosePageBuilder = function () {
 }
 const closePublish = async function () {
   pageBuilderStateStore.setIsLoadingGlobal(true)
-  await pageBuilderService.handleManualSave()
+  try {
+    await pageBuilderService.handleManualSave()
+    showToast(translate('Page saved successfully'), 'success')
+  } catch {
+    showToast(translate('Could not save page'), 'error')
+  }
   pageBuilderStateStore.setIsLoadingGlobal(false)
   emit('handlePublishPageBuilder')
+}
+
+async function savePageWithToast(): Promise<void> {
+  try {
+    await pageBuilderService.handleManualSave()
+    showToast(translate('Page saved successfully'), 'success')
+  } catch {
+    showToast(translate('Could not save page'), 'error')
+  }
 }
 
 // Provide modal close function for custom components
@@ -454,7 +471,12 @@ const handleRestoreOriginalContent = async function () {
 
   secondModalButtonRestoreFunction.value = async function () {}
   thirdModalButtonRestoreFunction.value = async function () {
-    await pageBuilderService.restoreOriginalContent()
+    try {
+      await pageBuilderService.restoreOriginalContent()
+      showToast(translate('Page restored to original version'), 'success')
+    } catch {
+      showToast(translate('Could not restore page'), 'error')
+    }
     showModalRestore.value = false
   }
 
@@ -806,7 +828,7 @@ onBeforeUnmount(() => {
             @click.stop="
               async () => {
                 await pageBuilderService.clearHtmlSelection()
-                await pageBuilderService.handleManualSave()
+                await savePageWithToast()
               }
             "
             type="button"
@@ -1323,6 +1345,7 @@ onBeforeUnmount(() => {
     :html="htmlViewerHtml"
     @close="closeHtmlViewer"
   />
+  <ToastContainer />
 </template>
 
 <style>

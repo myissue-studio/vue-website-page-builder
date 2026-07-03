@@ -23,10 +23,12 @@ import { computed, ref, nextTick } from 'vue'
 import type { ComputedRef } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { sleep } from '../utils/sleep'
+import { useToast } from '../composables/useToast'
+import { useTranslations } from '../composables/useTranslations'
 import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
-import { useTranslations } from '../composables/useTranslations'
+import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 
 function scrollContainerToCenterElement(
   container: HTMLElement,
@@ -1563,6 +1565,9 @@ export class PageBuilderService {
           await sleep(400)
         } catch (err) {
           console.error('Error trying auto save.', err)
+          const { showToast } = useToast()
+          const { translate } = useTranslations()
+          showToast(translate('Auto-save failed — please save manually'), 'error')
         } finally {
           this.pageBuilderStateStore.setIsSaving(false)
         }
@@ -1575,6 +1580,9 @@ export class PageBuilderService {
         await sleep(400)
       } catch (err) {
         console.error('Error trying saving.', err)
+        const { showToast } = useToast()
+        const { translate } = useTranslations()
+        showToast(translate('Auto-save failed — please save manually'), 'error')
       } finally {
         this.pageBuilderStateStore.setIsSaving(false)
       }
@@ -2019,7 +2027,9 @@ export class PageBuilderService {
     if (color === undefined) {
       const customColor = this.getElement.value?.style.getPropertyValue('background-color')
       if (customColor) {
-        this.pageBuilderStateStore.setBackgroundColor(`custom:${customColor}`)
+        this.pageBuilderStateStore.setBackgroundColor(
+          `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
+        )
         return
       }
     } else {
@@ -2051,7 +2061,9 @@ export class PageBuilderService {
     if (color === undefined) {
       const customColor = this.getElement.value?.style.getPropertyValue('color')
       if (customColor) {
-        this.pageBuilderStateStore.setTextColor(`custom:${customColor}`)
+        this.pageBuilderStateStore.setTextColor(
+          `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
+        )
         return
       }
     } else {
