@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import BaseModal from '../../../Modals/BaseModal.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const { translate } = useTranslations()
+const copied = ref(false)
 
 const lineCount = computed(() => {
   if (!props.html) return 0
@@ -26,6 +27,20 @@ const lineCount = computed(() => {
 
 function onHtmlInput(event: Event) {
   emit('update:html', (event.target as HTMLTextAreaElement).value)
+}
+
+async function copyHtml() {
+  if (!props.html) return
+
+  try {
+    await navigator.clipboard.writeText(props.html)
+    copied.value = true
+    globalThis.setTimeout(() => {
+      copied.value = false
+    }, 2000)
+  } catch {
+    // Clipboard unavailable.
+  }
 }
 </script>
 
@@ -37,30 +52,35 @@ function onHtmlInput(event: Event) {
     :z-index="10001"
     @closeMainModalBuilder="$emit('close')"
   >
-    <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
+    <div class="pbx-min-h-[10rem] pbx-py-6">
+      <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
 
-    <div v-else class="pbx-htmlCodeViewer">
-      <div class="pbx-htmlCodeViewerToolbar">
-        <div class="pbx-htmlCodeViewerToolbarLeft">
-          <span class="pbx-htmlCodeViewerBadge">HTML</span>
-          <span class="pbx-htmlCodeViewerMeta">
-            {{ lineCount }} {{ translate('lines') }}
-          </span>
-          <span class="pbx-htmlCodeViewerMeta pbx-htmlCodeViewerMetaMuted">
-            {{ translate('Editable') }}
-          </span>
+      <div v-else class="pbx-htmlCodeViewer">
+        <div class="pbx-htmlCodeViewerToolbar">
+          <div class="pbx-htmlCodeViewerToolbarLeft">
+            <span class="pbx-htmlCodeViewerBadge">HTML</span>
+            <span class="pbx-htmlCodeViewerMeta"> {{ lineCount }} {{ translate('lines') }} </span>
+            <span class="pbx-htmlCodeViewerMeta pbx-htmlCodeViewerMetaMuted">
+              {{ translate('Editable') }}
+            </span>
+          </div>
+          <button type="button" class="pbx-htmlCodeViewerCopy" @click="copyHtml">
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ copied ? 'check' : 'content_copy' }}
+            </span>
+          </button>
         </div>
-      </div>
 
-      <div class="pbx-htmlCodeViewerSurface">
-        <textarea
-          id="html-editor"
-          class="pbx-htmlCodeEditorTextarea"
-          :value="html"
-          :aria-label="title"
-          spellcheck="false"
-          @input="onHtmlInput"
-        ></textarea>
+        <div class="pbx-htmlCodeViewerSurface">
+          <textarea
+            id="html-editor"
+            class="pbx-htmlCodeEditorTextarea"
+            :value="html"
+            :aria-label="title"
+            spellcheck="false"
+            @input="onHtmlInput"
+          ></textarea>
+        </div>
       </div>
     </div>
 

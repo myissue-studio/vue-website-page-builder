@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { formatHtml } from '../utils/builder/prettify-html'
 import { getPageBuilder } from './usePageBuilder'
 import { sleep } from '../utils/sleep'
 
@@ -18,7 +19,7 @@ export function useHtmlCodeEditor() {
     editorMode: HtmlEditorMode = 'element',
   ) {
     title.value = modalTitle
-    html.value = modalHtml
+    html.value = formatHtml(modalHtml)
     mode.value = editorMode
     error.value = null
     isLoading.value = false

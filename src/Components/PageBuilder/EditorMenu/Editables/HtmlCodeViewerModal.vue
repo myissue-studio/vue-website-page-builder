@@ -47,26 +47,28 @@ async function copyHtml() {
     :z-index="10001"
     @closeMainModalBuilder="$emit('close')"
   >
-    <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
+    <div class="pbx-py-6">
+      <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
 
-    <div v-else class="pbx-htmlCodeViewer">
-      <div class="pbx-htmlCodeViewerToolbar">
-        <div class="pbx-htmlCodeViewerToolbarLeft">
-          <span class="pbx-htmlCodeViewerBadge">HTML</span>
-          <span class="pbx-htmlCodeViewerMeta"> {{ lineCount }} {{ translate('lines') }} </span>
-          <span class="pbx-htmlCodeViewerMeta pbx-htmlCodeViewerMetaMuted">
-            {{ translate('Read-only') }}
-          </span>
+      <div v-else class="pbx-htmlCodeViewer">
+        <div class="pbx-htmlCodeViewerToolbar">
+          <div class="pbx-htmlCodeViewerToolbarLeft">
+            <span class="pbx-htmlCodeViewerBadge">HTML</span>
+            <span class="pbx-htmlCodeViewerMeta"> {{ lineCount }} {{ translate('lines') }} </span>
+            <span class="pbx-htmlCodeViewerMeta pbx-htmlCodeViewerMetaMuted">
+              {{ translate('Read-only') }}
+            </span>
+          </div>
+          <button type="button" class="pbx-htmlCodeViewerCopy" @click="copyHtml">
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ copied ? 'check' : 'content_copy' }}
+            </span>
+          </button>
         </div>
-        <button type="button" class="pbx-htmlCodeViewerCopy" @click="copyHtml">
-          <span class="material-symbols-outlined" aria-hidden="true">
-            {{ copied ? 'check' : 'content_copy' }}
-          </span>
-        </button>
-      </div>
 
-      <div class="pbx-htmlCodeViewerSurface">
-        <pre class="pbx-htmlCodeViewerPre"><code v-html="prettifiedHtml"></code></pre>
+        <div class="pbx-htmlCodeViewerSurface">
+          <pre class="pbx-htmlCodeViewerPre"><code v-html="prettifiedHtml"></code></pre>
+        </div>
       </div>
     </div>
   </BaseModal>

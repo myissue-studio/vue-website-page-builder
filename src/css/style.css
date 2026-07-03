@@ -584,7 +584,7 @@
   }
 
   .pbx-htmlCodeViewer {
-    @apply pbx-flex pbx-min-h-[min(28rem,60vh)] pbx-flex-col pbx-overflow-hidden pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-950 pbx-shadow-inner;
+    @apply pbx-flex pbx-min-h-[min(28rem,60vh)] pbx-flex-col pbx-overflow-hidden pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-[#2f3549] pbx-bg-[#1e1e2e] pbx-shadow-inner;
   }
 
   .pbx-htmlCodeViewerToolbar {
@@ -620,35 +620,60 @@
   }
 
   .pbx-htmlCodeViewerPre {
-    @apply pbx-m-0 pbx-min-h-full pbx-px-4 pbx-py-4 pbx-font-mono pbx-text-[12px] pbx-leading-6 pbx-text-gray-100 pbx-whitespace-pre;
+    @apply pbx-m-0 pbx-min-h-full pbx-px-5 pbx-py-5 pbx-text-[#c0caf5] pbx-whitespace-pre;
+    font-family:
+      ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas,
+      monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    letter-spacing: 0.015em;
+    font-variant-ligatures: none;
+    tab-size: 2;
+    -moz-tab-size: 2;
+    -webkit-font-smoothing: antialiased;
   }
 
   .pbx-htmlCodeViewerPre code {
-    @apply pbx-block pbx-font-mono;
+    @apply pbx-block;
+    font: inherit;
+  }
+
+  .pbx-htmlCodeViewerPre .html-text-content {
+    color: #a9b1d6;
   }
 
   .pbx-htmlCodeViewerPre .html-tag-symbol {
-    color: #89b4fa;
+    color: #89ddff;
   }
 
   .pbx-htmlCodeViewerPre .html-tag-name {
-    color: #f5c2e7;
+    color: #7aa2f7;
   }
 
   .pbx-htmlCodeViewerPre .html-attribute-name {
-    color: #a6e3a1;
+    color: #bb9af7;
   }
 
   .pbx-htmlCodeViewerPre .html-attribute-value {
-    color: #f9e2af;
+    color: #9ece6a;
   }
 
   .pbx-htmlCodeViewerPre .html-operator {
-    color: #cdd6f4;
+    color: #89ddff;
   }
 
   .pbx-htmlCodeEditorTextarea {
-    @apply pbx-m-0 pbx-box-border pbx-block pbx-min-h-[min(28rem,60vh)] pbx-h-full pbx-w-full pbx-resize-y pbx-border-0 pbx-bg-transparent pbx-px-4 pbx-py-4 pbx-font-mono pbx-text-[12px] pbx-leading-6 pbx-text-gray-100 focus:pbx-outline-none;
+    @apply pbx-m-0 pbx-box-border pbx-block pbx-min-h-[min(28rem,60vh)] pbx-h-full pbx-w-full pbx-resize-y pbx-border-0 pbx-bg-transparent pbx-px-5 pbx-py-5 pbx-text-[#c0caf5] focus:pbx-outline-none;
+    font-family:
+      ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas,
+      monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    letter-spacing: 0.015em;
+    font-variant-ligatures: none;
+    tab-size: 2;
+    -moz-tab-size: 2;
+    -webkit-font-smoothing: antialiased;
   }
 
   /*
