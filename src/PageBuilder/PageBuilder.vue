@@ -20,6 +20,7 @@ import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
 import HtmlCodeViewerModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlCodeViewerModal.vue'
 import HtmlEditorModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
+import ToastContainer from '../Components/Toast/ToastContainer.vue'
 import { useHtmlCodeViewer } from '../composables/useHtmlCodeViewer'
 import { useHtmlCodeEditor } from '../composables/useHtmlCodeEditor'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
@@ -1323,6 +1324,7 @@ onBeforeUnmount(() => {
     :html="htmlViewerHtml"
     @close="closeHtmlViewer"
   />
+  <ToastContainer />
 </template>
 
 <style>

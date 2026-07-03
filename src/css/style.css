@@ -724,6 +724,30 @@
     @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4 pbx-shadow-sm;
   }
 
+  .pbx-toast {
+    @apply pbx-pointer-events-auto pbx-flex pbx-min-w-[15rem] pbx-max-w-sm pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-2xl pbx-px-5 pbx-py-3.5 pbx-shadow-lg;
+  }
+
+  .pbx-toastMessage {
+    @apply pbx-text-sm pbx-font-medium pbx-leading-snug;
+  }
+
+  .pbx-toastClose {
+    @apply pbx-inline-flex pbx-h-7 pbx-w-7 pbx-shrink-0 pbx-cursor-pointer pbx-items-center pbx-justify-center pbx-rounded-full pbx-border-0 pbx-bg-black/15 pbx-text-inherit pbx-transition-colors hover:pbx-bg-black/25 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-white/40;
+  }
+
+  .pbx-toastSuccess {
+    @apply pbx-bg-emerald-700 pbx-text-white;
+  }
+
+  .pbx-toastError {
+    @apply pbx-bg-red-600 pbx-text-white;
+  }
+
+  .pbx-toastWarning {
+    @apply pbx-bg-amber-300 pbx-text-gray-900;
+  }
+
   /*
     |--------------------------------------------------------------------------
     | Page design editor

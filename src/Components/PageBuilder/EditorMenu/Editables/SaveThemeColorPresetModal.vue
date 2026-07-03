@@ -4,6 +4,7 @@ import BaseModal from '../../../Modals/BaseModal.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { useToast } from '../../../../composables/useToast'
 import type { ThemeColorPresetId } from '../../../../types'
 
 const props = defineProps<{
@@ -17,12 +18,18 @@ const emit = defineEmits<{
 }>()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 const getPageBuilderConfig = computed(() => sharedPageBuilderStore.getPageBuilderConfig)
 const { themeColorPresetSettings, updateThemeColorPreset } =
   useThemeColorPresets(getPageBuilderConfig)
 
 function saveToPreset(id: ThemeColorPresetId): void {
+  const preset = themeColorPresetSettings.value.colors.find((item) => item.id === id)
   updateThemeColorPreset(id, { color: props.color, enabled: true })
+  showToast(
+    `${translate('Color saved to')} ${translate(preset?.label ?? id)}`,
+    'success',
+  )
   emit('saved', id)
   emit('close')
 }
