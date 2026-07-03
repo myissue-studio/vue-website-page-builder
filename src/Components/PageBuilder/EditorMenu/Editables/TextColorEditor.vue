@@ -228,7 +228,7 @@ watch(
     <div
       ref="textColorMenuTriggerRef"
       :title="translate('Text Color')"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md focus-visible:pbx-ring-0 hover:pbx-scale-105"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md focus-visible:pbx-ring-0"
       :class="{
         'pbx-bg-myPrimaryLinkColor pbx-text-white': isTextColorMenuOpen,
       }"
