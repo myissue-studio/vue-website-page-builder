@@ -587,6 +587,18 @@ const closeMoreMenuOnOutsideClick = function (event: Event) {
   openOptionsMoreOpen.value = false
 }
 
+const closeMoreMenu = () => {
+  openOptionsMoreOpen.value = false
+}
+
+const handleMoveComponentUp = () => {
+  pageBuilderService.reorderComponent(-1)
+}
+
+const handleMoveComponentDown = () => {
+  pageBuilderService.reorderComponent(1)
+}
+
 watch(openOptionsMoreOpen, (isOpen) => {
   if (isOpen) {
     attachMoreMenuPositionListeners()
@@ -1126,12 +1138,7 @@ const handleDuplicateElement = async function () {
             role="menuitem"
             class="pbx-toolbarMoreMenuItem"
             :disabled="!canMoveUp"
-            @click="
-              () => {
-                openOptionsMoreOpen = false
-                pageBuilderService.reorderComponent(-1)
-              }
-            "
+            @click="handleMoveComponentUp"
           >
             <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined" aria-hidden="true">
               move_up
@@ -1143,12 +1150,7 @@ const handleDuplicateElement = async function () {
             role="menuitem"
             class="pbx-toolbarMoreMenuItem"
             :disabled="!canMoveDown"
-            @click="
-              () => {
-                openOptionsMoreOpen = false
-                pageBuilderService.reorderComponent(1)
-              }
-            "
+            @click="handleMoveComponentDown"
           >
             <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined" aria-hidden="true">
               move_down
@@ -1162,7 +1164,7 @@ const handleDuplicateElement = async function () {
             class="pbx-toolbarMoreMenuItem"
             @click="
               () => {
-                openOptionsMoreOpen = false
+                closeMoreMenu()
                 pageBuilderService.reverseComponentLayout()
               }
             "
@@ -1185,7 +1187,7 @@ const handleDuplicateElement = async function () {
             class="pbx-toolbarMoreMenuItem"
             @click="
               () => {
-                openOptionsMoreOpen = false
+                closeMoreMenu()
                 handleDuplicateElement()
               }
             "
@@ -1201,7 +1203,7 @@ const handleDuplicateElement = async function () {
             class="pbx-toolbarMoreMenuItem pbx-toolbarMoreMenuItem--danger"
             @click="
               () => {
-                openOptionsMoreOpen = false
+                closeMoreMenu()
                 handleDeleteElement()
               }
             "
@@ -1221,7 +1223,7 @@ const handleDuplicateElement = async function () {
             class="pbx-toolbarMoreMenuItem"
             @click="
               () => {
-                openOptionsMoreOpen = false
+                closeMoreMenu()
                 pageBuilderService.duplicateComponent()
               }
             "
@@ -1243,7 +1245,7 @@ const handleDuplicateElement = async function () {
             class="pbx-toolbarMoreMenuItem pbx-toolbarMoreMenuItem--danger"
             @click="
               () => {
-                openOptionsMoreOpen = false
+                closeMoreMenu()
                 handleDelete()
               }
             "
