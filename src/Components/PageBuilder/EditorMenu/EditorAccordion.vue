@@ -20,7 +20,7 @@ defineExpose({ open, close, toggle: toggleExpanded })
 
 <template>
   <div
-    class="pbx-editorAccordion pbx-flex pbx-flex-col pbx-overflow-visible pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200"
+    class="pbx-editorAccordion pbx-flex pbx-flex-col pbx-overflow-visible pbx-border pbx-border-solid pbx-border-gray-200"
   >
     <div
       class="pbx-flex pbx-cursor-pointer pbx-select-none pbx-flex-row pbx-items-center pbx-justify-between pbx-bg-white pbx-px-4 pbx-py-4 pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor"

@@ -12,7 +12,6 @@ import BorderRadiusControl from './BorderRadiusControl.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BorderControls from './BorderControls.vue'
-import HTMLEditor from './HTMLEditor.vue'
 
 defineOptions({
   name: 'PageDesignEditor',
@@ -44,7 +43,7 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
 </script>
 
 <template>
-  <div class="pbx-pageDesignEditor">
+  <div class="pbx-pageDesignEditor pbx-min-h-[60rem]">
     <div v-if="isLoading" class="pbx-pageDesignLoading">
       <div
         class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent"
@@ -139,10 +138,6 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
             <p class="pbx-pageDesignCardLabel">{{ translate('Inline Styles') }}</p>
             <StyleEditor />
           </div>
-        </div>
-        <div class="pbx-pageDesignCard pbx-pageDesignCardWide pbx-mt-3">
-          <p class="pbx-pageDesignCardLabel">{{ translate('HTML Editor') }}</p>
-          <HTMLEditor />
         </div>
       </section>
     </template>

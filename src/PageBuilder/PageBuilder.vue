@@ -1404,6 +1404,7 @@ onBeforeUnmount(() => {
     maxWidth="7xl"
     :showModalBuilder="getShowModalHTMLEditor"
     :title="translate('HTML Editor')"
+    :z-index="10001"
     @closeMainModalBuilder="handleCloseHTMLEditor"
   >
     <template v-if="!getToggleGlobalHtmlMode">
