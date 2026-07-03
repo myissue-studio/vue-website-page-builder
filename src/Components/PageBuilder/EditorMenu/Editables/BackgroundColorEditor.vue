@@ -106,7 +106,7 @@ watch(
         >
           <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
             <div
-              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-sm pbx-border-solid"
+              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
               :class="
                 selectedCustomBackgroundColor
                   ? ''
@@ -186,7 +186,7 @@ watch(
               >
                 <div class="pbx-flex pbx-items-center">
                   <div
-                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-full"
                     :style="{ backgroundColor: preset.color }"
                   ></div>
                   <span class="pbx-ml-3">{{ translate(preset.label) }}</span>
@@ -222,7 +222,7 @@ watch(
             >
               <div class="pbx-flex pbx-items-center">
                 <div
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-full"
                   :class="`pbx-bg-${color.replace('pbx-bg-', '')}`"
                 ></div>
                 <span class="pbx-ml-3">{{ color }}</span>

@@ -99,7 +99,7 @@ watch(
         >
           <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
             <div
-              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-sm pbx-border-solid"
+              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
               :class="
                 selectedCustomTextColor
                   ? ''

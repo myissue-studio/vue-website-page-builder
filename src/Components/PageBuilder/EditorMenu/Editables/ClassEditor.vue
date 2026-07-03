@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
+import ClassTagsList from './ClassTagsList.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 
@@ -63,24 +64,17 @@ const handleAddClasses = async () => {
         }}
       </p>
 
-      <div class="pbx-flex pbx-flex-row pbx-flex-wrap pbx-gap-2 pbx-mb-4">
-        <div
-          v-for="className in currentClasses"
-          :key="className"
-          class="pbx-myPrimaryTag pbx-cursor-pointer hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-xs pbx-py-2 pbx-font-medium"
-          @click="
-            async () => {
+      <div class="pbx-mb-4">
+        <ClassTagsList
+          :classes="currentClasses"
+          removable
+          @remove="
+            async (className) => {
               pageBuilderService.handleRemoveClasses(className)
               await pageBuilderService.initializeElementStyles()
             }
           "
-        >
-          <div class="pbx-flex pbx-items-center pbx-gap-1">
-            <span class="pbx-mr-1">
-              {{ className }}
-            </span>
-          </div>
-        </div>
+        />
       </div>
 
       <hr />

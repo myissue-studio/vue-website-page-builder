@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
+import HtmlActionButton from './HtmlActionButton.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
+import { useHtmlCodeViewer } from '../../../../composables/useHtmlCodeViewer'
+import { useHtmlCodeEditor } from '../../../../composables/useHtmlCodeEditor'
 
 defineOptions({
   name: 'ElementHtmlEditorSettingsEditor',
@@ -9,10 +13,19 @@ defineOptions({
 
 const { translate } = useTranslations()
 const pageBuilderStateStore = sharedPageBuilderStore
+const { openHtmlViewer } = useHtmlCodeViewer()
+const { openHtmlEditor } = useHtmlCodeEditor()
+
+const getElement = computed(() => pageBuilderStateStore.getElement)
 
 const openElementHtmlEditor = () => {
-  pageBuilderStateStore.setToggleGlobalHtmlMode(false)
-  pageBuilderStateStore.setShowModalHTMLEditor(true)
+  if (!getElement.value) return
+  openHtmlEditor(translate('Element HTML'), getElement.value.outerHTML, 'element')
+}
+
+const openElementHtmlViewer = () => {
+  if (!getElement.value) return
+  openHtmlViewer(translate('Element HTML'), getElement.value.outerHTML)
 }
 </script>
 
@@ -24,20 +37,20 @@ const openElementHtmlEditor = () => {
         {{ translate('Element HTML editor description') }}
       </p>
 
-      <button type="button" class="pbx-pageDesignOpenButton" @click="openElementHtmlEditor">
-        <span class="material-symbols-outlined"> deployed_code </span>
-        <span class="pbx-pageDesignOpenButtonText">
-          <span class="pbx-pageDesignOpenButtonLabel">{{
-            translate('Open element HTML editor')
-          }}</span>
-          <span class="pbx-pageDesignOpenButtonHint">
-            {{ translate('Edit selected element markup') }}
-          </span>
-        </span>
-        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
-          arrow_forward
-        </span>
-      </button>
+      <div class="pbx-inspectorActionStack">
+        <HtmlActionButton
+          icon="visibility"
+          :label="translate('View element HTML')"
+          :hint="translate('Preview selected element markup')"
+          @click="openElementHtmlViewer"
+        />
+        <HtmlActionButton
+          icon="deployed_code"
+          :label="translate('Open element HTML editor')"
+          :hint="translate('Edit selected element markup')"
+          @click="openElementHtmlEditor"
+        />
+      </div>
     </template>
   </EditorAccordion>
 </template>

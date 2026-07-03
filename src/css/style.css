@@ -321,7 +321,10 @@
     @apply pbx-mt-6;
   }
 
-  :not(.pbx-editorEmbeddedSettings) .pbx-settingsSectionGroup > .pbx-settingsSection ~ .pbx-settingsSection {
+  :not(.pbx-editorEmbeddedSettings)
+    .pbx-settingsSectionGroup
+    > .pbx-settingsSection
+    ~ .pbx-settingsSection {
     @apply pbx-mt-8;
   }
 
@@ -405,11 +408,27 @@
   }
 
   .pbx-inspectorComponentsSummary {
-    @apply pbx-mb-3 pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-2 pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-2.5 pbx-text-xs pbx-font-medium pbx-text-gray-600;
+    @apply pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-2 pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-2.5 pbx-text-xs pbx-font-medium pbx-text-gray-600;
+  }
+
+  .pbx-inspectorComponentsSummaryToggle {
+    @apply pbx-mb-0 pbx-w-full pbx-cursor-pointer pbx-justify-between pbx-border-0 pbx-text-left pbx-transition-colors hover:pbx-bg-gray-100 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30;
+  }
+
+  .pbx-inspectorComponentsSummaryOpen {
+    @apply pbx-mb-3;
+  }
+
+  .pbx-inspectorComponentsSummaryContent {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-1 pbx-flex-wrap pbx-items-center pbx-gap-2;
+  }
+
+  .pbx-inspectorComponentsSummaryChevron {
+    @apply pbx-shrink-0 pbx-text-base pbx-text-gray-400;
   }
 
   .pbx-inspectorComponentsSummaryEmpty {
-    @apply pbx-justify-center pbx-border-dashed pbx-font-normal pbx-text-gray-500;
+    @apply pbx-mb-3 pbx-justify-center pbx-border-dashed pbx-font-normal pbx-text-gray-500;
   }
 
   .pbx-inspectorCountBadge {
@@ -417,7 +436,7 @@
   }
 
   .pbx-inspectorPanel {
-    @apply pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3;
+    @apply pbx-min-w-0 pbx-overflow-hidden pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3;
   }
 
   .pbx-inspectorEmpty {
@@ -480,6 +499,10 @@
     @apply pbx-mb-0 pbx-shrink-0;
   }
 
+  .pbx-inspectorMetaRowStacked {
+    @apply pbx-flex-col pbx-items-stretch pbx-gap-2;
+  }
+
   .pbx-inspectorList {
     @apply pbx-flex pbx-flex-col pbx-gap-2;
   }
@@ -501,11 +524,131 @@
   }
 
   .pbx-inspectorListTitle {
-    @apply pbx-min-w-0 pbx-flex-1 pbx-truncate;
+    @apply pbx-min-w-0 pbx-flex-1 pbx-truncate pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
   .pbx-inspectorListBody {
     @apply pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-p-3;
+  }
+
+  .pbx-inspectorActionStack {
+    @apply pbx-flex pbx-flex-col pbx-gap-2;
+  }
+
+  .pbx-inspectorComponentCard {
+    @apply pbx-min-w-0 pbx-overflow-hidden pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white;
+  }
+
+  .pbx-inspectorComponentCardToggle {
+    @apply pbx-flex pbx-w-full pbx-items-center pbx-justify-between pbx-gap-2 pbx-border-0 pbx-bg-gray-50 pbx-px-3 pbx-py-2.5 pbx-cursor-pointer pbx-text-left pbx-transition-colors hover:pbx-bg-gray-100 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-inset focus-visible:pbx-ring-myPrimaryLinkColor/30;
+  }
+
+  .pbx-inspectorComponentCardTitleContent {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-1 pbx-items-center pbx-gap-2;
+  }
+
+  .pbx-inspectorComponentCardBody {
+    @apply pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200;
+  }
+
+  .pbx-inspectorComponentCardMeta {
+    @apply pbx-m-0 pbx-mb-0 pbx-rounded-none pbx-border-0 pbx-bg-transparent;
+  }
+
+  .pbx-inspectorComponentCardFooter {
+    @apply pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-px-3 pbx-pb-3 pbx-pt-2;
+  }
+
+  .pbx-inspectorComponentCardFooter .pbx-pageDesignOpenButton {
+    @apply pbx-box-border pbx-w-full pbx-max-w-full;
+  }
+
+  .pbx-inspectorIdChip {
+    @apply pbx-inline-flex pbx-max-w-full pbx-items-center pbx-gap-1.5 pbx-rounded-md pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-2 pbx-py-1 pbx-font-mono pbx-text-[11px] pbx-text-gray-700 pbx-transition-colors hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-bg-gray-50 focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30;
+  }
+
+  .pbx-inspectorIdChipText {
+    @apply pbx-min-w-0 pbx-truncate;
+  }
+
+  .pbx-inspectorIdChipIcon {
+    @apply pbx-shrink-0 pbx-text-[14px] pbx-text-gray-400;
+  }
+
+  .pbx-inspectorIdChipCopied {
+    @apply pbx-shrink-0 pbx-text-[10px] pbx-font-sans pbx-font-medium pbx-text-emerald-600;
+  }
+
+  .pbx-inspectorCodeBlockModal {
+    @apply pbx-max-h-[min(70vh,40rem)];
+  }
+
+  .pbx-htmlCodeViewer {
+    @apply pbx-flex pbx-min-h-[min(28rem,60vh)] pbx-flex-col pbx-overflow-hidden pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-950 pbx-shadow-inner;
+  }
+
+  .pbx-htmlCodeViewerToolbar {
+    @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-3 pbx-border-0 pbx-border-b pbx-border-solid pbx-border-white/10 pbx-px-4 pbx-py-3;
+  }
+
+  .pbx-htmlCodeViewerToolbarLeft {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-wrap pbx-items-center pbx-gap-2;
+  }
+
+  .pbx-htmlCodeViewerBadge {
+    @apply pbx-inline-flex pbx-items-center pbx-rounded-md pbx-bg-myPrimaryLinkColor/20 pbx-px-2 pbx-py-0.5 pbx-text-[10px] pbx-font-bold pbx-uppercase pbx-tracking-wider pbx-text-sky-300;
+  }
+
+  .pbx-htmlCodeViewerMeta {
+    @apply pbx-text-[11px] pbx-font-medium pbx-text-gray-400;
+  }
+
+  .pbx-htmlCodeViewerMetaMuted {
+    @apply pbx-text-gray-500;
+  }
+
+  .pbx-htmlCodeViewerCopy {
+    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-1.5 pbx-rounded-lg pbx-border pbx-border-solid pbx-border-white/10 pbx-bg-white/5 pbx-px-2.5 pbx-py-1.5 pbx-text-[11px] pbx-font-medium pbx-text-gray-300 pbx-transition-colors hover:pbx-border-white/20 hover:pbx-bg-white/10 hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-sky-400/40;
+  }
+
+  .pbx-htmlCodeViewerCopy .material-symbols-outlined {
+    @apply pbx-text-[14px];
+  }
+
+  .pbx-htmlCodeViewerSurface {
+    @apply pbx-flex-1 pbx-overflow-auto;
+  }
+
+  .pbx-htmlCodeViewerPre {
+    @apply pbx-m-0 pbx-min-h-full pbx-px-4 pbx-py-4 pbx-font-mono pbx-text-[12px] pbx-leading-6 pbx-text-gray-100 pbx-whitespace-pre;
+  }
+
+  .pbx-htmlCodeViewerPre code {
+    @apply pbx-block pbx-font-mono;
+  }
+
+  .pbx-htmlCodeViewerPre .html-tag-symbol {
+    color: #89b4fa;
+  }
+
+  .pbx-htmlCodeViewerPre .html-tag-name {
+    color: #f5c2e7;
+  }
+
+  .pbx-htmlCodeViewerPre .html-attribute-name {
+    color: #a6e3a1;
+  }
+
+  .pbx-htmlCodeViewerPre .html-attribute-value {
+    color: #f9e2af;
+  }
+
+  .pbx-htmlCodeViewerPre .html-operator {
+    color: #cdd6f4;
+  }
+
+  .pbx-htmlCodeEditorTextarea {
+    @apply pbx-m-0 pbx-box-border pbx-block pbx-min-h-[min(28rem,60vh)] pbx-h-full pbx-w-full pbx-resize-y pbx-border-0 pbx-bg-transparent pbx-px-4 pbx-py-4 pbx-font-mono pbx-text-[12px] pbx-leading-6 pbx-text-gray-100 focus:pbx-outline-none;
   }
 
   /*
@@ -514,7 +657,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-pageDesignOpenButton {
-    @apply pbx-flex pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-box-border pbx-flex pbx-min-w-0 pbx-max-w-full pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
   }
 
   .pbx-pageDesignOpenButtonIcon {
@@ -526,11 +669,11 @@
   }
 
   .pbx-pageDesignOpenButtonLabel {
-    @apply pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+    @apply pbx-truncate pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
   .pbx-pageDesignOpenButtonHint {
-    @apply pbx-text-xs pbx-text-gray-500;
+    @apply pbx-truncate pbx-text-xs pbx-text-gray-500;
   }
 
   .pbx-pageDesignOpenButtonArrow {
@@ -634,24 +777,23 @@
     @apply pbx-m-0 pbx-text-xs pbx-text-gray-500;
   }
 
-  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion {
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion,
+  .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordion {
     @apply pbx-overflow-visible pbx-rounded-none pbx-border-0;
   }
 
-  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion > div:first-child {
-    @apply pbx-hidden;
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion > button,
+  .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordion > button {
+    @apply pbx-px-0 pbx-py-3;
   }
 
-  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordionContent {
-    @apply pbx-block pbx-border-0 pbx-px-0 pbx-py-0;
-  }
-
-  .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordion > div:first-child {
-    @apply pbx-hidden;
-  }
-
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordionContent,
   .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordionContent {
-    @apply pbx-block pbx-border-0 pbx-px-0 pbx-py-0;
+    @apply pbx-border-0 pbx-px-0 pbx-pt-4 pbx-pb-4;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCardLabel + * {
+    @apply pbx-pt-1;
   }
 
   /*
