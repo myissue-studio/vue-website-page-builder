@@ -3,24 +3,30 @@ import { computed, ref } from 'vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const props = defineProps<{
-  value?: string | null
+  value?: string | number | null
 }>()
 
 const { translate } = useTranslations()
 const copied = ref(false)
 
-const displayId = computed(() => {
+const normalizedValue = computed(() => {
   const id = props.value
+  if (id === null || id === undefined || id === '') return null
+  return String(id)
+})
+
+const displayId = computed(() => {
+  const id = normalizedValue.value
   if (!id) return '—'
   if (id.length <= 18) return id
   return `${id.slice(0, 8)}…${id.slice(-4)}`
 })
 
 async function copyId() {
-  if (!props.value) return
+  if (!normalizedValue.value) return
 
   try {
-    await navigator.clipboard.writeText(props.value)
+    await navigator.clipboard.writeText(normalizedValue.value)
     copied.value = true
     globalThis.setTimeout(() => {
       copied.value = false
@@ -33,11 +39,11 @@ async function copyId() {
 
 <template>
   <button
-    v-if="value"
+    v-if="normalizedValue"
     type="button"
     class="pbx-inspectorIdChip"
-    :title="value"
-    :aria-label="`${translate('Copy ID')}: ${value}`"
+    :title="normalizedValue"
+    :aria-label="`${translate('Copy ID')}: ${normalizedValue}`"
     @click="copyId"
   >
     <span class="pbx-inspectorIdChipText">{{ displayId }}</span>
