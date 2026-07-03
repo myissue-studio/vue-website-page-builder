@@ -306,27 +306,40 @@
   }
 
   .pbx-editorSectionDesc {
-    @apply pbx-my-0 pbx-mb-4 pbx-text-xs pbx-font-normal pbx-leading-relaxed pbx-text-gray-500;
+    @apply pbx-my-0 pbx-mb-6 pbx-text-xs pbx-font-normal pbx-leading-relaxed pbx-text-gray-500;
   }
 
   .pbx-editorFieldGroup {
-    @apply pbx-mb-4 last:pbx-mb-0;
+    @apply pbx-mb-6 last:pbx-mb-0;
+  }
+
+  .pbx-settingsSectionGroup {
+    @apply pbx-flex pbx-flex-col;
+  }
+
+  .pbx-settingsSectionGroup > .pbx-settingsSection ~ .pbx-settingsSection {
+    @apply pbx-mt-6;
+  }
+
+  :not(.pbx-editorEmbeddedSettings) .pbx-settingsSectionGroup > .pbx-settingsSection ~ .pbx-settingsSection {
+    @apply pbx-mt-8;
+  }
+
+  .pbx-settingsSectionTitle {
+    @apply pbx-myQuaternaryHeader pbx-m-0 pbx-mb-3 pbx-text-sm;
   }
 
   .pbx-editorEmbeddedSettings .pbx-myQuaternaryHeader {
     @apply pbx-mb-2 pbx-text-sm pbx-font-medium lg:pbx-mb-2 lg:pbx-text-sm md:pbx-mb-2 md:pbx-text-sm;
   }
 
-  .pbx-editorEmbeddedSettings h4.pbx-myQuaternaryHeader {
-    @apply pbx-mb-2 pbx-mt-4 pbx-text-xs pbx-font-semibold pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  .pbx-editorEmbeddedSettings h4.pbx-myQuaternaryHeader,
+  .pbx-editorEmbeddedSettings .pbx-settingsSectionTitle {
+    @apply pbx-mb-3 pbx-mt-0 pbx-text-xs pbx-font-semibold pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
   }
 
   .pbx-editorEmbeddedSettings .pbx-myPrimaryParagraph {
     @apply pbx-text-xs lg:pbx-text-xs;
-  }
-
-  .pbx-editorEmbeddedSettings .pbx-mt-8 {
-    @apply pbx-mt-4;
   }
 
   .pbx-editorEmbeddedSettings .pbx-mb-10 {
