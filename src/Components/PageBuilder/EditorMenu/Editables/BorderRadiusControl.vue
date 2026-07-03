@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import tailwindBorderRadius from '../../../../utils/builder/tailwind-border-radius'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()

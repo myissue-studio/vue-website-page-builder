@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPageBuilder } from '../../composables/builderInstance'
+import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 
 const { translate } = useTranslations()

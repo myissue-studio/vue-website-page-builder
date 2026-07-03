@@ -183,6 +183,21 @@
   }
 
   /*
+   * Builder editor only — use canvas width instead of the vw breakout.
+   * The wrapper sets overflow-x: clip to hide breakout scrollbars; at browser
+   * zoom the calc(50% - 50vw) shift can push section content past the left
+   * clip edge so headings/text (e.g. "Din …") become uneditable.
+   * Published HTML strips data-builder-canvas and keeps the vw rules above.
+   */
+  [data-builder-canvas].pbx-full-width-component section,
+  [data-builder-canvas] section.pbx-full-width-component {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /*
    * Mobile-safe horizontal inset for inner content.
    * Applies to sections that are full-width breakouts (all three cases above)
    * so their inner content is never flush with the screen edge on mobile.
@@ -478,6 +493,107 @@
 
   .pbx-inspectorListBody {
     @apply pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200 pbx-p-3;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Page design editor
+    |--------------------------------------------------------------------------
+    */
+  .pbx-pageDesignOpenButton {
+    @apply pbx-flex pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+  }
+
+  .pbx-pageDesignOpenButtonIcon {
+    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-pageDesignOpenButtonText {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-1 pbx-flex-col pbx-gap-0.5;
+  }
+
+  .pbx-pageDesignOpenButtonLabel {
+    @apply pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-pageDesignOpenButtonHint {
+    @apply pbx-text-xs pbx-text-gray-500;
+  }
+
+  .pbx-pageDesignOpenButtonArrow {
+    @apply pbx-shrink-0 pbx-text-lg pbx-text-gray-400;
+  }
+
+  .pbx-pageDesignEditor {
+    @apply pbx-pb-8;
+  }
+
+  .pbx-pageDesignLoading {
+    @apply pbx-flex pbx-min-h-[12rem] pbx-items-center pbx-justify-center;
+  }
+
+  .pbx-pageDesignIntro {
+    @apply pbx-mb-6;
+  }
+
+  .pbx-pageDesignSection {
+    @apply pbx-mb-6 last:pbx-mb-0;
+  }
+
+  .pbx-pageDesignSectionTitle {
+    @apply pbx-m-0 pbx-mb-3 pbx-text-[11px] pbx-font-semibold pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-pageDesignGrid {
+    @apply pbx-grid pbx-grid-cols-1 pbx-gap-3 lg:pbx-grid-cols-2;
+  }
+
+  .pbx-pageDesignCard {
+    @apply pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+  }
+
+  .pbx-pageDesignCardWide {
+    @apply lg:pbx-col-span-2;
+  }
+
+  .pbx-pageDesignCardLabel {
+    @apply pbx-m-0 pbx-mb-3 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-pageDesignToggleRow {
+    @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4;
+  }
+
+  .pbx-pageDesignToggleCopy {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-1 pbx-flex-col pbx-gap-1;
+  }
+
+  .pbx-pageDesignToggleLabel {
+    @apply pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-pageDesignToggleHint {
+    @apply pbx-m-0 pbx-text-xs pbx-text-gray-500;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion {
+    @apply pbx-overflow-visible pbx-rounded-none pbx-border-0;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion > div:first-child {
+    @apply pbx-hidden;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordionContent {
+    @apply pbx-block pbx-border-0 pbx-px-0 pbx-py-0;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordion > div:first-child {
+    @apply pbx-hidden;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordionContent {
+    @apply pbx-block pbx-border-0 pbx-px-0 pbx-py-0;
   }
 
   /*

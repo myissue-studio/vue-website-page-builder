@@ -5,10 +5,10 @@ import type { Editor as TiptapCoreEditor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
-import { getPageBuilder } from '../../composables/builderInstance'
+import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
-import DynamicModalBuilder from '../Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../Modals/ConfirmActionModal.vue'
 import { sanitizeInlineTipTapHtml, finalizeInlineTipTapHtml } from '../../utils/builder/sanitize-inline-tiptap-html'
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
@@ -471,7 +471,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div data-pbx-inline-editor-ui>
-    <DynamicModalBuilder
+    <ConfirmActionModal
       maxWidth="4xl"
       :showDynamicModalBuilder="showModalUrl"
       type="success"
@@ -513,7 +513,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
   </div>
 
   <div

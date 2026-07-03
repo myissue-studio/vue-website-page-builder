@@ -3,7 +3,7 @@ import PageBuilder from '../PageBuilder/PageBuilder.vue'
 import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
 import { computed, watch } from 'vue'
 import componentsArray from '../tests/componentsArray.test.json'
-import { getPageBuilder } from '../composables/builderInstance'
+import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
 
 const pageBuilderService = getPageBuilder()

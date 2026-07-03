@@ -4,7 +4,7 @@ import EditorAccordion from '../EditorAccordion.vue'
 import tailwindBorderStyleWidthPlusColor from '../../../../utils/builder/tailwind-border-style-width-color'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 defineOptions({

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, computed, ref, watch, provide, nextTick } from 'vue'
-import ModalBuilder from '../Components/Modals/ModalBuilder.vue'
+import BaseModal from '../Components/Modals/BaseModal.vue'
 import PageBuilderPreview from './PageBuilderPreview.vue'
-import ComponentTopMenu from '../Components/PageBuilder/EditorMenu/Editables/ComponentTopMenu.vue'
-import EditGetElement from '../Components/PageBuilder/EditorMenu/Editables/EditGetElement.vue'
-import BuilderComponents from '../Components/Modals/BuilderComponents.vue'
+import PageLayoutToolbar from '../Components/PageBuilder/EditorMenu/Editables/PageLayoutToolbar.vue'
+import SelectedElementToolbar from '../Components/PageBuilder/EditorMenu/Editables/SelectedElementToolbar.vue'
+import ComponentLibraryModal from '../Components/Modals/ComponentLibraryModal.vue'
 import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSidebarEditor.vue'
-import AdvancedPageBuilderSettings from '../Components/PageBuilder/Settings/AdvancedPageBuilderSettings.vue'
+import PageDesignEditor from '../Components/PageBuilder/EditorMenu/Editables/PageDesignEditor.vue'
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
-import { delay } from '../composables/delay'
+import { sleep } from '../utils/sleep'
 import { useDebounce } from '../composables/useDebounce'
-import DynamicModalBuilder from '../Components/Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../Components/Modals/ConfirmActionModal.vue'
 import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
 import ImageSettingsModal from '../Components/PageBuilder/EditorMenu/Editables/ImageSettingsModal.vue'
 import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
 import { useTranslations } from '../composables/useTranslations'
-import { getPageBuilder } from '../composables/builderInstance'
+import { getPageBuilder } from '../composables/usePageBuilder'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
@@ -132,7 +132,7 @@ const isLoadingLang = ref(false)
 watch(languageSelction, async (newVal) => {
   if (newVal && !isInitializingLang) {
     isLoadingLang.value = true
-    await delay(200)
+    await sleep(200)
     await loadTranslations(newVal)
     pageBuilderService.changeLanguage(newVal)
 
@@ -489,7 +489,7 @@ const openGlobalPageSettings = async () => {
   showGlobalPageSettings.value = true
   isLoadingGlobalPageSettings.value = true
   hideToolbar()
-  await delay(200)
+  await sleep(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
   hideToolbar()
@@ -498,7 +498,7 @@ const openGlobalPageSettings = async () => {
 
 const closeGlobalPageSettings = async () => {
   isLoadingGlobalPageSettings.value = true
-  await delay(200)
+  await sleep(200)
   await pageBuilderService.handleManualSave()
   pageBuilderService.stopGlobalStylesSync()
 
@@ -528,7 +528,7 @@ const closeImageSettings = () => {
 const handleSaveChangesElement = async () => {
   errSaveComponents.value = null
   isLoading.value = true
-  await delay(300)
+  await sleep(300)
 
   const error = await pageBuilderService.applyModifiedHTML(editableHtml.value)
 
@@ -546,7 +546,7 @@ const handleSaveChangesComponents = async () => {
   errSaveComponents.value = null
   isLoading.value = true
   errSaveComponents.value = null
-  await delay(300)
+  await sleep(300)
 
   const error = await pageBuilderService.applyModifiedComponents(editableComponents.value)
 
@@ -721,15 +721,15 @@ onMounted(async () => {
   //
   //
   // Check if Builder started
-  await delay(10000)
+  await sleep(10000)
   ensureBuilderInitialized()
 
   // Re-check if Builder started
-  await delay(10000)
+  await sleep(10000)
   ensureBuilderInitialized()
 
   // Re-check again if Builder started
-  await delay(10000)
+  await sleep(10000)
   ensureBuilderInitialized()
 })
 
@@ -752,7 +752,7 @@ onBeforeUnmount(() => {
     <GlobalLoader
       v-if="(getIsLoadingGlobal && !openAppNotStartedModal) || isLoadingLang"
     ></GlobalLoader>
-    <ModalBuilder
+    <BaseModal
       title="The builder hasn’t started yet"
       :showModalBuilder="openAppNotStartedModal"
       @closeMainModalBuilder="handlAppNotStartedModal"
@@ -763,18 +763,18 @@ onBeforeUnmount(() => {
       The builder hasn’t started yet. If this screen doesn’t go away soon, it may just need a little
       setup in the background. You can safely contact support and ask them to initialize the builder
       by running the startBuilder method for this resource.
-    </ModalBuilder>
+    </BaseModal>
 
-    <BuilderComponents
+    <ComponentLibraryModal
       v-if="showModalAddComponent"
       :show="showModalAddComponent"
       :firstButtonText="firstButtonTextSearchComponents"
       :title="titleModalAddComponent"
       :CustomBuilderComponents="props.CustomBuilderComponents"
       @firstModalButtonSearchComponentsFunction="() => firstModalButtonSearchComponentsFunction?.()"
-    ></BuilderComponents>
+    ></ComponentLibraryModal>
 
-    <DynamicModalBuilder
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalCloseNoSave"
       :isLoading="false"
       :type="typeModalloseNoSave"
@@ -790,27 +790,27 @@ onBeforeUnmount(() => {
     >
       <header></header>
       <main></main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
 
-    <ModalBuilder
+    <BaseModal
       :title="titleBuilderDesktop"
       :showModalBuilder="openPageBuilderPreviewModal"
       @closeMainModalBuilder="firstPageBuilderPreviewModalButton"
       maxWidth="screen"
     >
       <PageBuilderPreview></PageBuilderPreview>
-    </ModalBuilder>
+    </BaseModal>
 
-    <ModalBuilder
+    <BaseModal
       :title="titleBuilderMobile"
       :showModalBuilder="openPageBuilderPreviewMobile"
       @closeMainModalBuilder="firstPageBuilderPreviewModalButtonMobile"
       maxWidth="lg"
     >
       <PageBuilderPreview :mobile="true" />
-    </ModalBuilder>
+    </BaseModal>
 
-    <DynamicModalBuilder
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalResumeEditing"
       :isLoading="getIsLoadingResumeEditing"
       :type="typeModal"
@@ -828,8 +828,8 @@ onBeforeUnmount(() => {
     >
       <header></header>
       <main></main>
-    </DynamicModalBuilder>
-    <DynamicModalBuilder
+    </ConfirmActionModal>
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalRestore"
       :isLoading="getIsRestoring"
       :type="typeModalRestore"
@@ -845,7 +845,7 @@ onBeforeUnmount(() => {
     >
       <header></header>
       <main></main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
 
     <div
       id="pagebuilder-navbar"
@@ -1212,7 +1212,7 @@ onBeforeUnmount(() => {
               }
             "
           >
-            <ComponentTopMenu></ComponentTopMenu>
+            <PageLayoutToolbar></PageLayoutToolbar>
           </div>
         </div>
       </div>
@@ -1230,9 +1230,9 @@ onBeforeUnmount(() => {
           class="pbx-z-30 pbx-flex pbx-flex-wrap pbx-gap-x-2 pbx-gap-y-1 pbx-justify-start pbx-items-center pbx-content-start pbx-rounded-sm pbx-px-2 pbx-py-0 pbx-h-0 pbx-relative pbx-box-border"
         >
           <template v-if="getElement">
-            <EditGetElement
+            <SelectedElementToolbar
               @open-image-settings="openImageSettings"
-            ></EditGetElement>
+            ></SelectedElementToolbar>
           </template>
         </div>
         <!-- Element Popover toolbar end -->
@@ -1382,17 +1382,16 @@ onBeforeUnmount(() => {
     </div>
     <!-- Page Builder Main End -->
   </div>
-  <ModalBuilder
+  <BaseModal
     maxWidth="5xl"
     :showModalBuilder="showGlobalPageSettings"
-    :title="translate('Global Page Styles')"
+    :title="translate('Page Design')"
     @closeMainModalBuilder="closeGlobalPageSettings"
     minHeight=""
     maxHeight=""
   >
-    <AdvancedPageBuilderSettings :isLoading="isLoadingGlobalPageSettings">
-    </AdvancedPageBuilderSettings>
-  </ModalBuilder>
+    <PageDesignEditor :isLoading="isLoadingGlobalPageSettings" />
+  </BaseModal>
   <FloatingSidePanel
     :title="translate('Image Settings')"
     :showSidebarPanel="showImageSettingsModal"
@@ -1401,10 +1400,11 @@ onBeforeUnmount(() => {
   >
     <ImageSettingsModal :show="showImageSettingsModal" />
   </FloatingSidePanel>
-  <ModalBuilder
+  <BaseModal
     maxWidth="7xl"
     :showModalBuilder="getShowModalHTMLEditor"
     :title="translate('HTML Editor')"
+    :z-index="10001"
     @closeMainModalBuilder="handleCloseHTMLEditor"
   >
     <template v-if="!getToggleGlobalHtmlMode">
@@ -1498,7 +1498,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </template>
-  </ModalBuilder>
+  </BaseModal>
 </template>
 
 <style>

@@ -4,7 +4,7 @@ import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import SpacingStepper from './SpacingStepper.vue'
 import tailwindPaddingPlusMargin from '../../../../utils/builder/tailwind-padding-margin'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const props = defineProps<{

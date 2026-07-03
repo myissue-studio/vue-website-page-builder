@@ -45,7 +45,7 @@ import './css/style.css'
 // Export shared store instances for external access
 export { sharedPageBuilderPinia, sharedPageBuilderStore } from './stores/shared-store'
 
-export { getPageBuilder } from './composables/builderInstance'
+export { getPageBuilder } from './composables/usePageBuilder'
 
 // Export the plugin for app.use()
 export { pageBuilder } from './plugin'

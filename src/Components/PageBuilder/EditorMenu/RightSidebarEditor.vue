@@ -7,18 +7,19 @@ import ImageEditor from './Editables/ImageEditor.vue'
 import OpacityEditor from './Editables/OpacityEditor.vue'
 import PaddingControl from './Editables/PaddingControl.vue'
 import MarginControl from './Editables/MarginControl.vue'
-import BorderRadius from './Editables/BorderRadius.vue'
+import BorderRadiusControl from './Editables/BorderRadiusControl.vue'
 import BorderControls from './Editables/BorderControls.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
-import GlobalPageStylesSettingsEditor from './Editables/GlobalPageStylesSettingsEditor.vue'
-import PageBuilderOverviewSettingsEditor from './Editables/PageBuilderOverviewSettingsEditor.vue'
-import PageBuilderDownloadHtmlSettingsEditor from './Editables/PageBuilderDownloadHtmlSettingsEditor.vue'
-import PageBuilderSelectedHtmlSettingsEditor from './Editables/PageBuilderSelectedHtmlSettingsEditor.vue'
-import { getPageBuilder } from '../../../composables/builderInstance'
+import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
+import PageHtmlEditorSettingsEditor from './Editables/PageHtmlEditorSettingsEditor.vue'
+import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
+import DownloadHtmlSettingsSection from './Editables/DownloadHtmlSettingsSection.vue'
+import SelectedHtmlSettingsSection from './Editables/SelectedHtmlSettingsSection.vue'
+import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
-import ModalBuilder from '../../Modals/ModalBuilder.vue'
-import AdvancedPageBuilderSettings from '../Settings/AdvancedPageBuilderSettings.vue'
-import { delay } from '../../../composables/delay'
+import BaseModal from '../../Modals/BaseModal.vue'
+import PageDesignEditor from './Editables/PageDesignEditor.vue'
+import { sleep } from '../../../utils/sleep'
 
 const { translate } = useTranslations()
 
@@ -83,7 +84,7 @@ const isLoading = ref(false)
 const openHTMLSettings = async function () {
   showHTMLSettings.value = true
   isLoading.value = true
-  await delay(200)
+  await sleep(200)
   pageBuilderStateStore.setToggleGlobalHtmlMode(true)
   await pageBuilderService.globalPageStyles()
   isLoading.value = false
@@ -91,7 +92,7 @@ const openHTMLSettings = async function () {
 
 const closeHTMLSettings = async function () {
   isLoading.value = true
-  await delay(200)
+  await sleep(200)
   await pageBuilderService.handleManualSave()
 
   pageBuilderService.stopGlobalStylesSync()
@@ -133,7 +134,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'styles'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'styles'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
@@ -147,7 +148,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'settings'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'settings'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
@@ -161,7 +162,7 @@ const closeHTMLSettings = async function () {
           type="button"
           role="tab"
           :aria-selected="activeTab === 'tools'"
-          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
           :class="
             activeTab === 'tools'
               ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
@@ -185,7 +186,7 @@ const closeHTMLSettings = async function () {
           <OpacityEditor />
           <PaddingControl />
           <MarginControl />
-          <BorderRadius />
+          <BorderRadiusControl />
           <BorderControls />
           <ClassEditor />
           <StyleEditor />
@@ -203,24 +204,25 @@ const closeHTMLSettings = async function () {
 
       <div v-show="activeTab === 'settings'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <ThemeColorSettingsEditor />
-        <GlobalPageStylesSettingsEditor @open="openHTMLSettings" />
+        <PageDesignSettingsEditor @open="openHTMLSettings" />
+        <PageHtmlEditorSettingsEditor />
       </div>
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
-        <PageBuilderOverviewSettingsEditor />
-        <PageBuilderDownloadHtmlSettingsEditor />
-        <PageBuilderSelectedHtmlSettingsEditor />
+        <OverviewSettingsSection />
+        <DownloadHtmlSettingsSection />
+        <SelectedHtmlSettingsSection />
       </div>
     </div>
   </div>
-  <ModalBuilder
+  <BaseModal
     maxWidth="5xl"
     :showModalBuilder="showHTMLSettings"
-    :title="translate('Global Page Styles')"
+    :title="translate('Page Design')"
     @closeMainModalBuilder="closeHTMLSettings"
     minHeight=""
     maxHeight=""
   >
-    <AdvancedPageBuilderSettings :isLoading="isLoading"> </AdvancedPageBuilderSettings>
-  </ModalBuilder>
+    <PageDesignEditor :isLoading="isLoading" />
+  </BaseModal>
 </template>

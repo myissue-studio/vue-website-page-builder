@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
-import { isEmptyObject } from '../../../helpers/isEmptyObject'
+import { isEmptyObject } from '../../../utils/is-empty-object'
 import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
-import { extractCleanHTMLFromPageBuilder } from '../../../composables/extractCleanHTMLFromPageBuilder'
+import { extractCleanHTMLFromPageBuilder } from '../../../utils/builder/extract-clean-html'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
 
 type EmbeddedSection =

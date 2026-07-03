@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, inject, watch, onBeforeUnmount, nextTick } from 'vue'
-import DynamicModalBuilder from '../../../Modals/DynamicModalBuilder.vue'
+import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import TipTapInput from '../../../TipTap/TipTapInput.vue'
 import InlineTipTapEditor from '../../../TipTap/InlineTipTapEditor.vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
@@ -8,7 +8,7 @@ import TextColorEditor from './TextColorEditor.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 
@@ -708,7 +708,7 @@ const handleDuplicateElement = async function () {
 </script>
 <template v-if="getElement">
   <div class="pbx-max-w-full pbx-min-w-0">
-    <DynamicModalBuilder
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalIframeSrc"
       maxWidth="2xl"
       :type="typeModalTipTap"
@@ -755,8 +755,8 @@ const handleDuplicateElement = async function () {
           </div>
         </div>
       </main>
-    </DynamicModalBuilder>
-    <DynamicModalBuilder
+    </ConfirmActionModal>
+    <ConfirmActionModal
       :simpleModal="true"
       :showDynamicModalBuilder="getShowModalTipTap"
       maxWidth="6xl"
@@ -781,8 +781,8 @@ const handleDuplicateElement = async function () {
       <main class="pbx-overflow-y-auto">
         <TipTapInput></TipTapInput>
       </main>
-    </DynamicModalBuilder>
-    <DynamicModalBuilder
+    </ConfirmActionModal>
+    <ConfirmActionModal
       :showDynamicModalBuilder="showModalDeleteComponent"
       :type="typeModal"
       :gridColumnAmount="gridColumnModal"
@@ -803,7 +803,7 @@ const handleDuplicateElement = async function () {
     >
       <header></header>
       <main></main>
-    </DynamicModalBuilder>
+    </ConfirmActionModal>
     <MediaLibraryModal
       :open="showMediaLibraryModal"
       :title="titleMedia"
@@ -941,7 +941,7 @@ const handleDuplicateElement = async function () {
           </div>
         </template>
 
-        <DynamicModalBuilder
+        <ConfirmActionModal
           v-if="showComponentSettingsModal"
           :showDynamicModalBuilder="showComponentSettingsModal"
           :isLoading="false"
@@ -976,9 +976,9 @@ const handleDuplicateElement = async function () {
               </div>
             </div>
           </main>
-        </DynamicModalBuilder>
+        </ConfirmActionModal>
 
-        <DynamicModalBuilder
+        <ConfirmActionModal
           v-if="showSliderModal"
           :showDynamicModalBuilder="showSliderModal"
           :isLoading="false"
@@ -1085,7 +1085,7 @@ const handleDuplicateElement = async function () {
               </div>
             </div>
           </main>
-        </DynamicModalBuilder>
+        </ConfirmActionModal>
 
         <div v-if="getElement && getComponent" class="pbx-shrink-0">
           <div

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import GlobalLoader from '../../../Components/Loaders/GlobalLoader.vue'
-import { getPageBuilder } from '../../../composables/builderInstance'
+import { getPageBuilder } from '../../../composables/usePageBuilder'
 
 const pageBuilderService = getPageBuilder()
 

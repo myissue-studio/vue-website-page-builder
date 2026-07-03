@@ -27,6 +27,10 @@ const props = defineProps({
   noBackgroundOpacity: {
     type: Boolean,
   },
+  zIndex: {
+    type: Number,
+    default: 9999,
+  },
 })
 
 const emit = defineEmits(['closeMainModalBuilder'])
@@ -59,7 +63,8 @@ const maxWidthClass = computed(() => {
       <!-- Modal -->
       <div
         v-if="showModalBuilder"
-        class="pbx-fixed pbx-inset-0 pbx-z-[9999] pbx-flex pbx-items-center pbx-justify-center pbx-mx-4"
+        class="pbx-fixed pbx-inset-0 pbx-flex pbx-items-center pbx-justify-center pbx-mx-4"
+        :style="{ zIndex }"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dialog-title"

@@ -4,7 +4,7 @@ import tailwindFontSizes from '../../../../utils/builder/tailwind-font-sizes'
 import tailwindFontStyles from '../../../../utils/builder/tailwind-font-styles'
 import { resolveInheritedFontFamily } from '../../../../utils/builder/resolve-inherited-font-family'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
-import { getPageBuilder } from '../../../../composables/builderInstance'
+import { getPageBuilder } from '../../../../composables/usePageBuilder'
 
 import { useTranslations } from '../../../../composables/useTranslations'
 
