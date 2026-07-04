@@ -1377,6 +1377,11 @@
   }
 }
 
+#pagebuilder-navbar {
+  position: relative;
+  z-index: 60;
+}
+
 #pbxEditToolbar {
   opacity: 0;
   pointer-events: none;

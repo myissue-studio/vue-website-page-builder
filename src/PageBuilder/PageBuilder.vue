@@ -589,6 +589,7 @@ const ensureBuilderInitialized = function () {
 }
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
+const editToolbarPinned = ref(false)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
 
@@ -607,17 +608,26 @@ function applyToolbarFlexWidth(toolbar: HTMLElement, maxToolbarWidth: number) {
   const innerFlex = toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')
   if (!innerFlex) return
 
-  innerFlex.style.flexWrap = 'wrap'
-  innerFlex.style.maxWidth = `${maxToolbarWidth}px`
-  innerFlex.style.removeProperty('width')
+  innerFlex.style.flexWrap = 'nowrap'
+  innerFlex.style.removeProperty('max-width')
+  innerFlex.style.width = 'max-content'
   void innerFlex.offsetHeight
 
-  // Snapshot the natural laid-out width so scroll/reposition cannot reflow it wider.
-  const naturalWidth = innerFlex.offsetWidth
-  if (naturalWidth > 0) {
-    innerFlex.style.width = `${naturalWidth}px`
+  // Measure the actual one-line width of the current controls. This keeps the
+  // toolbar compact, but automatically grows when new controls are added.
+  const oneLineWidth = Math.ceil(innerFlex.getBoundingClientRect().width)
+  innerFlex.style.flexWrap = 'wrap'
+
+  if (oneLineWidth > 0) {
+    innerFlex.style.width = `${Math.min(oneLineWidth, maxToolbarWidth)}px`
   }
+  innerFlex.style.justifyContent = 'center'
   innerFlex.style.removeProperty('max-width')
+}
+
+const toggleEditToolbarPinned = function () {
+  editToolbarPinned.value = !editToolbarPinned.value
+  settleToolbarPosition()
 }
 
 function handlePanelMutation(mutations: MutationRecord[]) {
@@ -665,7 +675,7 @@ function updatePanelPositionNow(options: { remeasureWidth?: boolean } = {}) {
     const maxToolbarWidth = container.offsetWidth - margin * 2
     editToolbarElement.style.maxWidth = `${maxToolbarWidth}px`
 
-    editToolbarElement.style.position = 'absolute'
+    editToolbarElement.style.position = editToolbarPinned.value ? 'fixed' : 'absolute'
     editToolbarElement.classList.add('is-visible')
 
     if (remeasureWidth) {
@@ -682,17 +692,29 @@ function updatePanelPositionNow(options: { remeasureWidth?: boolean } = {}) {
       container.scrollTop -
       editToolbarElement.offsetHeight -
       GAP
-    top = Math.max(0, top)
-
     let left =
       selectedRect.left -
       containerRect.left +
       selectedRect.width / 2 -
       editToolbarElement.offsetWidth / 2
-    left = Math.max(
-      margin,
-      Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
-    )
+
+    if (editToolbarPinned.value) {
+      top = containerRect.top + margin
+      left = containerRect.left + container.offsetWidth / 2 - editToolbarElement.offsetWidth / 2
+      left = Math.max(
+        containerRect.left + margin,
+        Math.min(
+          left,
+          containerRect.left + container.offsetWidth - editToolbarElement.offsetWidth - margin,
+        ),
+      )
+    } else {
+      top = Math.max(0, top)
+      left = Math.max(
+        margin,
+        Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
+      )
+    }
     editToolbarElement.style.top = `${top}px`
     editToolbarElement.style.left = `${left}px`
     window.dispatchEvent(new CustomEvent('pagebuilder:toolbar-positioned'))
@@ -1300,7 +1322,9 @@ onBeforeUnmount(() => {
           <template v-if="getElement">
             <SelectedElementToolbar
               ref="selectedElementToolbarRef"
+              :toolbar-pinned="editToolbarPinned"
               @open-image-settings="openImageSettings"
+              @toggle-toolbar-pin="toggleEditToolbarPinned"
             ></SelectedElementToolbar>
           </template>
         </div>
