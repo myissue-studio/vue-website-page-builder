@@ -54,7 +54,7 @@ This section covers installation, requirements, quick start, advanced usage, and
 
 Key integration guides:
 
-- [Display Products (Ecommerce)](docs/display-products.md) — connect your catalog and insert product grids
+- [Display Products (Ecommerce)](https://myissue-studio.github.io/vue-website-page-builder/display-products) — connect your catalog and insert product grids
 - [Custom Media Library](https://myissue-studio.github.io/vue-website-page-builder/custom-media-library) — wire your uploads, CDN, or DAM
 - [TypeScript Support](https://myissue-studio.github.io/vue-website-page-builder/typescript-support) — typed config, products, and services
 
@@ -75,7 +75,7 @@ Most page builders are tied to one CMS, one storefront, or one cloud platform. T
 - **Integration-first** — inject `:CustomMediaLibraryComponent` and `:DisplayProducts` instead of being locked to one asset provider or product database
 - **Your backend stays in charge** — authentication, permissions, publishing, CDN, and checkout remain on your stack; the builder focuses on visual editing and portable HTML output
 
-[Live demo](https://mybuilder.dev) · [Display Products guide](docs/display-products.md)
+[Live demo](https://mybuilder.dev) · [Display Products guide](https://myissue-studio.github.io/vue-website-page-builder/display-products)
 
 ## Ecommerce Product Sections
 
@@ -101,7 +101,7 @@ import YourDisplayProducts from './YourDisplayProducts.vue'
 </template>
 ```
 
-Copy the reference picker from `src/tests/TestComponents/DemoDisplayProductsTest.vue` and swap static JSON for your API. Full walkthrough: [Display Products documentation](docs/display-products.md).
+Copy the reference picker from `src/tests/TestComponents/DemoDisplayProductsTest.vue` and swap static JSON for your API. Full walkthrough: [Display Products documentation](https://myissue-studio.github.io/vue-website-page-builder/display-products).
 
 The package does **not** include cart, checkout, or inventory — by design. You keep your ecommerce stack; the builder handles layout and visual editing.
 
