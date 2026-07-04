@@ -2,11 +2,16 @@
 <img width="200" style="max-width: 100%;" src="./public/logo/logo.svg" alt="Vue Website Page Builder Logo" />
 </p>
 
-# Free Click & Drop Page Builder
+# Vue 3 Page Builder — Free, Self-Hosted, Integration-First
 
-- [Free Click \& Drop Page Builder](#free-click--drop-page-builder)
+**The Vue page builder for ecommerce admin panels, multi-tenant SaaS, and API-backed CMS dashboards.** Embed a visual editor in your product, connect your own media library and product catalog, and save portable HTML to your backend.
+
+- [Vue 3 Page Builder — Free, Self-Hosted, Integration-First](#vue-3-page-builder--free-self-hosted-integration-first)
   - [Demo](#demo)
   - [Guide \& Documentation](#guide--documentation)
+  - [Built for Ecommerce Admin \& Multi-Tenant SaaS](#built-for-ecommerce-admin--multi-tenant-saas)
+  - [Ecommerce Product Sections](#ecommerce-product-sections)
+  - [Who This Is For](#who-this-is-for)
   - [Backend and CMS Integration](#backend-and-cms-integration)
   - [Why Choose This Vue Page Builder](#why-choose-this-vue-page-builder)
   - [Overview](#overview)
@@ -27,7 +32,7 @@
 
 ## Demo
 
-Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.
+Free **Vue 3 page builder** with drag-and-drop editing for ecommerce admin, SaaS dashboards, and CMS workflows. Try the live demo for real-time visual updates, product sections, and content management.
 
 Try the live demo to explore real-time visual updates and smooth content management.
 <br>
@@ -46,6 +51,72 @@ Find everything you need to get started, configure, and master the Vue Website P
 This section covers installation, requirements, quick start, advanced usage, and integration tips—so you can build and launch pages with confidence.
 
 [Open Guides & Docs](https://myissue-studio.github.io/vue-website-page-builder/)
+
+Key integration guides:
+
+- [Display Products (Ecommerce)](https://myissue-studio.github.io/vue-website-page-builder/display-products) — connect your catalog and insert product grids
+- [Custom Media Library](https://myissue-studio.github.io/vue-website-page-builder/custom-media-library) — wire your uploads, CDN, or DAM
+- [TypeScript Support](https://myissue-studio.github.io/vue-website-page-builder/typescript-support) — typed config, products, and services
+
+## Built for Ecommerce Admin & Multi-Tenant SaaS
+
+Most page builders are tied to one CMS, one storefront, or one cloud platform. This project is built for teams that already have a **Vue admin**, a **REST or GraphQL API**, and a **database** — and need a visual editor inside that product.
+
+**Best fit if you are building:**
+
+- **Ecommerce admin** — merchants edit landing pages, collection pages, and promotional blocks while your platform owns catalog, cart, and checkout
+- **Multi-tenant SaaS** — each customer gets branded pages; your app handles auth, billing, and tenancy; the builder outputs HTML you store per tenant
+- **Headless CMS / marketplace admin** — editors compose pages from blocks; your backend persists full HTML and serves it on the public site
+- **Agency & startup dashboards** — free, MIT-licensed, self-hosted; no vendor lock-in on hosting or storage
+
+**Why Vue teams choose this over generic builders:**
+
+- **Vue-native** — serious Vue 3 component with fewer integration compromises than dropping a React-only or iframe-based editor into a Nuxt or Laravel + Inertia app
+- **Integration-first** — inject `:CustomMediaLibraryComponent` and `:DisplayProducts` instead of being locked to one asset provider or product database
+- **Your backend stays in charge** — authentication, permissions, publishing, CDN, and checkout remain on your stack; the builder focuses on visual editing and portable HTML output
+
+[Live demo](https://mybuilder.dev) · [Display Products guide](https://myissue-studio.github.io/vue-website-page-builder/display-products)
+
+## Ecommerce Product Sections
+
+Add real product catalog blocks to any page — without WooCommerce shortcodes or rigid storefront widgets.
+
+Pass `:DisplayProducts` with your own product picker component. The builder opens it in the **Products** modal; when the editor confirms, you call `insertProducts()` and the canvas gets a responsive product grid (1, 2, 3, 4, or 6 columns).
+
+**What you get out of the box:**
+
+- **Your catalog UI** — search, categories, API pagination, Shopify/WooCommerce/custom ERP feeds (you implement the picker; we provide the hook)
+- **Built-in grid layouts** — `grid-1` through `grid-6`, mobile column options, card styles (clean, bordered, shadow, elevated), rounded product images
+- **Toolbar editing after insert** — change grid, mobile layout, and card style from the floating editor without re-inserting products
+- **Portable HTML** — sections include `data-pbx-product-section` and `data-pbx-product-id` for hydration or tracking on your storefront
+
+```vue
+<script setup>
+import PageBuilder from '@myissue/vue-website-page-builder'
+import YourDisplayProducts from './YourDisplayProducts.vue'
+</script>
+
+<template>
+  <PageBuilder :DisplayProducts="YourDisplayProducts" />
+</template>
+```
+
+Copy the reference picker from `src/tests/TestComponents/DemoDisplayProductsTest.vue` and swap static JSON for your API. Full walkthrough: [Display Products documentation](https://myissue-studio.github.io/vue-website-page-builder/display-products).
+
+The package does **not** include cart, checkout, or inventory — by design. You keep your ecommerce stack; the builder handles layout and visual editing.
+
+## Who This Is For
+
+| Use case | Why this builder |
+|----------|------------------|
+| **Ecommerce admin panels** | Merchants design pages; you connect `:DisplayProducts` to your catalog API |
+| **Multi-tenant SaaS** | Per-tenant pages, your auth and storage; HTML output works on any frontend |
+| **Laravel / Nuxt / Vue admin** | Drop-in `PageBuilder` component + `getPageBuilder()` service |
+| **Headless CMS (Strapi, Directus, custom)** | Save `getSavedPageHtml()` to your content API; reload with `parsePageBuilderHTML()` |
+| **Marketplaces & listings** | Job boards, directories, blogs — same editor, your data layer |
+| **Agencies & startups** | Free, MIT, self-hosted — low friction to embed and ship |
+
+Works with Laravel, Rails, Django, Express, Nuxt, Inertia, and any API that can store and return an HTML string.
 
 ## Backend and CMS Integration
 
@@ -104,6 +175,8 @@ Many page builders are heavy, opinionated, or tied to one CMS. This project focu
 - **Works with existing systems**: integrate with custom CMS dashboards, SaaS admin panels, marketplaces, job boards, blogs, and ecommerce content tools.
 - **Vue-native integration**: use the `PageBuilder` component and `getPageBuilder()` service directly in Vue or Nuxt projects.
 - **Bring your own media library**: inject your own media picker, storage URLs, and upload flow instead of being locked into one asset provider.
+- **Bring your own product catalog**: inject `:DisplayProducts` to browse real SKUs from your API and insert responsive product grids — ideal for ecommerce admin and storefront content teams.
+- **Edit product sections on canvas**: after insert, change grid layout, mobile columns, card style, and rounded images from the toolbar without re-opening the catalog modal.
 - **Global page styles included**: `pageSettings` can be saved and restored with the page, so editing existing posts keeps fonts, colors, backgrounds, and spacing.
 - **No Tailwind setup required**: the package ships the needed prefixed styles and avoids class conflicts with your app.
 - **Open and customizable**: MIT licensed, component-driven, and practical for teams that need control over the editing experience.
@@ -224,7 +297,8 @@ The Page Builder is packed with features:
 - **Click & Drop**: Easily rearrange elements on your page.
 - **Reordering**: Change the order of your content without hassle.
 - **True Visual Editing**: See your changes in real-time as you make them.
-- **Media Library**: Easily inject your own custom media library component.
+- **Media Library**: Inject your own custom media library component (`:CustomMediaLibraryComponent`) — S3, Cloudinary, Unsplash, or internal DAM.
+- **Ecommerce Product Sections**: Inject your own product picker (`:DisplayProducts`) — connect Shopify, WooCommerce, Medusa, or custom APIs; built-in grids, card styles, and toolbar layout editing.
 - **Advanced Sliders & Carousels**: Build responsive image and content sliders with autoplay, navigation controls, touch support, and full customization options.
 - **Draft Recovery & Auto-Save**: Never lose in-progress work—changes are saved locally as a draft while your backend stores published HTML.
 - **Unsplash**: Unsplash integration.

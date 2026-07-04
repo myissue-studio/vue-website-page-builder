@@ -34,8 +34,12 @@ import {
 } from '../utils/builder/apply-brand-color'
 
 const pageBuilderService = getPageBuilder()
-const { show: htmlViewerShow, title: htmlViewerTitle, html: htmlViewerHtml, closeHtmlViewer } =
-  useHtmlCodeViewer()
+const {
+  show: htmlViewerShow,
+  title: htmlViewerTitle,
+  html: htmlViewerHtml,
+  closeHtmlViewer,
+} = useHtmlCodeViewer()
 const {
   show: htmlEditorShow,
   title: htmlEditorTitle,
@@ -592,7 +596,9 @@ let panelPositionObserver: MutationObserver | null = null
 const hideToolbar = function () {
   const toolbar = document.querySelector('#pbxEditToolbar')
   if (toolbar) {
-    toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')?.style.removeProperty('width')
+    toolbar
+      .querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')
+      ?.style.removeProperty('width')
     toolbar.classList.remove('is-visible')
     toolbar.removeAttribute('style')
   }
@@ -1046,18 +1052,7 @@ onBeforeUnmount(() => {
             <span
               class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <svg
-                fill="currentColor"
-                height="22"
-                viewBox="0 0 24 24"
-                width="22"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.44a2 2 0 0 0 1.79 2.87h9.96v-2H9.42a.25.25 0 0 1-.22-.37L9.5 15h6.55a2 2 0 0 0 1.79-1.11L21 7H7zm0 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 18z"
-                />
-              </svg>
+              <span class="material-symbols-outlined"> shopping_bag </span>
             </span>
             <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
               {{ translate('Products') }}
@@ -1312,7 +1307,9 @@ onBeforeUnmount(() => {
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
             data-pbx-insert-btn
           >
-            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3">
+            <div
+              class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3"
+            >
               <div
                 @click="handleInsertButtonClick(0)"
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"

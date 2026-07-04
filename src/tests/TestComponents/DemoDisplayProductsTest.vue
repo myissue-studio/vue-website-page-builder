@@ -2,9 +2,18 @@
 import { computed, ref } from 'vue'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
-import type { PageBuilderProduct, ProductCardStyle, ProductGridLayout } from '../../types'
+import type {
+  PageBuilderProduct,
+  ProductCardStyle,
+  ProductGridLayout,
+  ProductMobileColumns,
+} from '../../types'
 import { useTranslations } from '../../composables/useTranslations'
-import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
+import ProductSectionSettingsFields from '../../Components/PageBuilder/EditorMenu/Editables/ProductSectionSettingsFields.vue'
+import {
+  PRODUCT_CARD_STYLE_OPTIONS,
+  PRODUCT_LAYOUT_OPTIONS,
+} from '../../utils/builder/product-section-options'
 import productsArray from '../productsArray.test.json'
 
 const pageBuilderService = getPageBuilder()
@@ -16,31 +25,12 @@ const searchQuery = ref('')
 const products = productsArray as PageBuilderProduct[]
 const selectedIds = ref<Set<string | number>>(new Set())
 const layout = ref<ProductGridLayout>('grid-3')
+const mobileColumns = ref<ProductMobileColumns>(1)
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(false)
 
-const layoutOptions: {
-  value: ProductGridLayout
-  labelKey: string
-  hintKey: string
-}[] = [
-  { value: 'grid-1', labelKey: '1 product', hintKey: 'Full width' },
-  { value: 'grid-2', labelKey: '2 products (grid)', hintKey: '2 columns' },
-  { value: 'grid-3', labelKey: '3 products (grid)', hintKey: '3 columns' },
-  { value: 'grid-4', labelKey: '4 products (grid)', hintKey: '4 columns' },
-  { value: 'grid-6', labelKey: '6 products (grid)', hintKey: '6 columns' },
-]
-
-const cardStyleOptions: {
-  value: ProductCardStyle
-  labelKey: string
-  hintKey: string
-}[] = [
-  { value: 'minimal', labelKey: 'Clean', hintKey: 'No border' },
-  { value: 'bordered', labelKey: 'Bordered', hintKey: 'Outlined cards' },
-  { value: 'shadow', labelKey: 'Shadow', hintKey: 'Soft depth' },
-  { value: 'elevated', labelKey: 'Elevated', hintKey: 'Border and shadow' },
-]
+const layoutOptions = PRODUCT_LAYOUT_OPTIONS
+const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
 
 const filteredProducts = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
@@ -91,6 +81,7 @@ async function insertSelectedProducts() {
   isLoading.value = true
   await pageBuilderService.insertProducts(selectedProducts.value, {
     layout: layout.value,
+    mobileColumns: mobileColumns.value,
     cardStyle: cardStyle.value,
     roundedImages: roundedImages.value,
   })
@@ -141,45 +132,18 @@ async function insertSelectedProducts() {
         </div>
       </form>
 
-      <div class="pbx-modalFilterBar">
-        <span class="pbx-modalFilterBarTitle">{{ translate('Grid layout') }}</span>
-        <div class="pbx-modalFilterBarChips">
-          <ModalFilterChip
-            v-for="option in layoutOptions"
-            :key="option.value"
-            slider-icon
-            :label="translate(option.labelKey)"
-            :hint="translate(option.hintKey)"
-            :active="layout === option.value"
-            @click="layout = option.value"
-          />
-        </div>
+      <div class="pbx-mt-4">
+        <ProductSectionSettingsFields
+          v-model:layout="layout"
+          v-model:mobile-columns="mobileColumns"
+          v-model:card-style="cardStyle"
+          v-model:rounded-images="roundedImages"
+          :translate="translate"
+        />
       </div>
 
-      <div class="pbx-modalFilterBar">
-        <span class="pbx-modalFilterBarTitle">{{ translate('Card style') }}</span>
-        <div class="pbx-modalFilterBarChips">
-          <ModalFilterChip
-            v-for="option in cardStyleOptions"
-            :key="option.value"
-            slider-icon
-            :label="translate(option.labelKey)"
-            :hint="translate(option.hintKey)"
-            :active="cardStyle === option.value"
-            @click="cardStyle = option.value"
-          />
-          <ModalFilterChip
-            slider-icon
-            :label="translate('Rounded images')"
-            :hint="translate('Rounded photo corners')"
-            :active="roundedImages"
-            @click="roundedImages = !roundedImages"
-          />
-        </div>
-      </div>
-
-      <div class="pbx-mb-12">
-        <div class="pbx-px-2">
+      <div class="pbx-mt-6 pbx-mb-12">
+        <div>
           <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6">
             <div class="md:pbx-w-9/12 pbx-w-full pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
               <div
@@ -190,7 +154,7 @@ async function insertSelectedProducts() {
                   v-for="product in filteredProducts"
                   :key="String(product.id)"
                   type="button"
-                  class="pbx-group pbx-text-left pbx-relative pbx-overflow-hidden pbx-rounded-2xl pbx-border-2 pbx-p-3 pbx-transition-all pbx-duration-150"
+                  class="pbx-group pbx-text-left pbx-relative pbx-overflow-hidden pbx-rounded-2xl pbx-border pbx-p-3 pbx-transition-all pbx-duration-150"
                   :class="
                     isSelected(product.id)
                       ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor/10 pbx-shadow-md'
@@ -269,7 +233,11 @@ async function insertSelectedProducts() {
                         {{ translate(activeLayout.labelKey) }}
                       </p>
                       <p class="pbx-modalSidebarStatHint">
-                        {{ translate(activeLayout.hintKey) }}
+                        {{
+                          layout !== 'grid-1' && mobileColumns === 2
+                            ? translate('Two products per row')
+                            : translate(activeLayout.hintKey)
+                        }}
                       </p>
                     </div>
 

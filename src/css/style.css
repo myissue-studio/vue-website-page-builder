@@ -928,6 +928,56 @@
 
   /*
     |--------------------------------------------------------------------------
+    | Modal preview cards (layout components, themes)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalPreviewCard {
+    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border-2 pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
+  }
+
+  .pbx-modalPreviewCardMedia {
+    @apply pbx-relative pbx-overflow-hidden pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50;
+  }
+
+  .pbx-modalPreviewCardTitle {
+    @apply pbx-myPrimaryParagraph pbx-pt-3 pbx-px-1 pbx-text-sm pbx-font-semibold pbx-line-clamp-2;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Product section settings (modal + toolbar)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-productSettingsPanel {
+    @apply pbx-flex pbx-flex-col pbx-gap-4;
+  }
+
+  .pbx-productSettingsSection {
+    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+  }
+
+  .pbx-productSettingsSectionHeader {
+    @apply pbx-mb-3 pbx-flex pbx-flex-col pbx-gap-1;
+  }
+
+  .pbx-productSettingsSectionTitle {
+    @apply pbx-m-0 pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-productSettingsSectionDesc {
+    @apply pbx-m-0 pbx-text-xs pbx-leading-relaxed pbx-text-gray-500;
+  }
+
+  .pbx-productSettingsSectionChips {
+    @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2;
+  }
+
+  .pbx-productSettingsToggleRow {
+    @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
     | Toolbar more menu
     |--------------------------------------------------------------------------
     */

@@ -44,6 +44,60 @@ When `:DisplayProducts` is provided, a **Products** button appears in the navbar
 
 Design the modal however you want: API search, categories, Shopify sync, ERP feed, etc.
 
+### Step-by-step: implement your product modal
+
+**What the Page Builder provides**
+
+- The **Products** button in the navbar and between sections
+- The modal shell (“Add Products to Page”) — your component renders inside it
+- `insertProducts()` / `insertProductHtml()` to add sections to the canvas
+- **Product section settings** on the toolbar after insert (grid, mobile columns, card style, rounded images) — no extra work from you
+
+**What you implement in `YourDisplayProducts.vue`**
+
+1. **Load products** — static list, REST API, CMS, etc. (your data layer)
+2. **Browse & select** — search, filters, multi-select, pagination — whatever your catalog needs
+3. **Layout options (optional)** — grid, mobile columns, card style, rounded images before insert; copy the pattern from `DemoDisplayProductsTest.vue` or use your own UI
+4. **Insert** — on confirm, call `insertProducts()` then close the modal
+
+**Minimum insert code** (required when the editor confirms):
+
+```vue
+<script setup lang="ts">
+import { getPageBuilder, usePageBuilderModal } from '@myissue/vue-website-page-builder'
+import type { PageBuilderProduct } from '@myissue/vue-website-page-builder'
+
+const pageBuilderService = getPageBuilder()
+const { closeProductLibraryModal } = usePageBuilderModal()
+
+async function onInsertSelected(products: PageBuilderProduct[]) {
+  if (!products.length) return
+
+  await pageBuilderService.insertProducts(products, {
+    layout: 'grid-3',           // grid-1 | grid-2 | grid-3 | grid-4 | grid-6
+    mobileColumns: 1,           // 1 or 2
+    cardStyle: 'minimal',       // minimal | bordered | shadow | elevated
+    roundedImages: false,
+    sectionTitle: 'Products',
+  })
+
+  closeProductLibraryModal()
+}
+</script>
+```
+
+**Reference implementation in this repo**
+
+| File | Purpose |
+|------|---------|
+| `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Full picker UI — search, multi-select, section settings, insert |
+| `src/tests/productsArray.test.json` | Sample product data |
+| `src/tests/PageBuilderTest.vue` | Wiring `:DisplayProducts="DemoDisplayProductsTest"` |
+
+Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API.
+
+**After insert:** editors change layout and card style from the canvas toolbar (grid icon) — you do not need to rebuild that in your picker unless you want those controls before the first insert.
+
 When the user confirms a selection, call one of these APIs:
 
 ## Large catalogs (1,000+ products)
@@ -260,10 +314,17 @@ Pass the same options to `insertProducts()`:
 ```ts
 await pageBuilderService.insertProducts(products, {
   layout: 'grid-3',
+  mobileColumns: 1, // or 2 for two products per row on small screens
   cardStyle: 'elevated',
   roundedImages: true,
 })
 ```
+
+### Edit layout after insert (toolbar)
+
+Click a product section on the canvas, then use the **grid** icon in the floating toolbar (`#pbxEditToolbar`) to change grid layout, mobile columns, card style, and rounded images — without deleting and re-inserting.
+
+Settings are stored on the section as `data-pbx-product-layout`, `data-pbx-product-mobile-cols`, etc.
 
 After insertion, editors can still tweak borders, shadows, and spacing visually in the builder.
 

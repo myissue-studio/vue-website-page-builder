@@ -24,6 +24,7 @@ export type {
   PageBuilderProductInput,
   ProductGridLayout,
   ProductCardStyle,
+  ProductSectionOptions,
   InsertProductsOptions,
   PageBuilderConfig,
   BuilderResourceComponent,

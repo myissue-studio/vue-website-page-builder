@@ -6,6 +6,7 @@ import type {
   InsertProductsOptions,
   PageBuilderConfig,
   PageBuilderProductInput,
+  ProductSectionOptions,
   PageSettings,
   SEOCheck,
   SEOSummary,
@@ -32,6 +33,11 @@ import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
+import {
+  applyProductSectionOptionsToElement,
+  DEFAULT_PRODUCT_SECTION_OPTIONS,
+  parseProductSectionFromElement,
+} from '../utils/builder/product-section-options'
 
 function scrollContainerToCenterElement(
   container: HTMLElement,
@@ -1192,6 +1198,27 @@ export class PageBuilderService {
     if (!section) return
 
     section.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
+    await this.handleAutoSave()
+  }
+
+  public isSelectedProductSection(): boolean {
+    const section = this.getSelectedComponentSection()
+    return section?.getAttribute('data-pbx-product-section') === 'true'
+  }
+
+  public getSelectedProductSectionOptions(): ProductSectionOptions {
+    const section = this.getSelectedComponentSection()
+    if (!section || !this.isSelectedProductSection()) {
+      return { ...DEFAULT_PRODUCT_SECTION_OPTIONS }
+    }
+    return parseProductSectionFromElement(section)
+  }
+
+  public async updateSelectedProductSection(options: ProductSectionOptions): Promise<void> {
+    const section = this.getSelectedComponentSection()
+    if (!section || !this.isSelectedProductSection()) return
+
+    applyProductSectionOptionsToElement(section, options)
     await this.handleAutoSave()
   }
 
@@ -3847,6 +3874,7 @@ export class PageBuilderService {
     const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle, {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
+      mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)
   }

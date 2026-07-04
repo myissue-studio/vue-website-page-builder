@@ -91,7 +91,7 @@ watch(
       },
 
       settings: {
-        brandColor: '#DB93B0',
+        brandColor: '#000000',
         themeColorPresets: {
           enabled: true,
           colors: [

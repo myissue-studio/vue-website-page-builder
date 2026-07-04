@@ -10,6 +10,7 @@ import { useTranslations } from '../../composables/useTranslations'
 import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
+import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
 
 const { translate } = useTranslations()
 
@@ -253,16 +254,20 @@ const convertToComponentObject = function (comp: {
             <div>
               <div
                 v-if="filteredThemes.length"
-                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-3 pbx-gap-4"
+                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4"
               >
-                <div
+                <ModalPreviewCard
                   v-for="theme in filteredThemes"
                   :key="theme.title"
-                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-min-h-[40rem]"
+                  :title="translate(theme.title)"
                   @click="handleDropTheme(theme.html_code)"
                 >
-                  <ComponentThumbnail :htmlCode="theme.html_code" :maxHeight="9999" fit="contain" />
-                </div>
+                  <ComponentThumbnail
+                    :htmlCode="theme.html_code"
+                    :maxHeight="360"
+                    fit="contain"
+                  />
+                </ModalPreviewCard>
               </div>
               <p
                 v-if="!filteredThemes.length"
@@ -335,14 +340,18 @@ const convertToComponentObject = function (comp: {
                 v-if="pagedComponents.length"
                 class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4"
               >
-                <div
+                <ModalPreviewCard
                   v-for="comp in pagedComponents"
                   :key="comp.title"
-                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-min-h-[25rem]"
+                  :title="translate(comp.title)"
                   @click="handleDropComponent(convertToComponentObject(comp))"
                 >
-                  <ComponentThumbnail :htmlCode="comp.html_code" fit="contain" />
-                </div>
+                  <ComponentThumbnail
+                    :htmlCode="comp.html_code"
+                    :maxHeight="260"
+                    fit="contain"
+                  />
+                </ModalPreviewCard>
               </div>
               <p
                 v-if="!filteredComponents.length"

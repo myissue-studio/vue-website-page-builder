@@ -58,5 +58,15 @@ describe('buildProductSectionHtml', () => {
     })
     expect(html).toContain('rounded-2xl border border-solid border-gray-200')
     expect(html).toContain('rounded-xl overflow-hidden')
+    expect(html).toContain('data-pbx-product-layout="grid-3"')
+    expect(html).toContain('data-pbx-product-grid="true"')
+  })
+
+  it('uses two columns on mobile when mobileColumns is 2', () => {
+    const html = buildProductSectionHtml(sample, 'grid-4', 'Products', {
+      mobileColumns: 2,
+    })
+    expect(html).toContain('grid-cols-2 sm:grid-cols-2 lg:grid-cols-4')
+    expect(html).toContain('data-pbx-product-mobile-cols="2"')
   })
 })

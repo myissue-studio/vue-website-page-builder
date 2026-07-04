@@ -77,8 +77,18 @@ export type ProductCardStyle =
   | 'elevated'
   | (string & {})
 
+export type ProductMobileColumns = 1 | 2
+
+export interface ProductSectionOptions {
+  layout: ProductGridLayout
+  mobileColumns?: ProductMobileColumns
+  cardStyle?: ProductCardStyle
+  roundedImages?: boolean
+}
+
 export interface InsertProductsOptions {
   layout?: ProductGridLayout
+  mobileColumns?: ProductMobileColumns
   cardStyle?: ProductCardStyle
   /** Adds rounded corners to product images */
   roundedImages?: boolean
