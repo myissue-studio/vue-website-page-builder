@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+todo.txt
+phase-1-roadmap.md
 
 # Editor directories and files
 .vscode/*

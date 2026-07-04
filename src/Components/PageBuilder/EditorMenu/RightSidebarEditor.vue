@@ -48,6 +48,12 @@ const hasEditableSelection = computed(() => {
   return Boolean(element && pageBuilderService.isEditableElement(element))
 })
 
+const showImageEditor = computed(() => {
+  const element = getElement.value
+  if (!element) return false
+  return element.tagName === 'IMG' || Boolean(pageBuilderStateStore.getBasePrimaryImage)
+})
+
 const scrollContainer = ref<HTMLElement | null>(null)
 let lastScrollTop = 0
 
@@ -122,9 +128,10 @@ const closeHTMLSettings = async function () {
       <button
         type="button"
         @click="$emit('closeEditor')"
+        :aria-label="translate('Close properties panel')"
         class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
       >
-        <span class="material-symbols-outlined"> close </span>
+        <span class="material-symbols-outlined" aria-hidden="true"> close </span>
       </button>
       <p class="pbx-font-medium pbx-text-sm">
         <template v-if="hasEditableSelection">
@@ -141,7 +148,7 @@ const closeHTMLSettings = async function () {
       <div
         class="pbx-grid pbx-grid-cols-3 pbx-gap-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
         role="tablist"
-        :aria-label="translate('Styles')"
+        :aria-label="translate('Properties panel')"
       >
         <button
           type="button"
@@ -195,7 +202,7 @@ const closeHTMLSettings = async function () {
     >
       <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <div v-if="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
-          <ImageEditor />
+          <ImageEditor v-if="showImageEditor" />
           <OpacityEditor />
           <PaddingControl />
           <MarginControl />

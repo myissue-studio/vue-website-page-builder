@@ -669,7 +669,6 @@ const handleDelete = function () {
   // end modal
 }
 
-// delete individual HTML element (not the whole component)
 const handleDeleteElement = function () {
   const element = getElement.value
   if (!element) return
@@ -736,6 +735,8 @@ const handleDuplicateComponent = async function () {
   await pageBuilderService.duplicateComponent()
   showToast(translate('Component duplicated'), 'success')
 }
+
+defineExpose({ openDeleteConfirm: handleDeleteElement })
 </script>
 <template v-if="getElement">
   <div class="pbx-max-w-full pbx-min-w-0">

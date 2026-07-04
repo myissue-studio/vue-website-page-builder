@@ -1,6 +1,6 @@
 {
   "name": "@myissue/vue-website-page-builder",
-  "version": "3.5.20",
+  "version": "3.5.21",
   "description": "Vue 3 page builder component with drag & drop functionality.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
@@ -47,7 +47,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:myissue-studio/vue-website-page-builder.git"
+    "url": "git+https://github.com/myissue-studio/vue-website-page-builder.git"
   },
   "bugs": {
     "url": "https://github.com/myissue-studio/vue-website-page-builder/issues"
@@ -110,6 +110,6 @@
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitepress": "^2.0.0-alpha.15",
     "vitest": "^3.2.4",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^3.3.6"
   }
 }
