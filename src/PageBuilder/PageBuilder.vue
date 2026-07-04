@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted, computed, ref, watch, provide, nextTick } from 'vue'
 import BaseModal from '../Components/Modals/BaseModal.vue'
 import PageBuilderPreview from './PageBuilderPreview.vue'
-import PageLayoutToolbar from '../Components/PageBuilder/EditorMenu/Editables/PageLayoutToolbar.vue'
 import SelectedElementToolbar from '../Components/PageBuilder/EditorMenu/Editables/SelectedElementToolbar.vue'
 import ComponentLibraryModal from '../Components/Modals/ComponentLibraryModal.vue'
 import ProductLibraryModal from '../Components/Modals/ProductLibraryModal.vue'
@@ -1252,30 +1251,6 @@ onBeforeUnmount(() => {
       id="pagebuilder-main"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-relative pbx-h-full pbx-flex pbx-pb-2 pbx-gap-2"
     >
-      <!-- Left Menu Start -->
-      <div
-        @click.self="
-          async () => {
-            await pageBuilderService.clearHtmlSelection()
-          }
-        "
-        id="pagebuilder-left-menu"
-        class="pbx-w-16 pbx-pt-7 pbx-pb-2 pbx-bg-myPrimaryLightGrayColor pbx-rounded-r-2xl pbx-shadow-sm"
-      >
-        <div class="pbx-mx-2 pbx-flex pbx-flex-col pbx-myPrimaryGap pbx-items-stretch">
-          <div
-            @click.self="
-              async () => {
-                await pageBuilderService.clearHtmlSelection()
-              }
-            "
-          >
-            <PageLayoutToolbar></PageLayoutToolbar>
-          </div>
-        </div>
-      </div>
-      <!-- Left Menu End -->
-
       <main
         ref="pbxBuilderWrapper"
         id="page-builder-wrapper"

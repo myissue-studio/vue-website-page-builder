@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { ref } from 'vue'
+import EditorAccordion from '../EditorAccordion.vue'
+import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
 import { sleep } from '../../../../utils/sleep'
 
+defineOptions({
+  name: 'RemoveAllComponentsSettingsEditor',
+})
+
 const { translate } = useTranslations()
 const { showToast } = useToast()
-
 const pageBuilderService = getPageBuilder()
 
 const isDeletingLayout = ref(false)
@@ -54,40 +58,53 @@ const handleDeleteComponentsFromDOM = function () {
 </script>
 
 <template>
-  <div>
-    <div class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center pbx-myPrimaryGap">
-      <div class="pbx-flex pbx-gap-2 pbx-items-center pbx-justify-center">
-        <div
-          @click="handleDeleteComponentsFromDOM"
-          class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-        >
-          <span class="material-symbols-outlined"> delete_forever </span>
-        </div>
-      </div>
-    </div>
+  <EditorAccordion>
+    <template #title>{{ translate('Page layout') }}</template>
+    <template #content>
+      <p class="pbx-editorSectionDesc">
+        {{ translate('Remove all components description') }}
+      </p>
 
-    <ConfirmActionModal
-      :showDynamicModalBuilder="showModalDeleteAllComponents"
-      :type="typeModal"
-      :gridColumnAmount="gridColumnModal"
-      :title="titleModal"
-      :description="descriptionModal"
-      :isLoading="isDeletingLayout"
-      :firstButtonText="firstButtonModal"
-      :secondButtonText="secondButtonModal ?? undefined"
-      :thirdButtonText="thirdButtonModal ?? undefined"
-      @firstModalButtonFunctionDynamicModalBuilder="
-        () => firstModalButtonFunctionDynamicModalBuilder?.()
-      "
-      @secondModalButtonFunctionDynamicModalBuilder="
-        () => secondModalButtonFunctionDynamicModalBuilder?.()
-      "
-      @thirdModalButtonFunctionDynamicModalBuilder="
-        () => thirdModalButtonFunctionDynamicModalBuilder?.()
-      "
-    >
-      <header></header>
-      <main></main>
-    </ConfirmActionModal>
-  </div>
+      <button
+        type="button"
+        class="pbx-pageDesignOpenButton pbx-pageDesignOpenButton--danger"
+        @click="handleDeleteComponentsFromDOM"
+      >
+        <span class="material-symbols-outlined">delete_forever</span>
+        <span class="pbx-pageDesignOpenButtonText">
+          <span class="pbx-pageDesignOpenButtonLabel">{{ translate('Remove all Components') }}</span>
+          <span class="pbx-pageDesignOpenButtonHint">
+            {{ translate('Clear every section from the page') }}
+          </span>
+        </span>
+        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
+          arrow_forward
+        </span>
+      </button>
+    </template>
+  </EditorAccordion>
+
+  <ConfirmActionModal
+    :showDynamicModalBuilder="showModalDeleteAllComponents"
+    :type="typeModal"
+    :gridColumnAmount="gridColumnModal"
+    :title="titleModal"
+    :description="descriptionModal"
+    :isLoading="isDeletingLayout"
+    :firstButtonText="firstButtonModal"
+    :secondButtonText="secondButtonModal ?? undefined"
+    :thirdButtonText="thirdButtonModal ?? undefined"
+    @firstModalButtonFunctionDynamicModalBuilder="
+      () => firstModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @secondModalButtonFunctionDynamicModalBuilder="
+      () => secondModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @thirdModalButtonFunctionDynamicModalBuilder="
+      () => thirdModalButtonFunctionDynamicModalBuilder?.()
+    "
+  >
+    <header></header>
+    <main></main>
+  </ConfirmActionModal>
 </template>

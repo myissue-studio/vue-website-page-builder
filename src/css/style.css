@@ -792,6 +792,18 @@
     @apply pbx-shrink-0 pbx-text-lg pbx-text-gray-400;
   }
 
+  .pbx-pageDesignOpenButton--danger {
+    @apply hover:pbx-border-myPrimaryErrorColor hover:pbx-bg-red-50;
+  }
+
+  .pbx-pageDesignOpenButton--danger .material-symbols-outlined:first-child {
+    @apply pbx-text-myPrimaryErrorColor;
+  }
+
+  .pbx-pageDesignOpenButton--danger .pbx-pageDesignOpenButtonLabel {
+    @apply pbx-text-myPrimaryErrorColor;
+  }
+
   .pbx-seoCheckGroupTitle {
     @apply pbx-text-xs pbx-font-semibold pbx-uppercase pbx-tracking-widest pbx-text-gray-400 pbx-px-1;
   }

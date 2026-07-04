@@ -13,6 +13,7 @@ import BorderControls from './Editables/BorderControls.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
 import PageMetaSettingsEditor from './Editables/PageMetaSettingsEditor.vue'
 import SeoCheckSettingsEditor from './Editables/SeoCheckSettingsEditor.vue'
+import RemoveAllComponentsSettingsEditor from './Editables/RemoveAllComponentsSettingsEditor.vue'
 import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
 import PageHtmlEditorSettingsEditor from './Editables/PageHtmlEditorSettingsEditor.vue'
 import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
@@ -231,6 +232,7 @@ const closeHTMLSettings = async function () {
         <PageMetaSettingsEditor />
         <SeoCheckSettingsEditor />
         <PageHtmlEditorSettingsEditor />
+        <RemoveAllComponentsSettingsEditor />
       </div>
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
