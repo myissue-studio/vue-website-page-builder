@@ -1394,8 +1394,8 @@ export class PageBuilderService {
       pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
     }
 
-    this.canvasClickCaptureListener = (event: Event) => {
-      void this.handleCanvasClickCapture(event)
+    this.canvasClickCaptureListener = () => {
+      void this.handleCanvasClickCapture()
     }
     this.canvasDblClickCaptureListener = (event: Event) => {
       void this.handleCanvasDoubleClickCapture(event)
