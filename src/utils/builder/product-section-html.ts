@@ -1,4 +1,4 @@
-import type { PageBuilderProduct, ProductGridLayout } from '../../types'
+import type { PageBuilderProductInput, ProductCardStyle, ProductGridLayout } from '../../types'
 
 function escapeHtml(value: string): string {
   return value
@@ -16,10 +16,31 @@ const GRID_CLASS: Record<ProductGridLayout, string> = {
   'grid-6': 'grid grid-cols-2 md:grid-cols-3 myPrimaryGap items-stretch',
 }
 
-const PRODUCT_CARD_CLASS =
-  'product-card flex flex-col h-full py-2'
+const PRODUCT_CARD_BASE = 'product-card flex flex-col h-full'
 
-function renderProductCard(product: PageBuilderProduct, _layout: ProductGridLayout): string {
+const CARD_STYLE_CLASS: Record<ProductCardStyle, string> = {
+  minimal: `${PRODUCT_CARD_BASE} py-2`,
+  bordered: `${PRODUCT_CARD_BASE} pt-4 pb-3 px-4 rounded-2xl border border-solid border-gray-200 bg-white`,
+  shadow: `${PRODUCT_CARD_BASE} pt-4 pb-3 px-4 rounded-2xl bg-white shadow-md`,
+  elevated: `${PRODUCT_CARD_BASE} pt-4 pb-3 px-4 rounded-2xl border border-solid border-gray-200 bg-white shadow-sm`,
+}
+
+export interface BuildProductSectionStyleOptions {
+  cardStyle?: ProductCardStyle
+  roundedImages?: boolean
+}
+
+function renderProductCard(
+  product: PageBuilderProductInput,
+  _layout: ProductGridLayout,
+  styleOptions: BuildProductSectionStyleOptions = {},
+): string {
+  const cardStyle = styleOptions.cardStyle ?? 'minimal'
+  const roundedImages = styleOptions.roundedImages ?? false
+  const productCardClass = CARD_STYLE_CLASS[cardStyle] ?? CARD_STYLE_CLASS.minimal
+  const imageWrapClass = roundedImages
+    ? 'product-card-image shrink-0 rounded-xl overflow-hidden'
+    : 'product-card-image shrink-0'
   const id = product.id != null ? String(product.id) : ''
   const title = product.title ? escapeHtml(product.title) : ''
   const description = product.description ? escapeHtml(product.description) : ''
@@ -36,14 +57,14 @@ function renderProductCard(product: PageBuilderProduct, _layout: ProductGridLayo
 
   const parts: string[] = []
 
-  parts.push(`<div class="${PRODUCT_CARD_CLASS}" data-pbx-product-id="${escapeHtml(id)}">`)
+  parts.push(`<div class="${productCardClass}" data-pbx-product-id="${escapeHtml(id)}">`)
 
   if (imageSrc) {
     const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
     parts.push(
       url
-        ? `<div class="product-card-image shrink-0"><a href="${url}">${imgTag}</a></div>`
-        : `<div class="product-card-image shrink-0">${imgTag}</div>`,
+        ? `<div class="${imageWrapClass}"><a href="${url}">${imgTag}</a></div>`
+        : `<div class="${imageWrapClass}">${imgTag}</div>`,
     )
   }
 
@@ -103,9 +124,10 @@ function renderProductCard(product: PageBuilderProduct, _layout: ProductGridLayo
 }
 
 export function buildProductSectionHtml(
-  products: PageBuilderProduct[],
+  products: ReadonlyArray<PageBuilderProductInput>,
   layout: ProductGridLayout = 'grid-3',
   sectionTitle = 'Products',
+  styleOptions: BuildProductSectionStyleOptions = {},
 ): string {
   if (!products.length) return ''
 
@@ -114,7 +136,9 @@ export function buildProductSectionHtml(
     .filter(Boolean)
     .join(',')
 
-  const cards = products.map((product) => renderProductCard(product, layout)).join('\n')
+  const cards = products
+    .map((product) => renderProductCard(product, layout, styleOptions))
+    .join('\n')
   const gridClass = GRID_CLASS[layout] ?? GRID_CLASS['grid-3']
 
   return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}">

@@ -808,6 +808,10 @@
     @apply pbx-text-xs pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
   }
 
+  .pbx-modalFilterBarHeader {
+    @apply pbx-flex pbx-items-center pbx-gap-2 pbx-text-gray-500;
+  }
+
   .pbx-modalFilterBarChips {
     @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2 pbx-overflow-x-auto;
   }
@@ -871,6 +875,55 @@
 
   .pbx-modalLibraryCardAction {
     @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor group-hover:pbx-text-white;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Modal sidebar summary (product library information panel)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalSidebarPanel {
+    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+  }
+
+  .pbx-modalSidebarPanelTitle {
+    @apply pbx-mb-3 pbx-text-xs pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarStatGrid {
+    @apply pbx-grid pbx-grid-cols-1 pbx-gap-2;
+  }
+
+  .pbx-modalSidebarStatCard {
+    @apply pbx-flex pbx-flex-col pbx-gap-1.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-p-3;
+  }
+
+  .pbx-modalSidebarStatCard--active {
+    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryLinkColor/5;
+  }
+
+  .pbx-modalSidebarStatLabel {
+    @apply pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarStatValue {
+    @apply pbx-text-base pbx-font-semibold pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-modalSidebarStatHint {
+    @apply pbx-text-[11px] pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarSelectedList {
+    @apply pbx-mt-4 pbx-space-y-2;
+  }
+
+  .pbx-modalSidebarSelectedTitle {
+    @apply pbx-mb-2 pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarSelectedItem {
+    @apply pbx-flex pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
   }
 
   /*

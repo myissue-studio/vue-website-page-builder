@@ -35,10 +35,10 @@ export interface ImageObject {
 }
 
 /**
- * Flexible product shape for ecommerce integrations.
- * All fields are optional — hosts decide what to show in their custom picker or layouts.
+ * Product fields accepted by insertProducts() / buildProductSectionHtml().
+ * No index signature — assign from your API interfaces without extra casting.
  */
-export interface PageBuilderProduct {
+export interface PageBuilderProductInput {
   id?: string | number
   title?: string
   description?: string
@@ -51,16 +51,40 @@ export interface PageBuilderProduct {
   url?: string
   buttonText?: string
   sku?: string
+}
+
+/**
+ * Flexible product shape for ecommerce integrations.
+ * All fields are optional — hosts decide what to show in their custom picker or layouts.
+ * Includes an index signature for custom fields used in templates.
+ */
+export type PageBuilderProduct = PageBuilderProductInput & {
   [key: string]: unknown
 }
 
-export type ProductGridLayout = 'grid-1' | 'grid-2' | 'grid-3' | 'grid-4' | 'grid-6'
+export type ProductGridLayout =
+  | 'grid-1'
+  | 'grid-2'
+  | 'grid-3'
+  | 'grid-4'
+  | 'grid-6'
+  | (string & {})
+
+export type ProductCardStyle =
+  | 'minimal'
+  | 'bordered'
+  | 'shadow'
+  | 'elevated'
+  | (string & {})
 
 export interface InsertProductsOptions {
   layout?: ProductGridLayout
+  cardStyle?: ProductCardStyle
+  /** Adds rounded corners to product images */
+  roundedImages?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
-  method?: 'unshift' | 'push' | 'insert'
+  method?: 'unshift' | 'push' | 'insert' | (string & {})
 }
 
 // For a single component/block passed by the developer

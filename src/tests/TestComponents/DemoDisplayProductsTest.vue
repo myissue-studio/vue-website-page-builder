@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
-import type { PageBuilderProduct, ProductGridLayout } from '../../types'
+import type { PageBuilderProduct, ProductCardStyle, ProductGridLayout } from '../../types'
 import { useTranslations } from '../../composables/useTranslations'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import productsArray from '../productsArray.test.json'
@@ -16,18 +16,30 @@ const searchQuery = ref('')
 const products = productsArray as PageBuilderProduct[]
 const selectedIds = ref<Set<string | number>>(new Set())
 const layout = ref<ProductGridLayout>('grid-3')
+const cardStyle = ref<ProductCardStyle>('minimal')
+const roundedImages = ref(false)
 
 const layoutOptions: {
   value: ProductGridLayout
   labelKey: string
-  icon: string
   hintKey: string
 }[] = [
-  { value: 'grid-1', labelKey: '1 product', icon: 'view_agenda', hintKey: 'Full width' },
-  { value: 'grid-2', labelKey: '2 products (grid)', icon: 'view_column', hintKey: '2 columns' },
-  { value: 'grid-3', labelKey: '3 products (grid)', icon: 'grid_view', hintKey: '3 columns' },
-  { value: 'grid-4', labelKey: '4 products (grid)', icon: 'grid_on', hintKey: '4 columns' },
-  { value: 'grid-6', labelKey: '6 products (grid)', icon: 'apps', hintKey: '6 columns' },
+  { value: 'grid-1', labelKey: '1 product', hintKey: 'Full width' },
+  { value: 'grid-2', labelKey: '2 products (grid)', hintKey: '2 columns' },
+  { value: 'grid-3', labelKey: '3 products (grid)', hintKey: '3 columns' },
+  { value: 'grid-4', labelKey: '4 products (grid)', hintKey: '4 columns' },
+  { value: 'grid-6', labelKey: '6 products (grid)', hintKey: '6 columns' },
+]
+
+const cardStyleOptions: {
+  value: ProductCardStyle
+  labelKey: string
+  hintKey: string
+}[] = [
+  { value: 'minimal', labelKey: 'Clean', hintKey: 'No border' },
+  { value: 'bordered', labelKey: 'Bordered', hintKey: 'Outlined cards' },
+  { value: 'shadow', labelKey: 'Shadow', hintKey: 'Soft depth' },
+  { value: 'elevated', labelKey: 'Elevated', hintKey: 'Border and shadow' },
 ]
 
 const filteredProducts = computed(() => {
@@ -44,6 +56,14 @@ const filteredProducts = computed(() => {
 
 const selectedProducts = computed(() =>
   products.filter((product) => product.id != null && selectedIds.value.has(product.id)),
+)
+
+const activeLayout = computed(
+  () => layoutOptions.find((option) => option.value === layout.value) ?? layoutOptions[0],
+)
+
+const activeCardStyle = computed(
+  () => cardStyleOptions.find((option) => option.value === cardStyle.value) ?? cardStyleOptions[0],
 )
 
 function toggleProduct(id: string | number) {
@@ -71,6 +91,8 @@ async function insertSelectedProducts() {
   isLoading.value = true
   await pageBuilderService.insertProducts(selectedProducts.value, {
     layout: layout.value,
+    cardStyle: cardStyle.value,
+    roundedImages: roundedImages.value,
   })
   closeProductLibraryModal()
   isLoading.value = false
@@ -125,11 +147,33 @@ async function insertSelectedProducts() {
           <ModalFilterChip
             v-for="option in layoutOptions"
             :key="option.value"
-            :icon="option.icon"
+            slider-icon
             :label="translate(option.labelKey)"
             :hint="translate(option.hintKey)"
             :active="layout === option.value"
             @click="layout = option.value"
+          />
+        </div>
+      </div>
+
+      <div class="pbx-modalFilterBar">
+        <span class="pbx-modalFilterBarTitle">{{ translate('Card style') }}</span>
+        <div class="pbx-modalFilterBarChips">
+          <ModalFilterChip
+            v-for="option in cardStyleOptions"
+            :key="option.value"
+            slider-icon
+            :label="translate(option.labelKey)"
+            :hint="translate(option.hintKey)"
+            :active="cardStyle === option.value"
+            @click="cardStyle = option.value"
+          />
+          <ModalFilterChip
+            slider-icon
+            :label="translate('Rounded images')"
+            :hint="translate('Rounded photo corners')"
+            :active="roundedImages"
+            @click="roundedImages = !roundedImages"
           />
         </div>
       </div>
@@ -207,39 +251,50 @@ async function insertSelectedProducts() {
             </div>
 
             <aside class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto">
-              <div class="pbx-min-h-[40rem]">
-                <p class="pbx-myPrimaryParagraph pbx-font-normal pbx-text-gray-900 pbx-pt-4">
-                  {{ translate('Information') }}
-                </p>
-                <dl
-                  class="pbx-mt-2 pbx-border-t pbx-border-b pbx-border-gray-200 pbx-divide-y pbx-divide-gray-200"
-                >
-                  <div
-                    class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
-                  >
-                    <dt class="pbx-text-gray-500">{{ translate('Selected') }}</dt>
-                    <dd class="pbx-text-gray-900">{{ selectedProducts.length }}</dd>
-                  </div>
-                  <div
-                    class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
-                  >
-                    <dt class="pbx-text-gray-500">{{ translate('Grid layout') }}</dt>
-                    <dd class="pbx-text-gray-900">
-                      {{ translate(layoutOptions.find((o) => o.value === layout)?.labelKey ?? '') }}
-                    </dd>
-                  </div>
-                </dl>
+              <div class="pbx-min-h-[10rem]">
+                <div class="pbx-modalSidebarPanel pbx-mt-4">
+                  <p class="pbx-modalSidebarPanelTitle">{{ translate('Information') }}</p>
+                  <div class="pbx-modalSidebarStatGrid">
+                    <div
+                      class="pbx-modalSidebarStatCard"
+                      :class="{ 'pbx-modalSidebarStatCard--active': selectedProducts.length > 0 }"
+                    >
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Selected') }}</span>
+                      <p class="pbx-modalSidebarStatValue">{{ selectedProducts.length }}</p>
+                    </div>
 
-                <div v-if="selectedProducts.length" class="pbx-mt-6 pbx-space-y-2">
-                  <p
-                    class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-uppercase pbx-tracking-wide"
-                  >
-                    {{ translate('Selected') }}
-                  </p>
+                    <div class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Grid layout') }}</span>
+                      <p class="pbx-modalSidebarStatValue pbx-text-sm">
+                        {{ translate(activeLayout.labelKey) }}
+                      </p>
+                      <p class="pbx-modalSidebarStatHint">
+                        {{ translate(activeLayout.hintKey) }}
+                      </p>
+                    </div>
+
+                    <div class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Card style') }}</span>
+                      <p class="pbx-modalSidebarStatValue pbx-text-sm">
+                        {{ translate(activeCardStyle.labelKey) }}
+                      </p>
+                      <p class="pbx-modalSidebarStatHint">
+                        {{
+                          roundedImages
+                            ? translate('Rounded photo corners')
+                            : translate(activeCardStyle.hintKey)
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="selectedProducts.length" class="pbx-modalSidebarSelectedList">
+                  <p class="pbx-modalSidebarSelectedTitle">{{ translate('Selected') }}</p>
                   <div
                     v-for="product in selectedProducts"
                     :key="String(product.id)"
-                    class="pbx-flex pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryLinkColor/5 pbx-py-2 pbx-px-2"
+                    class="pbx-modalSidebarSelectedItem"
                   >
                     <img
                       v-if="product.image"
@@ -248,7 +303,7 @@ async function insertSelectedProducts() {
                       class="pbx-h-12 pbx-w-12 pbx-shrink-0 pbx-rounded-lg pbx-object-cover"
                     />
                     <div class="pbx-min-w-0 pbx-flex-1">
-                      <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-truncate">
+                      <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-medium pbx-truncate">
                         {{ product.title }}
                       </p>
                       <p
@@ -261,12 +316,12 @@ async function insertSelectedProducts() {
                     <button
                       v-if="product.id != null"
                       type="button"
-                      class="pbx-select-none pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+                      class="pbx-select-none pbx-h-9 pbx-w-9 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
                       :aria-label="translate('Remove')"
                       :title="translate('Remove')"
                       @click.stop="removeProduct(product.id)"
                     >
-                      <span class="material-symbols-outlined">delete</span>
+                      <span class="material-symbols-outlined pbx-text-lg">close</span>
                     </button>
                   </div>
                 </div>
@@ -286,14 +341,23 @@ async function insertSelectedProducts() {
           </div>
 
           <div
-            class="pbx-flex md:pbx-hidden pbx-flex-col pbx-gap-3 pbx-mt-6 pbx-py-3 pbx-px-3 pbx-rounded-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-bg-gray-50"
+            class="pbx-flex md:pbx-hidden pbx-flex-col pbx-gap-3 pbx-mt-6 pbx-rounded-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-bg-white pbx-p-3"
           >
-            <p
-              v-if="selectedProducts.length"
-              class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-center pbx-text-gray-600"
-            >
-              {{ selectedProducts.length }} {{ translate('Selected') }}
-            </p>
+            <div class="pbx-modalSidebarStatGrid">
+              <div
+                class="pbx-modalSidebarStatCard"
+                :class="{ 'pbx-modalSidebarStatCard--active': selectedProducts.length > 0 }"
+              >
+                <span class="pbx-modalSidebarStatLabel">{{ translate('Selected') }}</span>
+                <p class="pbx-modalSidebarStatValue">{{ selectedProducts.length }}</p>
+              </div>
+              <div class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                <span class="pbx-modalSidebarStatLabel">{{ translate('Grid layout') }}</span>
+                <p class="pbx-modalSidebarStatValue pbx-text-sm">
+                  {{ translate(activeLayout.labelKey) }}
+                </p>
+              </div>
+            </div>
             <button
               type="button"
               class="pbx-myPrimaryButton pbx-w-full"

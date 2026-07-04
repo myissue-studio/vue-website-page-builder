@@ -5,7 +5,7 @@ import type {
   ImageObject,
   InsertProductsOptions,
   PageBuilderConfig,
-  PageBuilderProduct,
+  PageBuilderProductInput,
   PageSettings,
   SEOCheck,
   SEOSummary,
@@ -3834,7 +3834,7 @@ export class PageBuilderService {
    * Hosts can also call insertProductHtml() with fully custom markup.
    */
   public async insertProducts(
-    products: PageBuilderProduct[],
+    products: ReadonlyArray<PageBuilderProductInput>,
     options: InsertProductsOptions = {},
   ): Promise<void> {
     if (!products.length) return
@@ -3844,7 +3844,10 @@ export class PageBuilderService {
     }
 
     const sectionTitle = options.sectionTitle ?? 'Products'
-    const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle)
+    const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle, {
+      cardStyle: options.cardStyle,
+      roundedImages: options.roundedImages,
+    })
     await this.insertProductHtml(html, sectionTitle)
   }
 

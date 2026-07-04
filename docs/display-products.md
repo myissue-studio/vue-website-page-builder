@@ -46,6 +46,49 @@ Design the modal however you want: API search, categories, Shopify sync, ERP fee
 
 When the user confirms a selection, call one of these APIs:
 
+## Large catalogs (1,000+ products)
+
+**The package does not ship pagination, search, or catalog loading for products.** That is intentional — the same pattern as `:CustomMediaLibraryComponent`.
+
+| Responsibility | Who owns it |
+|----------------|-------------|
+| Opening the Products modal | Page Builder |
+| Loading products (API, DB, CMS) | **Your** `:DisplayProducts` component |
+| Pagination, infinite scroll, search | **Your** component |
+| Categories, permissions, variants UI | **Your** component |
+| Multi-select across pages | **Your** component |
+| Inserting HTML on the page | Page Builder (`insertProducts` / `insertProductHtml`) |
+| Cart, checkout, inventory | **Your** backend / ecommerce platform |
+
+You can implement all of this **today** — no extra package feature is required. The builder only needs the final selection when the editor clicks insert.
+
+### Typical production flow
+
+```
+Editor opens Products modal
+  → Your component: GET /api/products?page=1&limit=24&q=ring
+  → Editor selects 3 products (possibly across multiple pages)
+  → insertProducts([productA, productB, productC], { layout: 'grid-3' })
+  → closeProductLibraryModal()
+```
+
+Only the **selected** products become page HTML — not your full catalog. A company with 10,000 SKUs still inserts small sections (often 1–6 cards per block).
+
+### Recommendations at scale
+
+- **Server-side pagination** or infinite scroll inside your picker modal
+- **Server-side search** — avoid loading thousands of rows into the browser
+- **Selection basket** that persists while the editor browses pages
+- **Map your API** to `PageBuilderProduct` before calling `insertProducts()`
+
+### Demo vs production
+
+The repository demo (`DemoDisplayProductsTest.vue`) loads a small static JSON file (`productsArray.test.json`) with client-side search. That is a **UI reference**, not the recommended pattern for large catalogs.
+
+For production, replace the demo with `YourDisplayProducts.vue` that talks to your API.
+
+Hosts that call `insertProducts()` can pass `cardStyle` and `roundedImages` — the built-in HTML helper applies them automatically. Your picker UI (chips, toggles, defaults) is up to you; see the demo for a reference. For full control, use `insertProductHtml()` with your own markup instead.
+
 ### Option A — Built-in grid layouts (optional helper)
 
 Use `insertProducts()` when you want quick 1/2/3/4/6-column grids without hand-writing HTML:
@@ -66,6 +109,8 @@ async function insertFromApi(products: PageBuilderProduct[]) {
     layout: 'grid-3',
     method: 'unshift',
     sectionTitle: 'Shop',
+    cardStyle: 'bordered',
+    roundedImages: true,
   })
   closeProductLibraryModal()
 }
@@ -168,10 +213,59 @@ import {
   type PageBuilderProduct,
 } from '@myissue/vue-website-page-builder'
 
-const html = buildProductSectionHtml(products, 'grid-4', 'Sale')
+const html = buildProductSectionHtml(products, 'grid-4', 'Sale', {
+  cardStyle: 'bordered',
+  roundedImages: true,
+})
 ```
 
 Layouts: `grid-1` | `grid-2` | `grid-3` | `grid-4` | `grid-6`
+
+Card styles (`cardStyle`): `minimal` | `bordered` | `shadow` | `elevated`
+
+Optional `roundedImages: true` adds rounded corners to product photos.
+
+### TypeScript — avoiding type errors
+
+Product types follow the same flexibility rules as `PageBuilderConfig`:
+
+- Use **`PageBuilderProductInput`** when passing products to `insertProducts()` — map from your API without `as const` or casts.
+- Use **`PageBuilderProduct`** when you need custom fields (`rating`, `variantId`, etc.) on the object.
+- **`layout`**, **`cardStyle`**, and **`method`** accept string variables (e.g. `layout: userChoice`) without widening errors.
+
+```ts
+import type {
+  PageBuilderProductInput,
+  InsertProductsOptions,
+} from '@myissue/vue-website-page-builder'
+
+interface ShopRow { id: string; name: string; price: number }
+
+const selected: ShopRow[] = await fetchSelected()
+
+await pageBuilderService.insertProducts(
+  selected.map((row) => ({
+    id: row.id,
+    title: row.name,
+    price: row.price,
+  })),
+  { layout: 'grid-3', cardStyle: 'bordered' },
+)
+```
+
+`:DisplayProducts` itself is a Vue component prop (`Object`) — no product types are required on `<PageBuilder>`; types matter inside your picker when calling `insertProducts()`.
+
+Pass the same options to `insertProducts()`:
+
+```ts
+await pageBuilderService.insertProducts(products, {
+  layout: 'grid-3',
+  cardStyle: 'elevated',
+  roundedImages: true,
+})
+```
+
+After insertion, editors can still tweak borders, shadows, and spacing visually in the builder.
 
 ## Demo in this repository
 
@@ -187,3 +281,13 @@ See `src/tests/PageBuilderTest.vue` and `src/tests/TestComponents/DemoDisplayPro
 | **Manual blocks only** | Many landing-page builders | Flexible design; no catalog sync |
 
 `:DisplayProducts` follows the **injected data source** model (like your media library) — a strong fit for Vue apps, corporations, and custom storefronts that need both design freedom and real product data.
+
+### Is this suitable for enterprise / large companies?
+
+**Yes**, when you provide the product picker integration:
+
+- The builder handles **layout, visual editing, and inserting product sections**
+- Your app handles **catalog scale** (API paging, search, auth, business rules)
+- Checkout and inventory stay on **your** platform
+
+The package is **not** a product database or storefront. It is a page editor with a hook for your catalog UI — which is what most large teams want so they can keep their existing ecommerce stack.

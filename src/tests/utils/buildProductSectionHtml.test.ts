@@ -50,4 +50,13 @@ describe('buildProductSectionHtml', () => {
     expect(html).not.toContain('<script>')
     expect(html).toContain('&lt;script&gt;')
   })
+
+  it('applies bordered card style and rounded images', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      cardStyle: 'bordered',
+      roundedImages: true,
+    })
+    expect(html).toContain('rounded-2xl border border-solid border-gray-200')
+    expect(html).toContain('rounded-xl overflow-hidden')
+  })
 })

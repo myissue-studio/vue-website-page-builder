@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  icon: string
+  icon?: string
   label: string
   hint?: string
 }>()
@@ -12,7 +12,11 @@ defineEmits<{
 
 <template>
   <button type="button" class="pbx-group pbx-modalLibraryCard" @click="$emit('click')">
-    <span class="pbx-modalLibraryCardIcon material-symbols-outlined" aria-hidden="true">
+    <span
+      v-if="icon"
+      class="pbx-modalLibraryCardIcon material-symbols-outlined"
+      aria-hidden="true"
+    >
       {{ icon }}
     </span>
     <span class="pbx-modalLibraryCardText">

@@ -11,25 +11,6 @@ import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 
-function categoryIcon(category: string): string {
-  const icons: Record<string, string> = {
-    All: 'apps',
-    Text: 'title',
-    Media: 'perm_media',
-    Layout: 'view_quilt',
-    Buttons: 'smart_button',
-    Components: 'widgets',
-    Themes: 'palette',
-  }
-  return icons[category] ?? 'category'
-}
-
-function helperIconName(helper: { icon: string; category: string }): string {
-  const match = helper.icon.match(/>\s*([a-z0-9_]+)\s*</)
-  if (match?.[1]) return match[1]
-  return categoryIcon(helper.category)
-}
-
 const { translate } = useTranslations()
 
 const pageBuilderService = getPageBuilder()
@@ -261,7 +242,7 @@ const convertToComponentObject = function (comp: {
                 <ModalFilterChip
                   v-for="category in themeCategories"
                   :key="category"
-                  :icon="categoryIcon(category)"
+                  slider-icon
                   :label="translate(category)"
                   :active="selectedThemeCategory === category"
                   @click="selectedThemeCategory = category"
@@ -306,7 +287,7 @@ const convertToComponentObject = function (comp: {
                 <ModalFilterChip
                   v-for="category in helperCategories"
                   :key="category"
-                  :icon="categoryIcon(category)"
+                  slider-icon
                   :label="translate(category)"
                   :active="selectedHelperCategory === category"
                   @click="selectedHelperCategory = category"
@@ -321,7 +302,6 @@ const convertToComponentObject = function (comp: {
                 <ModalLibraryCard
                   v-for="helper in filteredHelpers"
                   :key="helper.title"
-                  :icon="helperIconName(helper)"
                   :label="translate(helper.title)"
                   :hint="translate(helper.category)"
                   @click="handleDropComponent(helper)"
@@ -342,7 +322,7 @@ const convertToComponentObject = function (comp: {
                 <ModalFilterChip
                   v-for="category in categories"
                   :key="category"
-                  :icon="categoryIcon(category)"
+                  slider-icon
                   :label="translate(category)"
                   :active="selectedCategory === category"
                   @click="selectedCategory = category"
