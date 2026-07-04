@@ -59,6 +59,7 @@ export default defineConfig({
           { text: 'Use in Modal', link: '/use-in-modal' },
           { text: 'Styling', link: '/styling' },
           { text: 'Custom Media Library', link: '/custom-media-library' },
+          { text: 'Display Products', link: '/display-products' },
           { text: 'Unsplash Integration', link: '/unsplash' },
           { text: 'Custom HTML Builder Elements', link: '/custom-html-builder-elements' },
           { text: 'Troubleshooting', link: '/troubleshooting' },

@@ -8,6 +8,27 @@ import type { ComponentObject } from '../../types'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
+import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
+import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
+
+function categoryIcon(category: string): string {
+  const icons: Record<string, string> = {
+    All: 'apps',
+    Text: 'title',
+    Media: 'perm_media',
+    Layout: 'view_quilt',
+    Buttons: 'smart_button',
+    Components: 'widgets',
+    Themes: 'palette',
+  }
+  return icons[category] ?? 'category'
+}
+
+function helperIconName(helper: { icon: string; category: string }): string {
+  const match = helper.icon.match(/>\s*([a-z0-9_]+)\s*</)
+  if (match?.[1]) return match[1]
+  return categoryIcon(helper.category)
+}
 
 const { translate } = useTranslations()
 
@@ -190,42 +211,43 @@ const convertToComponentObject = function (comp: {
     </template>
     <div v-if="!isLoading">
       <!-- Search input -->
-      <div
-        class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-4 pbx-border pbx-border-gray-200 pbx-py-4 pbx-px-3 pbx-rounded-lg"
-      >
-        <label class="pbx-myPrimaryInputLabel" for="search-components">{{
-          translate('Search components...')
-        }}</label>
-        <input
-          v-model="searchQuery"
-          id="search-components"
-          type="text"
-          :placeholder="translate('Search components...')"
-          class="pbx-myPrimaryInput"
-        />
-      </div>
+      <form @submit.prevent>
+        <div class="pbx-mysearchBarWithOptions">
+          <div class="pbx-relative pbx-w-full pbx-flex pbx-gap-2">
+            <input
+              v-model="searchQuery"
+              type="search"
+              id="search-components"
+              class="pbx-myPrimarySearchInput pbx-w-full pbx-pl-10 pbx-border-0"
+              autocomplete="off"
+              :placeholder="translate('Search...')"
+            />
+            <div
+              class="pbx-flex pbx-absolute pbx-inset-y-0 pbx-left-0 pbx-items-center pbx-pl-3 pbx-pointer-events-none"
+            >
+              <span class="material-symbols-outlined"> search </span>
+            </div>
+          </div>
 
-      <div
-        class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
-      >
-        <button
-          v-for="category in componentOrThemes"
-          :key="category"
-          @click="selectedThemeSelection = category"
-          class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
-          :class="[
-            selectedThemeSelection === category
-              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-              : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
-          ]"
-        >
-          <span class="material-symbols-outlined">{{
-            category === 'Themes' ? 'landscape_2' : 'wheat'
-          }}</span>
-          <span>
-            {{ translate(category) }}
-          </span>
-        </button>
+          <button type="submit" class="pbx-myPrimarySearchButton">
+            {{ translate('Search') }}
+          </button>
+        </div>
+      </form>
+
+      <div class="pbx-modalFilterBar">
+        <span class="pbx-modalFilterBarTitle">{{ translate('Browse') }}</span>
+        <div class="pbx-modalFilterBarChips">
+          <ModalFilterChip
+            v-for="category in componentOrThemes"
+            :key="category"
+            :icon="category === 'Themes' ? 'palette' : 'widgets'"
+            :label="translate(category)"
+            :hint="category === 'Themes' ? translate('Full page themes') : translate('Building blocks')"
+            :active="selectedThemeSelection === category"
+            @click="selectedThemeSelection = category"
+          />
+        </div>
       </div>
 
       <div class="pbx-min-h-[96rem] pbx-mb-12">
@@ -233,22 +255,18 @@ const convertToComponentObject = function (comp: {
         <template v-if="selectedThemeSelection === 'Themes'">
           <div class="pbx-mb-8">
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Themes') }}</h3>
-            <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
-            >
-              <button
-                v-for="category in themeCategories"
-                :key="category"
-                @click="selectedThemeCategory = category"
-                class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
-                :class="[
-                  selectedThemeCategory === category
-                    ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-                    : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
-                ]"
-              >
-                {{ translate(category) }}
-              </button>
+            <div class="pbx-modalFilterBar">
+              <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
+              <div class="pbx-modalFilterBarChips">
+                <ModalFilterChip
+                  v-for="category in themeCategories"
+                  :key="category"
+                  :icon="categoryIcon(category)"
+                  :label="translate(category)"
+                  :active="selectedThemeCategory === category"
+                  @click="selectedThemeCategory = category"
+                />
+              </div>
             </div>
 
             <div>
@@ -282,45 +300,32 @@ const convertToComponentObject = function (comp: {
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Helper Components') }}</h3>
 
             <!-- Helper category filter -->
-            <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
-            >
-              <button
-                v-for="category in helperCategories"
-                :key="category"
-                @click="selectedHelperCategory = category"
-                class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
-                :class="[
-                  selectedHelperCategory === category
-                    ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-                    : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
-                ]"
-              >
-                {{ translate(category) }}
-              </button>
+            <div class="pbx-modalFilterBar">
+              <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
+              <div class="pbx-modalFilterBarChips">
+                <ModalFilterChip
+                  v-for="category in helperCategories"
+                  :key="category"
+                  :icon="categoryIcon(category)"
+                  :label="translate(category)"
+                  :active="selectedHelperCategory === category"
+                  @click="selectedHelperCategory = category"
+                />
+              </div>
             </div>
             <div class="pbx-min-h-[10rem] pbx-max-h-[30rem] pbx-overflow-y-auto">
               <div
                 v-if="filteredHelpers.length"
-                class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 lg:pbx-grid-cols-4 pbx-gap-4"
+                class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-3 pbx-gap-3"
               >
-                <div
+                <ModalLibraryCard
                   v-for="helper in filteredHelpers"
                   :key="helper.title"
-                  class="pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-400 pbx-overflow-hidden hover:pbx-border-myPrimaryLinkColor pbx-duration-100 pbx-cursor-pointer pbx-max-h-96 pbx-p-4 pbx-rounded-3xl pbx-bg-gray-50"
+                  :icon="helperIconName(helper)"
+                  :label="translate(helper.title)"
+                  :hint="translate(helper.category)"
                   @click="handleDropComponent(helper)"
-                >
-                  <div class="pbx-max-h-72 pbx-cursor-pointer pbx-object-contain pbx-mx-auto">
-                    <div v-if="false" class="pbx-mr-2" v-html="helper.icon"></div>
-                    <h4 class="pbx-myPrimaryParagraph pbx-text-base pbx-font-medium">
-                      {{ translate(helper.title) }}
-                    </h4>
-                  </div>
-                  <div class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-normal pbx-pt-2">
-                    {{ translate('Click to add') }} {{ helper.title.toLowerCase() }}
-                    {{ translate('component') }}
-                  </div>
-                </div>
+                />
               </div>
               <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
                 {{ translate('No components found.') }}
@@ -331,22 +336,18 @@ const convertToComponentObject = function (comp: {
           <!-- Regular Components Section -->
           <div class="pbx-px-2">
             <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Layout Components') }}</h3>
-            <div
-              class="pbx-mb-4 pbx-flex pbx-jusitify-left pbx-items-center pbx-gap-2 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-overflow-auto pbx-pt-6"
-            >
-              <button
-                v-for="category in categories"
-                :key="category"
-                @click="selectedCategory = category"
-                class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
-                :class="[
-                  selectedCategory === category
-                    ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-                    : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
-                ]"
-              >
-                {{ translate(category) }}
-              </button>
+            <div class="pbx-modalFilterBar">
+              <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
+              <div class="pbx-modalFilterBarChips">
+                <ModalFilterChip
+                  v-for="category in categories"
+                  :key="category"
+                  :icon="categoryIcon(category)"
+                  :label="translate(category)"
+                  :active="selectedCategory === category"
+                  @click="selectedCategory = category"
+                />
+              </div>
             </div>
 
             <div>

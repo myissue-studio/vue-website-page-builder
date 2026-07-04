@@ -5,6 +5,7 @@ import PageBuilderPreview from './PageBuilderPreview.vue'
 import PageLayoutToolbar from '../Components/PageBuilder/EditorMenu/Editables/PageLayoutToolbar.vue'
 import SelectedElementToolbar from '../Components/PageBuilder/EditorMenu/Editables/SelectedElementToolbar.vue'
 import ComponentLibraryModal from '../Components/Modals/ComponentLibraryModal.vue'
+import ProductLibraryModal from '../Components/Modals/ProductLibraryModal.vue'
 import RightSidebarEditor from '../Components/PageBuilder/EditorMenu/RightSidebarEditor.vue'
 import { sharedPageBuilderPinia, sharedPageBuilderStore } from '../stores/shared-store'
 import ToolbarOption from '../Components/PageBuilder/ToolbarOption/ToolbarOption.vue'
@@ -27,6 +28,10 @@ import { useToast } from '../composables/useToast'
 import { useBuilderKeyboardShortcuts } from '../composables/useBuilderKeyboardShortcuts'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
+import {
+  applyPageBuilderBrandColor,
+  clearPageBuilderBrandColor,
+} from '../utils/builder/apply-brand-color'
 
 const pageBuilderService = getPageBuilder()
 const { show: htmlViewerShow, title: htmlViewerTitle, html: htmlViewerHtml, closeHtmlViewer } =
@@ -45,11 +50,16 @@ const {
  * Props for PageBuilder component
  * @typedef {Object} Props
  * @property {Object|null} CustomMediaLibraryComponent - Custom media component
+ * @property {Object|null} DisplayProducts - Custom product picker component
  * @property {Object|null} CustomBuilderComponents - Custom component
  * @property {Object} configPageBuilder - Configuration object containing:
  */
 const props = defineProps({
   CustomMediaLibraryComponent: {
+    type: Object,
+    default: null,
+  },
+  DisplayProducts: {
     type: Object,
     default: null,
   },
@@ -81,6 +91,7 @@ provide('pageBuilderStateStore', pageBuilderStateStore)
 provide('internalPinia', internalPinia)
 // Provide custom components for child components
 provide('CustomMediaComponent', props.CustomMediaLibraryComponent)
+provide('DisplayProductsComponent', props.DisplayProducts)
 provide('CustomBuilderComponents', props.CustomBuilderComponents)
 
 const emit = defineEmits(['handleClosePageBuilder', 'handlePublishPageBuilder'])
@@ -216,6 +227,14 @@ const canvasElementFontStyle = computed((): Record<string, string> => {
   return style
 })
 
+watch(
+  () => getPageBuilderConfig.value?.settings?.brandColor,
+  (brandColor) => {
+    applyPageBuilderBrandColor(brandColor)
+  },
+  { immediate: true },
+)
+
 const getCurrentLanguage = computed(() => pageBuilderStateStore.getCurrentLanguage)
 watch(getCurrentLanguage, (lang) => {
   if (lang && lang !== languageSelction.value) {
@@ -291,10 +310,33 @@ const toggleAddComponentModal = async function () {
   // end modal
 }
 
+const showProductLibraryModal = ref(false)
+const titleProductLibraryModal = ref('')
+
+const toggleProductLibraryModal = async function () {
+  await pageBuilderService.clearHtmlSelection()
+  pageBuilderStateStore.setAddComponentAddIndex(null)
+  pageBuilderStateStore.setComponentArrayAddMethod('unshift')
+  titleProductLibraryModal.value = translate('Add Products to Page')
+  showProductLibraryModal.value = true
+}
+
+const closeProductLibraryModal = () => {
+  showProductLibraryModal.value = false
+}
+
 const handleInsertButtonClick = function (id: number) {
   pageBuilderStateStore.setAddComponentAddIndex(id)
   pageBuilderStateStore.setComponentArrayAddMethod('insert')
   toggleAddComponentModal()
+}
+
+const handleInsertProductButtonClick = async function (id: number) {
+  await pageBuilderService.clearHtmlSelection()
+  pageBuilderStateStore.setAddComponentAddIndex(id)
+  pageBuilderStateStore.setComponentArrayAddMethod('insert')
+  titleProductLibraryModal.value = translate('Add Products to Page')
+  showProductLibraryModal.value = true
 }
 
 const getElement = computed(() => {
@@ -511,6 +553,7 @@ useBuilderKeyboardShortcuts({
     isLoadingLang.value ||
     pageBuilderStateStore.getInlineTipTapEditor ||
     showModalAddComponent.value ||
+    showProductLibraryModal.value ||
     showModalCloseNoSave.value ||
     showModalResumeEditing.value ||
     showModalRestore.value ||
@@ -717,6 +760,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
+  clearPageBuilderBrandColor()
 })
 </script>
 
@@ -748,6 +792,14 @@ onBeforeUnmount(() => {
       :CustomBuilderComponents="props.CustomBuilderComponents"
       @firstModalButtonSearchComponentsFunction="() => firstModalButtonSearchComponentsFunction?.()"
     ></ComponentLibraryModal>
+
+    <ProductLibraryModal
+      v-if="props.DisplayProducts && showProductLibraryModal"
+      :open="showProductLibraryModal"
+      :title="titleProductLibraryModal"
+      :displayProductsComponent="props.DisplayProducts"
+      @closeProductLibrary="closeProductLibraryModal"
+    />
 
     <ConfirmActionModal
       :showDynamicModalBuilder="showModalCloseNoSave"
@@ -981,6 +1033,34 @@ onBeforeUnmount(() => {
             </span>
             <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
               {{ translate('Add') }}
+            </span>
+          </button>
+          <button
+            v-if="props.DisplayProducts"
+            type="button"
+            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            :aria-label="translate('Add products')"
+            :title="translate('Add products')"
+            @click="toggleProductLibraryModal"
+          >
+            <span
+              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+            >
+              <svg
+                fill="currentColor"
+                height="22"
+                viewBox="0 0 24 24"
+                width="22"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.44a2 2 0 0 0 1.79 2.87h9.96v-2H9.42a.25.25 0 0 1-.22-.37L9.5 15h6.55a2 2 0 0 0 1.79-1.11L21 7H7zm0 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 18z"
+                />
+              </svg>
+            </span>
+            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+              {{ translate('Products') }}
             </span>
           </button>
           <button
@@ -1232,7 +1312,7 @@ onBeforeUnmount(() => {
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
             data-pbx-insert-btn
           >
-            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center">
+            <div class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3">
               <div
                 @click="handleInsertButtonClick(0)"
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
@@ -1245,6 +1325,20 @@ onBeforeUnmount(() => {
                   </span>
                 </div>
               </div>
+              <div
+                v-if="props.DisplayProducts"
+                @click="handleInsertProductButtonClick(0)"
+                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <span class="material-symbols-outlined">shopping_bag</span>
+                  <span
+                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
+                  >
+                    {{ translate('Products') }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1253,13 +1347,26 @@ onBeforeUnmount(() => {
             <div
               class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
             >
-              <div
-                @click="handleInsertButtonClick(0)"
-                class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-              >
-                <div class="pbx-flex pbx-items-center pbx-gap-1">
-                  <span class="material-symbols-outlined"> add </span>
-                  <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
+              <div class="pbx-flex pbx-items-center">
+                <div
+                  @click="handleInsertButtonClick(0)"
+                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <span class="material-symbols-outlined"> add </span>
+                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
+                  </div>
+                </div>
+                <div
+                  v-if="props.DisplayProducts"
+                  @click="handleInsertProductButtonClick(0)"
+                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                >
+                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <span class="material-symbols-outlined"> shopping_bag </span>
+                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1283,13 +1390,26 @@ onBeforeUnmount(() => {
               <div
                 class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
               >
-                <div
-                  @click="handleInsertButtonClick(idx + 1)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-                >
-                  <div class="pbx-flex pbx-items-center pbx-gap-1">
-                    <span class="material-symbols-outlined"> add </span>
-                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
+                <div class="pbx-flex pbx-items-center">
+                  <div
+                    @click="handleInsertButtonClick(idx + 1)"
+                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                    :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                  >
+                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                      <span class="material-symbols-outlined"> add </span>
+                      <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
+                    </div>
+                  </div>
+                  <div
+                    v-if="props.DisplayProducts"
+                    @click="handleInsertProductButtonClick(idx + 1)"
+                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                  >
+                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                      <span class="material-symbols-outlined"> shopping_bag </span>
+                      <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                    </div>
                   </div>
                 </div>
               </div>

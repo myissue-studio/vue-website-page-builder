@@ -3,7 +3,9 @@ import type {
   BuilderResourceData,
   ComponentObject,
   ImageObject,
+  InsertProductsOptions,
   PageBuilderConfig,
+  PageBuilderProduct,
   PageSettings,
   SEOCheck,
   SEOSummary,
@@ -29,6 +31,7 @@ import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
+import { buildProductSectionHtml } from '../utils/builder/product-section-html'
 
 function scrollContainerToCenterElement(
   container: HTMLElement,
@@ -3813,6 +3816,36 @@ export class PageBuilderService {
     } finally {
       this.pageBuilderStateStore.setAddComponentAddIndex(null)
     }
+  }
+
+  /**
+   * Inserts a product section using raw HTML from a custom product picker.
+   */
+  public async insertProductHtml(html: string, title = 'Products'): Promise<void> {
+    await this.addComponent({
+      id: null,
+      title,
+      html_code: html,
+    })
+  }
+
+  /**
+   * Inserts products using a built-in grid layout helper.
+   * Hosts can also call insertProductHtml() with fully custom markup.
+   */
+  public async insertProducts(
+    products: PageBuilderProduct[],
+    options: InsertProductsOptions = {},
+  ): Promise<void> {
+    if (!products.length) return
+
+    if (options.method) {
+      this.pageBuilderStateStore.setComponentArrayAddMethod(options.method)
+    }
+
+    const sectionTitle = options.sectionTitle ?? 'Products'
+    const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle)
+    await this.insertProductHtml(html, sectionTitle)
   }
 
   /**

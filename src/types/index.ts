@@ -34,6 +34,35 @@ export interface ImageObject {
   [key: string]: unknown // Allow custom properties on images (e.g., alt, width, height)
 }
 
+/**
+ * Flexible product shape for ecommerce integrations.
+ * All fields are optional — hosts decide what to show in their custom picker or layouts.
+ */
+export interface PageBuilderProduct {
+  id?: string | number
+  title?: string
+  description?: string
+  image?: string
+  imageAlt?: string
+  price?: string | number
+  compareAtPrice?: string | number
+  badge?: string
+  /** Product or checkout URL on the host storefront */
+  url?: string
+  buttonText?: string
+  sku?: string
+  [key: string]: unknown
+}
+
+export type ProductGridLayout = 'grid-1' | 'grid-2' | 'grid-3' | 'grid-4' | 'grid-6'
+
+export interface InsertProductsOptions {
+  layout?: ProductGridLayout
+  sectionTitle?: string
+  /** unshift | push | insert (uses current add index) */
+  method?: 'unshift' | 'push' | 'insert'
+}
+
 // For a single component/block passed by the developer
 export interface BuilderResourceComponent {
   html_code: string

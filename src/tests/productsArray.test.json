@@ -1,0 +1,72 @@
+[
+  {
+    "id": "prod-aurora-jacket",
+    "title": "Aurora Jacket",
+    "description": "Water-resistant shell with lightweight insulation for everyday wear.",
+    "image": "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=600&fit=crop",
+    "imageAlt": "Aurora Jacket",
+    "price": "$129",
+    "compareAtPrice": "$159",
+    "badge": "Sale",
+    "url": "/products/aurora-jacket",
+    "buttonText": "View product",
+    "sku": "AJ-001"
+  },
+  {
+    "id": "prod-loom-sneaker",
+    "title": "Loom Sneaker",
+    "description": "Breathable knit upper with cushioned sole for all-day comfort.",
+    "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
+    "imageAlt": "Loom Sneaker",
+    "price": "$89",
+    "url": "/products/loom-sneaker",
+    "buttonText": "Buy now",
+    "sku": "LS-204"
+  },
+  {
+    "id": "prod-cedar-tote",
+    "title": "Cedar Tote",
+    "description": "Structured canvas tote with interior pocket and reinforced handles.",
+    "image": "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&h=600&fit=crop",
+    "imageAlt": "Cedar Tote",
+    "price": "$48",
+    "url": "/products/cedar-tote",
+    "buttonText": "Shop",
+    "sku": "CT-118"
+  },
+  {
+    "id": "prod-haven-mug",
+    "title": "Haven Mug Set",
+    "description": "Set of two ceramic mugs with matte glaze finish.",
+    "image": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&h=600&fit=crop",
+    "imageAlt": "Haven Mug Set",
+    "price": "$32",
+    "badge": "New",
+    "url": "/products/haven-mug-set",
+    "buttonText": "Add to cart",
+    "sku": "HM-330"
+  },
+  {
+    "id": "prod-summit-watch",
+    "title": "Summit Watch",
+    "description": "Minimal analog watch with sapphire glass and leather strap.",
+    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop",
+    "imageAlt": "Summit Watch",
+    "price": "$210",
+    "url": "/products/summit-watch",
+    "buttonText": "View details",
+    "sku": "SW-077"
+  },
+  {
+    "id": "prod-breeze-lamp",
+    "title": "Breeze Desk Lamp",
+    "description": "Adjustable LED lamp with warm dimming and USB-C power.",
+    "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=600&fit=crop",
+    "imageAlt": "Breeze Desk Lamp",
+    "price": "$74",
+    "compareAtPrice": "$94",
+    "url": "/products/breeze-desk-lamp",
+    "buttonText": "View product",
+    "sku": "BL-512"
+  }
+]
