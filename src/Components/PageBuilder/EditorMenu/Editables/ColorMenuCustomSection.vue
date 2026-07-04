@@ -5,7 +5,7 @@ defineProps<{
   modelValue: string
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   open: []
 }>()
 
@@ -20,9 +20,13 @@ const { translate } = useTranslations()
     @pointerdown.stop
     @click.stop="$emit('open')"
   >
-    <span class="material-symbols-outlined pbx-text-[18px] pbx-text-gray-500" aria-hidden="true">
-      palette
-    </span>
+    <div
+      class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-bg-white pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-100"
+    >
+      <span class="material-symbols-outlined pbx-text-[18px] pbx-text-gray-800" aria-hidden="true">
+        <span class="material-symbols-outlined"> ink_marker </span>
+      </span>
+    </div>
     <span class="pbx-flex-1">{{ translate('Custom color') }}</span>
     <span
       v-if="modelValue"

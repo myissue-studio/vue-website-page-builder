@@ -154,11 +154,11 @@ function closeSaveModal(): void {
 
             <button
               type="button"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-aspect-square focus-visible:pbx-ring-0 disabled:pbx-cursor-not-allowed disabled:pbx-opacity-50"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-xl pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-aspect-square focus-visible:pbx-ring-0 disabled:pbx-cursor-not-allowed disabled:pbx-opacity-50"
               :class="[
                 hasPendingColorChange
                   ? 'pbx-bg-emerald-600 pbx-text-white hover:pbx-bg-emerald-700'
-                  : 'pbx-bg-gray-50 pbx-text-black hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white',
+                  : 'pbx-bg-gray-50 pbx-text-black  hover:pbx-text-black',
               ]"
               :title="translate('Apply color')"
               :disabled="!validDraft"

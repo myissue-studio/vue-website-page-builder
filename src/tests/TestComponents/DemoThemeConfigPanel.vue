@@ -1,13 +1,32 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import ThemeColorPresetManager from '../../Components/PageBuilder/EditorMenu/Editables/ThemeColorPresetManager.vue'
 import HexColorPicker from '../../Components/Inputs/HexColorPicker.vue'
 import SliderIcon from '../../Components/Icons/SliderIcon.vue'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
+import HtmlActionButton from '../../Components/PageBuilder/EditorMenu/Editables/HtmlActionButton.vue'
+import HtmlEditorModal from '../../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
+import { useThemeColorPresets } from '../../composables/useThemeColorPresets'
 import type { PageBuilderConfig, PageBuilderElementFonts } from '../../types'
+import { DEMO_THEME_PACKS, type DemoThemePackId } from '../demo-theme-presets'
+
+const props = defineProps<{
+  showWelcomeHint?: boolean
+}>()
+
+const emit = defineEmits<{
+  dismissWelcomeHint: []
+}>()
 
 const pageBuilderStateStore = sharedPageBuilderStore
+
+const getPageBuilderConfig = computed(() => pageBuilderStateStore.getPageBuilderConfig)
+const { resetToConfigDefaults } = useThemeColorPresets(getPageBuilderConfig)
+
+const activePresetId = ref<DemoThemePackId | null>('fashion')
+const showConfigModal = ref(false)
+const configModalContent = ref('')
 
 const DEMO_FONT_OPTIONS = [
   { value: 'jost', label: 'Jost' },
@@ -50,9 +69,33 @@ function buildElementFonts(fontKey: string): PageBuilderElementFonts {
   }
 }
 
+async function syncThemePresetsFromConfig(): Promise<void> {
+  await nextTick()
+  resetToConfigDefaults()
+}
+
+async function applyPresetPack(packId: DemoThemePackId): Promise<void> {
+  const pack = DEMO_THEME_PACKS.find((item) => item.id === packId)
+  if (!pack) return
+
+  activePresetId.value = packId
+  patchConfig({
+    settings: {
+      brandColor: pack.brandColor,
+      themeColorPresets: pack.themeColorPresets,
+    },
+    userSettings: {
+      fontFamily: `${pack.fontKey}, arial, fantasy`,
+      elementFonts: buildElementFonts(pack.fontKey),
+    },
+  })
+  await syncThemePresetsFromConfig()
+}
+
 const brandColor = computed({
   get: () => pageBuilderStateStore.getPageBuilderConfig?.settings?.brandColor ?? '#DB93B0',
   set: (value: string) => {
+    activePresetId.value = null
     patchConfig({
       settings: {
         brandColor: value,
@@ -66,7 +109,8 @@ const canvasFont = computed(() => {
   return fontConfig.split(',')[0]?.trim().toLowerCase() || 'jost'
 })
 
-function setCanvasFont(fontKey: string): void {
+async function setCanvasFont(fontKey: string): Promise<void> {
+  activePresetId.value = null
   patchConfig({
     userSettings: {
       fontFamily: `${fontKey}, arial, fantasy`,
@@ -74,10 +118,65 @@ function setCanvasFont(fontKey: string): void {
     },
   })
 }
+
+const startBuilderSnippet = computed(() => {
+  const config = pageBuilderStateStore.getPageBuilderConfig
+  if (!config) return '// Builder not started yet'
+
+  const snippet = {
+    settings: {
+      brandColor: config.settings?.brandColor ?? '#DB93B0',
+      themeColorPresets: config.settings?.themeColorPresets ?? { enabled: true, colors: [] },
+    },
+    userSettings: {
+      fontFamily: config.userSettings?.fontFamily ?? 'jost, arial, fantasy',
+      elementFonts: config.userSettings?.elementFonts ?? buildElementFonts('jost'),
+    },
+  }
+
+  return `// Pass inside your PageBuilderConfig when calling startBuilder()\n${JSON.stringify(snippet, null, 2)}`
+})
+
+function openConfigModal(): void {
+  configModalContent.value = startBuilderSnippet.value
+  showConfigModal.value = true
+}
+
+function closeConfigModal(): void {
+  showConfigModal.value = false
+}
+
+function dismissWelcome(): void {
+  emit('dismissWelcomeHint')
+}
+
+onMounted(() => {
+  void syncThemePresetsFromConfig()
+})
 </script>
 
 <template>
   <div class="pbx-flex pbx-flex-col pbx-gap-5 pbx-pb-6">
+    <div v-if="showWelcomeHint" class="pbx-demoThemeWelcomeHint" role="status">
+      <div class="pbx-flex pbx-flex-col pbx-gap-1 pbx-pr-2">
+        <p class="pbx-m-0 pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor">
+          Welcome — try your brand here
+        </p>
+        <p class="pbx-m-0 pbx-text-xs pbx-leading-relaxed pbx-text-gray-600">
+          Pick a preset pack, tweak colors and fonts, then copy the JSON for your
+          <code class="pbx-text-[11px]">startBuilder()</code> config.
+        </p>
+      </div>
+      <button
+        type="button"
+        class="pbx-demoThemeWelcomeDismiss"
+        aria-label="Dismiss welcome hint"
+        @click="dismissWelcome"
+      >
+        <span class="material-symbols-outlined pbx-text-base">close</span>
+      </button>
+    </div>
+
     <div
       class="pbx-flex pbx-items-start pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-p-3"
     >
@@ -95,6 +194,26 @@ function setCanvasFont(fontKey: string): void {
         </p>
       </div>
     </div>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">Preset packs</p>
+        <p class="pbx-productSettingsSectionDesc">
+          One-click themes for fashion, corporate, and blog sites
+        </p>
+      </div>
+      <div class="pbx-productSettingsSectionChips">
+        <ModalFilterChip
+          v-for="pack in DEMO_THEME_PACKS"
+          :key="pack.id"
+          slider-icon
+          :label="pack.label"
+          :hint="pack.hint"
+          :active="activePresetId === pack.id"
+          @click="applyPresetPack(pack.id)"
+        />
+      </div>
+    </section>
 
     <section class="pbx-productSettingsSection">
       <div class="pbx-productSettingsSectionHeader">
@@ -150,13 +269,71 @@ function setCanvasFont(fontKey: string): void {
 
     <section class="pbx-productSettingsSection">
       <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">Copy for developers</p>
+        <p class="pbx-productSettingsSectionDesc">
+          JSON snippet for <code class="pbx-text-[11px]">startBuilder(configPageBuilder)</code>
+        </p>
+      </div>
+      <div class="pbx-inspectorActionStack">
+        <HtmlActionButton
+          icon="visibility"
+          label="View config JSON"
+          hint="Preview startBuilder() theme snippet"
+          @click="openConfigModal"
+        />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Product catalog</p>
         <p class="pbx-productSettingsSectionDesc">
           Ecommerce teams inject their own picker with
-          <code class="pbx-text-[11px]">:DisplayProducts</code> — use the Products button in the
-          navbar to try the demo catalog.
+          <code class="pbx-text-[11px] pbx-font-sans">:DisplayProducts</code> — use the Products
+          button in the navbar to try the demo catalog.
         </p>
       </div>
     </section>
   </div>
+
+  <HtmlEditorModal
+    :show="showConfigModal"
+    title="startBuilder() theme config"
+    :html="configModalContent"
+    badge="JSON"
+    read-only
+    @close="closeConfigModal"
+  />
 </template>
+
+<style scoped>
+.pbx-demoThemeWelcomeHint {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 35%, #e5e7eb);
+  background: color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 8%, #ffffff);
+  padding: 0.75rem;
+}
+
+.pbx-demoThemeWelcomeDismiss {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.pbx-demoThemeWelcomeDismiss:hover {
+  background: #fff;
+  color: #111827;
+}
+</style>

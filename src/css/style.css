@@ -682,9 +682,6 @@
 
   .pbx-htmlCodeEditorTextarea {
     @apply pbx-m-0 pbx-box-border pbx-block pbx-min-h-[min(28rem,60vh)] pbx-h-full pbx-w-full pbx-resize-y pbx-border-0 pbx-bg-transparent pbx-px-5 pbx-py-5 pbx-text-[#c0caf5] focus:pbx-outline-none;
-    font-family:
-      ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas,
-      monospace;
     font-size: 13px;
     line-height: 1.75;
     letter-spacing: 0.015em;
@@ -719,7 +716,7 @@
   }
 
   .pbx-customColorModalPreviewHex {
-    @apply pbx-font-mono pbx-text-base pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+    @apply pbx-font-sans pbx-text-base pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
   .pbx-customColorModalAppliedBadge {

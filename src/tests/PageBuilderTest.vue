@@ -5,15 +5,20 @@ import DemoDisplayProductsTest from '../tests/TestComponents/DemoDisplayProducts
 import DemoThemeConfigPanel from '../tests/TestComponents/DemoThemeConfigPanel.vue'
 import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
 import SliderIcon from '../Components/Icons/SliderIcon.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import componentsArray from '../tests/componentsArray.test.json'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
+import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from '../tests/demo-theme-presets'
 
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()
 
 const showDemoThemePanel = ref(false)
+const showWelcomeHint = ref(false)
+const highlightThemeTrigger = ref(false)
+
+const fashionPreset = DEMO_THEME_PACKS[0]
 
 const translatedComponents = computed(() => {
   return componentsArray.map((component) => {
@@ -40,6 +45,32 @@ const publishPageBuilder = function () {
   console.info('Full page HTML ready for backend submission:', latestHtml)
 }
 
+function dismissWelcomeHint(): void {
+  showWelcomeHint.value = false
+  highlightThemeTrigger.value = false
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(DEMO_THEME_HINT_STORAGE_KEY, '1')
+  }
+}
+
+function openDemoThemePanel(): void {
+  showDemoThemePanel.value = true
+  highlightThemeTrigger.value = false
+}
+
+onMounted(() => {
+  const hasSeenHint =
+    typeof localStorage !== 'undefined' && localStorage.getItem(DEMO_THEME_HINT_STORAGE_KEY) === '1'
+
+  if (!hasSeenHint) {
+    showWelcomeHint.value = true
+    highlightThemeTrigger.value = true
+    window.setTimeout(() => {
+      showDemoThemePanel.value = false
+    }, 900)
+  }
+})
+
 watch(
   currentTranslations,
   async () => {
@@ -49,7 +80,7 @@ watch(
 
     const configPageBuilder = {
       userForPageBuilder: {
-        id: 1, // Optional — scopes theme color presets to this user in localStorage
+        id: 1,
         name: 'Jane Doe',
         image: '/jane_doe.jpg',
       },
@@ -71,33 +102,21 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        fontFamily: 'jost, raleway, arial, fantasy',
+        fontFamily: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
         elementFonts: {
-          h1: 'jost, raleway, arial, fantasy',
-          h2: 'jost, raleway, arial, fantasy',
-          h3: 'jost, raleway, arial, fantasy',
-          h4: 'jost, raleway, arial, fantasy',
-          h5: 'jost, raleway, arial, fantasy',
-          h6: 'jost, raleway, arial, fantasy',
-          p: 'jost, raleway, arial, fantasy',
+          h1: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h2: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h3: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h4: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h5: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h6: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          p: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
         },
       },
 
       settings: {
-        brandColor: '#000000',
-        themeColorPresets: {
-          enabled: true,
-          colors: [
-            { id: 'primary', label: 'Primary', color: '482C3D', enabled: true },
-            { id: 'secondary', label: 'Secondary', color: 'E5D352', enabled: true },
-            { id: 'custom1', label: 'Custom 1', color: 'AC3931', enabled: true },
-            { id: 'custom2', label: 'Custom 2', color: '623CEA', enabled: true },
-            { id: 'custom3', label: 'Custom 3', color: '54426B', enabled: true },
-            { id: 'custom4', label: 'Custom 4', color: '#ffffff', enabled: true },
-            { id: 'custom5', label: 'Custom 5', color: '#ffffff', enabled: false },
-            { id: 'custom6', label: 'Custom 6', color: '#ffffff', enabled: false },
-          ],
-        },
+        brandColor: fashionPreset.brandColor,
+        themeColorPresets: fashionPreset.themeColorPresets,
       },
       pageSettings,
     } as const
@@ -123,19 +142,17 @@ watch(
         v-if="!showDemoThemePanel"
         type="button"
         class="pbx-demoThemeTrigger"
-        @click="showDemoThemePanel = true"
+        :class="{ 'pbx-demoThemeTrigger--pulse': highlightThemeTrigger }"
+        @click="openDemoThemePanel"
       >
         <span class="pbx-pageDesignOpenButtonIcon">
           <SliderIcon :size="18" />
         </span>
-        <span class="pbx-pageDesignOpenButtonText">
+        <span class="pbx-pageDesignOpenButtonText pbx-pr-6">
           <span class="pbx-pageDesignOpenButtonLabel">Customize theme for your business</span>
-          <span class="pbx-pageDesignOpenButtonHint"
-            >Brand color, presets &amp; fonts — live demo</span
-          >
-        </span>
-        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
-          tune
+          <span class="pbx-pageDesignOpenButtonHint">
+            Brand color, presets &amp; fonts — live demo
+          </span>
         </span>
       </button>
 
@@ -145,7 +162,10 @@ watch(
         position="right"
         @closeSidebarPanel="showDemoThemePanel = false"
       >
-        <DemoThemeConfigPanel />
+        <DemoThemeConfigPanel
+          :show-welcome-hint="showWelcomeHint"
+          @dismiss-welcome-hint="dismissWelcomeHint"
+        />
       </FloatingSidePanel>
     </div>
   </div>
@@ -183,6 +203,27 @@ watch(
     0 12px 20px -5px rgb(0 0 0 / 0.12),
     0 6px 8px -4px rgb(0 0 0 / 0.08);
   transform: translateY(-1px);
+}
+
+.pbx-demoThemeTrigger--pulse {
+  animation: demo-theme-trigger-pulse 2s ease-in-out infinite;
+}
+
+@keyframes demo-theme-trigger-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.08),
+      0 4px 6px -4px rgb(0 0 0 / 0.08),
+      0 0 0 0 color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 45%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 12px 20px -5px rgb(0 0 0 / 0.12),
+      0 6px 8px -4px rgb(0 0 0 / 0.08),
+      0 0 0 6px color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 0%, transparent);
+  }
 }
 
 @media (min-width: 1024px) {

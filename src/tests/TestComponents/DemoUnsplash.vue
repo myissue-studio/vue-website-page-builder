@@ -305,7 +305,7 @@ onMounted(async () => {
           </nav>
         </div>
 
-        <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6">
+        <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-2">
           <div class="md:pbx-w-9/12 pbx-w-6/12 pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
             <div v-if="getUnsplashImages && getUnsplashImages.results">
               <div
@@ -357,7 +357,7 @@ onMounted(async () => {
             </div>
           </div>
           <!-- Sidebar # start -->
-          <aside class="md:pbx-w-3/12 pbx-w-6/12 pbx-overflow-y-auto">
+          <aside class="md:pbx-w-3/12 pbx-w-6/12 pbx-overflow-y-auto pbx-px-2">
             <template v-if="getIsLoadingImage">
               <div class="pbx-flex pbx-items-start pbx-justify-center pbx-min-h-[40rem] pbx-pt-12">
                 <div
@@ -367,7 +367,7 @@ onMounted(async () => {
             </template>
             <template v-if="getApplyImageToSelection && !getIsLoadingImage">
               <div>
-                <div class="pbx-min-h-[40rem]">
+                <div class="pbx-min-h-[20rem]">
                   <img
                     class="pbx-mx-auto pbx-block pbx-w-full pbx-object-cover pbx-object-center pbx-cursor-pointer"
                     :src="`${getApplyImageToSelection}`"
