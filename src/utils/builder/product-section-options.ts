@@ -53,7 +53,7 @@ export function buildProductGridClass(
     case 'grid-4':
       return `myPrimaryGap grid ${mobile} sm:grid-cols-2 lg:grid-cols-4 items-stretch`
     case 'grid-6':
-      return `grid ${mobile} md:grid-cols-3 myPrimaryGap items-stretch`
+      return `myPrimaryGap grid ${mobile} sm:grid-cols-2 lg:grid-cols-6 items-stretch`
     default:
       return `myPrimaryGap grid ${mobile} sm:grid-cols-3 lg:grid-cols-3 items-stretch`
   }
