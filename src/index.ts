@@ -31,6 +31,7 @@ export type {
   BuilderResourceData,
   StartBuilderResult,
   PageSettings,
+  PageMeta,
   ThemeColorPreset,
   ThemeColorPresetId,
   ThemeColorPresetInput,

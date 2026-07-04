@@ -42,6 +42,7 @@ export default defineConfig({
           { text: 'Installation', link: '/installation' },
           { text: 'Nuxt Integration', link: '/nuxt-integration' },
           { text: 'Vue Integration', link: '/vue-integration' },
+          { text: 'Laravel Integration', link: '/laravel-integration' },
         ],
       },
       {

@@ -6,10 +6,10 @@ import DemoThemeConfigPanel from '../tests/TestComponents/DemoThemeConfigPanel.v
 import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
 import SliderIcon from '../Components/Icons/SliderIcon.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import componentsArray from '../tests/componentsArray.test.json'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
 import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from '../tests/demo-theme-presets'
+import { getDemoPageHtml, translateThemePlaceholderText } from '../tests/demo-theme-utils'
 
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()
@@ -20,24 +20,10 @@ const highlightThemeTrigger = ref(false)
 
 const fashionPreset = DEMO_THEME_PACKS[0]
 
-const translatedComponents = computed(() => {
-  return componentsArray.map((component) => {
-    const newComponent = { ...component }
-    newComponent.html_code = newComponent.html_code.replace(
-      /{{\s*translate\('([^']+)'\)\s*}}/g,
-      (_, key) => translate(key),
-    )
-    return newComponent
-  })
-})
-
 const demoPost = computed(() => ({
   id: 1,
-  title: 'Demo Article',
-  content:
-    '<div id="pagebuilder" class="pbx-bg-white" style="letter-spacing: 0.5px;">' +
-    translatedComponents.value.map((component) => component.html_code).join('\n') +
-    '</div>',
+  title: 'mybuilder.dev Demo',
+  content: translateThemePlaceholderText(getDemoPageHtml(), translate),
 }))
 
 const publishPageBuilder = function () {
@@ -174,7 +160,7 @@ watch(
 <style scoped>
 .pbx-demoThemeTrigger {
   position: fixed;
-  right: 1rem;
+  left: 1rem;
   bottom: 1.25rem;
   z-index: 9990;
   display: flex;

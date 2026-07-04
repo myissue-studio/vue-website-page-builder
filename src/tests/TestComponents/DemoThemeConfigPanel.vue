@@ -7,9 +7,21 @@ import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import HtmlActionButton from '../../Components/PageBuilder/EditorMenu/Editables/HtmlActionButton.vue'
 import HtmlEditorModal from '../../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
 import { sharedPageBuilderStore } from '../../stores/shared-store'
+import { getPageBuilder } from '../../composables/usePageBuilder'
+import { useTranslations } from '../../composables/useTranslations'
 import { useThemeColorPresets } from '../../composables/useThemeColorPresets'
 import type { PageBuilderConfig, PageBuilderElementFonts } from '../../types'
 import { DEMO_THEME_PACKS, type DemoThemePackId } from '../demo-theme-presets'
+import {
+  getThemeHtmlByTitle,
+  restoreDemoPage,
+  translateThemePlaceholderText,
+} from '../demo-theme-utils'
+import { useToast } from '../../composables/useToast'
+
+const { translate } = useTranslations()
+const { showToast } = useToast()
+const pageBuilderService = getPageBuilder()
 
 const props = defineProps<{
   showWelcomeHint?: boolean
@@ -79,6 +91,7 @@ async function applyPresetPack(packId: DemoThemePackId): Promise<void> {
   if (!pack) return
 
   activePresetId.value = packId
+
   patchConfig({
     settings: {
       brandColor: pack.brandColor,
@@ -90,6 +103,11 @@ async function applyPresetPack(packId: DemoThemePackId): Promise<void> {
     },
   })
   await syncThemePresetsFromConfig()
+
+  const themeHtml = getThemeHtmlByTitle(pack.themeTitle)
+  if (themeHtml) {
+    await pageBuilderService.replaceTheme(translateThemePlaceholderText(themeHtml, translate))
+  }
 }
 
 const brandColor = computed({
@@ -150,6 +168,24 @@ function dismissWelcome(): void {
   emit('dismissWelcomeHint')
 }
 
+async function restoreMybuilderDemoPage(): Promise<void> {
+  activePresetId.value = null
+  await restoreDemoPage(pageBuilderService, translate)
+  showToast('Restored mybuilder.dev demo page', 'success')
+}
+
+async function copyPageHtmlForDemoFile(): Promise<void> {
+  const html = await pageBuilderService.generateFullPageHtml()
+  try {
+    await navigator.clipboard.writeText(html)
+    showToast('Copied — paste into src/tests/demo-page.content.html (replace entire file)', 'success')
+  } catch {
+    configModalContent.value = html
+    showConfigModal.value = true
+    showToast('Copy failed — HTML opened in viewer instead', 'warning')
+  }
+}
+
 onMounted(() => {
   void syncThemePresetsFromConfig()
 })
@@ -164,7 +200,7 @@ onMounted(() => {
         </p>
         <p class="pbx-m-0 pbx-text-xs pbx-leading-relaxed pbx-text-gray-600">
           Pick a preset pack, tweak colors and fonts, then copy the JSON for your
-          <code class="pbx-text-[11px]">startBuilder()</code> config.
+          <code class="pbx-font-sans pbx-text-[11px]">startBuilder()</code> config.
         </p>
       </div>
       <button
@@ -189,8 +225,8 @@ onMounted(() => {
         </p>
         <p class="pbx-m-0 pbx-text-xs pbx-leading-relaxed pbx-text-gray-500">
           Host apps pass the same options to
-          <code class="pbx-text-[11px]">startBuilder()</code> — brand color, theme presets, and
-          fonts. Changes apply instantly on the canvas and toolbar.
+          <code class="pbx-text-[11px] pbx-font-sans">startBuilder()</code> — brand color, theme
+          presets, and fonts. Changes apply instantly on the canvas and toolbar.
         </p>
       </div>
     </div>
@@ -199,7 +235,7 @@ onMounted(() => {
       <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Preset packs</p>
         <p class="pbx-productSettingsSectionDesc">
-          One-click themes for fashion, corporate, and blog sites
+          Swaps page layout, colors, and fonts for fashion, corporate, or blog sites
         </p>
       </div>
       <div class="pbx-productSettingsSectionChips">
@@ -253,7 +289,7 @@ onMounted(() => {
         <p class="pbx-productSettingsSectionTitle">Canvas font</p>
         <p class="pbx-productSettingsSectionDesc">
           Default font for headings and paragraphs via
-          <code class="pbx-text-[11px]">userSettings.fontFamily</code>
+          <code class="pbx-text-[11px] pbx-font-sans">userSettings.fontFamily</code>
         </p>
       </div>
       <div class="pbx-productSettingsSectionChips">
@@ -269,9 +305,35 @@ onMounted(() => {
 
     <section class="pbx-productSettingsSection">
       <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">Update demo file</p>
+        <p class="pbx-productSettingsSectionDesc">
+          After editing the page, copy HTML and paste into
+          <code class="pbx-text-[11px] pbx-font-sans">src/tests/demo-page.content.html</code>
+          (replace the whole file — not shipped to npm)
+        </p>
+      </div>
+      <div class="pbx-inspectorActionStack">
+        <HtmlActionButton
+          icon="content_copy"
+          label="Copy page HTML for demo file"
+          hint="Full #pagebuilder output for DEMO_PAGE_HTML"
+          @click="copyPageHtmlForDemoFile"
+        />
+        <HtmlActionButton
+          icon="restart_alt"
+          label="Restore mybuilder demo page"
+          hint="Reload demo-page.content.html"
+          @click="restoreMybuilderDemoPage"
+        />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Copy for developers</p>
         <p class="pbx-productSettingsSectionDesc">
-          JSON snippet for <code class="pbx-text-[11px]">startBuilder(configPageBuilder)</code>
+          JSON snippet for
+          <code class="pbx-text-[11px] pbx-font-sans">startBuilder(configPageBuilder)</code>
         </p>
       </div>
       <div class="pbx-inspectorActionStack">

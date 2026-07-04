@@ -3,18 +3,24 @@ import { ref, computed, watch } from 'vue'
 import componentHelpers from '../../utils/html-elements/componentHelpers'
 import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
+import { getBlockDescriptionKey } from '../../utils/html-elements/block-descriptions'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type { ComponentObject } from '../../types'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
+import { useToast } from '../../composables/useToast'
+import { sharedPageBuilderStore } from '../../stores/shared-store'
 import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
+import ConfirmActionModal from '../../Components/Modals/ConfirmActionModal.vue'
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const pageBuilderService = getPageBuilder()
+const pageBuilderStateStore = sharedPageBuilderStore
 
 defineProps({
   customMediaComponent: {
@@ -106,21 +112,73 @@ const filteredThemes = computed(() => {
 // Get modal close function
 const { closeAddComponentModal } = usePageBuilderModal()
 
-// Super simple component addition with professional modal closing!
-const handleDropTheme = async function (themeHtml: string) {
-  isLoading.value = true
+const hasPageContent = computed(
+  () => (pageBuilderStateStore.getComponents?.length ?? 0) > 0,
+)
 
-  // Translate all occurrences of hardcoded strings in the theme HTML
-  const translatedThemeHtml = themeHtml
+const showReplaceThemeModal = ref(false)
+const pendingThemeHtml = ref('')
+const typeModal = ref('')
+const gridColumnModal = ref(1)
+const titleModal = ref('')
+const descriptionModal = ref('')
+const firstButtonModal = ref('')
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
+
+function translateThemeHtml(themeHtml: string): string {
+  return themeHtml
     .replace(/Layouts and visual\./g, translate('Layouts and visual.'))
     .replace(
       /Start customizing by editing this default text directly in the editor\./g,
       translate('Start customizing by editing this default text directly in the editor.'),
     )
+}
 
-  await pageBuilderService.addTheme(translatedThemeHtml)
-  closeAddComponentModal()
-  isLoading.value = false
+function blockDescription(title: string): string {
+  const key = getBlockDescriptionKey(title)
+  return key ? translate(key) : ''
+}
+
+const applyTheme = async function (themeHtml: string) {
+  isLoading.value = true
+  try {
+    await pageBuilderService.replaceTheme(translateThemeHtml(themeHtml))
+    closeAddComponentModal()
+    showToast(translate('Theme applied successfully'), 'success')
+  } catch {
+    showToast(translate('Could not apply theme'), 'error')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleDropTheme = function (themeHtml: string) {
+  if (hasPageContent.value) {
+    pendingThemeHtml.value = themeHtml
+    showReplaceThemeModal.value = true
+    typeModal.value = 'delete'
+    gridColumnModal.value = 2
+    titleModal.value = translate('Replace page with theme')
+    descriptionModal.value = translate('Replace page with theme description')
+    firstButtonModal.value = translate('Close')
+    secondButtonModal.value = null
+    thirdButtonModal.value = translate('Replace')
+    firstModalButtonFunctionDynamicModalBuilder.value = () => {
+      showReplaceThemeModal.value = false
+    }
+    secondModalButtonFunctionDynamicModalBuilder.value = () => {}
+    thirdModalButtonFunctionDynamicModalBuilder.value = async () => {
+      await applyTheme(pendingThemeHtml.value)
+      showReplaceThemeModal.value = false
+    }
+    return
+  }
+
+  void applyTheme(themeHtml)
 }
 
 // Super simple component addition with professional modal closing!
@@ -344,6 +402,7 @@ const convertToComponentObject = function (comp: {
                   v-for="comp in pagedComponents"
                   :key="comp.title"
                   :title="translate(comp.title)"
+                  :description="blockDescription(comp.title)"
                   @click="handleDropComponent(convertToComponentObject(comp))"
                 >
                   <ComponentThumbnail
@@ -415,4 +474,28 @@ const convertToComponentObject = function (comp: {
       </div>
     </div>
   </div>
+
+  <ConfirmActionModal
+    :showDynamicModalBuilder="showReplaceThemeModal"
+    :type="typeModal"
+    :gridColumnAmount="gridColumnModal"
+    :title="titleModal"
+    :description="descriptionModal"
+    :isLoading="isLoading"
+    :firstButtonText="firstButtonModal"
+    :secondButtonText="secondButtonModal ?? undefined"
+    :thirdButtonText="thirdButtonModal ?? undefined"
+    @firstModalButtonFunctionDynamicModalBuilder="
+      () => firstModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @secondModalButtonFunctionDynamicModalBuilder="
+      () => secondModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @thirdModalButtonFunctionDynamicModalBuilder="
+      () => thirdModalButtonFunctionDynamicModalBuilder?.()
+    "
+  >
+    <header></header>
+    <main></main>
+  </ConfirmActionModal>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   title?: string
+  description?: string
 }>()
 
 defineEmits<{
@@ -14,5 +15,6 @@ defineEmits<{
       <slot />
     </div>
     <p v-if="title" class="pbx-modalPreviewCardTitle">{{ title }}</p>
+    <p v-if="description" class="pbx-modalPreviewCardDesc">{{ description }}</p>
   </button>
 </template>

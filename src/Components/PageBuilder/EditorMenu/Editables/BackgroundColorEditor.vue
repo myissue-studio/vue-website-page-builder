@@ -293,7 +293,7 @@ watch(
           type="button"
           class="pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
           :class="{
-            'pbx-bg-myPrimaryLinkColor pbx-text-white': isBackgroundTransparent,
+            'pbx-bg-myPrimaryLinkColor ': isBackgroundTransparent,
           }"
           @click="selectTailwindBackgroundColor('none')"
         >
@@ -301,7 +301,7 @@ watch(
             class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0"
             :style="transparentSwatchStyle"
           ></div>
-          <span class="pbx-text-black hover:pbx-text-white">{{ translate('Transparent') }}</span>
+          <span>{{ translate('Transparent') }}</span>
         </button>
         <div class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"></div>
         <ColorMenuCustomSection

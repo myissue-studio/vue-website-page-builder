@@ -11,6 +11,8 @@ import MarginControl from './Editables/MarginControl.vue'
 import BorderRadiusControl from './Editables/BorderRadiusControl.vue'
 import BorderControls from './Editables/BorderControls.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
+import PageMetaSettingsEditor from './Editables/PageMetaSettingsEditor.vue'
+import SeoCheckSettingsEditor from './Editables/SeoCheckSettingsEditor.vue'
 import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
 import PageHtmlEditorSettingsEditor from './Editables/PageHtmlEditorSettingsEditor.vue'
 import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
@@ -224,8 +226,10 @@ const closeHTMLSettings = async function () {
       </div>
 
       <div v-show="activeTab === 'settings'" class="pbx-flex pbx-flex-col pbx-gap-2">
-        <ThemeColorSettingsEditor />
         <PageDesignSettingsEditor @open="openHTMLSettings" />
+        <ThemeColorSettingsEditor />
+        <PageMetaSettingsEditor />
+        <SeoCheckSettingsEditor />
         <PageHtmlEditorSettingsEditor />
       </div>
 

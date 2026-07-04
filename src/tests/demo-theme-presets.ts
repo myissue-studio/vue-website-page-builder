@@ -6,6 +6,8 @@ export interface DemoThemePack {
   id: DemoThemePackId
   label: string
   hint: string
+  /** Full-page layout in themes.ts — swapped when the preset is applied */
+  themeTitle: string
   brandColor: string
   fontKey: string
   themeColorPresets: ThemeColorPresetSettingsInput
@@ -16,7 +18,8 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     id: 'fashion',
     label: 'Fashion',
     hint: 'Boutique & retail',
-    brandColor: '#DB93B0',
+    themeTitle: 'Landing Page',
+    brandColor: '#000000',
     fontKey: 'jost',
     themeColorPresets: {
       enabled: true,
@@ -36,6 +39,7 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     id: 'corporate',
     label: 'Corporate',
     hint: 'SaaS & enterprise',
+    themeTitle: 'Corporate Page',
     brandColor: '#2563EB',
     fontKey: 'inter',
     themeColorPresets: {
@@ -56,6 +60,7 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     id: 'blog',
     label: 'Blog',
     hint: 'Editorial & media',
+    themeTitle: 'Blog Post',
     brandColor: '#C45C26',
     fontKey: 'georgia',
     themeColorPresets: {

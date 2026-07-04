@@ -792,6 +792,34 @@
     @apply pbx-shrink-0 pbx-text-lg pbx-text-gray-400;
   }
 
+  .pbx-seoCheckGroupTitle {
+    @apply pbx-text-xs pbx-font-semibold pbx-uppercase pbx-tracking-widest pbx-text-gray-400 pbx-px-1;
+  }
+
+  .pbx-seoCheckRow {
+    @apply pbx-box-border pbx-flex pbx-min-w-0 pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-3 pbx-py-3;
+  }
+
+  .pbx-seoCheckRow--pass {
+    @apply pbx-border-emerald-200 pbx-bg-emerald-50/60;
+  }
+
+  .pbx-seoCheckRow--fail {
+    @apply pbx-border-red-200 pbx-bg-red-50/60;
+  }
+
+  .pbx-seoCheckRowIcon {
+    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-text-xl;
+  }
+
+  .pbx-seoCheckRowIcon--pass {
+    @apply pbx-bg-emerald-100 pbx-text-emerald-700;
+  }
+
+  .pbx-seoCheckRowIcon--fail {
+    @apply pbx-bg-red-100 pbx-text-red-700;
+  }
+
   /*
     |--------------------------------------------------------------------------
     | Modal filter chips (component & product library toolbars)
@@ -938,6 +966,10 @@
 
   .pbx-modalPreviewCardTitle {
     @apply pbx-myPrimaryParagraph pbx-pt-3 pbx-px-1 pbx-text-sm pbx-font-semibold pbx-line-clamp-2;
+  }
+
+  .pbx-modalPreviewCardDesc {
+    @apply pbx-myPrimaryParagraph pbx-px-1 pbx-pb-1 pbx-text-xs pbx-font-normal pbx-text-gray-500 pbx-line-clamp-2;
   }
 
   /*
