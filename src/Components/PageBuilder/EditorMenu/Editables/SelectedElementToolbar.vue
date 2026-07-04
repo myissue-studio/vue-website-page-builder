@@ -143,12 +143,9 @@ const applySelectedProductSectionSettings = async () => {
   productSettingsApplyQueued = false
 }
 
-watch(
-  [productLayout, productMobileColumns, productCardStyle, productRoundedImages],
-  () => {
-    void applySelectedProductSectionSettings()
-  },
-)
+watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages], () => {
+  void applySelectedProductSectionSettings()
+})
 
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
@@ -1019,7 +1016,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
             "
             :title="translate('Product section settings')"
           >
-            <span class="material-symbols-outlined pbx-text-lg">grid_view</span>
+            <span class="material-symbols-outlined">shopping_bag</span>
           </div>
         </template>
 
