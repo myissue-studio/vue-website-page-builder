@@ -144,6 +144,18 @@
     @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
   }
 
+  /* Let product copy grow naturally in the builder and on saved pages. */
+  #pagebuilder .pbx-product-card-title,
+  #pagebuilder .pbx-product-card-description,
+  #pagebuilder .pbx-product-card-badge {
+    overflow: visible;
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    -webkit-box-orient: unset;
+    max-height: none;
+  }
+
   #pagebuilder .pbx-product-card {
     @apply pbx-h-full;
   }

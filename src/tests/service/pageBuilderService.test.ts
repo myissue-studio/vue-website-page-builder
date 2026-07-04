@@ -664,5 +664,45 @@ describe('PageBuilderService', () => {
       expect(mockStore.setElement).toHaveBeenCalledWith(element)
       expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(true)
     })
+
+    it('does not open inline TipTap when double-clicking a product card image', async () => {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-pbx-product-section="true">
+          <div class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden" data-pb-no-inline-text>
+            <a href="/products/demo">
+              <img src="https://example.com/product.jpg" alt="Demo product">
+            </a>
+          </div>
+        </section>
+      `
+
+      const imageWrap = pagebuilder.querySelector<HTMLElement>('.pbx-product-card-image')
+      const image = pagebuilder.querySelector<HTMLElement>('img')
+      expect(imageWrap).not.toBeNull()
+      expect(image).not.toBeNull()
+      if (!imageWrap || !image) return
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      expect(service.isValidTextElement(imageWrap)).toBe(false)
+
+      image.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+      await Promise.resolve()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(mockStore.setInlineTipTapEditor).not.toHaveBeenCalledWith(true)
+      expect(imageWrap.querySelector('img')).not.toBeNull()
+    })
   })
 })

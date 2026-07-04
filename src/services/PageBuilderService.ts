@@ -1441,7 +1441,16 @@ export class PageBuilderService {
     if (this.pageBuilderStateStore.getInlineTipTapEditor) return
 
     const element = this.findEditableElementFromEventTarget(e.target)
-    if (!element || !this.isValidTextElement(element)) return
+    if (!element || !this.isValidTextElement(element)) {
+      if (
+        e.target instanceof Element &&
+        (e.target.tagName === 'IMG' || e.target.closest('img'))
+      ) {
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+      }
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -1506,7 +1515,10 @@ export class PageBuilderService {
   private handleElementDoubleClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     if (this.pageBuilderStateStore.getInlineTipTapEditor) return
-    if (!this.isValidTextElement(element)) return
+    if (!this.isValidTextElement(element)) {
+      e.stopPropagation()
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -2702,7 +2714,18 @@ export class PageBuilderService {
   public isValidTextElement(element: HTMLElement | null | undefined): boolean {
     if (!element) return false
 
+    if (element.hasAttribute('data-pb-no-inline-text')) return false
+
     if (element.tagName === 'IMG' || element.firstElementChild?.tagName === 'IFRAME') {
+      return false
+    }
+
+    if (element.querySelector('img')) return false
+
+    if (
+      element.classList.contains('pbx-product-card-image') ||
+      element.classList.contains('product-card-image')
+    ) {
       return false
     }
 
