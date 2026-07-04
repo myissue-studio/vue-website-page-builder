@@ -1,3 +1,8 @@
+---
+title: Nuxt Integration — Vue Page Builder for Nuxt 3 & 4
+description: Add the Vue page builder to Nuxt 3 or Nuxt 4 admin panels. Plugin setup for ecommerce, SaaS, and CMS dashboards with SSR-friendly integration.
+---
+
 ## Nuxt Integration
 
 To use `@myissue/vue-website-page-builder` in your Nuxt 3 or Nuxt 4 project, follow these steps:

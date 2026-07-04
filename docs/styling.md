@@ -1,3 +1,8 @@
+---
+title: Global Styling — Vue Page Builder pageSettings
+description: Global fonts, colors, and backgrounds on the Vue page builder canvas. pageSettings for branded ecommerce and multi-tenant SaaS pages.
+---
+
 ## Styling
 
 Styling the Main Page Builder Container.

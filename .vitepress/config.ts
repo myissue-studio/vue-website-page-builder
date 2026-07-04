@@ -3,9 +3,9 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'docs',
-  title: 'Builder',
+  title: 'Vue Website Page Builder',
   description:
-    'Vue 3 Drag & Drop Page Builder. Power your vision and build impressive, modern pages. A web builder designed for stunning results. Enable users to design and publish responsive pages—such as listings, job posts, or blogs—at any scale. Easily manage and update content with flexibility.',
+    'Vue 3 page builder for ecommerce admin, multi-tenant SaaS, and CMS dashboards. Free, self-hosted, integration-first — embed in Laravel, Nuxt, or Vue apps with custom media library and product catalog hooks.',
   base: '/vue-website-page-builder/',
   head: [
     ['link', { rel: 'icon', href: '/vue-website-page-builder/favicon.ico' }],
@@ -59,6 +59,7 @@ export default defineConfig({
           { text: 'Use in Modal', link: '/use-in-modal' },
           { text: 'Styling', link: '/styling' },
           { text: 'Custom Media Library', link: '/custom-media-library' },
+          { text: 'Display Products', link: '/display-products' },
           { text: 'Unsplash Integration', link: '/unsplash' },
           { text: 'Custom HTML Builder Elements', link: '/custom-html-builder-elements' },
           { text: 'Troubleshooting', link: '/troubleshooting' },

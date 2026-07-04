@@ -1,3 +1,8 @@
+---
+title: Vue Integration — Embed Page Builder in Vue 3 Apps
+description: Register the Vue 3 page builder plugin in your Vue app. Embed the editor in admin panels, ecommerce dashboards, and multi-tenant SaaS products.
+---
+
 ## Vue Integration
 
 To use `@myissue/vue-website-page-builder` in your Vue project, follow these steps:

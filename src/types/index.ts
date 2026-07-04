@@ -34,6 +34,69 @@ export interface ImageObject {
   [key: string]: unknown // Allow custom properties on images (e.g., alt, width, height)
 }
 
+/**
+ * Product fields accepted by insertProducts() / buildProductSectionHtml().
+ * No index signature — assign from your API interfaces without extra casting.
+ */
+export interface PageBuilderProductInput {
+  id?: string | number
+  title?: string
+  description?: string
+  image?: string
+  imageAlt?: string
+  price?: string | number
+  compareAtPrice?: string | number
+  badge?: string
+  /** Product or checkout URL on the host storefront */
+  url?: string
+  buttonText?: string
+  sku?: string
+}
+
+/**
+ * Flexible product shape for ecommerce integrations.
+ * All fields are optional — hosts decide what to show in their custom picker or layouts.
+ * Includes an index signature for custom fields used in templates.
+ */
+export type PageBuilderProduct = PageBuilderProductInput & {
+  [key: string]: unknown
+}
+
+export type ProductGridLayout =
+  | 'grid-1'
+  | 'grid-2'
+  | 'grid-3'
+  | 'grid-4'
+  | 'grid-6'
+  | (string & {})
+
+export type ProductCardStyle =
+  | 'minimal'
+  | 'bordered'
+  | 'shadow'
+  | 'elevated'
+  | (string & {})
+
+export type ProductMobileColumns = 1 | 2
+
+export interface ProductSectionOptions {
+  layout: ProductGridLayout
+  mobileColumns?: ProductMobileColumns
+  cardStyle?: ProductCardStyle
+  roundedImages?: boolean
+}
+
+export interface InsertProductsOptions {
+  layout?: ProductGridLayout
+  mobileColumns?: ProductMobileColumns
+  cardStyle?: ProductCardStyle
+  /** Adds rounded corners to product images */
+  roundedImages?: boolean
+  sectionTitle?: string
+  /** unshift | push | insert (uses current add index) */
+  method?: 'unshift' | 'push' | 'insert' | (string & {})
+}
+
 // For a single component/block passed by the developer
 export interface BuilderResourceComponent {
   html_code: string

@@ -35,7 +35,7 @@ export default {
         ...defaultTheme.colors,
         // Custom colors
         myPrimaryBrandColor: '#000000',
-        myPrimaryLinkColor: '#16a34a',
+        myPrimaryLinkColor: 'rgb(var(--pbx-brand-color-rgb, 22 163 74) / <alpha-value>)',
         // gray colors
         myPrimaryLightGrayColor: '#eff2f6',
         // for myPrimaryTag

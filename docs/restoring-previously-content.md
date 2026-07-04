@@ -1,3 +1,8 @@
+---
+title: Restore Content — Vue Page Builder & CMS
+description: Load existing page HTML from your database into the Vue page builder. parsePageBuilderHTML() and startBuilder() for ecommerce and multi-tenant SaaS editing.
+---
+
 ## Loading Existing Content or Components into the Page Builder
 
 The Page Builder makes it simple to load previously published content—including both your page’s global styles and all components—from any backend source, such as your database or API.

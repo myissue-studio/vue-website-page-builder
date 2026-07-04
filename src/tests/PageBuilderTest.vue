@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PageBuilder from '../PageBuilder/PageBuilder.vue'
 import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
+import DemoDisplayProductsTest from '../tests/TestComponents/DemoDisplayProductsTest.vue'
 import { computed, watch } from 'vue'
 import componentsArray from '../tests/componentsArray.test.json'
 import { getPageBuilder } from '../composables/usePageBuilder'
@@ -90,7 +91,7 @@ watch(
       },
 
       settings: {
-        brandColor: '#DB93B0',
+        brandColor: '#000000',
         themeColorPresets: {
           enabled: true,
           colors: [
@@ -120,6 +121,7 @@ watch(
       <!--   :CustomBuilderComponents="DemoBuilderComponentsTest" -->
       <PageBuilder
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
+        :DisplayProducts="DemoDisplayProductsTest"
         :showPublishButton="true"
         :showCloseButton="true"
         @handlePublishPageBuilder="publishPageBuilder"

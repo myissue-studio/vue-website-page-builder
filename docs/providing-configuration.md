@@ -1,3 +1,8 @@
+---
+title: Configuration — Vue Page Builder Setup
+description: PageBuilderConfig options for ecommerce admin and SaaS apps — branding, autosave, fonts, theme colors, user settings, and multi-tenant resource data.
+---
+
 ## Providing Configuration
 
 The example below demonstrates the setup to start building pages, with additional options available for customization and branding.
@@ -71,7 +76,7 @@ const configPageBuilder = {
       h4: 'jost',
       h5: 'jost',
       h6: 'jost',
-      p:  'arial',
+      p: 'arial',
     },
     autoSave: true,
   },
@@ -167,7 +172,7 @@ userSettings: {
 All fields are optional — omit any element to let it inherit from the global `fontFamily`.
 
 ::: tip
-`elementFonts` overrides are applied via CSS custom properties on the builder's scroll container, so they never conflict with global page styles set through the builder's *Global Page Styles* panel.
+`elementFonts` overrides are applied via CSS custom properties on the builder's scroll container, so they never conflict with global page styles set through the builder's _Global Page Styles_ panel.
 :::
 
 ### Theme Color Presets
@@ -210,7 +215,7 @@ Pass `userForPageBuilder.id` to isolate each user's presets under their own `loc
 ```ts
 const configPageBuilder = {
   userForPageBuilder: {
-    id: currentUser.id,   // any stable identifier — string or number
+    id: currentUser.id, // any stable identifier — string or number
     name: currentUser.name,
     image: currentUser.avatar,
   },
@@ -267,7 +272,7 @@ import type { ThemeColorPresetSettingsInput } from '@myissue/vue-website-page-bu
 const presets: ThemeColorPresetSettingsInput = {
   enabled: true,
   colors: dbColors.map((c) => ({
-    id: c.slug,        // any string accepted
+    id: c.slug, // any string accepted
     label: c.name,
     color: c.hexCode,
     enabled: c.active,

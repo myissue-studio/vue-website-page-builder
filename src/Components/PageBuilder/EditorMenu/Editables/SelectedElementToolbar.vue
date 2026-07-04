@@ -12,6 +12,9 @@ import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
+import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
+import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
+import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/product-section-options'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -99,6 +102,53 @@ const updateSelectedComponentFullWidth = async (enabled: boolean) => {
   await updatePromise
   componentSettingsTick.value++
 }
+
+const productSectionSettingsTick = ref(0)
+const showProductSectionSettingsModal = ref(false)
+const productLayout = ref<ProductGridLayout>(DEFAULT_PRODUCT_SECTION_OPTIONS.layout)
+const productMobileColumns = ref<ProductMobileColumns>(
+  DEFAULT_PRODUCT_SECTION_OPTIONS.mobileColumns ?? 1,
+)
+const productCardStyle = ref<ProductCardStyle>(
+  DEFAULT_PRODUCT_SECTION_OPTIONS.cardStyle ?? 'minimal',
+)
+const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
+let productSettingsApplyQueued = false
+
+const isSelectedProductSection = computed(() => {
+  void productSectionSettingsTick.value
+  return pageBuilderService.isSelectedProductSection()
+})
+
+const openProductSectionSettings = () => {
+  const options = pageBuilderService.getSelectedProductSectionOptions()
+  productLayout.value = options.layout
+  productMobileColumns.value = options.mobileColumns ?? 1
+  productCardStyle.value = options.cardStyle ?? 'minimal'
+  productRoundedImages.value = options.roundedImages ?? false
+  productSectionSettingsTick.value++
+  showProductSectionSettingsModal.value = true
+}
+
+const applySelectedProductSectionSettings = async () => {
+  if (!showProductSectionSettingsModal.value || productSettingsApplyQueued) return
+  productSettingsApplyQueued = true
+  await pageBuilderService.updateSelectedProductSection({
+    layout: productLayout.value,
+    mobileColumns: productMobileColumns.value,
+    cardStyle: productCardStyle.value,
+    roundedImages: productRoundedImages.value,
+  })
+  productSectionSettingsTick.value++
+  productSettingsApplyQueued = false
+}
+
+watch(
+  [productLayout, productMobileColumns, productCardStyle, productRoundedImages],
+  () => {
+    void applySelectedProductSectionSettings()
+  },
+)
 
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
@@ -958,6 +1008,21 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           </div>
         </template>
 
+        <template v-if="getElement && getComponent && isSelectedProductSection">
+          <div
+            @click="openProductSectionSettings"
+            class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0"
+            :class="
+              showProductSectionSettingsModal
+                ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+                : 'pbx-text-myPrimaryDarkGrayColor'
+            "
+            :title="translate('Product section settings')"
+          >
+            <span class="material-symbols-outlined pbx-text-lg">grid_view</span>
+          </div>
+        </template>
+
         <template v-if="isInsideSlider">
           <div
             @click="showSliderModal = true"
@@ -1007,6 +1072,30 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
                 </div>
               </div>
             </div>
+          </main>
+        </ConfirmActionModal>
+
+        <ConfirmActionModal
+          v-if="showProductSectionSettingsModal"
+          :showDynamicModalBuilder="showProductSectionSettingsModal"
+          :isLoading="false"
+          type="success"
+          :gridColumnAmount="1"
+          :title="translate('Product section settings')"
+          description=""
+          :firstButtonText="translate('Close')"
+          @firstModalButtonFunctionDynamicModalBuilder="showProductSectionSettingsModal = false"
+        >
+          <header></header>
+          <main>
+            <ProductSectionSettingsFields
+              v-model:layout="productLayout"
+              v-model:mobile-columns="productMobileColumns"
+              v-model:card-style="productCardStyle"
+              v-model:rounded-images="productRoundedImages"
+              :translate="translate"
+              compact
+            />
           </main>
         </ConfirmActionModal>
 

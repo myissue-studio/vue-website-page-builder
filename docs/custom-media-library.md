@@ -1,3 +1,8 @@
+---
+title: Custom Media Library — Vue Page Builder Integration
+description: Inject your own media picker into the Vue 3 page builder. Connect S3, Cloudinary, Unsplash, or internal DAM for ecommerce admin and SaaS dashboards.
+---
+
 ## Custom Media Library
 
 By default, the Page Builder does not include a built-in media library.

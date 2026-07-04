@@ -1,3 +1,8 @@
+---
+title: Use in Modal — Vue Page Builder Embedding
+description: Embed the Vue page builder inside a modal or dialog in your admin panel. Close button and events for SaaS and ecommerce dashboards.
+---
+
 ## Use in Modal
 
 Close Page Builder Without Saving in a Modal or Dialog.

@@ -1,3 +1,8 @@
+---
+title: Language Support — Vue Page Builder i18n
+description: Multilingual Vue page builder with 12+ languages. i18n for global ecommerce admin panels and multi-tenant SaaS products.
+---
+
 ## Language Support
 
 The Page Builder offers robust multilingual support, enabling you to reach a global audience with ease. By default, it supports the following languages, chosen for their widespread use and strong developer communities:

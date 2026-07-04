@@ -1,3 +1,8 @@
+---
+title: Backend Integration — Vue Page Builder & CMS
+description: Save and restore page HTML from your database. Production flow for Laravel, SaaS, headless CMS, and multi-tenant apps using getSavedPageHtml() and parsePageBuilderHTML().
+---
+
 ## Backend Integration
 
 Use one database field for the saved builder output:

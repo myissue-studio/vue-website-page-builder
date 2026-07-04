@@ -1,3 +1,8 @@
+---
+title: Custom Builder Components — Vue Page Builder
+description: Inject custom layout blocks and helper components into the Vue page builder Add modal for SaaS, ecommerce, and agency workflows.
+---
+
 This guide will walk you through creating custom components that can be injected into the Vue Website Page Builder.
 
 ## Custom Layout Builder

@@ -1,3 +1,8 @@
+---
+title: Draft Recovery — Vue Page Builder Autosave
+description: Automatic local draft recovery in the Vue page builder. Unsaved work protection for ecommerce admin and SaaS content editors.
+---
+
 ## Automatic Draft Recovery
 
 The Page Builder automatically checks for unsaved drafts in local storage for the current resource.

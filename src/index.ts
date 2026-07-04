@@ -20,6 +20,12 @@ export type {
   PageBuilderUser,
   ComponentObject,
   ImageObject,
+  PageBuilderProduct,
+  PageBuilderProductInput,
+  ProductGridLayout,
+  ProductCardStyle,
+  ProductSectionOptions,
+  InsertProductsOptions,
   PageBuilderConfig,
   BuilderResourceComponent,
   BuilderResourceData,
@@ -46,6 +52,8 @@ import './css/style.css'
 export { sharedPageBuilderPinia, sharedPageBuilderStore } from './stores/shared-store'
 
 export { getPageBuilder } from './composables/usePageBuilder'
+
+export { buildProductSectionHtml } from './utils/builder/product-section-html'
 
 // Export the plugin for app.use()
 export { pageBuilder } from './plugin'

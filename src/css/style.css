@@ -136,6 +136,24 @@
   }
 
   /*
+   * Product cards (DisplayProducts) — typography lives on wrapper divs so TipTap
+   * edits to inner <p>/<a> do not strip size/weight classes.
+   */
+  #pagebuilder .pbx-product-card-title a,
+  #pagebuilder .pbx-product-card-cta a {
+    @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
+  }
+
+  #pagebuilder .pbx-product-card {
+    @apply pbx-h-full;
+  }
+
+  /*
+   * Brand color — RGB channels on :root via PageBuilder when settings.brandColor is provided.
+   * Powers pbx-bg-myPrimaryLinkColor, opacity variants (/30, /20), pbx-myPrimaryButton, etc.
+   */
+
+  /*
    * ── Full-width breakout ────────────────────────────────────────────────────
    *
    * Two contexts, different strategies:
@@ -775,6 +793,187 @@
 
   .pbx-pageDesignOpenButtonArrow {
     @apply pbx-shrink-0 pbx-text-lg pbx-text-gray-400;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Modal filter chips (component & product library toolbars)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalFilterBar {
+    @apply pbx-mb-4 pbx-flex pbx-flex-col pbx-gap-3 pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-pb-4 pbx-pt-6;
+  }
+
+  .pbx-modalFilterBarTitle {
+    @apply pbx-text-xs pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalFilterBarHeader {
+    @apply pbx-flex pbx-items-center pbx-gap-2 pbx-text-gray-500;
+  }
+
+  .pbx-modalFilterBarChips {
+    @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2 pbx-overflow-x-auto;
+  }
+
+  .pbx-modalFilterChip {
+    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+  }
+
+  .pbx-modalFilterChip--active {
+    @apply pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor/10 pbx-shadow-sm hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor/10;
+  }
+
+  .pbx-modalFilterChipIcon {
+    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-base pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-modalFilterChip--active .pbx-modalFilterChipIcon {
+    @apply pbx-bg-myPrimaryLinkColor pbx-text-white;
+  }
+
+  .pbx-modalFilterChipText {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-col pbx-gap-0.5;
+  }
+
+  .pbx-modalFilterChipLabel {
+    @apply pbx-whitespace-nowrap pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-modalFilterChip--active .pbx-modalFilterChipLabel {
+    @apply pbx-text-myPrimaryLinkColor;
+  }
+
+  .pbx-modalFilterChipHint {
+    @apply pbx-whitespace-nowrap pbx-text-[10px] pbx-leading-tight pbx-text-gray-500;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Modal library cards (helper components, quick-insert items)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalLibraryCard {
+    @apply pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+  }
+
+  .pbx-modalLibraryCardIcon {
+    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-xl pbx-text-myPrimaryDarkGrayColor pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor/10 group-hover:pbx-text-myPrimaryLinkColor;
+  }
+
+  .pbx-modalLibraryCardText {
+    @apply pbx-flex pbx-min-w-0 pbx-flex-1 pbx-flex-col pbx-gap-0.5;
+  }
+
+  .pbx-modalLibraryCardLabel {
+    @apply pbx-truncate pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-modalLibraryCardHint {
+    @apply pbx-truncate pbx-text-xs pbx-text-gray-500;
+  }
+
+  .pbx-modalLibraryCardAction {
+    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor group-hover:pbx-text-white;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Modal sidebar summary (product library information panel)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalSidebarPanel {
+    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+  }
+
+  .pbx-modalSidebarPanelTitle {
+    @apply pbx-mb-3 pbx-text-xs pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarStatGrid {
+    @apply pbx-grid pbx-grid-cols-1 pbx-gap-2;
+  }
+
+  .pbx-modalSidebarStatCard {
+    @apply pbx-flex pbx-flex-col pbx-gap-1.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-p-3;
+  }
+
+  .pbx-modalSidebarStatCard--active {
+    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryLinkColor/5;
+  }
+
+  .pbx-modalSidebarStatLabel {
+    @apply pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarStatValue {
+    @apply pbx-text-base pbx-font-semibold pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-modalSidebarStatHint {
+    @apply pbx-text-[11px] pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarSelectedList {
+    @apply pbx-mt-4 pbx-space-y-2;
+  }
+
+  .pbx-modalSidebarSelectedTitle {
+    @apply pbx-mb-2 pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500;
+  }
+
+  .pbx-modalSidebarSelectedItem {
+    @apply pbx-flex pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Modal preview cards (layout components, themes)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-modalPreviewCard {
+    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border-2 pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
+  }
+
+  .pbx-modalPreviewCardMedia {
+    @apply pbx-relative pbx-overflow-hidden pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50;
+  }
+
+  .pbx-modalPreviewCardTitle {
+    @apply pbx-myPrimaryParagraph pbx-pt-3 pbx-px-1 pbx-text-sm pbx-font-semibold pbx-line-clamp-2;
+  }
+
+  /*
+    |--------------------------------------------------------------------------
+    | Product section settings (modal + toolbar)
+    |--------------------------------------------------------------------------
+    */
+  .pbx-productSettingsPanel {
+    @apply pbx-flex pbx-flex-col pbx-gap-4;
+  }
+
+  .pbx-productSettingsSection {
+    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+  }
+
+  .pbx-productSettingsSectionHeader {
+    @apply pbx-mb-3 pbx-flex pbx-flex-col pbx-gap-1;
+  }
+
+  .pbx-productSettingsSectionTitle {
+    @apply pbx-m-0 pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor;
+  }
+
+  .pbx-productSettingsSectionDesc {
+    @apply pbx-m-0 pbx-text-xs pbx-leading-relaxed pbx-text-gray-500;
+  }
+
+  .pbx-productSettingsSectionChips {
+    @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2;
+  }
+
+  .pbx-productSettingsToggleRow {
+    @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
   }
 
   /*
