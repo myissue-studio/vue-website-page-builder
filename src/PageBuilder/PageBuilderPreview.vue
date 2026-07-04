@@ -68,7 +68,6 @@ const iframeContent = computed(() => {
 </head>
 <body>
   <div id="pagebuilder" class="${previewFontClass.value} pbx-text-black">${htmlPage.value}</div>
-  ${previewLinkBlockerScript}
 </body>
 </html>`
 })
@@ -78,30 +77,6 @@ watchEffect(() => {
     updateStylesheets()
   }
 })
-
-/** Preview shows real HTML; block link navigation so the app does not reload. */
-const handlePreviewLinkClick = (event: MouseEvent) => {
-  const target = event.target
-  if (!(target instanceof Element)) return
-
-  const anchor = target.closest('a[href]')
-  if (anchor instanceof HTMLAnchorElement && anchor.getAttribute('href') !== '#') {
-    event.preventDefault()
-    event.stopPropagation()
-  }
-}
-
-const previewLinkBlockerScript = `<script>
-document.addEventListener('click', function (event) {
-  var target = event.target;
-  if (!target || !target.closest) return;
-  var anchor = target.closest('a[href]');
-  if (anchor && anchor.getAttribute('href') !== '#') {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-}, true);
-<\/script>`
 </script>
 
 <template>
@@ -109,7 +84,6 @@ document.addEventListener('click', function (event) {
     <div>
       <div
         class="pbx-text-black pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
-        @click.capture="handlePreviewLinkClick"
       >
         <div :style="previewElementFontStyle">
           <div id="pagebuilder" :class="[previewFontClass, 'pbx-text-black']">
