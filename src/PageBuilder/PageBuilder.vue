@@ -24,6 +24,7 @@ import ToastContainer from '../Components/Toast/ToastContainer.vue'
 import { useHtmlCodeViewer } from '../composables/useHtmlCodeViewer'
 import { useHtmlCodeEditor } from '../composables/useHtmlCodeEditor'
 import { useToast } from '../composables/useToast'
+import { useBuilderKeyboardShortcuts } from '../composables/useBuilderKeyboardShortcuts'
 import { resolveFontFamily } from '../utils/builder/font-family-map'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 
@@ -391,6 +392,9 @@ const getIsSaving = computed(() => {
   return pageBuilderStateStore.getIsSaving
 })
 
+const undoRedoRef = ref<InstanceType<typeof UndoRedo> | null>(null)
+const selectedElementToolbarRef = ref<InstanceType<typeof SelectedElementToolbar> | null>(null)
+
 const getIsLoadingResumeEditing = computed(() => {
   return pageBuilderStateStore.getIsLoadingResumeEditing
 })
@@ -498,6 +502,38 @@ const closeImageSettings = () => {
   showImageSettingsModal.value = false
   pageBuilderService.setImageSettingsModalOpen(false)
 }
+
+useBuilderKeyboardShortcuts({
+  canUndo: () => pageBuilderStateStore.getHistoryIndex > 0,
+  canRedo: () => pageBuilderStateStore.getHistoryIndex < pageBuilderStateStore.getHistoryLength - 1,
+  isBlocked: () =>
+    getIsLoadingGlobal.value ||
+    isLoadingLang.value ||
+    pageBuilderStateStore.getInlineTipTapEditor ||
+    showModalAddComponent.value ||
+    showModalCloseNoSave.value ||
+    showModalResumeEditing.value ||
+    showModalRestore.value ||
+    htmlEditorShow.value ||
+    htmlViewerShow.value ||
+    openPageBuilderPreviewModal.value ||
+    openPageBuilderPreviewMobile.value ||
+    showImageSettingsModal.value,
+  onUndo: async () => {
+    await undoRedoRef.value?.handleUndo()
+  },
+  onRedo: async () => {
+    await undoRedoRef.value?.handleRedo()
+  },
+  onSave: savePageWithToast,
+  onDeselect: async () => {
+    await pageBuilderService.clearHtmlSelection()
+  },
+  onDelete: () => {
+    selectedElementToolbarRef.value?.openDeleteConfirm()
+  },
+  hasSelection: () => Boolean(pageBuilderStateStore.getElement),
+})
 // HTML editor logic end
 
 const ensureBuilderInitialized = function () {
@@ -811,7 +847,7 @@ onBeforeUnmount(() => {
       </template>
       <!-- Logo # end -->
 
-      <UndoRedo @toolbar-hide-request="hideToolbar"></UndoRedo>
+      <UndoRedo ref="undoRedoRef" @toolbar-hide-request="hideToolbar"></UndoRedo>
 
       <div
         @click.self="
@@ -833,12 +869,14 @@ onBeforeUnmount(() => {
             "
             type="button"
             :disabled="getIsSaving"
+            :aria-label="translate('Save')"
+            :title="`${translate('Save')} (Ctrl+S)`"
           >
             <div
               v-if="!getIsSaving"
               class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined">save</span>
+              <span class="material-symbols-outlined" aria-hidden="true">save</span>
             </div>
             <div
               v-if="getIsSaving"
@@ -875,6 +913,7 @@ onBeforeUnmount(() => {
               "
               type="button"
               :disabled="getIsRestoring"
+              :aria-label="translate('Reset Page')"
             >
               <div
                 v-if="!getIsRestoring"
@@ -923,8 +962,11 @@ onBeforeUnmount(() => {
           "
           class="pbx-flex pbx-items-center pbx-justify-center"
         >
-          <div
-            class="pbx-mr-2"
+          <button
+            type="button"
+            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            :aria-label="translate('Add components')"
+            :title="translate('Add components')"
             @click="
               () => {
                 pageBuilderStateStore.setComponentArrayAddMethod('unshift')
@@ -932,84 +974,84 @@ onBeforeUnmount(() => {
               }
             "
           >
-            <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-gray-200">
-              <span
-                class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+            <span
+              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+            >
+              <LayersIcon />
+            </span>
+            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+              {{ translate('Add') }}
+            </span>
+          </button>
+          <button
+            type="button"
+            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
+            :aria-label="translate('Desktop preview')"
+            :title="translate('Desktop preview')"
+            @click="
+              async () => {
+                pageBuilderStateStore.setMenuRight(false)
+                pageBuilderStateStore.setElement(null)
+                await pageBuilderService.clearHtmlSelection()
+                handlePageBuilderPreview()
+              }
+            "
+          >
+            <span
+              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+            >
+              <span>
+                <svg
+                  fill="currentColor"
+                  height="22"
+                  viewBox="0 0 22 22"
+                  width="22"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="display: block"
+                  aria-hidden="true"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
+                    fill-rule="evenodd"
+                  ></path>
+                </svg>
+              </span>
+            </span>
+          </button>
+          <button
+            type="button"
+            class="lg:pbx-flex pbx-hidden pbx-items-center pbx-justify-center pbx-mr-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
+            :aria-label="translate('Mobile preview')"
+            :title="translate('Mobile preview')"
+            @click="
+              async () => {
+                pageBuilderStateStore.setMenuRight(false)
+                pageBuilderStateStore.setElement(null)
+                await pageBuilderService.clearHtmlSelection()
+                handlePageBuilderPreviewMobile()
+              }
+            "
+          >
+            <span
+              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+            >
+              <svg
+                fill="currentColor"
+                height="22"
+                viewBox="0 0 22 22"
+                width="22"
+                xmlns="http://www.w3.org/2000/svg"
+                style="display: block"
+                aria-hidden="true"
               >
-                <LayersIcon />
-              </span>
-              <span class="pbx-cursor-pointer lg:pbx-block lg:pbx-pr-4 pbx-hidden">
-                {{ translate('Add') }}
-              </span>
-            </div>
-          </div>
-          <div class="pbx-flex pbx-items-center pbx-justify-center pbx-mr-2">
-            <div
-              @click="
-                async () => {
-                  pageBuilderStateStore.setMenuRight(false)
-                  pageBuilderStateStore.setElement(null)
-                  await pageBuilderService.clearHtmlSelection()
-                  handlePageBuilderPreview()
-                }
-              "
-            >
-              <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
-                <span
-                  class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-                >
-                  <span>
-                    <svg
-                      fill="currentColor"
-                      height="22"
-                      viewBox="0 0 22 22"
-                      width="22"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style="display: block"
-                    >
-                      <path
-                        clip-rule="evenodd"
-                        d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
-                        fill-rule="evenodd"
-                      ></path>
-                    </svg>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="lg:pbx-flex pbx-hidden pbx-items-center pbx-justify-center">
-            <div
-              @click="
-                async () => {
-                  pageBuilderStateStore.setMenuRight(false)
-                  pageBuilderStateStore.setElement(null)
-                  await pageBuilderService.clearHtmlSelection()
-                  handlePageBuilderPreviewMobile()
-                }
-              "
-            >
-              <div class="pbx-flex pbx-items-center pbx-justify-center pbx-gap-2">
-                <span
-                  class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-                >
-                  <svg
-                    fill="currentColor"
-                    height="22"
-                    viewBox="0 0 22 22"
-                    width="22"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="display: block"
-                  >
-                    <path d="M14 16H8v2h6v-2z"></path>
-                    <path
-                      d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-          </div>
+                <path d="M14 16H8v2h6v-2z"></path>
+                <path
+                  d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
+                ></path>
+              </svg>
+            </span>
+          </button>
         </div>
       </div>
 
@@ -1112,7 +1154,9 @@ onBeforeUnmount(() => {
         <template v-if="showCloseButton">
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
+              type="button"
               class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
+              :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
                   closePageBuilder()
@@ -1120,7 +1164,7 @@ onBeforeUnmount(() => {
                 }
               "
             >
-              <span class="material-symbols-outlined"> close </span>
+              <span class="material-symbols-outlined" aria-hidden="true"> close </span>
             </button>
           </div>
         </template>
@@ -1170,6 +1214,7 @@ onBeforeUnmount(() => {
         >
           <template v-if="getElement">
             <SelectedElementToolbar
+              ref="selectedElementToolbarRef"
               @open-image-settings="openImageSettings"
             ></SelectedElementToolbar>
           </template>
