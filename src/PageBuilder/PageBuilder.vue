@@ -607,21 +607,45 @@ function applyToolbarFlexWidth(toolbar: HTMLElement, maxToolbarWidth: number) {
   const innerFlex = toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')
   if (!innerFlex) return
 
+  innerFlex.style.flexWrap = 'wrap'
+  innerFlex.style.maxWidth = `${maxToolbarWidth}px`
   innerFlex.style.removeProperty('width')
-  innerFlex.style.flexWrap = 'nowrap'
-  void innerFlex.offsetWidth
-  const unwrappedWidth = innerFlex.scrollWidth
-  innerFlex.style.removeProperty('flex-wrap')
+  void innerFlex.offsetHeight
 
-  if (unwrappedWidth > maxToolbarWidth) {
-    innerFlex.style.width = `${maxToolbarWidth}px`
-    return
+  // Snapshot the natural laid-out width so scroll/reposition cannot reflow it wider.
+  const naturalWidth = innerFlex.offsetWidth
+  if (naturalWidth > 0) {
+    innerFlex.style.width = `${naturalWidth}px`
   }
-
-  innerFlex.style.removeProperty('width')
+  innerFlex.style.removeProperty('max-width')
 }
 
-function updatePanelPositionNow() {
+function handlePanelMutation(mutations: MutationRecord[]) {
+  const toolbar = document.querySelector('#pbxEditToolbar')
+  let remeasureWidth = false
+
+  for (const mutation of mutations) {
+    if (mutation.type === 'attributes' && mutation.attributeName === 'selected') {
+      remeasureWidth = true
+      break
+    }
+    if (!toolbar) continue
+    const target = mutation.target
+    if (target instanceof Node && (toolbar === target || toolbar.contains(target))) {
+      remeasureWidth = true
+      break
+    }
+  }
+
+  if (remeasureWidth) {
+    updatePanelPosition()
+  } else {
+    updatePanelPositionOnScroll()
+  }
+}
+
+function updatePanelPositionNow(options: { remeasureWidth?: boolean } = {}) {
+  const remeasureWidth = options.remeasureWidth ?? true
   const container = pbxBuilderWrapper.value
   const editToolbarElement = container && container.querySelector<HTMLElement>('#pbxEditToolbar')
 
@@ -640,13 +664,16 @@ function updatePanelPositionNow() {
     const margin = 20 // px
     const maxToolbarWidth = container.offsetWidth - margin * 2
     editToolbarElement.style.maxWidth = `${maxToolbarWidth}px`
-    editToolbarElement.style.removeProperty('width')
 
     editToolbarElement.style.position = 'absolute'
     editToolbarElement.classList.add('is-visible')
-    applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
-    // Force layout so inner flex wraps within max-width before measuring size/position.
-    void editToolbarElement.offsetHeight
+
+    if (remeasureWidth) {
+      editToolbarElement.style.removeProperty('width')
+      applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
+      // Force layout so inner flex wraps within max-width before measuring size/position.
+      void editToolbarElement.offsetHeight
+    }
 
     const GAP = 20 // px
     let top =
@@ -676,15 +703,23 @@ function updatePanelPositionNow() {
 }
 
 const settleToolbarPosition = function () {
-  updatePanelPositionNow()
-  requestAnimationFrame(updatePanelPositionNow)
+  updatePanelPositionNow({ remeasureWidth: true })
+  requestAnimationFrame(() => updatePanelPositionNow({ remeasureWidth: true }))
+}
+
+function updatePanelPositionOnScroll() {
+  cancelAnimationFrame(panelPositionRaf)
+  panelPositionRaf = requestAnimationFrame(() => {
+    panelPositionRaf = 0
+    updatePanelPositionNow({ remeasureWidth: false })
+  })
 }
 
 function updatePanelPosition() {
   cancelAnimationFrame(panelPositionRaf)
   panelPositionRaf = requestAnimationFrame(() => {
     panelPositionRaf = 0
-    updatePanelPositionNow()
+    updatePanelPositionNow({ remeasureWidth: true })
   })
 }
 
@@ -725,7 +760,7 @@ onMounted(async () => {
   const container = pbxBuilderWrapper.value
   if (!container) return
 
-  panelPositionObserver = new MutationObserver(updatePanelPosition)
+  panelPositionObserver = new MutationObserver(handlePanelMutation)
   panelPositionObserver.observe(container, {
     attributes: true,
     attributeFilter: ['selected'],
@@ -733,8 +768,8 @@ onMounted(async () => {
     subtree: true,
   })
 
-  container.addEventListener('scroll', updatePanelPosition, { passive: true })
-  window.addEventListener('scroll', updatePanelPosition, { passive: true })
+  container.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
+  window.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
   window.addEventListener('resize', updatePanelPosition)
   window.addEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.addEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
@@ -760,8 +795,8 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(panelPositionRaf)
   panelPositionObserver?.disconnect()
   panelPositionObserver = null
-  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPosition)
-  window.removeEventListener('scroll', updatePanelPosition)
+  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPositionOnScroll)
+  window.removeEventListener('scroll', updatePanelPositionOnScroll)
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
