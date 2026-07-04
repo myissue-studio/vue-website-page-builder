@@ -1,3 +1,8 @@
+---
+title: Retrieve HTML — Vue Page Builder API
+description: Export full page HTML from the Vue page builder for your backend. getSavedPageHtml() for Laravel, SaaS, and headless CMS persistence.
+---
+
 ## Retrieving HTML for Submission
 
 Retrieving the Latest HTML Content for Form Submission.

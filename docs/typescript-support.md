@@ -1,3 +1,8 @@
+---
+title: TypeScript Support — Vue Page Builder Types
+description: Full TypeScript types for PageBuilderConfig, insertProducts(), PageBuilderProduct, and ecommerce integration. Typed config for Vue admin and SaaS apps.
+---
+
 # TypeScript Support
 
 The `@myissue/vue-website-page-builder` package is built with TypeScript and includes comprehensive type declarations for full TypeScript support in your projects.

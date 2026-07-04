@@ -1,3 +1,8 @@
+---
+title: Render HTML Output — Vue Page Builder Frontend
+description: Display saved page builder HTML in React, Nuxt, or any frontend. Import package CSS for correct styling on ecommerce and marketing sites.
+---
+
 ## Rendering HTML Output in Other Frameworks (React, Nuxt, etc.)
 
 You can use the Page Builder to generate HTML and render it in any frontend framework, such as React, Nuxt, or even server-side apps.

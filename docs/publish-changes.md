@@ -1,3 +1,8 @@
+---
+title: Publish Changes — Vue Page Builder Events
+description: Wire the Publish button in your Vue page builder admin. showPublishButton prop and handlePublishPageBuilder for SaaS and CMS workflows.
+---
+
 ## Publish Changes
 
 Publish Changes Using the Save Button.

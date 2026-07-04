@@ -1,3 +1,8 @@
+---
+title: Troubleshooting — Vue Page Builder
+description: Common fixes for fonts, icons, CSS conflicts, and integration issues when embedding the Vue 3 page builder in admin and SaaS apps.
+---
+
 ## Troubleshooting
 
 If you run into any issues while using the Page Builder, this section will help you diagnose and solve them.

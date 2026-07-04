@@ -1,3 +1,8 @@
+---
+title: Unsplash Integration — Vue Page Builder Media Library
+description: Add Unsplash image search to your custom media library in the Vue page builder. Copy-paste example for ecommerce and CMS admin panels.
+---
+
 ## Integrate Unsplash Library
 
 Easily add Unsplash image search to your media library modal—just like in the demo!

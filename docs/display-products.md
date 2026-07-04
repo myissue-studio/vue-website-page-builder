@@ -1,3 +1,8 @@
+---
+title: Display Products — Vue Ecommerce Page Builder Integration
+description: Connect your product catalog to the Vue page builder. DisplayProducts hook, insertProducts(), responsive grids, card styles, and toolbar editing for ecommerce admin panels.
+---
+
 ## Display Products (Ecommerce)
 
 The Page Builder does not ship a storefront, cart, or checkout. It gives you a **flexible hook** to connect your own product catalog and insert product sections into the canvas — the same pattern as `:CustomMediaLibraryComponent`.

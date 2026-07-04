@@ -1,3 +1,8 @@
+---
+title: Live Demo — Vue 3 Page Builder
+description: Try the free Vue page builder demo. Drag-and-drop editing, product sections, custom media library, and ecommerce admin workflows at mybuilder.dev.
+---
+
 ## Demo
 
 Vue 3 Page Builder component with drag-and-drop functionality for creating dynamic web pages.

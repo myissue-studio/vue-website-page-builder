@@ -1,3 +1,8 @@
+---
+title: Architecture — Vue Page Builder Internals
+description: Shared singleton service, CSS prefixing, and architecture notes for embedding the Vue 3 page builder in production SaaS and ecommerce admin apps.
+---
+
 ## Why Use the Shared Instance?
 
 By always accessing the shared instance, you avoid creating multiple, isolated copies of the builder. This prevents data inconsistencies, synchronization issues, and unpredictable behavior. All components and modules interact with the same centralized service, ensuring that updates and state changes are reflected everywhere in your application.
