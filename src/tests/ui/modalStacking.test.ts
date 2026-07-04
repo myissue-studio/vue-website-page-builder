@@ -29,7 +29,7 @@
  * 4. Integration: parent-modal scenario — child page-builder modals escape
  *    the parent stacking context                       ✅ (should PASS)
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { createApp, h, nextTick, defineComponent } from 'vue'
 import BaseModal from '../../Components/Modals/BaseModal.vue'
 import FloatingSidePanel from '../../Components/Overlays/FloatingSidePanel.vue'

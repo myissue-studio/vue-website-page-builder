@@ -185,7 +185,9 @@ describe('Global Page Settings', () => {
     })
 
     const service = new PageBuilderService(mockStore)
-    const svc = service as unknown as { mountComponentsToDOM: Function }
+    const svc = service as unknown as {
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
 
     await svc.mountComponentsToDOM(SECTION_HTML, true /* usePassedPageSettings */)
     await nextTick()
@@ -241,7 +243,9 @@ describe('Global Page Settings', () => {
     })
 
     const service = new PageBuilderService(mockStore)
-    const svc = service as unknown as { mountComponentsToDOM: Function }
+    const svc = service as unknown as {
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
 
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
@@ -268,7 +272,9 @@ describe('Global Page Settings', () => {
     })
 
     const service = new PageBuilderService(mockStore)
-    const svc = service as unknown as { mountComponentsToDOM: Function }
+    const svc = service as unknown as {
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
 
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
@@ -298,7 +304,9 @@ describe('Global Page Settings', () => {
     })
 
     const service = new PageBuilderService(mockStore)
-    const svc = service as unknown as { mountComponentsToDOM: Function }
+    const svc = service as unknown as {
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
 
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()
@@ -322,7 +330,9 @@ describe('Global Page Settings', () => {
     })
 
     const service = new PageBuilderService(mockStore)
-    const svc = service as unknown as { mountComponentsToDOM: Function }
+    const svc = service as unknown as {
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
 
     await svc.mountComponentsToDOM(SECTION_HTML, true)
     await nextTick()

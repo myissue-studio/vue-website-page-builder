@@ -16,8 +16,6 @@ import { usePageBuilderStateStore } from '../../stores/page-builder-state'
 // Mock factory
 // ---------------------------------------------------------------------------
 function createMockStore(overrides: Record<string, unknown> = {}) {
-  const capturedCalls: Record<string, unknown[][]> = {}
-
   const base = {
     getApplyImageToSelection: { src: '' },
     getLocalStorageItemName: 'test-key',

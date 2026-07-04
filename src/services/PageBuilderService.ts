@@ -1422,7 +1422,7 @@ export class PageBuilderService {
     return null
   }
 
-  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
+  private handleCanvasClickCapture = async (): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
       this.pageBuilderStateStore.setInlineTipTapEditor(false)

@@ -23,7 +23,7 @@ const { translate } = useTranslations()
 const { showToast } = useToast()
 const pageBuilderService = getPageBuilder()
 
-const props = defineProps<{
+defineProps<{
   showWelcomeHint?: boolean
 }>()
 
