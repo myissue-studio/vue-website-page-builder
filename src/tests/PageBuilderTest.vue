@@ -2,13 +2,18 @@
 import PageBuilder from '../PageBuilder/PageBuilder.vue'
 import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
 import DemoDisplayProductsTest from '../tests/TestComponents/DemoDisplayProductsTest.vue'
-import { computed, watch } from 'vue'
+import DemoThemeConfigPanel from '../tests/TestComponents/DemoThemeConfigPanel.vue'
+import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
+import SliderIcon from '../Components/Icons/SliderIcon.vue'
+import { computed, ref, watch } from 'vue'
 import componentsArray from '../tests/componentsArray.test.json'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
 
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()
+
+const showDemoThemePanel = ref(false)
 
 const translatedComponents = computed(() => {
   return componentsArray.map((component) => {
@@ -66,19 +71,7 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        // fontFamily — first recognised entry sets the canvas default.
-        // The editor font-family picker remains a broad override palette and is not restricted by this list.
-        // Unknown names are skipped until a recognised font or CSS generic family is found.
-        // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
-        // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
-        // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
-        // didot, franklin-gothic, rockwell, baskerville, inter, roboto, open-sans, lato, montserrat,
-        // poppins, nunito, merriweather, playfair-display, source-sans-3, noto-sans, work-sans,
-        // quicksand, pt-serif, crimson-text, sans, serif, mono
         fontFamily: 'jost, raleway, arial, fantasy',
-        // elementFonts — optional per-element font overrides for h1–h6 and p.
-        // Same format as fontFamily: first recognised entry wins.
-        // An explicit font class picked in the editor on an element overrides both fontFamily and elementFonts.
         elementFonts: {
           h1: 'jost, raleway, arial, fantasy',
           h2: 'jost, raleway, arial, fantasy',
@@ -118,14 +111,84 @@ watch(
 <template>
   <div class="pbx-bg-white">
     <div class="lg:pbx-p-2">
-      <!--   :CustomBuilderComponents="DemoBuilderComponentsTest" -->
       <PageBuilder
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
         :DisplayProducts="DemoDisplayProductsTest"
         :showPublishButton="true"
         :showCloseButton="true"
         @handlePublishPageBuilder="publishPageBuilder"
-      ></PageBuilder>
+      />
+
+      <button
+        v-if="!showDemoThemePanel"
+        type="button"
+        class="pbx-demoThemeTrigger"
+        @click="showDemoThemePanel = true"
+      >
+        <span class="pbx-pageDesignOpenButtonIcon">
+          <SliderIcon :size="18" />
+        </span>
+        <span class="pbx-pageDesignOpenButtonText">
+          <span class="pbx-pageDesignOpenButtonLabel">Customize theme for your business</span>
+          <span class="pbx-pageDesignOpenButtonHint"
+            >Brand color, presets &amp; fonts — live demo</span
+          >
+        </span>
+        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
+          tune
+        </span>
+      </button>
+
+      <FloatingSidePanel
+        title="Demo: Your brand theme"
+        :showSidebarPanel="showDemoThemePanel"
+        position="right"
+        @closeSidebarPanel="showDemoThemePanel = false"
+      >
+        <DemoThemeConfigPanel />
+      </FloatingSidePanel>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pbx-demoThemeTrigger {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.25rem;
+  z-index: 9990;
+  display: flex;
+  max-width: min(22rem, calc(100vw - 2rem));
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.08),
+    0 4px 6px -4px rgb(0 0 0 / 0.08);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.pbx-demoThemeTrigger:hover {
+  border-color: var(--myPrimaryLinkColor, #db93b0);
+  box-shadow:
+    0 12px 20px -5px rgb(0 0 0 / 0.12),
+    0 6px 8px -4px rgb(0 0 0 / 0.08);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 1024px) {
+  .pbx-demoThemeTrigger {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+</style>
