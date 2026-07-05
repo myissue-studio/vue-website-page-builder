@@ -1,6 +1,6 @@
 {
   "name": "@myissue/vue-website-page-builder",
-  "version": "3.5.23",
+  "version": "3.5.24",
   "description": "Vue 3 page builder for ecommerce admin, multi-tenant SaaS, and CMS dashboards. Drag-and-drop editor with custom media library and product catalog integration.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
@@ -88,7 +88,7 @@
     "@tiptap/starter-kit": "^3.4.2",
     "@tiptap/vue-3": "^3.4.2",
     "pinia": "^2.1.7",
-    "uuid": "^9.0.0",
+    "uuid": "^14.0.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {

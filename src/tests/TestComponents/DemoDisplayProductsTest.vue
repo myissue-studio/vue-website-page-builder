@@ -114,6 +114,9 @@ async function insertSelectedProducts() {
       <form @submit.prevent>
         <div class="pbx-mysearchBarWithOptions">
           <div class="pbx-relative pbx-w-full pbx-flex pbx-gap-2">
+            <label for="search-products" class="pbx-sr-only"
+              >{{ translate('Search products') }}hiii</label
+            >
             <input
               v-model="searchQuery"
               type="search"

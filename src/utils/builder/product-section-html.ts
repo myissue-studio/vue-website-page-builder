@@ -35,78 +35,64 @@ function renderProductCard(
     product.compareAtPrice != null ? escapeHtml(String(product.compareAtPrice)) : ''
   const badge = product.badge ? escapeHtml(product.badge) : ''
   const imageSrc = product.image ? escapeHtml(product.image) : ''
-  const imageAlt = product.imageAlt
-    ? escapeHtml(product.imageAlt)
-    : title || 'Product'
+  const imageAlt = product.imageAlt ? escapeHtml(product.imageAlt) : title || 'Product'
   const url = product.url ? escapeHtml(product.url) : ''
   const buttonText = product.buttonText ? escapeHtml(product.buttonText) : ''
 
-  const parts: string[] = []
-
-  parts.push(`<div class="${productCardClass}" data-pbx-product-id="${escapeHtml(id)}">`)
-
+  let imageHtml = ''
   if (imageSrc) {
     const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
-    parts.push(
-      url
-        ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}">${imgTag}</a></div>`
-        : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`,
-    )
+    imageHtml = url
+      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}">${imgTag}</a></div>`
+      : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
   }
 
-  parts.push('<div class="break-words py-2 product-card-body flex flex-col flex-1">')
+  const badgeHtml = `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-10">${badge ? `<p>${badge}</p>` : '<p></p>'}</div>`
 
-  parts.push('<div class="product-card-meta flex flex-col flex-1">')
+  const titleHtml = title
+    ? `<div class="product-card-title text-lg font-semibold pt-2 min-h-16">${url ? `<p><a href="${url}">${title}</a></p>` : `<p>${title}</p>`}</div>`
+    : ''
 
-  parts.push(
-    `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-5">${badge ? `<p>${badge}</p>` : '<p></p>'}</div>`,
-  )
+  const descriptionHtml = description
+    ? `<div class="product-card-description text-sm text-gray-600 pt-1"><p>${description}</p></div>`
+    : ''
 
-  if (title) {
-    const titleInner = url ? `<p><a href="${url}">${title}</a></p>` : `<p>${title}</p>`
-    parts.push(
-      `<div class="product-card-title text-lg font-semibold pt-2">${titleInner}</div>`,
-    )
-  }
-
-  if (description) {
-    parts.push(
-      `<div class="product-card-description text-sm text-gray-600 pt-1"><p>${description}</p></div>`,
-    )
-  }
-
-  parts.push('</div>')
-
+  let footerHtml = ''
   const hasFooter = Boolean(price || compareAtPrice || (url && buttonText))
   if (hasFooter) {
-    parts.push('<div class="product-card-footer mt-auto flex flex-col">')
-
+    let priceRowHtml = ''
     if (price || compareAtPrice) {
-      parts.push('<div class="product-card-price-row flex flex-wrap items-baseline gap-2 pt-2">')
-      if (compareAtPrice) {
-        parts.push(
-          `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`,
-        )
-      }
-      if (price) {
-        parts.push(
-          `<div class="product-card-price text-2xl font-semibold"><p>${price}</p></div>`,
-        )
-      }
-      parts.push('</div>')
+      const priceParts = [
+        compareAtPrice
+          ? `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`
+          : '',
+        price ? `<div class="product-card-price text-2xl font-semibold"><p>${price}</p></div>` : '',
+      ].filter(Boolean)
+      priceRowHtml = `<div class="product-card-price-row flex flex-wrap items-baseline gap-2 pt-2">${priceParts.join('')}</div>`
     }
 
-    if (url && buttonText) {
-      parts.push(
-        `<div class="product-card-cta text-sm font-semibold pt-3"><p><a href="${url}">${buttonText}</a></p></div>`,
-      )
-    }
+    const ctaHtml =
+      url && buttonText
+        ? `<div class="product-card-cta text-sm font-semibold pt-3"><p><a href="${url}">${buttonText}</a></p></div>`
+        : ''
 
-    parts.push('</div>')
+    footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
   }
 
-  parts.push('</div></div>')
-  return parts.join('\n')
+  return [
+    `<div class="${productCardClass}" data-pbx-product-id="${escapeHtml(id)}">`,
+    imageHtml,
+    '<div class="break-words py-2 product-card-body flex flex-col flex-1">',
+    '<div class="product-card-meta flex flex-col flex-1">',
+    badgeHtml,
+    titleHtml,
+    descriptionHtml,
+    '</div>',
+    footerHtml,
+    '</div></div>',
+  ]
+    .filter(Boolean)
+    .join('\n')
 }
 
 export function buildProductSectionHtml(
