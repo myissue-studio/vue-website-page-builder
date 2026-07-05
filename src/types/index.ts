@@ -85,6 +85,10 @@ export interface ProductSectionOptions {
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
   openInNewTab?: boolean
+  /** Hides price and compare-at price when product data includes them */
+  hidePrice?: boolean
+  /** Hides product photos when product data includes images */
+  hideImage?: boolean
 }
 
 export interface InsertProductsOptions {
@@ -95,6 +99,10 @@ export interface InsertProductsOptions {
   roundedImages?: boolean
   /** Adds target="_blank" rel="noopener noreferrer" to product links */
   openInNewTab?: boolean
+  /** Hides price and compare-at price when product data includes them */
+  hidePrice?: boolean
+  /** Hides product photos when product data includes images */
+  hideImage?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
   method?: 'unshift' | 'push' | 'insert' | (string & {})

@@ -38,6 +38,8 @@ import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
   parseProductSectionFromElement,
+  sectionHasProductImages,
+  sectionHasProductPrices,
 } from '../utils/builder/product-section-options'
 import {
   applyPageMetaToElement,
@@ -1219,6 +1221,20 @@ export class PageBuilderService {
       return { ...DEFAULT_PRODUCT_SECTION_OPTIONS }
     }
     return parseProductSectionFromElement(section)
+  }
+
+  public getSelectedProductSectionContentAvailability(): {
+    hasPrices: boolean
+    hasImages: boolean
+  } {
+    const section = this.getSelectedComponentSection()
+    if (!section || !this.isSelectedProductSection()) {
+      return { hasPrices: false, hasImages: false }
+    }
+    return {
+      hasPrices: sectionHasProductPrices(section),
+      hasImages: sectionHasProductImages(section),
+    }
   }
 
   public async updateSelectedProductSection(options: ProductSectionOptions): Promise<void> {
@@ -3952,6 +3968,8 @@ export class PageBuilderService {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
+      hidePrice: options.hidePrice,
+      hideImage: options.hideImage,
       mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)

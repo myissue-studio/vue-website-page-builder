@@ -1,4 +1,5 @@
 import type {
+  PageBuilderProductInput,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -95,6 +96,58 @@ export function getProductImageWrapClass(roundedImages: boolean): string {
     : 'product-card-image shrink-0'
 }
 
+const PRODUCT_CONTENT_HIDDEN_CLASS = 'pbx-hidden'
+
+export function productsHaveImages(products: ReadonlyArray<PageBuilderProductInput>): boolean {
+  return products.some((product) => Boolean(product.image?.trim()))
+}
+
+export function productsHavePrices(products: ReadonlyArray<PageBuilderProductInput>): boolean {
+  return products.some((product) => {
+    const price = product.price != null ? String(product.price).trim() : ''
+    const compareAtPrice =
+      product.compareAtPrice != null ? String(product.compareAtPrice).trim() : ''
+    return price !== '' || compareAtPrice !== ''
+  })
+}
+
+export function sectionHasProductImages(section: HTMLElement): boolean {
+  return findProductCardsInSection(section).some((card) => {
+    const imageWrap = card.querySelector('[class*="product-card-image"]')
+    return imageWrap?.querySelector('img') != null
+  })
+}
+
+export function sectionHasProductPrices(section: HTMLElement): boolean {
+  return findProductCardsInSection(section).some((card) => {
+    const price = card.querySelector('[class*="product-card-price"]')
+    const compare = card.querySelector('[class*="product-card-compare"]')
+    return Boolean(price?.textContent?.trim() || compare?.textContent?.trim())
+  })
+}
+
+function setProductContentHidden(el: HTMLElement, hidden: boolean): void {
+  el.classList.toggle(PRODUCT_CONTENT_HIDDEN_CLASS, hidden)
+}
+
+export function applyProductContentVisibilityInSection(
+  section: HTMLElement,
+  hidePrice: boolean,
+  hideImage: boolean,
+): void {
+  findProductCardsInSection(section).forEach((card) => {
+    const imageWrap = card.querySelector('[class*="product-card-image"]')
+    if (imageWrap instanceof HTMLElement) {
+      setProductContentHidden(imageWrap, hideImage)
+    }
+
+    const priceRow = card.querySelector('[class*="product-card-price-row"]')
+    if (priceRow instanceof HTMLElement) {
+      setProductContentHidden(priceRow, hidePrice)
+    }
+  })
+}
+
 export function applyProductLinkTargetsInSection(section: HTMLElement, openInNewTab: boolean): void {
   findProductCardsInSection(section).forEach((card) => {
     card.querySelectorAll('a[href]').forEach((node) => {
@@ -137,8 +190,10 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const cardStyle = normalizeCardStyle(section.getAttribute('data-pbx-product-card-style'))
   const roundedImages = section.getAttribute('data-pbx-product-rounded-images') === 'true'
   const openInNewTab = section.getAttribute('data-pbx-product-open-in-new-tab') === 'true'
+  const hidePrice = section.getAttribute('data-pbx-product-hide-price') === 'true'
+  const hideImage = section.getAttribute('data-pbx-product-hide-image') === 'true'
 
-  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab }
+  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab, hidePrice, hideImage }
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
@@ -160,12 +215,16 @@ export function applyProductSectionOptionsToElement(
   const mobileColumns: ProductMobileColumns = options.mobileColumns === 2 ? 2 : 1
   const roundedImages = Boolean(options.roundedImages)
   const openInNewTab = Boolean(options.openInNewTab)
+  const hidePrice = Boolean(options.hidePrice)
+  const hideImage = Boolean(options.hideImage)
 
   section.setAttribute('data-pbx-product-layout', layout)
   section.setAttribute('data-pbx-product-mobile-cols', String(mobileColumns))
   section.setAttribute('data-pbx-product-card-style', cardStyle)
   section.setAttribute('data-pbx-product-rounded-images', roundedImages ? 'true' : 'false')
   section.setAttribute('data-pbx-product-open-in-new-tab', openInNewTab ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-hide-price', hidePrice ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-hide-image', hideImage ? 'true' : 'false')
 
   const grid = findProductGridInSection(section)
   if (grid) {
@@ -186,6 +245,7 @@ export function applyProductSectionOptionsToElement(
   })
 
   applyProductLinkTargetsInSection(section, openInNewTab)
+  applyProductContentVisibilityInSection(section, hidePrice, hideImage)
 }
 
 export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
@@ -194,4 +254,6 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   cardStyle: 'minimal',
   roundedImages: false,
   openInNewTab: false,
+  hidePrice: false,
+  hideImage: false,
 }

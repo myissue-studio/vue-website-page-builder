@@ -84,6 +84,8 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
     cardStyle: 'minimal',       // minimal | bordered | shadow | elevated
     roundedImages: false,
     openInNewTab: false,        // target="_blank" on product image, title, and CTA links
+    hidePrice: false,           // hide price row when products include prices
+    hideImage: false,           // hide photos when products include images
     sectionTitle: 'Products',
   })
 
@@ -113,6 +115,14 @@ When `openInNewTab: true`, the built-in product HTML adds `target="_blank" rel="
 Editors can toggle this later from the product section settings on the canvas toolbar (same panel as rounded images).
 
 The setting is stored on the section as `data-pbx-product-open-in-new-tab="true"` or `"false"`.
+
+### Hide prices / hide images
+
+When your products include `price`, `compareAtPrice`, or `image`, the Add Products modal and toolbar settings can show **Hide prices** and **Hide images** toggles. Each toggle only appears when at least one product in the selection (or on the canvas section) actually has that data — so editors never see irrelevant options.
+
+Pass `hidePrice: true` or `hideImage: true` to `insertProducts()` to hide those fields on insert. Content stays in the HTML (with a `hidden` class) so editors can turn visibility back on from the toolbar without re-inserting.
+
+Stored as `data-pbx-product-hide-price` and `data-pbx-product-hide-image` on the section.
 
 When the user confirms a selection, call one of these APIs:
 

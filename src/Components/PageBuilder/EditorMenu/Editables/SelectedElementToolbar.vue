@@ -123,6 +123,10 @@ const productCardStyle = ref<ProductCardStyle>(
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
 const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
+const productHidePrice = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hidePrice ?? false)
+const productHideImage = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideImage ?? false)
+const productSectionHasPrices = ref(false)
+const productSectionHasImages = ref(false)
 let productSettingsApplyQueued = false
 let productSettingsPendingSaveToast = false
 let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
@@ -132,6 +136,8 @@ let productSettingsBaseline: {
   cardStyle: ProductCardStyle
   roundedImages: boolean
   openInNewTab: boolean
+  hidePrice: boolean
+  hideImage: boolean
 } | null = null
 
 const productSettingsMatchBaseline = (): boolean => {
@@ -141,7 +147,9 @@ const productSettingsMatchBaseline = (): boolean => {
     productMobileColumns.value === productSettingsBaseline.mobileColumns &&
     productCardStyle.value === productSettingsBaseline.cardStyle &&
     productRoundedImages.value === productSettingsBaseline.roundedImages &&
-    productOpenInNewTab.value === productSettingsBaseline.openInNewTab
+    productOpenInNewTab.value === productSettingsBaseline.openInNewTab &&
+    productHidePrice.value === productSettingsBaseline.hidePrice &&
+    productHideImage.value === productSettingsBaseline.hideImage
   )
 }
 
@@ -176,6 +184,9 @@ const openProductSectionSettings = () => {
   const cardStyle = options.cardStyle ?? 'minimal'
   const roundedImages = options.roundedImages ?? false
   const openInNewTab = options.openInNewTab ?? false
+  const hidePrice = options.hidePrice ?? false
+  const hideImage = options.hideImage ?? false
+  const availability = pageBuilderService.getSelectedProductSectionContentAvailability()
 
   productSettingsBaseline = {
     layout: options.layout,
@@ -183,6 +194,8 @@ const openProductSectionSettings = () => {
     cardStyle,
     roundedImages,
     openInNewTab,
+    hidePrice,
+    hideImage,
   }
 
   productLayout.value = options.layout
@@ -190,6 +203,10 @@ const openProductSectionSettings = () => {
   productCardStyle.value = cardStyle
   productRoundedImages.value = roundedImages
   productOpenInNewTab.value = openInNewTab
+  productHidePrice.value = hidePrice
+  productHideImage.value = hideImage
+  productSectionHasPrices.value = availability.hasPrices
+  productSectionHasImages.value = availability.hasImages
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
 }
@@ -210,6 +227,8 @@ const applySelectedProductSectionSettings = async () => {
       cardStyle: productCardStyle.value,
       roundedImages: productRoundedImages.value,
       openInNewTab: productOpenInNewTab.value,
+      hidePrice: productHidePrice.value,
+      hideImage: productHideImage.value,
     })
     productSectionSettingsTick.value++
     if (!productSettingsMatchBaseline()) {
@@ -227,7 +246,17 @@ const applySelectedProductSectionSettings = async () => {
   }
 }
 
-watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages, productOpenInNewTab], () => {
+watch(
+  [
+    productLayout,
+    productMobileColumns,
+    productCardStyle,
+    productRoundedImages,
+    productOpenInNewTab,
+    productHidePrice,
+    productHideImage,
+  ],
+  () => {
   void applySelectedProductSectionSettings()
 })
 
@@ -1220,6 +1249,10 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:card-style="productCardStyle"
               v-model:rounded-images="productRoundedImages"
               v-model:open-in-new-tab="productOpenInNewTab"
+              v-model:hide-price="productHidePrice"
+              v-model:hide-image="productHideImage"
+              :has-product-prices="productSectionHasPrices"
+              :has-product-images="productSectionHasImages"
               :translate="translate"
               compact
             />

@@ -93,4 +93,22 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('data-pbx-product-open-in-new-tab="false"')
     expect(html).not.toContain('target="_blank"')
   })
+
+  it('hides price row when hidePrice is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hidePrice: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-price="true"')
+    expect(html).toContain('product-card-price-row flex flex-wrap items-baseline gap-2 pt-2 hidden')
+    expect(html).toContain('$10')
+  })
+
+  it('hides image when hideImage is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hideImage: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-image="true"')
+    expect(html).toContain('product-card-image shrink-0 hidden')
+    expect(html).toContain('https://example.com/a.jpg')
+  })
 })

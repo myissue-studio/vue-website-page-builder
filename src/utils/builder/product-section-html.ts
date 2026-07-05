@@ -17,8 +17,12 @@ export interface BuildProductSectionStyleOptions {
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
   openInNewTab?: boolean
+  hidePrice?: boolean
+  hideImage?: boolean
   mobileColumns?: 1 | 2
 }
+
+const PRODUCT_CONTENT_HIDDEN_CLASS = 'hidden'
 
 function productLinkAttrs(openInNewTab: boolean): string {
   return openInNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''
@@ -31,9 +35,16 @@ function renderProductCard(
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
+  const hidePrice = styleOptions.hidePrice ?? false
+  const hideImage = styleOptions.hideImage ?? false
   const linkAttrs = productLinkAttrs(openInNewTab)
   const productCardClass = PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
-  const imageWrapClass = getProductImageWrapClass(roundedImages)
+  const imageWrapClass = [
+    getProductImageWrapClass(roundedImages),
+    hideImage ? PRODUCT_CONTENT_HIDDEN_CLASS : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
   const id = product.id != null ? String(product.id) : ''
   const title = product.title ? escapeHtml(product.title) : ''
   const description = product.description ? escapeHtml(product.description) : ''
@@ -75,7 +86,13 @@ function renderProductCard(
           : '',
         price ? `<div class="product-card-price text-2xl font-semibold"><p>${price}</p></div>` : '',
       ].filter(Boolean)
-      priceRowHtml = `<div class="product-card-price-row flex flex-wrap items-baseline gap-2 pt-2">${priceParts.join('')}</div>`
+      const priceRowClass = [
+        'product-card-price-row flex flex-wrap items-baseline gap-2 pt-2',
+        hidePrice ? PRODUCT_CONTENT_HIDDEN_CLASS : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
+      priceRowHtml = `<div class="${priceRowClass}">${priceParts.join('')}</div>`
     }
 
     const ctaHtml =
@@ -119,11 +136,13 @@ export function buildProductSectionHtml(
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
+  const hidePrice = styleOptions.hidePrice ?? false
+  const hideImage = styleOptions.hideImage ?? false
 
   const cards = products.map((product) => renderProductCard(product, styleOptions)).join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type {
@@ -14,6 +14,8 @@ import ProductSectionSettingsFields from '../../Components/PageBuilder/EditorMen
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
+  productsHaveImages,
+  productsHavePrices,
 } from '../../utils/builder/product-section-options'
 import productsArray from '../productsArray.test.json'
 
@@ -31,6 +33,8 @@ const mobileColumns = ref<ProductMobileColumns>(1)
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(false)
 const openInNewTab = ref(false)
+const hidePrice = ref(false)
+const hideImage = ref(false)
 
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
@@ -50,6 +54,17 @@ const filteredProducts = computed(() => {
 const selectedProducts = computed(() =>
   products.filter((product) => product.id != null && selectedIds.value.has(product.id)),
 )
+
+const selectedProductsHavePrices = computed(() => productsHavePrices(selectedProducts.value))
+const selectedProductsHaveImages = computed(() => productsHaveImages(selectedProducts.value))
+
+watch(selectedProductsHavePrices, (hasPrices) => {
+  if (!hasPrices) hidePrice.value = false
+})
+
+watch(selectedProductsHaveImages, (hasImages) => {
+  if (!hasImages) hideImage.value = false
+})
 
 const activeLayout = computed(
   () => layoutOptions.find((option) => option.value === layout.value) ?? layoutOptions[0],
@@ -88,6 +103,8 @@ async function insertSelectedProducts() {
     cardStyle: cardStyle.value,
     roundedImages: roundedImages.value,
     openInNewTab: openInNewTab.value,
+    hidePrice: hidePrice.value,
+    hideImage: hideImage.value,
   })
   showToast(translate('Products added to page'), 'success')
   closeProductLibraryModal()
@@ -147,6 +164,10 @@ async function insertSelectedProducts() {
           v-model:card-style="cardStyle"
           v-model:rounded-images="roundedImages"
           v-model:open-in-new-tab="openInNewTab"
+          v-model:hide-price="hidePrice"
+          v-model:hide-image="hideImage"
+          :has-product-prices="selectedProductsHavePrices"
+          :has-product-images="selectedProductsHaveImages"
           :translate="translate"
         />
       </div>
