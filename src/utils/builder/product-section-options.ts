@@ -95,6 +95,21 @@ export function getProductImageWrapClass(roundedImages: boolean): string {
     : 'product-card-image shrink-0'
 }
 
+export function applyProductLinkTargetsInSection(section: HTMLElement, openInNewTab: boolean): void {
+  findProductCardsInSection(section).forEach((card) => {
+    card.querySelectorAll('a[href]').forEach((node) => {
+      if (!(node instanceof HTMLAnchorElement)) return
+      if (openInNewTab) {
+        node.target = '_blank'
+        node.rel = 'noopener noreferrer'
+      } else {
+        node.removeAttribute('target')
+        node.removeAttribute('rel')
+      }
+    })
+  })
+}
+
 function normalizeLayout(value: string | null): ProductGridLayout {
   if (
     value === 'grid-1' ||
@@ -121,8 +136,9 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const mobileColumns: ProductMobileColumns = mobileRaw === '2' ? 2 : 1
   const cardStyle = normalizeCardStyle(section.getAttribute('data-pbx-product-card-style'))
   const roundedImages = section.getAttribute('data-pbx-product-rounded-images') === 'true'
+  const openInNewTab = section.getAttribute('data-pbx-product-open-in-new-tab') === 'true'
 
-  return { layout, mobileColumns, cardStyle, roundedImages }
+  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab }
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
@@ -143,11 +159,13 @@ export function applyProductSectionOptionsToElement(
   const cardStyle = normalizeCardStyle(options.cardStyle ?? 'minimal')
   const mobileColumns: ProductMobileColumns = options.mobileColumns === 2 ? 2 : 1
   const roundedImages = Boolean(options.roundedImages)
+  const openInNewTab = Boolean(options.openInNewTab)
 
   section.setAttribute('data-pbx-product-layout', layout)
   section.setAttribute('data-pbx-product-mobile-cols', String(mobileColumns))
   section.setAttribute('data-pbx-product-card-style', cardStyle)
   section.setAttribute('data-pbx-product-rounded-images', roundedImages ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-open-in-new-tab', openInNewTab ? 'true' : 'false')
 
   const grid = findProductGridInSection(section)
   if (grid) {
@@ -166,6 +184,8 @@ export function applyProductSectionOptionsToElement(
       imageWrap.className = imageWrapClass
     }
   })
+
+  applyProductLinkTargetsInSection(section, openInNewTab)
 }
 
 export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
@@ -173,4 +193,5 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   mobileColumns: 1,
   cardStyle: 'minimal',
   roundedImages: false,
+  openInNewTab: false,
 }

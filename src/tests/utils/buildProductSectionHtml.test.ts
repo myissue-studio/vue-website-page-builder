@@ -76,4 +76,21 @@ describe('buildProductSectionHtml', () => {
     expect(html).not.toContain('md:grid-cols-3')
     expect(html).toContain('data-pbx-product-layout="grid-6"')
   })
+
+  it('adds target="_blank" to product links when openInNewTab is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      openInNewTab: true,
+    })
+    expect(html).toContain('data-pbx-product-open-in-new-tab="true"')
+    expect(html).toContain('target="_blank" rel="noopener noreferrer"')
+    expect(html.match(/target="_blank"/g)?.length).toBe(3)
+  })
+
+  it('omits target="_blank" when openInNewTab is false', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      openInNewTab: false,
+    })
+    expect(html).toContain('data-pbx-product-open-in-new-tab="false"')
+    expect(html).not.toContain('target="_blank"')
+  })
 })

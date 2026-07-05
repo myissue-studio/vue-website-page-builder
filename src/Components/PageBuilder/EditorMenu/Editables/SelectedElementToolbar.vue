@@ -122,6 +122,7 @@ const productCardStyle = ref<ProductCardStyle>(
   DEFAULT_PRODUCT_SECTION_OPTIONS.cardStyle ?? 'minimal',
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
+const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
 let productSettingsApplyQueued = false
 let productSettingsPendingSaveToast = false
 let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
@@ -130,6 +131,7 @@ let productSettingsBaseline: {
   mobileColumns: ProductMobileColumns
   cardStyle: ProductCardStyle
   roundedImages: boolean
+  openInNewTab: boolean
 } | null = null
 
 const productSettingsMatchBaseline = (): boolean => {
@@ -138,7 +140,8 @@ const productSettingsMatchBaseline = (): boolean => {
     productLayout.value === productSettingsBaseline.layout &&
     productMobileColumns.value === productSettingsBaseline.mobileColumns &&
     productCardStyle.value === productSettingsBaseline.cardStyle &&
-    productRoundedImages.value === productSettingsBaseline.roundedImages
+    productRoundedImages.value === productSettingsBaseline.roundedImages &&
+    productOpenInNewTab.value === productSettingsBaseline.openInNewTab
   )
 }
 
@@ -172,18 +175,21 @@ const openProductSectionSettings = () => {
   const mobileColumns = options.mobileColumns ?? 1
   const cardStyle = options.cardStyle ?? 'minimal'
   const roundedImages = options.roundedImages ?? false
+  const openInNewTab = options.openInNewTab ?? false
 
   productSettingsBaseline = {
     layout: options.layout,
     mobileColumns,
     cardStyle,
     roundedImages,
+    openInNewTab,
   }
 
   productLayout.value = options.layout
   productMobileColumns.value = mobileColumns
   productCardStyle.value = cardStyle
   productRoundedImages.value = roundedImages
+  productOpenInNewTab.value = openInNewTab
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
 }
@@ -203,6 +209,7 @@ const applySelectedProductSectionSettings = async () => {
       mobileColumns: productMobileColumns.value,
       cardStyle: productCardStyle.value,
       roundedImages: productRoundedImages.value,
+      openInNewTab: productOpenInNewTab.value,
     })
     productSectionSettingsTick.value++
     if (!productSettingsMatchBaseline()) {
@@ -220,7 +227,7 @@ const applySelectedProductSectionSettings = async () => {
   }
 }
 
-watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages], () => {
+watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages, productOpenInNewTab], () => {
   void applySelectedProductSectionSettings()
 })
 
@@ -1212,6 +1219,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:mobile-columns="productMobileColumns"
               v-model:card-style="productCardStyle"
               v-model:rounded-images="productRoundedImages"
+              v-model:open-in-new-tab="productOpenInNewTab"
               :translate="translate"
               compact
             />

@@ -30,6 +30,7 @@ const layout = ref<ProductGridLayout>('grid-3')
 const mobileColumns = ref<ProductMobileColumns>(1)
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(false)
+const openInNewTab = ref(false)
 
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
@@ -86,6 +87,7 @@ async function insertSelectedProducts() {
     mobileColumns: mobileColumns.value,
     cardStyle: cardStyle.value,
     roundedImages: roundedImages.value,
+    openInNewTab: openInNewTab.value,
   })
   showToast(translate('Products added to page'), 'success')
   closeProductLibraryModal()
@@ -144,6 +146,7 @@ async function insertSelectedProducts() {
           v-model:mobile-columns="mobileColumns"
           v-model:card-style="cardStyle"
           v-model:rounded-images="roundedImages"
+          v-model:open-in-new-tab="openInNewTab"
           :translate="translate"
         />
       </div>
@@ -244,6 +247,14 @@ async function insertSelectedProducts() {
                             ? translate('Two products per row')
                             : translate(activeLayout.hintKey)
                         }}
+                      </p>
+                    </div>
+
+                    <div v-if="openInNewTab" class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Open in new tab') }}</span>
+                      <p class="pbx-modalSidebarStatValue pbx-text-sm">{{ translate('Open in new tab') }}</p>
+                      <p class="pbx-modalSidebarStatHint">
+                        {{ translate('Product links open in a new browser tab') }}
                       </p>
                     </div>
 

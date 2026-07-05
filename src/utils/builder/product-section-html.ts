@@ -16,7 +16,12 @@ function escapeHtml(value: string): string {
 export interface BuildProductSectionStyleOptions {
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
+  openInNewTab?: boolean
   mobileColumns?: 1 | 2
+}
+
+function productLinkAttrs(openInNewTab: boolean): string {
+  return openInNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''
 }
 
 function renderProductCard(
@@ -25,6 +30,8 @@ function renderProductCard(
 ): string {
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
+  const openInNewTab = styleOptions.openInNewTab ?? false
+  const linkAttrs = productLinkAttrs(openInNewTab)
   const productCardClass = PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
   const imageWrapClass = getProductImageWrapClass(roundedImages)
   const id = product.id != null ? String(product.id) : ''
@@ -43,14 +50,14 @@ function renderProductCard(
   if (imageSrc) {
     const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
     imageHtml = url
-      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}">${imgTag}</a></div>`
+      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}"${linkAttrs}>${imgTag}</a></div>`
       : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
   }
 
   const badgeHtml = `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-10">${badge ? `<p>${badge}</p>` : '<p></p>'}</div>`
 
   const titleHtml = title
-    ? `<div class="product-card-title text-lg font-semibold pt-2 min-h-16">${url ? `<p><a href="${url}">${title}</a></p>` : `<p>${title}</p>`}</div>`
+    ? `<div class="product-card-title text-lg font-semibold pt-2 min-h-16">${url ? `<p><a href="${url}"${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
     : ''
 
   const descriptionHtml = description
@@ -73,7 +80,7 @@ function renderProductCard(
 
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold pt-3"><p><a href="${url}">${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold pt-3"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -111,11 +118,12 @@ export function buildProductSectionHtml(
   const mobileColumns = styleOptions.mobileColumns === 2 ? 2 : 1
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
+  const openInNewTab = styleOptions.openInNewTab ?? false
 
   const cards = products.map((product) => renderProductCard(product, styleOptions)).join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

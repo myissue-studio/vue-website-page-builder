@@ -3951,6 +3951,7 @@ export class PageBuilderService {
     const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle, {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
+      openInNewTab: options.openInNewTab,
       mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)

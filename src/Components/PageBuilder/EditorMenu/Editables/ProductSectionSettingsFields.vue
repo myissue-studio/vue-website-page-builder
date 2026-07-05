@@ -13,6 +13,7 @@ const layout = defineModel<ProductGridLayout>('layout', { required: true })
 const mobileColumns = defineModel<ProductMobileColumns>('mobileColumns', { required: true })
 const cardStyle = defineModel<ProductCardStyle>('cardStyle', { required: true })
 const roundedImages = defineModel<boolean>('roundedImages', { required: true })
+const openInNewTab = defineModel<boolean>('openInNewTab', { required: true })
 
 defineProps<{
   translate: (key: string) => string
@@ -85,6 +86,20 @@ watch(layout, (value) => {
           :active="cardStyle === option.value"
           @click="cardStyle = option.value"
         />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsToggleRow">
+        <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+          <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+            {{ translate('Open in new tab') }}
+          </p>
+          <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+            {{ translate('Product links open in a new browser tab') }}
+          </p>
+        </div>
+        <ToggleInput v-model="openInNewTab" />
       </div>
     </section>
 

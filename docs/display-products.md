@@ -56,13 +56,13 @@ Design the modal however you want: API search, categories, Shopify sync, ERP fee
 - The **Products** button in the navbar and between sections
 - The modal shell (“Add Products to Page”) — your component renders inside it
 - `insertProducts()` / `insertProductHtml()` to add sections to the canvas
-- **Product section settings** on the toolbar after insert (grid, mobile columns, card style, rounded images) — no extra work from you
+- **Product section settings** on the toolbar after insert (grid, mobile columns, card style, rounded images, open in new tab) — no extra work from you
 
 **What you implement in `YourDisplayProducts.vue`**
 
 1. **Load products** — static list, REST API, CMS, etc. (your data layer)
 2. **Browse & select** — search, filters, multi-select, pagination — whatever your catalog needs
-3. **Layout options (optional)** — grid, mobile columns, card style, rounded images before insert; copy the pattern from `DemoDisplayProductsTest.vue` or use your own UI
+3. **Layout options (optional)** — grid, mobile columns, card style, rounded images, open in new tab before insert; copy the pattern from `DemoDisplayProductsTest.vue` or use your own UI
 4. **Insert** — on confirm, call `insertProducts()` then close the modal
 
 **Minimum insert code** (required when the editor confirms):
@@ -83,6 +83,7 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
     mobileColumns: 1,           // 1 or 2
     cardStyle: 'minimal',       // minimal | bordered | shadow | elevated
     roundedImages: false,
+    openInNewTab: false,        // target="_blank" on product image, title, and CTA links
     sectionTitle: 'Products',
   })
 
@@ -102,6 +103,16 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
 Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API.
 
 **After insert:** editors change layout and card style from the canvas toolbar (grid icon) — you do not need to rebuild that in your picker unless you want those controls before the first insert.
+
+### Open in new tab
+
+When `openInNewTab: true`, the built-in product HTML adds `target="_blank" rel="noopener noreferrer"` to every product link (image, title, and button) that has a `url` on the product object.
+
+**No extra setup is required** — enable the toggle in the Add Products modal (or pass `openInNewTab: true` to `insertProducts()`). Your products still need a `url` field; links without a URL are unchanged.
+
+Editors can toggle this later from the product section settings on the canvas toolbar (same panel as rounded images).
+
+The setting is stored on the section as `data-pbx-product-open-in-new-tab="true"` or `"false"`.
 
 When the user confirms a selection, call one of these APIs:
 
@@ -146,7 +157,7 @@ The repository demo (`DemoDisplayProductsTest.vue`) loads a small static JSON fi
 
 For production, replace the demo with `YourDisplayProducts.vue` that talks to your API.
 
-Hosts that call `insertProducts()` can pass `cardStyle` and `roundedImages` — the built-in HTML helper applies them automatically. Your picker UI (chips, toggles, defaults) is up to you; see the demo for a reference. For full control, use `insertProductHtml()` with your own markup instead.
+Hosts that call `insertProducts()` can pass `cardStyle`, `roundedImages`, and `openInNewTab` — the built-in HTML helper applies them automatically. Your picker UI (chips, toggles, defaults) is up to you; see the demo for a reference. For full control, use `insertProductHtml()` with your own markup instead.
 
 ### Option A — Built-in grid layouts (optional helper)
 
@@ -275,6 +286,7 @@ import {
 const html = buildProductSectionHtml(products, 'grid-4', 'Sale', {
   cardStyle: 'bordered',
   roundedImages: true,
+  openInNewTab: true,
 })
 ```
 
@@ -283,6 +295,8 @@ Layouts: `grid-1` | `grid-2` | `grid-3` | `grid-4` | `grid-6`
 Card styles (`cardStyle`): `minimal` | `bordered` | `shadow` | `elevated`
 
 Optional `roundedImages: true` adds rounded corners to product photos.
+
+Optional `openInNewTab: true` opens product links in a new browser tab (`target="_blank"`).
 
 ### TypeScript — avoiding type errors
 
@@ -322,14 +336,15 @@ await pageBuilderService.insertProducts(products, {
   mobileColumns: 1, // or 2 for two products per row on small screens
   cardStyle: 'elevated',
   roundedImages: true,
+  openInNewTab: true,
 })
 ```
 
 ### Edit layout after insert (toolbar)
 
-Click a product section on the canvas, then use the **grid** icon in the floating toolbar (`#pbxEditToolbar`) to change grid layout, mobile columns, card style, and rounded images — without deleting and re-inserting.
+Click a product section on the canvas, then use the **grid** icon in the floating toolbar (`#pbxEditToolbar`) to change grid layout, mobile columns, card style, rounded images, and open in new tab — without deleting and re-inserting.
 
-Settings are stored on the section as `data-pbx-product-layout`, `data-pbx-product-mobile-cols`, etc.
+Settings are stored on the section as `data-pbx-product-layout`, `data-pbx-product-mobile-cols`, `data-pbx-product-open-in-new-tab`, etc.
 
 After insertion, editors can still tweak borders, shadows, and spacing visually in the builder.
 

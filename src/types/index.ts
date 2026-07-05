@@ -84,6 +84,7 @@ export interface ProductSectionOptions {
   mobileColumns?: ProductMobileColumns
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
+  openInNewTab?: boolean
 }
 
 export interface InsertProductsOptions {
@@ -92,6 +93,8 @@ export interface InsertProductsOptions {
   cardStyle?: ProductCardStyle
   /** Adds rounded corners to product images */
   roundedImages?: boolean
+  /** Adds target="_blank" rel="noopener noreferrer" to product links */
+  openInNewTab?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
   method?: 'unshift' | 'push' | 'insert' | (string & {})
