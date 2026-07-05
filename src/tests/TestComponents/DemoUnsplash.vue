@@ -158,6 +158,7 @@ onMounted(async () => {
       >
         <div class="pbx-mysearchBarWithOptions">
           <div class="pbx-relative pbx-w-full pbx-flex pbx-gap-2">
+            <label for="search_query" class="pbx-sr-only">{{ translate('Search...') }}</label>
             <input
               type="search"
               id="search_query"
