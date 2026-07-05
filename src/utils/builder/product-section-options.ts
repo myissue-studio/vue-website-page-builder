@@ -25,8 +25,8 @@ export const PRODUCT_MOBILE_COLUMN_OPTIONS: {
   hintKey: string
   iconKey: string
 }[] = [
-  { value: 1, labelKey: '1 column', hintKey: 'Single product per row', iconKey: 'asterisk' },
-  { value: 2, labelKey: '2 columns', hintKey: 'Two products per row', iconKey: 'asterisk' },
+  { value: 1, labelKey: '1 column', hintKey: 'Single product per row', iconKey: 'grid_4x4' },
+  { value: 2, labelKey: '2 columns', hintKey: 'Two products per row', iconKey: 'grid_4x4' },
 ]
 
 export const PRODUCT_CARD_STYLE_OPTIONS: {
@@ -169,7 +169,10 @@ export function applyProductContentVisibilityInSection(
   })
 }
 
-export function applyProductLinkTargetsInSection(section: HTMLElement, openInNewTab: boolean): void {
+export function applyProductLinkTargetsInSection(
+  section: HTMLElement,
+  openInNewTab: boolean,
+): void {
   findProductCardsInSection(section).forEach((card) => {
     card.querySelectorAll('a[href]').forEach((node) => {
       if (!(node instanceof HTMLAnchorElement)) return
@@ -215,7 +218,16 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const hideImage = section.getAttribute('data-pbx-product-hide-image') === 'true'
   const hideButton = section.getAttribute('data-pbx-product-hide-button') === 'true'
 
-  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab, hidePrice, hideImage, hideButton }
+  return {
+    layout,
+    mobileColumns,
+    cardStyle,
+    roundedImages,
+    openInNewTab,
+    hidePrice,
+    hideImage,
+    hideButton,
+  }
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
