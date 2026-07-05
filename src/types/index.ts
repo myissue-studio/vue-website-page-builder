@@ -89,6 +89,8 @@ export interface ProductSectionOptions {
   hidePrice?: boolean
   /** Hides product photos when product data includes images */
   hideImage?: boolean
+  /** Hides the CTA button when product data includes url and buttonText */
+  hideButton?: boolean
 }
 
 export interface InsertProductsOptions {
@@ -103,6 +105,8 @@ export interface InsertProductsOptions {
   hidePrice?: boolean
   /** Hides product photos when product data includes images */
   hideImage?: boolean
+  /** Hides the CTA button when product data includes url and buttonText */
+  hideButton?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
   method?: 'unshift' | 'push' | 'insert' | (string & {})

@@ -19,6 +19,7 @@ export interface BuildProductSectionStyleOptions {
   openInNewTab?: boolean
   hidePrice?: boolean
   hideImage?: boolean
+  hideButton?: boolean
   mobileColumns?: 1 | 2
 }
 
@@ -37,6 +38,7 @@ function renderProductCard(
   const openInNewTab = styleOptions.openInNewTab ?? false
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
+  const hideButton = styleOptions.hideButton ?? false
   const linkAttrs = productLinkAttrs(openInNewTab)
   const productCardClass = PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
   const imageWrapClass = [
@@ -97,7 +99,7 @@ function renderProductCard(
 
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold pt-3"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -138,11 +140,12 @@ export function buildProductSectionHtml(
   const openInNewTab = styleOptions.openInNewTab ?? false
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
+  const hideButton = styleOptions.hideButton ?? false
 
   const cards = products.map((product) => renderProductCard(product, styleOptions)).join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

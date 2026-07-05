@@ -16,12 +16,14 @@ const roundedImages = defineModel<boolean>('roundedImages', { required: true })
 const openInNewTab = defineModel<boolean>('openInNewTab', { required: true })
 const hidePrice = defineModel<boolean>('hidePrice', { required: true })
 const hideImage = defineModel<boolean>('hideImage', { required: true })
+const hideButton = defineModel<boolean>('hideButton', { required: true })
 
 defineProps<{
   translate: (key: string) => string
   compact?: boolean
   hasProductPrices?: boolean
   hasProductImages?: boolean
+  hasProductButtons?: boolean
 }>()
 
 watch(layout, (value) => {
@@ -94,7 +96,7 @@ watch(layout, (value) => {
     </section>
 
     <section
-      v-if="hasProductPrices"
+      v-if="hasProductPrices || hasProductButtons"
       class="pbx-productSettingsSection"
     >
       <div class="pbx-productSettingsSectionHeader">
@@ -104,7 +106,7 @@ watch(layout, (value) => {
         </p>
       </div>
       <div class="pbx-productSettingsToggleList">
-        <div class="pbx-productSettingsToggleRow">
+        <div v-if="hasProductPrices" class="pbx-productSettingsToggleRow">
           <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
             <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
               {{ translate('Hide prices') }}
@@ -114,6 +116,17 @@ watch(layout, (value) => {
             </p>
           </div>
           <ToggleInput v-model="hidePrice" />
+        </div>
+        <div v-if="hasProductButtons" class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Hide buy button') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Do not show the product CTA button on cards') }}
+            </p>
+          </div>
+          <ToggleInput v-model="hideButton" />
         </div>
       </div>
     </section>

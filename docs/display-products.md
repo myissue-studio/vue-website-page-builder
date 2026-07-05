@@ -86,6 +86,7 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
     openInNewTab: false,        // target="_blank" on product image, title, and CTA links
     hidePrice: false,           // hide price row when products include prices
     hideImage: false,           // hide photos when products include images
+    hideButton: false,          // hide CTA when products include url + buttonText
     sectionTitle: 'Products',
   })
 
@@ -116,13 +117,15 @@ Editors can toggle this later from the product section settings on the canvas to
 
 The setting is stored on the section as `data-pbx-product-open-in-new-tab="true"` or `"false"`.
 
-### Hide prices / hide images
+### Hide prices / hide images / hide buy button
 
-When your products include `price`, `compareAtPrice`, or `image`, the Add Products modal and toolbar settings can show **Hide prices** and **Hide images** toggles. Each toggle only appears when at least one product in the selection (or on the canvas section) actually has that data — so editors never see irrelevant options.
+When your products include prices, images, or a CTA (`url` + `buttonText`), the Add Products modal and toolbar settings show the relevant toggles. Each toggle only appears when your catalog (on insert) or the canvas section (on edit) actually has that data.
 
-Pass `hidePrice: true` or `hideImage: true` to `insertProducts()` to hide those fields on insert. Content stays in the HTML (with a `hidden` class) so editors can turn visibility back on from the toolbar without re-inserting.
+Pass `hidePrice: true`, `hideImage: true`, or `hideButton: true` to `insertProducts()`. Content stays in the HTML (with a `hidden` class) so editors can turn visibility back on from the toolbar.
 
-Stored as `data-pbx-product-hide-price` and `data-pbx-product-hide-image` on the section.
+Use **Hide buy button** with **Hide prices** for catalog-style grids where title/image still link to the product but you do not want a “Shop now” CTA without a visible price.
+
+Stored as `data-pbx-product-hide-price`, `data-pbx-product-hide-image`, and `data-pbx-product-hide-button` on the section.
 
 When the user confirms a selection, call one of these APIs:
 

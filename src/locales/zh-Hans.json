@@ -205,6 +205,8 @@
   "Do not show prices on product cards": "不在产品卡片上显示价格",
   "Hide images": "隐藏图片",
   "Do not show product photos on cards": "不在卡片上显示产品照片",
+  "Hide buy button": "隐藏购买按钮",
+  "Do not show the product CTA button on cards": "不在卡片上显示产品 CTA 按钮",
   "Mobile columns": "移动端列数",
   "1 column": "1 列",
   "Single product per row": "每行一个产品",

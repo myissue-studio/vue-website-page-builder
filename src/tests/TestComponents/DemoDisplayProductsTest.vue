@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type {
@@ -14,6 +14,7 @@ import ProductSectionSettingsFields from '../../Components/PageBuilder/EditorMen
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
+  productsHaveButtons,
   productsHaveImages,
   productsHavePrices,
 } from '../../utils/builder/product-section-options'
@@ -35,6 +36,11 @@ const roundedImages = ref(false)
 const openInNewTab = ref(false)
 const hidePrice = ref(false)
 const hideImage = ref(false)
+const hideButton = ref(false)
+
+const catalogHasPrices = computed(() => productsHavePrices(products))
+const catalogHasImages = computed(() => productsHaveImages(products))
+const catalogHasButtons = computed(() => productsHaveButtons(products))
 
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
@@ -54,17 +60,6 @@ const filteredProducts = computed(() => {
 const selectedProducts = computed(() =>
   products.filter((product) => product.id != null && selectedIds.value.has(product.id)),
 )
-
-const selectedProductsHavePrices = computed(() => productsHavePrices(selectedProducts.value))
-const selectedProductsHaveImages = computed(() => productsHaveImages(selectedProducts.value))
-
-watch(selectedProductsHavePrices, (hasPrices) => {
-  if (!hasPrices) hidePrice.value = false
-})
-
-watch(selectedProductsHaveImages, (hasImages) => {
-  if (!hasImages) hideImage.value = false
-})
 
 const activeLayout = computed(
   () => layoutOptions.find((option) => option.value === layout.value) ?? layoutOptions[0],
@@ -105,6 +100,7 @@ async function insertSelectedProducts() {
     openInNewTab: openInNewTab.value,
     hidePrice: hidePrice.value,
     hideImage: hideImage.value,
+    hideButton: hideButton.value,
   })
   showToast(translate('Products added to page'), 'success')
   closeProductLibraryModal()
@@ -134,7 +130,7 @@ async function insertSelectedProducts() {
         <div class="pbx-mysearchBarWithOptions">
           <div class="pbx-relative pbx-w-full pbx-flex pbx-gap-2">
             <label for="search-products" class="pbx-sr-only"
-              >{{ translate('Search products') }}hiii</label
+              >{{ translate('Search products') }}</label
             >
             <input
               v-model="searchQuery"
@@ -166,8 +162,10 @@ async function insertSelectedProducts() {
           v-model:open-in-new-tab="openInNewTab"
           v-model:hide-price="hidePrice"
           v-model:hide-image="hideImage"
-          :has-product-prices="selectedProductsHavePrices"
-          :has-product-images="selectedProductsHaveImages"
+          v-model:hide-button="hideButton"
+          :has-product-prices="catalogHasPrices"
+          :has-product-images="catalogHasImages"
+          :has-product-buttons="catalogHasButtons"
           :translate="translate"
         />
       </div>

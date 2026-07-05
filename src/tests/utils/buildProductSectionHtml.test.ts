@@ -111,4 +111,13 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('product-card-image shrink-0 hidden')
     expect(html).toContain('https://example.com/a.jpg')
   })
+
+  it('hides CTA when hideButton is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hideButton: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-button="true"')
+    expect(html).toContain('product-card-cta text-sm font-semibold pt-3 hidden')
+    expect(html).toContain('Buy')
+  })
 })

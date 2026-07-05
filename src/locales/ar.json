@@ -205,6 +205,8 @@
   "Do not show prices on product cards": "عدم عرض الأسعار على بطاقات المنتجات",
   "Hide images": "إخفاء الصور",
   "Do not show product photos on cards": "عدم عرض صور المنتج على البطاقات",
+  "Hide buy button": "إخفاء زر الشراء",
+  "Do not show the product CTA button on cards": "عدم عرض زر CTA للمنتج على البطاقات",
   "Mobile columns": "أعمدة الجوال",
   "1 column": "عمود واحد",
   "Single product per row": "منتج واحد في الصف",

@@ -205,6 +205,8 @@
   "Do not show prices on product cards": "Vis ikke priser på produktkort",
   "Hide images": "Skjul billeder",
   "Do not show product photos on cards": "Vis ikke produktfotos på kort",
+  "Hide buy button": "Skjul købsknap",
+  "Do not show the product CTA button on cards": "Vis ikke produkt-CTA-knappen på kort",
   "Mobile columns": "Mobilkolonner",
   "1 column": "1 kolonne",
   "Single product per row": "Ét produkt pr. række",

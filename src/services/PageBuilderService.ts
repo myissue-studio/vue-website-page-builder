@@ -40,6 +40,7 @@ import {
   parseProductSectionFromElement,
   sectionHasProductImages,
   sectionHasProductPrices,
+  sectionHasProductButtons,
 } from '../utils/builder/product-section-options'
 import {
   applyPageMetaToElement,
@@ -1226,14 +1227,16 @@ export class PageBuilderService {
   public getSelectedProductSectionContentAvailability(): {
     hasPrices: boolean
     hasImages: boolean
+    hasButtons: boolean
   } {
     const section = this.getSelectedComponentSection()
     if (!section || !this.isSelectedProductSection()) {
-      return { hasPrices: false, hasImages: false }
+      return { hasPrices: false, hasImages: false, hasButtons: false }
     }
     return {
       hasPrices: sectionHasProductPrices(section),
       hasImages: sectionHasProductImages(section),
+      hasButtons: sectionHasProductButtons(section),
     }
   }
 
@@ -3970,6 +3973,7 @@ export class PageBuilderService {
       openInNewTab: options.openInNewTab,
       hidePrice: options.hidePrice,
       hideImage: options.hideImage,
+      hideButton: options.hideButton,
       mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)

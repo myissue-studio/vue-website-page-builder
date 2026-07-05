@@ -205,6 +205,8 @@
   "Do not show prices on product cards": "Ne pas afficher les prix sur les fiches produit",
   "Hide images": "Masquer les images",
   "Do not show product photos on cards": "Ne pas afficher les photos produit sur les fiches",
+  "Hide buy button": "Masquer le bouton d'achat",
+  "Do not show the product CTA button on cards": "Ne pas afficher le bouton CTA produit sur les fiches",
   "Mobile columns": "Colonnes mobiles",
   "1 column": "1 colonne",
   "Single product per row": "Un produit par ligne",

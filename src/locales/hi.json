@@ -205,6 +205,8 @@
   "Do not show prices on product cards": "उत्पाद कार्ड पर कीमतें न दिखाएँ",
   "Hide images": "छवियाँ छिपाएँ",
   "Do not show product photos on cards": "कार्ड पर उत्पाद फ़ोटो न दिखाएँ",
+  "Hide buy button": "खरीदें बटन छिपाएँ",
+  "Do not show the product CTA button on cards": "कार्ड पर उत्पाद CTA बटन न दिखाएँ",
   "Mobile columns": "मोबाइल कॉलम",
   "1 column": "1 कॉलम",
   "Single product per row": "प्रति पंक्ति एक उत्पाद",

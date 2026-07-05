@@ -111,6 +111,14 @@ export function productsHavePrices(products: ReadonlyArray<PageBuilderProductInp
   })
 }
 
+export function productsHaveButtons(products: ReadonlyArray<PageBuilderProductInput>): boolean {
+  return products.some((product) => {
+    const url = product.url?.trim() ?? ''
+    const buttonText = product.buttonText?.trim() ?? ''
+    return url !== '' && buttonText !== ''
+  })
+}
+
 export function sectionHasProductImages(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
     const imageWrap = card.querySelector('[class*="product-card-image"]')
@@ -126,6 +134,13 @@ export function sectionHasProductPrices(section: HTMLElement): boolean {
   })
 }
 
+export function sectionHasProductButtons(section: HTMLElement): boolean {
+  return findProductCardsInSection(section).some((card) => {
+    const cta = card.querySelector('[class*="product-card-cta"]')
+    return Boolean(cta?.querySelector('a[href]')?.textContent?.trim())
+  })
+}
+
 function setProductContentHidden(el: HTMLElement, hidden: boolean): void {
   el.classList.toggle(PRODUCT_CONTENT_HIDDEN_CLASS, hidden)
 }
@@ -134,6 +149,7 @@ export function applyProductContentVisibilityInSection(
   section: HTMLElement,
   hidePrice: boolean,
   hideImage: boolean,
+  hideButton: boolean,
 ): void {
   findProductCardsInSection(section).forEach((card) => {
     const imageWrap = card.querySelector('[class*="product-card-image"]')
@@ -144,6 +160,11 @@ export function applyProductContentVisibilityInSection(
     const priceRow = card.querySelector('[class*="product-card-price-row"]')
     if (priceRow instanceof HTMLElement) {
       setProductContentHidden(priceRow, hidePrice)
+    }
+
+    const cta = card.querySelector('[class*="product-card-cta"]')
+    if (cta instanceof HTMLElement) {
+      setProductContentHidden(cta, hideButton)
     }
   })
 }
@@ -192,8 +213,9 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const openInNewTab = section.getAttribute('data-pbx-product-open-in-new-tab') === 'true'
   const hidePrice = section.getAttribute('data-pbx-product-hide-price') === 'true'
   const hideImage = section.getAttribute('data-pbx-product-hide-image') === 'true'
+  const hideButton = section.getAttribute('data-pbx-product-hide-button') === 'true'
 
-  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab, hidePrice, hideImage }
+  return { layout, mobileColumns, cardStyle, roundedImages, openInNewTab, hidePrice, hideImage, hideButton }
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
@@ -217,6 +239,7 @@ export function applyProductSectionOptionsToElement(
   const openInNewTab = Boolean(options.openInNewTab)
   const hidePrice = Boolean(options.hidePrice)
   const hideImage = Boolean(options.hideImage)
+  const hideButton = Boolean(options.hideButton)
 
   section.setAttribute('data-pbx-product-layout', layout)
   section.setAttribute('data-pbx-product-mobile-cols', String(mobileColumns))
@@ -225,6 +248,7 @@ export function applyProductSectionOptionsToElement(
   section.setAttribute('data-pbx-product-open-in-new-tab', openInNewTab ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-price', hidePrice ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-image', hideImage ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-hide-button', hideButton ? 'true' : 'false')
 
   const grid = findProductGridInSection(section)
   if (grid) {
@@ -245,7 +269,7 @@ export function applyProductSectionOptionsToElement(
   })
 
   applyProductLinkTargetsInSection(section, openInNewTab)
-  applyProductContentVisibilityInSection(section, hidePrice, hideImage)
+  applyProductContentVisibilityInSection(section, hidePrice, hideImage, hideButton)
 }
 
 export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
@@ -256,4 +280,5 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   openInNewTab: false,
   hidePrice: false,
   hideImage: false,
+  hideButton: false,
 }

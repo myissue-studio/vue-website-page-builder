@@ -125,8 +125,10 @@ const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?
 const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
 const productHidePrice = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hidePrice ?? false)
 const productHideImage = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideImage ?? false)
+const productHideButton = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideButton ?? false)
 const productSectionHasPrices = ref(false)
 const productSectionHasImages = ref(false)
+const productSectionHasButtons = ref(false)
 let productSettingsApplyQueued = false
 let productSettingsPendingSaveToast = false
 let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
@@ -138,6 +140,7 @@ let productSettingsBaseline: {
   openInNewTab: boolean
   hidePrice: boolean
   hideImage: boolean
+  hideButton: boolean
 } | null = null
 
 const productSettingsMatchBaseline = (): boolean => {
@@ -149,7 +152,8 @@ const productSettingsMatchBaseline = (): boolean => {
     productRoundedImages.value === productSettingsBaseline.roundedImages &&
     productOpenInNewTab.value === productSettingsBaseline.openInNewTab &&
     productHidePrice.value === productSettingsBaseline.hidePrice &&
-    productHideImage.value === productSettingsBaseline.hideImage
+    productHideImage.value === productSettingsBaseline.hideImage &&
+    productHideButton.value === productSettingsBaseline.hideButton
   )
 }
 
@@ -186,6 +190,7 @@ const openProductSectionSettings = () => {
   const openInNewTab = options.openInNewTab ?? false
   const hidePrice = options.hidePrice ?? false
   const hideImage = options.hideImage ?? false
+  const hideButton = options.hideButton ?? false
   const availability = pageBuilderService.getSelectedProductSectionContentAvailability()
 
   productSettingsBaseline = {
@@ -196,6 +201,7 @@ const openProductSectionSettings = () => {
     openInNewTab,
     hidePrice,
     hideImage,
+    hideButton,
   }
 
   productLayout.value = options.layout
@@ -205,8 +211,10 @@ const openProductSectionSettings = () => {
   productOpenInNewTab.value = openInNewTab
   productHidePrice.value = hidePrice
   productHideImage.value = hideImage
+  productHideButton.value = hideButton
   productSectionHasPrices.value = availability.hasPrices
   productSectionHasImages.value = availability.hasImages
+  productSectionHasButtons.value = availability.hasButtons
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
 }
@@ -229,6 +237,7 @@ const applySelectedProductSectionSettings = async () => {
       openInNewTab: productOpenInNewTab.value,
       hidePrice: productHidePrice.value,
       hideImage: productHideImage.value,
+      hideButton: productHideButton.value,
     })
     productSectionSettingsTick.value++
     if (!productSettingsMatchBaseline()) {
@@ -255,6 +264,7 @@ watch(
     productOpenInNewTab,
     productHidePrice,
     productHideImage,
+    productHideButton,
   ],
   () => {
   void applySelectedProductSectionSettings()
@@ -1251,8 +1261,10 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:open-in-new-tab="productOpenInNewTab"
               v-model:hide-price="productHidePrice"
               v-model:hide-image="productHideImage"
+              v-model:hide-button="productHideButton"
               :has-product-prices="productSectionHasPrices"
               :has-product-images="productSectionHasImages"
+              :has-product-buttons="productSectionHasButtons"
               :translate="translate"
               compact
             />
