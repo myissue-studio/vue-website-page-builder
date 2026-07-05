@@ -13,11 +13,9 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
 }
 
 #pagebuilder button {
-  cursor: not-allowed !important;
-  font-family: 'Comic Sans MS', Helvetica, Arial, sans-serif !important;
+  font-family: 'Jost', Helvetica, Arial, sans-serif !important;
 }
 
 #pbx-modal button {
-  cursor: not-allowed !important;
-  font-family: 'Comic Sans MS', Helvetica, Arial, sans-serif !important;
+  font-family: 'Jost', Helvetica, Arial, sans-serif !important;
 }
