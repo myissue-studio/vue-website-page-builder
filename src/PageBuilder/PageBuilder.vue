@@ -25,7 +25,13 @@ import { useHtmlCodeViewer } from '../composables/useHtmlCodeViewer'
 import { useHtmlCodeEditor } from '../composables/useHtmlCodeEditor'
 import { useToast } from '../composables/useToast'
 import { useBuilderKeyboardShortcuts } from '../composables/useBuilderKeyboardShortcuts'
-import { resolveFontFamily } from '../utils/builder/font-family-map'
+import {
+  buildCustomFontStylesCss,
+  findFontFamilyClassOnElement,
+  hasUserPageCanvasFontOverride,
+  resolveConfigDefaultFontClass,
+  resolveFontFamily,
+} from '../utils/builder/font-family-map'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import {
   dispatchCloseEditToolbarPopovers,
@@ -204,15 +210,62 @@ const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
 
+const configDefaultFontClass = computed(() =>
+  resolveConfigDefaultFontClass(getPageBuilderConfig.value?.userSettings),
+)
+
+/**
+ * Font class for #pagebuilder. Page Design choices override config defaults;
+ * config `elementFonts` still apply until a different global page font is set.
+ */
 const canvasFontClass = computed(() => {
-  const fontConfig = getPageBuilderConfig.value?.userSettings?.fontFamily
-  if (!fontConfig) return 'pbx-font-sans'
-  // Accept either a single font or a comma-separated list — always use the first entry.
-  // Normalise to lowercase so 'Arial' and 'arial' both produce 'pbx-font-arial'.
-  const first = fontConfig.split(',')[0].trim().toLowerCase()
-  if (!first) return 'pbx-font-sans'
-  return first.startsWith('pbx-font-') ? first : `pbx-font-${first}`
+  void pageBuilderStateStore.getFontFamily
+  void pageBuilderStateStore.getToggleGlobalHtmlMode
+  void pageBuilderStateStore.getComponents?.length
+
+  const userSettings = getPageBuilderConfig.value?.userSettings
+  const globalMode = pageBuilderStateStore.getToggleGlobalHtmlMode
+  const storeFont = pageBuilderStateStore.getFontFamily
+
+  if (globalMode && storeFont && storeFont !== 'none') {
+    return storeFont
+  }
+
+  const pagebuilder = document.getElementById('pagebuilder')
+  const domFont = pagebuilder
+    ? findFontFamilyClassOnElement(pagebuilder, userSettings)
+    : undefined
+
+  if (
+    domFont &&
+    hasUserPageCanvasFontOverride(pagebuilder, userSettings, {
+      globalPageDesignMode: globalMode,
+      selectedFontClass: storeFont,
+    })
+  ) {
+    return domFont
+  }
+
+  return configDefaultFontClass.value
 })
+
+const hasPageDesignFontOverride = computed(() => {
+  void pageBuilderStateStore.getFontFamily
+  void pageBuilderStateStore.getToggleGlobalHtmlMode
+  void pageBuilderStateStore.getComponents?.length
+
+  const userSettings = getPageBuilderConfig.value?.userSettings
+  const pagebuilder = document.getElementById('pagebuilder')
+
+  return hasUserPageCanvasFontOverride(pagebuilder, userSettings, {
+    globalPageDesignMode: pageBuilderStateStore.getToggleGlobalHtmlMode,
+    selectedFontClass: pageBuilderStateStore.getFontFamily,
+  })
+})
+
+const customFontStylesCss = computed(() =>
+  buildCustomFontStylesCss(getPageBuilderConfig.value?.userSettings),
+)
 
 /**
  * Returns CSS custom properties for per-element font overrides, to be bound as
@@ -222,6 +275,8 @@ const canvasFontClass = computed(() => {
  * The style.css rules inside #pagebuilder pick up the variables via CSS cascade.
  */
 const canvasElementFontStyle = computed((): Record<string, string> => {
+  if (hasPageDesignFontOverride.value) return {}
+
   const elementFonts = getPageBuilderConfig.value?.userSettings?.elementFonts
   if (!elementFonts) return {}
   const style: Record<string, string> = {}
@@ -260,7 +315,10 @@ const titleBuilderMobile = ref('')
 
 const savePreviewFontSettings = function () {
   localStorage.setItem('preview-font-class', canvasFontClass.value)
-  localStorage.setItem('preview-element-fonts', JSON.stringify(canvasElementFontStyle.value))
+  localStorage.setItem(
+    'preview-element-fonts',
+    JSON.stringify(hasPageDesignFontOverride.value ? {} : canvasElementFontStyle.value),
+  )
 }
 
 const previewCurrentDesign = function () {
@@ -865,6 +923,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <component :is="'style'" v-if="customFontStylesCss">{{ customFontStylesCss }}</component>
   <div
     class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-mx-auto pbx-flex pbx-flex-col pbx-font-sans pbx-text-black pbx-border-solid pbx-border pbx-border-gray-400 pbx-inset-x-0 pbx-z-10 pbx-bg-white pbx-overflow-x-auto pbx-h-full"
   >

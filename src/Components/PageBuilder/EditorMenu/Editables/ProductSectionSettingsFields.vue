@@ -95,6 +95,10 @@ watch(layout, (value) => {
       </div>
     </section>
 
+    <div
+      class="pbx-productSettingsToggleGrid"
+      :class="compact ? '' : 'pbx-productSettingsToggleGrid--twoCol'"
+    >
     <section
       v-if="hasProductPrices || hasProductButtons"
       class="pbx-productSettingsSection"
@@ -185,5 +189,6 @@ watch(layout, (value) => {
         </div>
       </div>
     </section>
+    </div>
   </div>
 </template>

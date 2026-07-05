@@ -34,6 +34,7 @@ import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
+import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
@@ -1835,11 +1836,10 @@ export class PageBuilderService {
    * @param {string} [userSelectedFontFamily] - The selected font family class.
    */
   public handleFontFamily(userSelectedFontFamily?: string): void {
-    this.applyElementClassChanges(
-      userSelectedFontFamily,
-      tailwindFontStyles.fontFamily,
-      'setFontFamily',
+    const fontClasses = getEditorFontFamilyClasses(
+      this.pageBuilderStateStore.getPageBuilderConfig?.userSettings,
     )
+    this.applyElementClassChanges(userSelectedFontFamily, fontClasses, 'setFontFamily')
   }
   /**
    * Handles changes to the font style of the selected element.

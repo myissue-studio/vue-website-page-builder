@@ -56,19 +56,14 @@ const configPageBuilder = {
       default: 'en',
       enable: ['en', 'zh-Hans', 'fr'],
     },
-    // Single font — sets the canvas default; font-family picker shows all fonts.
+    // Single built-in font — canvas default; picker shows all built-in fonts.
     // fontFamily: 'raleway',
     //
-    // Comma-separated list — first entry is the canvas default; picker is
-    // restricted to the listed fonts (unknown names are silently skipped).
-    // Available fonts: jost, raleway, palantino, arial, helvetica, georgia,
-    // times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet,
-    // garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans,
-    // candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic,
-    // rockwell, baskerville, sans, serif, mono
+    // Comma-separated list — first entry is canvas default; picker is restricted
+    // to the listed fonts. Custom names (Google Fonts, @font-face, etc.) work
+    // when you load the font in your app CSS. See "Font Family" below.
     fontFamily: 'raleway, jost, arial',
     // Per-element font overrides — optional, same format as fontFamily.
-    // First recognised font name wins; unrecognised names are skipped.
     elementFonts: {
       h1: 'raleway',
       h2: 'raleway',
@@ -121,9 +116,39 @@ onMounted(async () => {
 
 Use `userSettings.fontFamily` to control the default canvas font and — optionally — which fonts appear in the font-family picker inside the builder.
 
-#### Single font
+Built-in keys (`jost`, `raleway`, `arial`, …) work out of the box. **Any other name is treated as a custom font** — including Google Fonts, self-hosted `@font-face` fonts, or Adobe Fonts. The builder applies the `font-family` name only; **you must load the font in your app CSS**.
 
-Sets the canvas default. The font-family picker still shows all available fonts.
+#### Load custom fonts in your app
+
+```css
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap');
+
+/* Self-hosted */
+@font-face {
+  font-family: 'Brand Sans';
+  src: url('/fonts/brand-sans.woff2') format('woff2');
+}
+```
+
+Then pass the exact font name in config (same name as in your CSS):
+
+```ts
+userSettings: {
+  fontFamily: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+  elementFonts: {
+    h1: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+    h2: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+    p: 'jost, raleway, arial',
+  },
+}
+```
+
+**Published pages:** your live site also needs the same `@import` / `@font-face` / `<link>` — the builder stores font choices in HTML/classes, not font files.
+
+#### Single built-in font
+
+Sets the canvas default. The font-family picker still shows all built-in fonts.
 
 ```ts
 userSettings: {
@@ -133,38 +158,36 @@ userSettings: {
 
 #### Comma-separated list
 
-The **first** entry becomes the canvas default. Every subsequent entry restricts the picker to only the listed fonts. Unknown font names are silently skipped — the first recognised name is used.
+The **first** entry becomes the canvas default. Remaining entries are **fallbacks** for that default (if the first font fails to load). The font-family picker in the toolbar still shows **all built-in fonts**, plus any custom names from your config.
 
 ```ts
 userSettings: {
-  // Canvas default: Raleway. Picker shows: Raleway, Jost, Arial only.
-  fontFamily: 'raleway, jost, arial',
+  // Canvas default: Bitcount Grid Double, with fallbacks if it is unavailable.
+  fontFamily: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
 }
 ```
 
-Available font names: `jost`, `raleway`, `palantino`, `arial`, `helvetica`, `georgia`,
+Built-in font keys: `jost`, `raleway`, `palantino`, `arial`, `helvetica`, `georgia`,
 `times`, `times-new-roman`, `courier`, `courier-new`, `verdana`, `tahoma`, `trebuchet`,
 `garamond`, `bookman`, `comic-sans`, `impact`, `lucida`, `lucida-console`, `lucida-sans`,
 `candara`, `optima`, `avenir`, `futura`, `calibri`, `cambria`, `didot`, `franklin-gothic`,
-`rockwell`, `baskerville`, `sans`, `serif`, `mono`.
+`rockwell`, `baskerville`, `sans`, `serif`, `mono`, plus CSS generics such as `fantasy`.
+
+**Page Design override:** When a user sets a global font in **Open page design → Typography**, that choice overrides both `fontFamily` and `elementFonts` config defaults for the live page. Config values still apply as initial defaults until the user changes the global page font.
 
 ### Element Fonts
 
 Use `userSettings.elementFonts` to apply a default font to specific HTML elements (`h1`–`h6` and `p`) across the entire canvas. This is independent from the global `fontFamily` default — you can mix and match.
 
-Each value accepts the same format as `fontFamily`: a single font name, or a comma-separated list where the first recognised name wins.
+Each value accepts the same format as `fontFamily`: a built-in key, a custom font name, or a comma-separated fallback list. The **first** entry wins.
 
 ```ts
 userSettings: {
-  fontFamily: 'raleway, jost, arial',
+  fontFamily: 'Bitcount Grid Double, jost, raleway, arial',
   elementFonts: {
-    h1: 'raleway',       // all h1 elements use Raleway
-    h2: 'raleway',
-    h3: 'raleway',
-    h4: 'jost',
-    h5: 'jost',
-    h6: 'jost',
-    p:  'arial',         // all p elements use Arial
+    h1: 'Bitcount Grid Double, jost, raleway',
+    h2: 'Bitcount Grid Double, jost, raleway',
+    p:  'jost, raleway, arial',
   },
 }
 ```

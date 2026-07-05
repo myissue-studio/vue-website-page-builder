@@ -1,6 +1,13 @@
 import type { PageBuilderConfig } from '../../types'
 import tailwindFontStyles from './tailwind-font-styles'
-import fontFamilyMap, { resolveFontFamily } from './font-family-map'
+import fontFamilyMap, {
+  findFontTokenByCustomClass,
+  findFontFamilyClassOnElement,
+  hasUserPageCanvasFontOverride,
+  isPassThroughFontStackClass,
+  resolveFontFamily,
+  resolveFontFamilyFromToken,
+} from './font-family-map'
 
 const FONT_FAMILY_CLASSES = tailwindFontStyles.fontFamily.filter((cls) => cls !== 'none')
 const TEXT_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'])
@@ -16,10 +23,31 @@ export function getFontTargetElement(element: HTMLElement): HTMLElement {
 }
 
 function findFontFamilyClass(element: HTMLElement): string | undefined {
-  return FONT_FAMILY_CLASSES.find((cls) => element.classList.contains(cls))
+  const builtin = FONT_FAMILY_CLASSES.find((cls) => element.classList.contains(cls))
+  if (builtin) return builtin
+
+  for (const cls of element.classList) {
+    if (cls.startsWith('pbx-font-custom-')) return cls
+  }
+  return undefined
 }
 
-function formatFontFamilyFromClass(className: string): string {
+function findExplicitFontFamilyClass(element: HTMLElement): string | undefined {
+  const cls = findFontFamilyClass(element)
+  if (!cls || isPassThroughFontStackClass(cls)) return undefined
+  return cls
+}
+
+function formatFontFamilyFromClass(
+  className: string,
+  config?: PageBuilderConfig | null,
+): string {
+  const customToken = findFontTokenByCustomClass(className, config?.userSettings)
+  if (customToken) {
+    const resolved = resolveFontFamilyFromToken(customToken)
+    return resolved ? formatFontFamily(resolved) : formatFontFamily(customToken)
+  }
+
   const key = className.startsWith('pbx-font-') ? className.slice('pbx-font-'.length) : className
   const fromMap = fontFamilyMap[key]
   if (fromMap) return formatFontFamily(fromMap)
@@ -50,30 +78,44 @@ function resolveConfiguredFontFamily(
   return ''
 }
 
+export interface ResolveInheritedFontFamilyOptions {
+  globalPageDesignMode?: boolean
+  selectedFontClass?: string | null
+}
+
 /**
  * Resolves the font family label shown as "Inherited: …" in typography controls.
- * Uses page-builder config and explicit pbx-font-* family classes — not getComputedStyle,
- * which can report the browser's fallback (e.g. Garamond for CSS `fantasy`) instead of
- * the configured Jost default.
+ * Matches config `elementFonts` / `fontFamily` CSS defaults before stale canvas classes.
  */
 export function resolveInheritedFontFamily(
   element: HTMLElement,
   config: PageBuilderConfig | null | undefined,
+  options?: ResolveInheritedFontFamilyOptions,
 ): string {
   const target = getFontTargetElement(element)
   const pagebuilder = element.closest('#pagebuilder')
+  const tag = target.tagName.toLowerCase()
 
   let current: HTMLElement | null = target
   while (current && pagebuilder && current !== pagebuilder) {
-    const cls = findFontFamilyClass(current)
-    if (cls) return formatFontFamilyFromClass(cls)
+    const cls = findExplicitFontFamilyClass(current)
+    if (cls) return formatFontFamilyFromClass(cls, config)
     current = current.parentElement
   }
 
-  if (pagebuilder instanceof HTMLElement) {
-    const canvasClass = findFontFamilyClass(pagebuilder)
-    if (canvasClass) return formatFontFamilyFromClass(canvasClass)
+  const pageDesignOverride =
+    pagebuilder instanceof HTMLElement &&
+    hasUserPageCanvasFontOverride(pagebuilder, config?.userSettings, options)
+
+  if (!pageDesignOverride && TEXT_TAGS.has(tag)) {
+    const fromConfig = resolveConfiguredFontFamily(tag, config)
+    if (fromConfig) return fromConfig
   }
 
-  return resolveConfiguredFontFamily(target.tagName.toLowerCase(), config)
+  if (pagebuilder instanceof HTMLElement) {
+    const canvasClass = findExplicitFontFamilyClass(pagebuilder)
+    if (canvasClass) return formatFontFamilyFromClass(canvasClass, config)
+  }
+
+  return resolveConfiguredFontFamily(tag, config)
 }

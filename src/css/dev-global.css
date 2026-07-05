@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap');
+
 /* Tailwind’s base layer includes global CSS resets and element styles that are not prefixed. 
 These styles affect all HTML elements (like input, button, h1, etc.) in the consuming app. */
 @tailwind base;
