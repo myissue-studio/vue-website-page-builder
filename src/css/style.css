@@ -866,11 +866,11 @@
   }
 
   .pbx-modalFilterChip {
-    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor/10 hover:pbx-shadow-sm;
   }
 
   .pbx-modalFilterChip--active {
-    @apply pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor/10 pbx-shadow-sm hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor/10;
+    @apply pbx-bg-myPrimaryLinkColor/10 pbx-shadow-sm hover:pbx-bg-myPrimaryLinkColor/30;
   }
 
   .pbx-modalFilterChipIcon {

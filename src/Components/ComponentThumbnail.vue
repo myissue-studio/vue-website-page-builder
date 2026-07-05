@@ -8,19 +8,19 @@ const props = withDefaults(
     htmlCode: string
     containerHeight?: number
     renderWidth?: number
-    /** Maximum visual height in px. Thumbnails taller than this are clipped
-     *  at the bottom (cover-style). Shorter ones show fully. */
+    /** Maximum visual height in px for the preview box. With fit="contain", tall
+     *  content is scaled down so the full component stays visible within this height. */
     maxHeight?: number
     /** 'cover': fill container width, clip vertically.
-     *  'contain' (default): grow container to show the full component at a
-     *  consistent zoom level. Content is never clipped beyond maxHeight. */
+     *  'contain' (default): scale to fit width; shrink further if needed so the
+     *  full component height is visible within maxHeight (no bottom clipping). */
     fit?: 'cover' | 'contain'
   }>(),
   {
     containerHeight: 256,
     renderWidth: 1280,
     maxHeight: 380,
-    fit: 'contain',
+    fit: 'contain' as const,
   },
 )
 
@@ -28,44 +28,97 @@ const props = withDefaults(
 // Starts at a reasonable guess so the iframe isn't invisible on first paint.
 const containerWidth = ref(320)
 
-// Scale is width-driven: the iframe renders at renderWidth and is scaled down
-// to the actual container width.
-const scale = computed(() => containerWidth.value / props.renderWidth)
+// Scale is primarily width-driven: the iframe renders at renderWidth and is
+// scaled down to the actual container width.
+const widthScale = computed(() => containerWidth.value / props.renderWidth)
 
-// For 'contain' fit: measure the rendered content height, then grow the
-// container to fit everything at the current scale, capped at maxHeight.
-const adaptiveHeight = ref<number | null>(null)
+// Raw content height at renderWidth (measured from iframe body).
+const measuredContentHeight = ref<number | null>(null)
 
-// Placeholder height shown while the iframe is still measuring content.
-// Keeps the loader centred regardless of the maxHeight cap.
-const LOADING_HEIGHT = 260
+// For contain: shrink scale when height would exceed maxHeight so nothing is clipped.
+const effectiveScale = computed(() => {
+  if (props.fit === 'cover') return widthScale.value
+  if (measuredContentHeight.value === null || measuredContentHeight.value <= 0) {
+    return widthScale.value
+  }
+  const heightAtWidthScale = measuredContentHeight.value * widthScale.value
+  if (heightAtWidthScale <= props.maxHeight) return widthScale.value
+  return props.maxHeight / measuredContentHeight.value
+})
+
+const iframeOffsetX = computed(() => {
+  if (props.fit === 'cover') return 0
+  const scaledWidth = props.renderWidth * effectiveScale.value
+  return Math.max(0, (containerWidth.value - scaledWidth) / 2)
+})
+
+// Placeholder / minimum height while the iframe is still measuring content.
+const LOADING_MIN_HEIGHT = 280
 
 const displayHeight = computed(() => {
-  if (props.fit === 'contain' && adaptiveHeight.value !== null) {
-    return Math.min(adaptiveHeight.value, props.maxHeight)
-  }
-  // cover mode OR still measuring: use a fixed height so the loader is visible
-  return props.fit === 'cover' ? props.containerHeight : LOADING_HEIGHT
+  if (props.fit === 'cover') return props.containerHeight
+  if (measuredContentHeight.value === null) return LOADING_MIN_HEIGHT
+  return Math.ceil(measuredContentHeight.value * effectiveScale.value)
 })
+
+const showLoader = computed(() => isVisible.value && !isReady.value)
 
 // During the measurement phase use a tall initial iframe so the content
 // renders fully before we read scrollHeight.
 const iframeHeight = computed(() =>
-  props.fit === 'contain' && adaptiveHeight.value === null
+  props.fit === 'contain' && measuredContentHeight.value === null
     ? 8192
-    : Math.ceil(displayHeight.value / scale.value),
+    : Math.max(measuredContentHeight.value ?? 0, 1),
 )
 
 const isVisible = ref(false)
-const isLoaded = ref(false)
+const isReady = ref(false)
+const iframeRef = ref<HTMLIFrameElement | null>(null)
 
-// Re-measure content height when container width changes (e.g. panel resize).
+watch(
+  () => props.htmlCode,
+  () => {
+    measuredContentHeight.value = null
+    isReady.value = false
+  },
+)
+
+// Re-measure when container width changes — keep the preview visible (no loader flash).
 watch(containerWidth, () => {
-  if (props.fit === 'contain') {
-    adaptiveHeight.value = null
-    isLoaded.value = false
+  if (props.fit !== 'contain') return
+  if (isReady.value && iframeRef.value) {
+    measureIframeContent(iframeRef.value, { silent: true })
+    return
   }
+  measuredContentHeight.value = null
 })
+
+function measureIframeContent(iframe: HTMLIFrameElement, options: { silent?: boolean } = {}): void {
+  const doc = iframe.contentDocument
+  const bodyHeight = doc?.body?.scrollHeight ?? 0
+  const contentHeight = bodyHeight > 0 ? bodyHeight : (doc?.documentElement?.scrollHeight ?? 0)
+  if (contentHeight > 0) {
+    measuredContentHeight.value = contentHeight
+  }
+  if (!options.silent) {
+    isReady.value = true
+  }
+}
+
+function attachImageLoadRemeasure(iframe: HTMLIFrameElement): void {
+  const doc = iframe.contentDocument
+  if (!doc) return
+
+  const remeasure = () => {
+    measureIframeContent(iframe, { silent: true })
+  }
+
+  doc.querySelectorAll('img').forEach((img) => {
+    if (img.complete) return
+    img.addEventListener('load', remeasure, { once: true })
+    img.addEventListener('error', remeasure, { once: true })
+  })
+}
 
 // Component HTML is authored for both the pbx-prefixed library CSS AND the
 // consuming app's non-prefixed Tailwind CSS. The inlined style.css only has
@@ -103,27 +156,18 @@ let resizeObs: ResizeObserver | null = null
 function onIframeLoad(event: Event) {
   const iframe = event.target as HTMLIFrameElement
   if (props.fit === 'contain') {
-    // Wait for web fonts (e.g. Jost) before measuring so the final layout
-    // height is stable. Fall back to double-rAF when fonts API is unavailable.
-    const measure = () => {
-      const doc = iframe.contentDocument
-      // Use body.scrollHeight — the <html> element expands to fill the full
-      // iframe viewport (8192px during measurement), body does not.
-      const bodyHeight = doc?.body?.scrollHeight ?? 0
-      const contentHeight = bodyHeight > 0 ? bodyHeight : (doc?.documentElement?.scrollHeight ?? 0)
-      if (contentHeight > 0) {
-        adaptiveHeight.value = Math.ceil(contentHeight * scale.value)
-      }
-      isLoaded.value = true
+    const runMeasure = () => {
+      measureIframeContent(iframe)
+      attachImageLoadRemeasure(iframe)
     }
     const fontsReady = iframe.contentDocument?.fonts?.ready
     if (fontsReady) {
-      fontsReady.then(measure)
+      fontsReady.then(runMeasure)
     } else {
-      requestAnimationFrame(() => requestAnimationFrame(measure))
+      requestAnimationFrame(() => requestAnimationFrame(runMeasure))
     }
   } else {
-    isLoaded.value = true
+    isReady.value = true
   }
 }
 
@@ -173,31 +217,45 @@ onUnmounted(() => {
 <template>
   <div
     ref="wrapper"
-    class="pbx-relative pbx-overflow-hidden pbx-w-full"
-    :style="{ height: `${displayHeight}px` }"
+    class="pbx-relative pbx-overflow-hidden pbx-w-full pbx-min-h-[12rem]"
+    :style="{
+      height: `${displayHeight}px`,
+      minHeight: showLoader ? `${LOADING_MIN_HEIGHT}px` : undefined,
+    }"
   >
     <iframe
       v-if="isVisible"
+      ref="iframeRef"
       :srcdoc="srcdoc"
       sandbox="allow-same-origin"
       loading="lazy"
       title=""
       aria-hidden="true"
-      class="pbx-absolute pbx-top-0 pbx-left-0 pbx-border-0 pbx-pointer-events-none"
+      class="pbx-absolute pbx-top-0 pbx-border-0 pbx-pointer-events-none pbx-transition-opacity pbx-duration-300 pbx-ease-out"
+      :class="isReady ? 'pbx-opacity-100' : 'pbx-opacity-0'"
       :style="{
         width: `${renderWidth}px`,
         height: `${iframeHeight}px`,
-        transform: `scale(${scale})`,
+        transform: `scale(${effectiveScale})`,
         transformOrigin: 'top left',
+        left: `${iframeOffsetX}px`,
         overflow: 'hidden',
       }"
       @load="onIframeLoad"
     ></iframe>
-    <div
-      v-if="!isLoaded"
-      class="pbx-absolute pbx-inset-0 pbx-flex pbx-items-center pbx-justify-center"
+    <Transition
+      enter-active-class="pbx-transition-opacity pbx-duration-200 pbx-ease-out"
+      leave-active-class="pbx-transition-opacity pbx-duration-300 pbx-ease-in"
+      enter-from-class="pbx-opacity-0"
+      leave-to-class="pbx-opacity-0"
     >
-      <ElementLoader />
-    </div>
+      <div
+        v-if="showLoader"
+        class="pbx-absolute pbx-inset-0 pbx-z-10 pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-50"
+        :style="{ minHeight: `${LOADING_MIN_HEIGHT}px` }"
+      >
+        <ElementLoader />
+      </div>
+    </Transition>
   </div>
 </template>
