@@ -1381,10 +1381,9 @@ onBeforeUnmount(() => {
               <div class="pbx-flex pbx-items-center">
                 <div
                   @click="handleInsertButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-                  :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
-                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                  <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> add </span>
                     <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                   </div>
@@ -1392,11 +1391,13 @@ onBeforeUnmount(() => {
                 <div
                   v-if="props.DisplayProducts"
                   @click="handleInsertProductButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
-                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                  <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> shopping_bag </span>
-                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                    <span v-if="false" class="lg:pbx-block pbx-hidden">
+                      {{ translate('Products') }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -1424,10 +1425,9 @@ onBeforeUnmount(() => {
                 <div class="pbx-flex pbx-items-center">
                   <div
                     @click="handleInsertButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-                    :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                   >
-                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> add </span>
                       <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                     </div>
@@ -1435,11 +1435,13 @@ onBeforeUnmount(() => {
                   <div
                     v-if="props.DisplayProducts"
                     @click="handleInsertProductButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
-                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> shopping_bag </span>
-                      <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                      <span v-if="false" class="lg:pbx-block pbx-hidden">
+                        {{ translate('Products') }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -1572,6 +1574,19 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+#pagebuilder .pbx-addsection-btn {
+  height: 1.875rem;
+  padding-inline: 0.375rem;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+#pagebuilder .pbx-addsection-btn > div {
+  gap: 0.125rem;
+}
+#pagebuilder .pbx-addsection-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+  line-height: 1;
 }
 /* Insert buttons are siblings of [data-pagebuilder-content], so section markup
    remains isolated from builder controls. */

@@ -198,6 +198,7 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
   }
 
   await pageBuilderService.addComponent(translatedComponentObject)
+  showToast(translate('Component added to page'), 'success')
   closeAddComponentModal()
   isLoading.value = false
 }
@@ -279,7 +280,7 @@ const convertToComponentObject = function (comp: {
           <ModalFilterChip
             v-for="category in componentOrThemes"
             :key="category"
-            :icon="category === 'Themes' ? 'palette' : 'widgets'"
+            :icon="category === 'Themes' ? 'asterisk' : 'asterisk'"
             :label="translate(category)"
             :hint="
               category === 'Themes' ? translate('Full page themes') : translate('Building blocks')
@@ -294,7 +295,9 @@ const convertToComponentObject = function (comp: {
         <!-- theme is selected start -->
         <template v-if="selectedThemeSelection === 'Themes'">
           <div class="pbx-mb-8">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Themes') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Themes') }}</h3>
+            </div>
             <div class="pbx-modalFilterBar">
               <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
               <div class="pbx-modalFilterBarChips">
@@ -337,7 +340,9 @@ const convertToComponentObject = function (comp: {
         <template v-if="selectedThemeSelection === 'Components'">
           <!-- Helper Components Section -->
           <div class="pbx-mb-8">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Helper Components') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Helper Components') }}</h3>
+            </div>
 
             <!-- Helper category filter -->
             <div class="pbx-modalFilterBar">
@@ -374,7 +379,9 @@ const convertToComponentObject = function (comp: {
 
           <!-- Regular Components Section -->
           <div class="pbx-px-2">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Layout Components') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Layout Components') }}</h3>
+            </div>
             <div class="pbx-modalFilterBar">
               <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
               <div class="pbx-modalFilterBarChips">

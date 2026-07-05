@@ -6,6 +6,7 @@ import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
+  PRODUCT_MOBILE_COLUMN_OPTIONS,
 } from '../../../../utils/builder/product-section-options'
 
 const layout = defineModel<ProductGridLayout>('layout', { required: true })
@@ -38,7 +39,7 @@ watch(layout, (value) => {
         <ModalFilterChip
           v-for="option in PRODUCT_LAYOUT_OPTIONS"
           :key="option.value"
-          slider-icon
+          :icon="option.iconKey"
           :label="translate(option.labelKey)"
           :hint="translate(option.hintKey)"
           :active="layout === option.value"
@@ -56,18 +57,13 @@ watch(layout, (value) => {
       </div>
       <div class="pbx-productSettingsSectionChips">
         <ModalFilterChip
-          slider-icon
-          :label="translate('1 column')"
-          :hint="translate('Single product per row')"
-          :active="mobileColumns === 1"
-          @click="mobileColumns = 1"
-        />
-        <ModalFilterChip
-          slider-icon
-          :label="translate('2 columns')"
-          :hint="translate('Two products per row')"
-          :active="mobileColumns === 2"
-          @click="mobileColumns = 2"
+          v-for="option in PRODUCT_MOBILE_COLUMN_OPTIONS"
+          :key="option.value"
+          :icon="option.iconKey"
+          :label="translate(option.labelKey)"
+          :hint="translate(option.hintKey)"
+          :active="mobileColumns === option.value"
+          @click="mobileColumns = option.value"
         />
       </div>
     </section>
@@ -83,7 +79,7 @@ watch(layout, (value) => {
         <ModalFilterChip
           v-for="option in PRODUCT_CARD_STYLE_OPTIONS"
           :key="option.value"
-          slider-icon
+          :icon="option.iconKey"
           :label="translate(option.labelKey)"
           :hint="translate(option.hintKey)"
           :active="cardStyle === option.value"
@@ -93,12 +89,6 @@ watch(layout, (value) => {
     </section>
 
     <section class="pbx-productSettingsSection">
-      <div class="pbx-productSettingsSectionHeader">
-        <p class="pbx-productSettingsSectionTitle">{{ translate('Product images') }}</p>
-        <p class="pbx-productSettingsSectionDesc">
-          {{ translate('Photo appearance on each card') }}
-        </p>
-      </div>
       <div class="pbx-productSettingsToggleRow">
         <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
           <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">

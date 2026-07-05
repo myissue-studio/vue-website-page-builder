@@ -9,23 +9,40 @@ export const PRODUCT_LAYOUT_OPTIONS: {
   value: ProductGridLayout
   labelKey: string
   hintKey: string
+  iconKey: string
 }[] = [
-  { value: 'grid-1', labelKey: '1 product', hintKey: 'Full width' },
-  { value: 'grid-2', labelKey: '2 products (grid)', hintKey: '2 columns' },
-  { value: 'grid-3', labelKey: '3 products (grid)', hintKey: '3 columns' },
-  { value: 'grid-4', labelKey: '4 products (grid)', hintKey: '4 columns' },
-  { value: 'grid-6', labelKey: '6 products (grid)', hintKey: '6 columns' },
+  { value: 'grid-1', labelKey: '1 product', hintKey: 'Full width', iconKey: 'grid_4x4' },
+  { value: 'grid-2', labelKey: '2 products (grid)', hintKey: '2 columns', iconKey: 'grid_4x4' },
+  { value: 'grid-3', labelKey: '3 products (grid)', hintKey: '3 columns', iconKey: 'grid_4x4' },
+  { value: 'grid-4', labelKey: '4 products (grid)', hintKey: '4 columns', iconKey: 'grid_4x4' },
+  { value: 'grid-6', labelKey: '6 products (grid)', hintKey: '6 columns', iconKey: 'grid_4x4' },
+]
+
+export const PRODUCT_MOBILE_COLUMN_OPTIONS: {
+  value: ProductMobileColumns
+  labelKey: string
+  hintKey: string
+  iconKey: string
+}[] = [
+  { value: 1, labelKey: '1 column', hintKey: 'Single product per row', iconKey: 'asterisk' },
+  { value: 2, labelKey: '2 columns', hintKey: 'Two products per row', iconKey: 'asterisk' },
 ]
 
 export const PRODUCT_CARD_STYLE_OPTIONS: {
   value: ProductCardStyle
   labelKey: string
   hintKey: string
+  iconKey: string
 }[] = [
-  { value: 'minimal', labelKey: 'Clean', hintKey: 'No border' },
-  { value: 'bordered', labelKey: 'Bordered', hintKey: 'Outlined cards' },
-  { value: 'shadow', labelKey: 'Shadow', hintKey: 'Soft depth' },
-  { value: 'elevated', labelKey: 'Elevated', hintKey: 'Border and shadow' },
+  { value: 'minimal', labelKey: 'Clean', hintKey: 'No border', iconKey: 'horizontal_rule' },
+  { value: 'bordered', labelKey: 'Bordered', hintKey: 'Outlined cards', iconKey: 'line_curve' },
+  { value: 'shadow', labelKey: 'Shadow', hintKey: 'Soft depth', iconKey: 'ev_shadow' },
+  {
+    value: 'elevated',
+    labelKey: 'Elevated',
+    hintKey: 'Border and shadow',
+    iconKey: 'contrast',
+  },
 ]
 
 const PRODUCT_CARD_BASE = 'product-card flex flex-col h-full'
@@ -138,7 +155,9 @@ export function applyProductSectionOptionsToElement(
   }
 
   const imageWrapClass = prefixBuilderClasses(getProductImageWrapClass(roundedImages))
-  const cardClass = prefixBuilderClasses(PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal)
+  const cardClass = prefixBuilderClasses(
+    PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal,
+  )
 
   findProductCardsInSection(section).forEach((card) => {
     card.className = cardClass

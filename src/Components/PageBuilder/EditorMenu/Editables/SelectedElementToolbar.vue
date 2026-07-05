@@ -118,6 +118,44 @@ const productCardStyle = ref<ProductCardStyle>(
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
 let productSettingsApplyQueued = false
+let productSettingsPendingSaveToast = false
+let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
+let productSettingsBaseline: {
+  layout: ProductGridLayout
+  mobileColumns: ProductMobileColumns
+  cardStyle: ProductCardStyle
+  roundedImages: boolean
+} | null = null
+
+const productSettingsMatchBaseline = (): boolean => {
+  if (!productSettingsBaseline) return true
+  return (
+    productLayout.value === productSettingsBaseline.layout &&
+    productMobileColumns.value === productSettingsBaseline.mobileColumns &&
+    productCardStyle.value === productSettingsBaseline.cardStyle &&
+    productRoundedImages.value === productSettingsBaseline.roundedImages
+  )
+}
+
+const notifyProductSectionSettingsSaved = () => {
+  productSettingsPendingSaveToast = true
+  if (productSettingsSaveToastTimer) clearTimeout(productSettingsSaveToastTimer)
+  productSettingsSaveToastTimer = setTimeout(() => {
+    showToast(translate('Product section settings saved'), 'success')
+    productSettingsPendingSaveToast = false
+    productSettingsSaveToastTimer = null
+  }, 350)
+}
+
+const flushProductSectionSettingsSavedToast = () => {
+  if (!productSettingsPendingSaveToast) return
+  if (productSettingsSaveToastTimer) {
+    clearTimeout(productSettingsSaveToastTimer)
+    productSettingsSaveToastTimer = null
+  }
+  showToast(translate('Product section settings saved'), 'success')
+  productSettingsPendingSaveToast = false
+}
 
 const isSelectedProductSection = computed(() => {
   void productSectionSettingsTick.value
@@ -126,25 +164,55 @@ const isSelectedProductSection = computed(() => {
 
 const openProductSectionSettings = () => {
   const options = pageBuilderService.getSelectedProductSectionOptions()
+  const mobileColumns = options.mobileColumns ?? 1
+  const cardStyle = options.cardStyle ?? 'minimal'
+  const roundedImages = options.roundedImages ?? false
+
+  productSettingsBaseline = {
+    layout: options.layout,
+    mobileColumns,
+    cardStyle,
+    roundedImages,
+  }
+
   productLayout.value = options.layout
-  productMobileColumns.value = options.mobileColumns ?? 1
-  productCardStyle.value = options.cardStyle ?? 'minimal'
-  productRoundedImages.value = options.roundedImages ?? false
+  productMobileColumns.value = mobileColumns
+  productCardStyle.value = cardStyle
+  productRoundedImages.value = roundedImages
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
+}
+
+const closeProductSectionSettings = () => {
+  flushProductSectionSettingsSavedToast()
+  showProductSectionSettingsModal.value = false
+  productSettingsBaseline = null
 }
 
 const applySelectedProductSectionSettings = async () => {
   if (!showProductSectionSettingsModal.value || productSettingsApplyQueued) return
   productSettingsApplyQueued = true
-  await pageBuilderService.updateSelectedProductSection({
-    layout: productLayout.value,
-    mobileColumns: productMobileColumns.value,
-    cardStyle: productCardStyle.value,
-    roundedImages: productRoundedImages.value,
-  })
-  productSectionSettingsTick.value++
-  productSettingsApplyQueued = false
+  try {
+    await pageBuilderService.updateSelectedProductSection({
+      layout: productLayout.value,
+      mobileColumns: productMobileColumns.value,
+      cardStyle: productCardStyle.value,
+      roundedImages: productRoundedImages.value,
+    })
+    productSectionSettingsTick.value++
+    if (!productSettingsMatchBaseline()) {
+      notifyProductSectionSettingsSaved()
+    }
+  } catch {
+    if (productSettingsSaveToastTimer) {
+      clearTimeout(productSettingsSaveToastTimer)
+      productSettingsSaveToastTimer = null
+    }
+    productSettingsPendingSaveToast = false
+    showToast(translate('Could not save product section settings'), 'error')
+  } finally {
+    productSettingsApplyQueued = false
+  }
 }
 
 watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages], () => {
@@ -679,6 +747,10 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  if (productSettingsSaveToastTimer) {
+    clearTimeout(productSettingsSaveToastTimer)
+    productSettingsSaveToastTimer = null
+  }
 })
 
 const showModalDeleteComponent = ref(false)
@@ -1085,7 +1157,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           :title="translate('Product section settings')"
           description=""
           :firstButtonText="translate('Close')"
-          @firstModalButtonFunctionDynamicModalBuilder="showProductSectionSettingsModal = false"
+          @firstModalButtonFunctionDynamicModalBuilder="closeProductSectionSettings"
         >
           <header></header>
           <main>
