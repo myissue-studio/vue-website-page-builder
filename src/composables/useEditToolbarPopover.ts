@@ -1,4 +1,5 @@
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { getEditToolbarPopoverTop } from '../utils/builder/clamp-edit-toolbar-popover-top'
 
 type UseEditToolbarPopoverOptions = {
   width?: number
@@ -26,7 +27,7 @@ export function useEditToolbarPopover(options: UseEditToolbarPopoverOptions = {}
     left = Math.max(margin, Math.min(left, window.innerWidth - widthPx - margin))
 
     popoverStyle.value = {
-      top: `${Math.round(rect.bottom + 4)}px`,
+      top: `${getEditToolbarPopoverTop(rect.bottom)}px`,
       left: `${Math.round(left)}px`,
       width: `${widthPx}px`,
     }

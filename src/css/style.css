@@ -1709,3 +1709,11 @@
   transform: scale(1);
   opacity: 1;
 }
+
+#pagebuilder button {
+  font-family: 'Jost', Helvetica, Arial, sans-serif;
+}
+
+#pbx-modal button {
+  font-family: 'Jost', Helvetica, Arial, sans-serif;
+}

@@ -15,6 +15,7 @@ import {
 } from '../../utils/builder/sanitize-inline-tiptap-html'
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
+import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -139,7 +140,7 @@ const updateTypographyMenuPosition = function () {
   left = Math.max(margin, Math.min(left, window.innerWidth - TYPOGRAPHY_MENU_WIDTH_PX - margin))
 
   typographyPopoverStyle.value = {
-    top: `${Math.round(rect.bottom + 4)}px`,
+    top: `${getEditToolbarPopoverTop(rect.bottom)}px`,
     left: `${Math.round(left)}px`,
     width: `${TYPOGRAPHY_MENU_WIDTH_PX}px`,
   }

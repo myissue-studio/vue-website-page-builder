@@ -15,6 +15,7 @@ import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
 import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
 import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/product-section-options'
+import { getEditToolbarPopoverTop } from '../../../../utils/builder/clamp-edit-toolbar-popover-top'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -661,7 +662,7 @@ const updateMoreMenuPosition = function () {
   left = Math.max(margin, Math.min(left, window.innerWidth - MORE_MENU_WIDTH_PX - margin))
 
   moreMenuPopoverStyle.value = {
-    top: `${Math.round(rect.bottom + 4)}px`,
+    top: `${getEditToolbarPopoverTop(rect.bottom)}px`,
     left: `${Math.round(left)}px`,
     width: `${MORE_MENU_WIDTH_PX}px`,
   }
