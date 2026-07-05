@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import SliderIcon from '../Icons/SliderIcon.vue'
-
 defineProps<{
   icon?: string
   sliderIcon?: boolean
@@ -18,7 +16,7 @@ defineProps<{
     :aria-pressed="active"
   >
     <span v-if="sliderIcon" class="pbx-modalFilterChipIcon" aria-hidden="true">
-      <SliderIcon :size="16" />
+      <span class="material-symbols-outlined"> stack_group </span>
     </span>
     <span
       v-else-if="icon"
