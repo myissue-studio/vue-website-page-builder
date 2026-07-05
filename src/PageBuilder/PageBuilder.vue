@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted, computed, ref, watch, provide, nextTick } from 'vue'
 import BaseModal from '../Components/Modals/BaseModal.vue'
 import PageBuilderPreview from './PageBuilderPreview.vue'
-import PageLayoutToolbar from '../Components/PageBuilder/EditorMenu/Editables/PageLayoutToolbar.vue'
 import SelectedElementToolbar from '../Components/PageBuilder/EditorMenu/Editables/SelectedElementToolbar.vue'
 import ComponentLibraryModal from '../Components/Modals/ComponentLibraryModal.vue'
 import ProductLibraryModal from '../Components/Modals/ProductLibraryModal.vue'
@@ -590,6 +589,7 @@ const ensureBuilderInitialized = function () {
 }
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
+const editToolbarPinned = ref(false)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
 
@@ -608,21 +608,54 @@ function applyToolbarFlexWidth(toolbar: HTMLElement, maxToolbarWidth: number) {
   const innerFlex = toolbar.querySelector<HTMLElement>('.pbx-select-none > .pbx-flex')
   if (!innerFlex) return
 
-  innerFlex.style.removeProperty('width')
   innerFlex.style.flexWrap = 'nowrap'
-  void innerFlex.offsetWidth
-  const unwrappedWidth = innerFlex.scrollWidth
-  innerFlex.style.removeProperty('flex-wrap')
+  innerFlex.style.removeProperty('max-width')
+  innerFlex.style.width = 'max-content'
+  void innerFlex.offsetHeight
 
-  if (unwrappedWidth > maxToolbarWidth) {
-    innerFlex.style.width = `${maxToolbarWidth}px`
-    return
+  // Measure the actual one-line width of the current controls. This keeps the
+  // toolbar compact, but automatically grows when new controls are added.
+  const oneLineWidth = Math.ceil(innerFlex.getBoundingClientRect().width)
+  innerFlex.style.flexWrap = 'wrap'
+
+  if (oneLineWidth > 0) {
+    innerFlex.style.width = `${Math.min(oneLineWidth, maxToolbarWidth)}px`
   }
-
-  innerFlex.style.removeProperty('width')
+  innerFlex.style.justifyContent = 'center'
+  innerFlex.style.removeProperty('max-width')
 }
 
-function updatePanelPositionNow() {
+const toggleEditToolbarPinned = function () {
+  editToolbarPinned.value = !editToolbarPinned.value
+  settleToolbarPosition()
+}
+
+function handlePanelMutation(mutations: MutationRecord[]) {
+  const toolbar = document.querySelector('#pbxEditToolbar')
+  let remeasureWidth = false
+
+  for (const mutation of mutations) {
+    if (mutation.type === 'attributes' && mutation.attributeName === 'selected') {
+      remeasureWidth = true
+      break
+    }
+    if (!toolbar) continue
+    const target = mutation.target
+    if (target instanceof Node && (toolbar === target || toolbar.contains(target))) {
+      remeasureWidth = true
+      break
+    }
+  }
+
+  if (remeasureWidth) {
+    updatePanelPosition()
+  } else {
+    updatePanelPositionOnScroll()
+  }
+}
+
+function updatePanelPositionNow(options: { remeasureWidth?: boolean } = {}) {
+  const remeasureWidth = options.remeasureWidth ?? true
   const container = pbxBuilderWrapper.value
   const editToolbarElement = container && container.querySelector<HTMLElement>('#pbxEditToolbar')
 
@@ -641,13 +674,16 @@ function updatePanelPositionNow() {
     const margin = 20 // px
     const maxToolbarWidth = container.offsetWidth - margin * 2
     editToolbarElement.style.maxWidth = `${maxToolbarWidth}px`
-    editToolbarElement.style.removeProperty('width')
 
-    editToolbarElement.style.position = 'absolute'
+    editToolbarElement.style.position = editToolbarPinned.value ? 'fixed' : 'absolute'
     editToolbarElement.classList.add('is-visible')
-    applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
-    // Force layout so inner flex wraps within max-width before measuring size/position.
-    void editToolbarElement.offsetHeight
+
+    if (remeasureWidth) {
+      editToolbarElement.style.removeProperty('width')
+      applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
+      // Force layout so inner flex wraps within max-width before measuring size/position.
+      void editToolbarElement.offsetHeight
+    }
 
     const GAP = 20 // px
     let top =
@@ -656,17 +692,29 @@ function updatePanelPositionNow() {
       container.scrollTop -
       editToolbarElement.offsetHeight -
       GAP
-    top = Math.max(0, top)
-
     let left =
       selectedRect.left -
       containerRect.left +
       selectedRect.width / 2 -
       editToolbarElement.offsetWidth / 2
-    left = Math.max(
-      margin,
-      Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
-    )
+
+    if (editToolbarPinned.value) {
+      top = containerRect.top + margin
+      left = containerRect.left + container.offsetWidth / 2 - editToolbarElement.offsetWidth / 2
+      left = Math.max(
+        containerRect.left + margin,
+        Math.min(
+          left,
+          containerRect.left + container.offsetWidth - editToolbarElement.offsetWidth - margin,
+        ),
+      )
+    } else {
+      top = Math.max(0, top)
+      left = Math.max(
+        margin,
+        Math.min(left, container.offsetWidth - editToolbarElement.offsetWidth - margin),
+      )
+    }
     editToolbarElement.style.top = `${top}px`
     editToolbarElement.style.left = `${left}px`
     window.dispatchEvent(new CustomEvent('pagebuilder:toolbar-positioned'))
@@ -677,15 +725,23 @@ function updatePanelPositionNow() {
 }
 
 const settleToolbarPosition = function () {
-  updatePanelPositionNow()
-  requestAnimationFrame(updatePanelPositionNow)
+  updatePanelPositionNow({ remeasureWidth: true })
+  requestAnimationFrame(() => updatePanelPositionNow({ remeasureWidth: true }))
+}
+
+function updatePanelPositionOnScroll() {
+  cancelAnimationFrame(panelPositionRaf)
+  panelPositionRaf = requestAnimationFrame(() => {
+    panelPositionRaf = 0
+    updatePanelPositionNow({ remeasureWidth: false })
+  })
 }
 
 function updatePanelPosition() {
   cancelAnimationFrame(panelPositionRaf)
   panelPositionRaf = requestAnimationFrame(() => {
     panelPositionRaf = 0
-    updatePanelPositionNow()
+    updatePanelPositionNow({ remeasureWidth: true })
   })
 }
 
@@ -726,7 +782,7 @@ onMounted(async () => {
   const container = pbxBuilderWrapper.value
   if (!container) return
 
-  panelPositionObserver = new MutationObserver(updatePanelPosition)
+  panelPositionObserver = new MutationObserver(handlePanelMutation)
   panelPositionObserver.observe(container, {
     attributes: true,
     attributeFilter: ['selected'],
@@ -734,8 +790,8 @@ onMounted(async () => {
     subtree: true,
   })
 
-  container.addEventListener('scroll', updatePanelPosition, { passive: true })
-  window.addEventListener('scroll', updatePanelPosition, { passive: true })
+  container.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
+  window.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
   window.addEventListener('resize', updatePanelPosition)
   window.addEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.addEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
@@ -761,8 +817,8 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(panelPositionRaf)
   panelPositionObserver?.disconnect()
   panelPositionObserver = null
-  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPosition)
-  window.removeEventListener('scroll', updatePanelPosition)
+  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPositionOnScroll)
+  window.removeEventListener('scroll', updatePanelPositionOnScroll)
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
@@ -1252,30 +1308,6 @@ onBeforeUnmount(() => {
       id="pagebuilder-main"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-relative pbx-h-full pbx-flex pbx-pb-2 pbx-gap-2"
     >
-      <!-- Left Menu Start -->
-      <div
-        @click.self="
-          async () => {
-            await pageBuilderService.clearHtmlSelection()
-          }
-        "
-        id="pagebuilder-left-menu"
-        class="pbx-w-16 pbx-pt-7 pbx-pb-2 pbx-bg-myPrimaryLightGrayColor pbx-rounded-r-2xl pbx-shadow-sm"
-      >
-        <div class="pbx-mx-2 pbx-flex pbx-flex-col pbx-myPrimaryGap pbx-items-stretch">
-          <div
-            @click.self="
-              async () => {
-                await pageBuilderService.clearHtmlSelection()
-              }
-            "
-          >
-            <PageLayoutToolbar></PageLayoutToolbar>
-          </div>
-        </div>
-      </div>
-      <!-- Left Menu End -->
-
       <main
         ref="pbxBuilderWrapper"
         id="page-builder-wrapper"
@@ -1290,7 +1322,9 @@ onBeforeUnmount(() => {
           <template v-if="getElement">
             <SelectedElementToolbar
               ref="selectedElementToolbarRef"
+              :toolbar-pinned="editToolbarPinned"
               @open-image-settings="openImageSettings"
+              @toggle-toolbar-pin="toggleEditToolbarPinned"
             ></SelectedElementToolbar>
           </template>
         </div>
@@ -1347,10 +1381,9 @@ onBeforeUnmount(() => {
               <div class="pbx-flex pbx-items-center">
                 <div
                   @click="handleInsertButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-                  :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
-                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                  <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> add </span>
                     <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                   </div>
@@ -1358,11 +1391,13 @@ onBeforeUnmount(() => {
                 <div
                   v-if="props.DisplayProducts"
                   @click="handleInsertProductButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
-                  <div class="pbx-flex pbx-items-center pbx-gap-1">
+                  <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> shopping_bag </span>
-                    <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                    <span v-if="false" class="lg:pbx-block pbx-hidden">
+                      {{ translate('Products') }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -1390,10 +1425,9 @@ onBeforeUnmount(() => {
                 <div class="pbx-flex pbx-items-center">
                   <div
                     @click="handleInsertButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-l-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
-                    :class="props.DisplayProducts ? '' : 'pbx-rounded-r-full'"
+                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                   >
-                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> add </span>
                       <span class="lg:pbx-block pbx-hidden"> {{ translate('Add') }}</span>
                     </div>
@@ -1401,11 +1435,13 @@ onBeforeUnmount(() => {
                   <div
                     v-if="props.DisplayProducts"
                     @click="handleInsertProductButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-h-10 pbx-rounded-r-full pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-pl-2 pbx-pr-2 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
-                    <div class="pbx-flex pbx-items-center pbx-gap-1">
+                    <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> shopping_bag </span>
-                      <span class="lg:pbx-block pbx-hidden"> {{ translate('Products') }}</span>
+                      <span v-if="false" class="lg:pbx-block pbx-hidden">
+                        {{ translate('Products') }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -1538,6 +1574,19 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+#pagebuilder .pbx-addsection-btn {
+  height: 1.875rem;
+  padding-inline: 0.375rem;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+#pagebuilder .pbx-addsection-btn > div {
+  gap: 0.125rem;
+}
+#pagebuilder .pbx-addsection-btn .material-symbols-outlined {
+  font-size: 1.125rem;
+  line-height: 1;
 }
 /* Insert buttons are siblings of [data-pagebuilder-content], so section markup
    remains isolated from builder controls. */

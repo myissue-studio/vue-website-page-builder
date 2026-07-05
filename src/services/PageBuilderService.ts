@@ -6,6 +6,7 @@ import type {
   InsertProductsOptions,
   PageBuilderConfig,
   PageBuilderProductInput,
+  PageMeta,
   ProductSectionOptions,
   PageSettings,
   SEOCheck,
@@ -38,6 +39,12 @@ import {
   DEFAULT_PRODUCT_SECTION_OPTIONS,
   parseProductSectionFromElement,
 } from '../utils/builder/product-section-options'
+import {
+  applyPageMetaToElement,
+  mergePageMetaIntoSettings,
+  pageMetaFromPageSettings,
+  readPageMetaFromElement,
+} from '../utils/builder/page-meta'
 
 function scrollContainerToCenterElement(
   container: HTMLElement,
@@ -128,7 +135,7 @@ export class PageBuilderService {
   private pendingMountComponents: BuilderResourceData | null = null
   private globalStylesObserver: MutationObserver | null = null
   private _pendingPageSettings: PageSettings | null = null
-  private _lastKnownPageSettings: { classes: string; style: string } | null = null
+  private _lastKnownPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
@@ -869,14 +876,14 @@ export class PageBuilderService {
     // Keep the latest page-level classes/styles available after Vue remounts.
     if (this.globalStylesObserver) this.globalStylesObserver.disconnect()
     this.globalStylesObserver = new MutationObserver(() => {
-      this._lastKnownPageSettings = {
-        classes: pagebuilder.getAttribute('class') ?? '',
-        style: pagebuilder.getAttribute('style') ?? '',
+      const current = this.readCurrentPageSettings()
+      if (current) {
+        this._lastKnownPageSettings = current
       }
     })
     this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
-      attributeFilter: ['class', 'style'],
+      attributeFilter: ['class', 'style', 'data-meta-title', 'data-meta-description'],
     })
 
     await nextTick()
@@ -1387,8 +1394,8 @@ export class PageBuilderService {
       pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
     }
 
-    this.canvasClickCaptureListener = (event: Event) => {
-      void this.handleCanvasClickCapture(event)
+    this.canvasClickCaptureListener = () => {
+      void this.handleCanvasClickCapture()
     }
     this.canvasDblClickCaptureListener = (event: Event) => {
       void this.handleCanvasDoubleClickCapture(event)
@@ -1415,7 +1422,7 @@ export class PageBuilderService {
     return null
   }
 
-  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
+  private handleCanvasClickCapture = async (): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
       this.pageBuilderStateStore.setInlineTipTapEditor(false)
@@ -1434,7 +1441,16 @@ export class PageBuilderService {
     if (this.pageBuilderStateStore.getInlineTipTapEditor) return
 
     const element = this.findEditableElementFromEventTarget(e.target)
-    if (!element || !this.isValidTextElement(element)) return
+    if (!element || !this.isValidTextElement(element)) {
+      if (
+        e.target instanceof Element &&
+        (e.target.tagName === 'IMG' || e.target.closest('img'))
+      ) {
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+      }
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -1499,7 +1515,10 @@ export class PageBuilderService {
   private handleElementDoubleClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     if (this.pageBuilderStateStore.getInlineTipTapEditor) return
-    if (!this.isValidTextElement(element)) return
+    if (!this.isValidTextElement(element)) {
+      e.stopPropagation()
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -2695,7 +2714,18 @@ export class PageBuilderService {
   public isValidTextElement(element: HTMLElement | null | undefined): boolean {
     if (!element) return false
 
+    if (element.hasAttribute('data-pb-no-inline-text')) return false
+
     if (element.tagName === 'IMG' || element.firstElementChild?.tagName === 'IFRAME') {
+      return false
+    }
+
+    if (element.querySelector('img')) return false
+
+    if (
+      element.classList.contains('pbx-product-card-image') ||
+      element.classList.contains('product-card-image')
+    ) {
       return false
     }
 
@@ -2852,8 +2882,14 @@ export class PageBuilderService {
     }
 
     if (pageSettings?.style) {
-      pagebuilder.setAttribute('style', pageSettings.style)
+      const styleValue =
+        typeof pageSettings.style === 'string'
+          ? pageSettings.style
+          : this.convertStyleObjectToString(pageSettings.style) || ''
+      if (styleValue) pagebuilder.setAttribute('style', styleValue)
     }
+
+    applyPageMetaToElement(pagebuilder, pageMetaFromPageSettings(pageSettings))
 
     components.forEach((comp) => {
       const parser = new DOMParser()
@@ -3033,13 +3069,14 @@ export class PageBuilderService {
    * Reads the current page settings.
    * Prioritises the live #pagebuilder element (always current) and falls back to localStorage.
    */
-  private readCurrentPageSettings(): { classes: string; style: string } | null {
+  private readCurrentPageSettings(): PageSettings | null {
     // The live DOM is always the most up-to-date source — read it first.
     const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
     if (pagebuilder) {
       return {
         classes: pagebuilder.className || '',
         style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
+        meta: readPageMetaFromElement(pagebuilder),
       }
     }
 
@@ -3073,13 +3110,18 @@ export class PageBuilderService {
   }
 
   /** Applies captured global page classes/styles to the page wrapper once. */
-  private applyPageSettingsToPage(pageSettings: { classes: string; style: string }): void {
+  private applyPageSettingsToPage(pageSettings: PageSettings): void {
     const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
     if (pagebuilder) {
       if (pageSettings.classes) pagebuilder.setAttribute('class', pageSettings.classes)
       else pagebuilder.removeAttribute('class')
-      if (pageSettings.style) pagebuilder.setAttribute('style', pageSettings.style)
+      const styleValue =
+        typeof pageSettings.style === 'string'
+          ? pageSettings.style
+          : this.convertStyleObjectToString(pageSettings.style) || ''
+      if (styleValue) pagebuilder.setAttribute('style', styleValue)
       else pagebuilder.removeAttribute('style')
+      applyPageMetaToElement(pagebuilder, pageMetaFromPageSettings(pageSettings))
     }
 
     // Page settings used to be copied to every content wrapper. Clear those legacy
@@ -3089,7 +3131,7 @@ export class PageBuilderService {
       el.removeAttribute('style')
     })
 
-    if (pageSettings.classes || pageSettings.style) {
+    if (pageSettings.classes || pageSettings.style || pageSettings.meta) {
       this._lastKnownPageSettings = pageSettings
     }
   }
@@ -3103,14 +3145,14 @@ export class PageBuilderService {
 
     this.globalStylesObserver.disconnect()
     this.globalStylesObserver = new MutationObserver(() => {
-      this._lastKnownPageSettings = {
-        classes: pagebuilder.getAttribute('class') ?? '',
-        style: pagebuilder.getAttribute('style') ?? '',
+      const current = this.readCurrentPageSettings()
+      if (current) {
+        this._lastKnownPageSettings = current
       }
     })
     this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
-      attributeFilter: ['class', 'style'],
+      attributeFilter: ['class', 'style', 'data-meta-title', 'data-meta-description'],
     })
   }
 
@@ -3580,6 +3622,41 @@ export class PageBuilderService {
     await this.handleAutoSave()
   }
 
+  /**
+   * Replaces the entire page with a theme template (clears existing sections first).
+   */
+  public async replaceTheme(themeHtml: string): Promise<void> {
+    const trimmed = themeHtml?.trim()
+    if (!trimmed) return
+
+    const validationError = this.validateMountingHTML(trimmed, { logError: true })
+    if (validationError) return
+
+    this.deleteAllComponentsFromDOM()
+    await this.mountComponentsToDOM(trimmed)
+    await this.handleAutoSave()
+  }
+
+  public getPageMeta(): PageMeta {
+    const settings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
+    return pageMetaFromPageSettings(settings)
+  }
+
+  public async setPageMeta(partial: Partial<PageMeta>): Promise<void> {
+    const current = this.getPageMeta()
+    const next: PageMeta = { ...current, ...partial }
+
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (pagebuilder) {
+      applyPageMetaToElement(pagebuilder, next)
+    }
+
+    const base: PageSettings =
+      this.readCurrentPageSettings() ?? this._lastKnownPageSettings ?? { classes: '', style: '' }
+    this._lastKnownPageSettings = mergePageMetaIntoSettings(base, next)
+    await this.handleAutoSave()
+  }
+
   public async analyzeSEO(): Promise<SEOSummary> {
     const getComponents = await this.returnLatestComponents()
 
@@ -3959,6 +4036,7 @@ export class PageBuilderService {
       pageSettings = {
         classes: pagebuilderDiv.className || '',
         style: this.parseStyleString(rawStyle),
+        meta: readPageMetaFromElement(pagebuilderDiv as HTMLElement),
       }
     }
 
@@ -4213,6 +4291,7 @@ export class PageBuilderService {
         configPageSettings = {
           classes: importedPageBuilder.className || '',
           style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+          meta: readPageMetaFromElement(importedPageBuilder),
         }
       }
 
@@ -4275,9 +4354,10 @@ export class PageBuilderService {
         const settings = this._pendingPageSettings
         this._pendingPageSettings = null
         const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
-        const pageSettings = {
+        const pageSettings: PageSettings = {
           classes: settings.classes || '',
           style: this.convertStyleObjectToString(settings.style) || '',
+          meta: pageMetaFromPageSettings(settings),
         }
         if (pagebuilder) {
           this.applyPageSettingsToPage(pageSettings)

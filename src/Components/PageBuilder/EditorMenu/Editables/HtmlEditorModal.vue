@@ -4,13 +4,23 @@ import BaseModal from '../../../Modals/BaseModal.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
-const props = defineProps<{
-  show: boolean
-  title: string
-  html: string
-  isLoading?: boolean
-  error?: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    show: boolean
+    title: string
+    html: string
+    isLoading?: boolean
+    error?: string | null
+    /** Toolbar badge, e.g. HTML or JSON */
+    badge?: string
+    /** Preview-only mode — hides Save and locks the textarea */
+    readOnly?: boolean
+  }>(),
+  {
+    badge: 'HTML',
+    readOnly: false,
+  },
+)
 
 const emit = defineEmits<{
   close: []
@@ -56,10 +66,10 @@ async function copyHtml() {
       <div v-else class="pbx-htmlCodeViewer">
         <div class="pbx-htmlCodeViewerToolbar">
           <div class="pbx-htmlCodeViewerToolbarLeft">
-            <span class="pbx-htmlCodeViewerBadge">HTML</span>
+            <span class="pbx-htmlCodeViewerBadge">{{ badge }}</span>
             <span class="pbx-htmlCodeViewerMeta"> {{ lineCount }} {{ translate('lines') }} </span>
             <span class="pbx-htmlCodeViewerMeta pbx-htmlCodeViewerMetaMuted">
-              {{ translate('Editable') }}
+              {{ readOnly ? translate('Read-only') : translate('Editable') }}
             </span>
           </div>
           <button type="button" class="pbx-htmlCodeViewerCopy" @click="copyHtml">
@@ -75,6 +85,7 @@ async function copyHtml() {
             class="pbx-htmlCodeEditorTextarea"
             :value="html"
             :aria-label="title"
+            :readonly="readOnly"
             spellcheck="false"
             @input="onHtmlInput"
           ></textarea>
@@ -91,7 +102,7 @@ async function copyHtml() {
         <button type="button" class="pbx-mySecondaryButton" @click="$emit('close')">
           {{ translate('Close') }}
         </button>
-        <button type="button" class="pbx-myPrimaryButton" @click="$emit('save')">
+        <button v-if="!readOnly" type="button" class="pbx-myPrimaryButton" @click="$emit('save')">
           {{ translate('Save') }}
         </button>
       </template>

@@ -496,7 +496,7 @@ var DOMIterator = class _DOMIterator {
 
 // node_modules/mark.js/src/lib/mark.js
 var Mark = class {
-  // eslint-disable-line no-unused-vars
+   
   /**
    * @param {HTMLElement|HTMLElement[]|NodeList|string} ctx - The context DOM
    * element, an array of DOM elements, a NodeList or a selector

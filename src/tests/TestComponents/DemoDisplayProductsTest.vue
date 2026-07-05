@@ -9,6 +9,7 @@ import type {
   ProductMobileColumns,
 } from '../../types'
 import { useTranslations } from '../../composables/useTranslations'
+import { useToast } from '../../composables/useToast'
 import ProductSectionSettingsFields from '../../Components/PageBuilder/EditorMenu/Editables/ProductSectionSettingsFields.vue'
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
@@ -19,6 +20,7 @@ import productsArray from '../productsArray.test.json'
 const pageBuilderService = getPageBuilder()
 const { closeProductLibraryModal } = usePageBuilderModal()
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const isLoading = ref(false)
 const searchQuery = ref('')
@@ -85,6 +87,7 @@ async function insertSelectedProducts() {
     cardStyle: cardStyle.value,
     roundedImages: roundedImages.value,
   })
+  showToast(translate('Products added to page'), 'success')
   closeProductLibraryModal()
   isLoading.value = false
 }

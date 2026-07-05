@@ -310,9 +310,15 @@ export interface PageBuilderUser {
   image?: string // Optional - allows flexibility for different user contexts
 }
 
+export interface PageMeta {
+  title?: string
+  description?: string
+}
+
 export interface PageSettings {
   classes?: string
   style?: string | Record<string, string>
+  meta?: PageMeta
   [key: string]: unknown
 }
 

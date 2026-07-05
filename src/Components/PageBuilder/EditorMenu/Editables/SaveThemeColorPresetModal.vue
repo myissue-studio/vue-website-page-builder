@@ -56,7 +56,7 @@ function saveToPreset(id: ThemeColorPresetId): void {
           class="pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
           :style="{ backgroundColor: color }"
         ></span>
-        <span class="pbx-font-mono pbx-text-sm pbx-text-myPrimaryDarkGrayColor">{{ color }}</span>
+        <span class="pbx-font-sans pbx-text-sm pbx-text-myPrimaryDarkGrayColor">{{ color }}</span>
       </div>
 
       <div class="pbx-grid pbx-grid-cols-1 pbx-gap-2">
@@ -76,7 +76,7 @@ function saveToPreset(id: ThemeColorPresetId): void {
               {{ translate(preset.label) }}
             </span>
           </div>
-          <span class="pbx-font-mono pbx-text-xs pbx-text-gray-400">{{ preset.color }}</span>
+          <span class="pbx-font-sans pbx-text-xs pbx-text-gray-400">{{ preset.color }}</span>
         </button>
       </div>
     </div>

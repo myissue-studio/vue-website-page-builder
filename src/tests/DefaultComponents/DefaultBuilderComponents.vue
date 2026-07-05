@@ -3,18 +3,24 @@ import { ref, computed, watch } from 'vue'
 import componentHelpers from '../../utils/html-elements/componentHelpers'
 import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
+import { getBlockDescriptionKey } from '../../utils/html-elements/block-descriptions'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import type { ComponentObject } from '../../types'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
+import { useToast } from '../../composables/useToast'
+import { sharedPageBuilderStore } from '../../stores/shared-store'
 import ComponentThumbnail from '../../Components/ComponentThumbnail.vue'
 import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
+import ConfirmActionModal from '../../Components/Modals/ConfirmActionModal.vue'
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const pageBuilderService = getPageBuilder()
+const pageBuilderStateStore = sharedPageBuilderStore
 
 defineProps({
   customMediaComponent: {
@@ -106,21 +112,71 @@ const filteredThemes = computed(() => {
 // Get modal close function
 const { closeAddComponentModal } = usePageBuilderModal()
 
-// Super simple component addition with professional modal closing!
-const handleDropTheme = async function (themeHtml: string) {
-  isLoading.value = true
+const hasPageContent = computed(() => (pageBuilderStateStore.getComponents?.length ?? 0) > 0)
 
-  // Translate all occurrences of hardcoded strings in the theme HTML
-  const translatedThemeHtml = themeHtml
+const showReplaceThemeModal = ref(false)
+const pendingThemeHtml = ref('')
+const typeModal = ref('')
+const gridColumnModal = ref(1)
+const titleModal = ref('')
+const descriptionModal = ref('')
+const firstButtonModal = ref('')
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
+
+function translateThemeHtml(themeHtml: string): string {
+  return themeHtml
     .replace(/Layouts and visual\./g, translate('Layouts and visual.'))
     .replace(
       /Start customizing by editing this default text directly in the editor\./g,
       translate('Start customizing by editing this default text directly in the editor.'),
     )
+}
 
-  await pageBuilderService.addTheme(translatedThemeHtml)
-  closeAddComponentModal()
-  isLoading.value = false
+function blockDescription(title: string): string {
+  const key = getBlockDescriptionKey(title)
+  return key ? translate(key) : ''
+}
+
+const applyTheme = async function (themeHtml: string) {
+  isLoading.value = true
+  try {
+    await pageBuilderService.replaceTheme(translateThemeHtml(themeHtml))
+    closeAddComponentModal()
+    showToast(translate('Theme applied successfully'), 'success')
+  } catch {
+    showToast(translate('Could not apply theme'), 'error')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleDropTheme = function (themeHtml: string) {
+  if (hasPageContent.value) {
+    pendingThemeHtml.value = themeHtml
+    showReplaceThemeModal.value = true
+    typeModal.value = 'delete'
+    gridColumnModal.value = 2
+    titleModal.value = translate('Replace page with theme')
+    descriptionModal.value = translate('Replace page with theme description')
+    firstButtonModal.value = translate('Close')
+    secondButtonModal.value = null
+    thirdButtonModal.value = translate('Replace')
+    firstModalButtonFunctionDynamicModalBuilder.value = () => {
+      showReplaceThemeModal.value = false
+    }
+    secondModalButtonFunctionDynamicModalBuilder.value = () => {}
+    thirdModalButtonFunctionDynamicModalBuilder.value = async () => {
+      await applyTheme(pendingThemeHtml.value)
+      showReplaceThemeModal.value = false
+    }
+    return
+  }
+
+  void applyTheme(themeHtml)
 }
 
 // Super simple component addition with professional modal closing!
@@ -142,6 +198,7 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
   }
 
   await pageBuilderService.addComponent(translatedComponentObject)
+  showToast(translate('Component added to page'), 'success')
   closeAddComponentModal()
   isLoading.value = false
 }
@@ -223,9 +280,11 @@ const convertToComponentObject = function (comp: {
           <ModalFilterChip
             v-for="category in componentOrThemes"
             :key="category"
-            :icon="category === 'Themes' ? 'palette' : 'widgets'"
+            :icon="category === 'Themes' ? 'asterisk' : 'asterisk'"
             :label="translate(category)"
-            :hint="category === 'Themes' ? translate('Full page themes') : translate('Building blocks')"
+            :hint="
+              category === 'Themes' ? translate('Full page themes') : translate('Building blocks')
+            "
             :active="selectedThemeSelection === category"
             @click="selectedThemeSelection = category"
           />
@@ -236,7 +295,9 @@ const convertToComponentObject = function (comp: {
         <!-- theme is selected start -->
         <template v-if="selectedThemeSelection === 'Themes'">
           <div class="pbx-mb-8">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Themes') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Themes') }}</h3>
+            </div>
             <div class="pbx-modalFilterBar">
               <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
               <div class="pbx-modalFilterBarChips">
@@ -262,11 +323,7 @@ const convertToComponentObject = function (comp: {
                   :title="translate(theme.title)"
                   @click="handleDropTheme(theme.html_code)"
                 >
-                  <ComponentThumbnail
-                    :htmlCode="theme.html_code"
-                    :maxHeight="360"
-                    fit="contain"
-                  />
+                  <ComponentThumbnail :htmlCode="theme.html_code" :maxHeight="480" fit="contain" />
                 </ModalPreviewCard>
               </div>
               <p
@@ -283,7 +340,9 @@ const convertToComponentObject = function (comp: {
         <template v-if="selectedThemeSelection === 'Components'">
           <!-- Helper Components Section -->
           <div class="pbx-mb-8">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Helper Components') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Helper Components') }}</h3>
+            </div>
 
             <!-- Helper category filter -->
             <div class="pbx-modalFilterBar">
@@ -320,7 +379,9 @@ const convertToComponentObject = function (comp: {
 
           <!-- Regular Components Section -->
           <div class="pbx-px-2">
-            <h3 class="pbx-myQuaternaryHeader pbx-mb-4">{{ translate('Layout Components') }}</h3>
+            <div class="pbx-modalSectionTitleRow">
+              <h3 class="pbx-myQuaternaryHeader">{{ translate('Layout Components') }}</h3>
+            </div>
             <div class="pbx-modalFilterBar">
               <span class="pbx-modalFilterBarTitle">{{ translate('Category') }}</span>
               <div class="pbx-modalFilterBarChips">
@@ -344,13 +405,10 @@ const convertToComponentObject = function (comp: {
                   v-for="comp in pagedComponents"
                   :key="comp.title"
                   :title="translate(comp.title)"
+                  :description="blockDescription(comp.title)"
                   @click="handleDropComponent(convertToComponentObject(comp))"
                 >
-                  <ComponentThumbnail
-                    :htmlCode="comp.html_code"
-                    :maxHeight="260"
-                    fit="contain"
-                  />
+                  <ComponentThumbnail :htmlCode="comp.html_code" :maxHeight="360" fit="contain" />
                 </ModalPreviewCard>
               </div>
               <p
@@ -367,7 +425,7 @@ const convertToComponentObject = function (comp: {
               >
                 <button
                   type="button"
-                  class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
+                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                   :disabled="componentsPage === 1"
                   :class="componentsPage === 1 ? 'pbx-opacity-40 pbx-cursor-not-allowed' : ''"
                   @click="componentsPage--"
@@ -380,7 +438,7 @@ const convertToComponentObject = function (comp: {
                     v-for="page in componentsTotalPages"
                     :key="page"
                     type="button"
-                    class="pbx-mySecondaryButton"
+                    class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                     :class="
                       page === componentsPage
                         ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
@@ -394,7 +452,7 @@ const convertToComponentObject = function (comp: {
 
                 <button
                   type="button"
-                  class="pbx-mySecondaryButton pbx-text-xs pbx-px-4"
+                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                   :disabled="componentsPage === componentsTotalPages"
                   :class="
                     componentsPage === componentsTotalPages
@@ -415,4 +473,28 @@ const convertToComponentObject = function (comp: {
       </div>
     </div>
   </div>
+
+  <ConfirmActionModal
+    :showDynamicModalBuilder="showReplaceThemeModal"
+    :type="typeModal"
+    :gridColumnAmount="gridColumnModal"
+    :title="titleModal"
+    :description="descriptionModal"
+    :isLoading="isLoading"
+    :firstButtonText="firstButtonModal"
+    :secondButtonText="secondButtonModal ?? undefined"
+    :thirdButtonText="thirdButtonModal ?? undefined"
+    @firstModalButtonFunctionDynamicModalBuilder="
+      () => firstModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @secondModalButtonFunctionDynamicModalBuilder="
+      () => secondModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @thirdModalButtonFunctionDynamicModalBuilder="
+      () => thirdModalButtonFunctionDynamicModalBuilder?.()
+    "
+  >
+    <header></header>
+    <main></main>
+  </ConfirmActionModal>
 </template>

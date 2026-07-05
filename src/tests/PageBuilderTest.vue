@@ -2,38 +2,60 @@
 import PageBuilder from '../PageBuilder/PageBuilder.vue'
 import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
 import DemoDisplayProductsTest from '../tests/TestComponents/DemoDisplayProductsTest.vue'
-import { computed, watch } from 'vue'
-import componentsArray from '../tests/componentsArray.test.json'
+import DemoThemeConfigPanel from '../tests/TestComponents/DemoThemeConfigPanel.vue'
+import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
+import SliderIcon from '../Components/Icons/SliderIcon.vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
+import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from '../tests/demo-theme-presets'
+import { getDemoPageHtml, translateThemePlaceholderText } from '../tests/demo-theme-utils'
 
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()
 
-const translatedComponents = computed(() => {
-  return componentsArray.map((component) => {
-    const newComponent = { ...component }
-    newComponent.html_code = newComponent.html_code.replace(
-      /{{\s*translate\('([^']+)'\)\s*}}/g,
-      (_, key) => translate(key),
-    )
-    return newComponent
-  })
-})
+const showDemoThemePanel = ref(false)
+const showWelcomeHint = ref(false)
+const highlightThemeTrigger = ref(false)
+
+const fashionPreset = DEMO_THEME_PACKS[0]
 
 const demoPost = computed(() => ({
   id: 1,
-  title: 'Demo Article',
-  content:
-    '<div id="pagebuilder" class="pbx-bg-white" style="letter-spacing: 0.5px;">' +
-    translatedComponents.value.map((component) => component.html_code).join('\n') +
-    '</div>',
+  title: 'mybuilder.dev Demo',
+  content: translateThemePlaceholderText(getDemoPageHtml(), translate),
 }))
 
 const publishPageBuilder = function () {
   const latestHtml = pageBuilderService.getSavedPageHtml()
   console.info('Full page HTML ready for backend submission:', latestHtml)
 }
+
+function dismissWelcomeHint(): void {
+  showWelcomeHint.value = false
+  highlightThemeTrigger.value = false
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(DEMO_THEME_HINT_STORAGE_KEY, '1')
+  }
+}
+
+function openDemoThemePanel(): void {
+  showDemoThemePanel.value = true
+  highlightThemeTrigger.value = false
+}
+
+onMounted(() => {
+  const hasSeenHint =
+    typeof localStorage !== 'undefined' && localStorage.getItem(DEMO_THEME_HINT_STORAGE_KEY) === '1'
+
+  if (!hasSeenHint) {
+    showWelcomeHint.value = true
+    highlightThemeTrigger.value = true
+    window.setTimeout(() => {
+      showDemoThemePanel.value = false
+    }, 900)
+  }
+})
 
 watch(
   currentTranslations,
@@ -44,7 +66,7 @@ watch(
 
     const configPageBuilder = {
       userForPageBuilder: {
-        id: 1, // Optional — scopes theme color presets to this user in localStorage
+        id: 1,
         name: 'Jane Doe',
         image: '/jane_doe.jpg',
       },
@@ -66,45 +88,21 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        // fontFamily — first recognised entry sets the canvas default.
-        // The editor font-family picker remains a broad override palette and is not restricted by this list.
-        // Unknown names are skipped until a recognised font or CSS generic family is found.
-        // Available fonts: jost, raleway, palantino, arial, helvetica, georgia, times, times-new-roman,
-        // courier, courier-new, verdana, tahoma, trebuchet, garamond, bookman, comic-sans, impact,
-        // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
-        // didot, franklin-gothic, rockwell, baskerville, inter, roboto, open-sans, lato, montserrat,
-        // poppins, nunito, merriweather, playfair-display, source-sans-3, noto-sans, work-sans,
-        // quicksand, pt-serif, crimson-text, sans, serif, mono
-        fontFamily: 'jost, raleway, arial, fantasy',
-        // elementFonts — optional per-element font overrides for h1–h6 and p.
-        // Same format as fontFamily: first recognised entry wins.
-        // An explicit font class picked in the editor on an element overrides both fontFamily and elementFonts.
+        fontFamily: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
         elementFonts: {
-          h1: 'jost, raleway, arial, fantasy',
-          h2: 'jost, raleway, arial, fantasy',
-          h3: 'jost, raleway, arial, fantasy',
-          h4: 'jost, raleway, arial, fantasy',
-          h5: 'jost, raleway, arial, fantasy',
-          h6: 'jost, raleway, arial, fantasy',
-          p: 'jost, raleway, arial, fantasy',
+          h1: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h2: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h3: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h4: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h5: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h6: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          p: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
         },
       },
 
       settings: {
-        brandColor: '#000000',
-        themeColorPresets: {
-          enabled: true,
-          colors: [
-            { id: 'primary', label: 'Primary', color: '482C3D', enabled: true },
-            { id: 'secondary', label: 'Secondary', color: 'E5D352', enabled: true },
-            { id: 'custom1', label: 'Custom 1', color: 'AC3931', enabled: true },
-            { id: 'custom2', label: 'Custom 2', color: '623CEA', enabled: true },
-            { id: 'custom3', label: 'Custom 3', color: '54426B', enabled: true },
-            { id: 'custom4', label: 'Custom 4', color: '#ffffff', enabled: true },
-            { id: 'custom5', label: 'Custom 5', color: '#ffffff', enabled: false },
-            { id: 'custom6', label: 'Custom 6', color: '#ffffff', enabled: false },
-          ],
-        },
+        brandColor: fashionPreset.brandColor,
+        themeColorPresets: fashionPreset.themeColorPresets,
       },
       pageSettings,
     } as const
@@ -118,14 +116,106 @@ watch(
 <template>
   <div class="pbx-bg-white">
     <div class="lg:pbx-p-2">
-      <!--   :CustomBuilderComponents="DemoBuilderComponentsTest" -->
       <PageBuilder
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
         :DisplayProducts="DemoDisplayProductsTest"
         :showPublishButton="true"
         :showCloseButton="true"
         @handlePublishPageBuilder="publishPageBuilder"
-      ></PageBuilder>
+      />
+
+      <button
+        v-if="!showDemoThemePanel"
+        type="button"
+        class="pbx-demoThemeTrigger"
+        :class="{ 'pbx-demoThemeTrigger--pulse': highlightThemeTrigger }"
+        @click="openDemoThemePanel"
+      >
+        <span class="pbx-pageDesignOpenButtonIcon">
+          <SliderIcon :size="18" />
+        </span>
+        <span class="pbx-pageDesignOpenButtonText pbx-pr-6">
+          <span class="pbx-pageDesignOpenButtonLabel">Customize theme for your business</span>
+          <span class="pbx-pageDesignOpenButtonHint">
+            Brand color, presets &amp; fonts — live demo
+          </span>
+        </span>
+      </button>
+
+      <FloatingSidePanel
+        title="Demo: Your brand theme"
+        :showSidebarPanel="showDemoThemePanel"
+        position="right"
+        @closeSidebarPanel="showDemoThemePanel = false"
+      >
+        <DemoThemeConfigPanel
+          :show-welcome-hint="showWelcomeHint"
+          @dismiss-welcome-hint="dismissWelcomeHint"
+        />
+      </FloatingSidePanel>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pbx-demoThemeTrigger {
+  position: fixed;
+  left: 1rem;
+  bottom: 1.25rem;
+  z-index: 9990;
+  display: flex;
+  max-width: min(22rem, calc(100vw - 2rem));
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.08),
+    0 4px 6px -4px rgb(0 0 0 / 0.08);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.pbx-demoThemeTrigger:hover {
+  border-color: var(--myPrimaryLinkColor, #db93b0);
+  box-shadow:
+    0 12px 20px -5px rgb(0 0 0 / 0.12),
+    0 6px 8px -4px rgb(0 0 0 / 0.08);
+  transform: translateY(-1px);
+}
+
+.pbx-demoThemeTrigger--pulse {
+  animation: demo-theme-trigger-pulse 2s ease-in-out infinite;
+}
+
+@keyframes demo-theme-trigger-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.08),
+      0 4px 6px -4px rgb(0 0 0 / 0.08),
+      0 0 0 0 color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 45%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 12px 20px -5px rgb(0 0 0 / 0.12),
+      0 6px 8px -4px rgb(0 0 0 / 0.08),
+      0 0 0 6px color-mix(in srgb, var(--myPrimaryLinkColor, #db93b0) 0%, transparent);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pbx-demoThemeTrigger {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+</style>

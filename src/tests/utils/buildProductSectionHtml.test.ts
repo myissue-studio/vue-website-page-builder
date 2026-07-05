@@ -69,4 +69,11 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('grid-cols-2 sm:grid-cols-2 lg:grid-cols-4')
     expect(html).toContain('data-pbx-product-mobile-cols="2"')
   })
+
+  it('uses six columns at large breakpoints for grid-6 layout', () => {
+    const html = buildProductSectionHtml(sample, 'grid-6')
+    expect(html).toContain('lg:grid-cols-6')
+    expect(html).not.toContain('md:grid-cols-3')
+    expect(html).toContain('data-pbx-product-layout="grid-6"')
+  })
 })

@@ -19,8 +19,12 @@ import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/produ
 const { translate } = useTranslations()
 const { showToast } = useToast()
 const pageBuilderService = getPageBuilder()
+const props = defineProps<{
+  toolbarPinned?: boolean
+}>()
 const emit = defineEmits<{
   (event: 'open-image-settings'): void
+  (event: 'toggle-toolbar-pin'): void
 }>()
 
 // Use shared store instance
@@ -114,6 +118,44 @@ const productCardStyle = ref<ProductCardStyle>(
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
 let productSettingsApplyQueued = false
+let productSettingsPendingSaveToast = false
+let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
+let productSettingsBaseline: {
+  layout: ProductGridLayout
+  mobileColumns: ProductMobileColumns
+  cardStyle: ProductCardStyle
+  roundedImages: boolean
+} | null = null
+
+const productSettingsMatchBaseline = (): boolean => {
+  if (!productSettingsBaseline) return true
+  return (
+    productLayout.value === productSettingsBaseline.layout &&
+    productMobileColumns.value === productSettingsBaseline.mobileColumns &&
+    productCardStyle.value === productSettingsBaseline.cardStyle &&
+    productRoundedImages.value === productSettingsBaseline.roundedImages
+  )
+}
+
+const notifyProductSectionSettingsSaved = () => {
+  productSettingsPendingSaveToast = true
+  if (productSettingsSaveToastTimer) clearTimeout(productSettingsSaveToastTimer)
+  productSettingsSaveToastTimer = setTimeout(() => {
+    showToast(translate('Product section settings saved'), 'success')
+    productSettingsPendingSaveToast = false
+    productSettingsSaveToastTimer = null
+  }, 350)
+}
+
+const flushProductSectionSettingsSavedToast = () => {
+  if (!productSettingsPendingSaveToast) return
+  if (productSettingsSaveToastTimer) {
+    clearTimeout(productSettingsSaveToastTimer)
+    productSettingsSaveToastTimer = null
+  }
+  showToast(translate('Product section settings saved'), 'success')
+  productSettingsPendingSaveToast = false
+}
 
 const isSelectedProductSection = computed(() => {
   void productSectionSettingsTick.value
@@ -122,33 +164,60 @@ const isSelectedProductSection = computed(() => {
 
 const openProductSectionSettings = () => {
   const options = pageBuilderService.getSelectedProductSectionOptions()
+  const mobileColumns = options.mobileColumns ?? 1
+  const cardStyle = options.cardStyle ?? 'minimal'
+  const roundedImages = options.roundedImages ?? false
+
+  productSettingsBaseline = {
+    layout: options.layout,
+    mobileColumns,
+    cardStyle,
+    roundedImages,
+  }
+
   productLayout.value = options.layout
-  productMobileColumns.value = options.mobileColumns ?? 1
-  productCardStyle.value = options.cardStyle ?? 'minimal'
-  productRoundedImages.value = options.roundedImages ?? false
+  productMobileColumns.value = mobileColumns
+  productCardStyle.value = cardStyle
+  productRoundedImages.value = roundedImages
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
+}
+
+const closeProductSectionSettings = () => {
+  flushProductSectionSettingsSavedToast()
+  showProductSectionSettingsModal.value = false
+  productSettingsBaseline = null
 }
 
 const applySelectedProductSectionSettings = async () => {
   if (!showProductSectionSettingsModal.value || productSettingsApplyQueued) return
   productSettingsApplyQueued = true
-  await pageBuilderService.updateSelectedProductSection({
-    layout: productLayout.value,
-    mobileColumns: productMobileColumns.value,
-    cardStyle: productCardStyle.value,
-    roundedImages: productRoundedImages.value,
-  })
-  productSectionSettingsTick.value++
-  productSettingsApplyQueued = false
+  try {
+    await pageBuilderService.updateSelectedProductSection({
+      layout: productLayout.value,
+      mobileColumns: productMobileColumns.value,
+      cardStyle: productCardStyle.value,
+      roundedImages: productRoundedImages.value,
+    })
+    productSectionSettingsTick.value++
+    if (!productSettingsMatchBaseline()) {
+      notifyProductSectionSettingsSaved()
+    }
+  } catch {
+    if (productSettingsSaveToastTimer) {
+      clearTimeout(productSettingsSaveToastTimer)
+      productSettingsSaveToastTimer = null
+    }
+    productSettingsPendingSaveToast = false
+    showToast(translate('Could not save product section settings'), 'error')
+  } finally {
+    productSettingsApplyQueued = false
+  }
 }
 
-watch(
-  [productLayout, productMobileColumns, productCardStyle, productRoundedImages],
-  () => {
-    void applySelectedProductSectionSettings()
-  },
-)
+watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages], () => {
+  void applySelectedProductSectionSettings()
+})
 
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
@@ -678,6 +747,10 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  if (productSettingsSaveToastTimer) {
+    clearTimeout(productSettingsSaveToastTimer)
+    productSettingsSaveToastTimer = null
+  }
 })
 
 const showModalDeleteComponent = ref(false)
@@ -1019,7 +1092,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
             "
             :title="translate('Product section settings')"
           >
-            <span class="material-symbols-outlined pbx-text-lg">grid_view</span>
+            <span class="material-symbols-outlined">shopping_bag</span>
           </div>
         </template>
 
@@ -1084,7 +1157,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           :title="translate('Product section settings')"
           description=""
           :firstButtonText="translate('Close')"
-          @firstModalButtonFunctionDynamicModalBuilder="showProductSectionSettingsModal = false"
+          @firstModalButtonFunctionDynamicModalBuilder="closeProductSectionSettings"
         >
           <header></header>
           <main>
@@ -1221,6 +1294,21 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
             <span class="material-symbols-outlined" aria-hidden="true"> more_horiz </span>
           </button>
         </div>
+        <button
+          v-if="getElement && getComponent"
+          type="button"
+          class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-solid pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0"
+          :class="
+            props.toolbarPinned
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
+              : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor'
+          "
+          :aria-pressed="props.toolbarPinned"
+          :title="props.toolbarPinned ? translate('Unpin toolbar') : translate('Pin toolbar')"
+          @click="emit('toggle-toolbar-pin')"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true"> push_pin </span>
+        </button>
         <div
           v-if="getElement && getComponent"
           class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"

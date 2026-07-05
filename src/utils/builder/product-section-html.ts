@@ -49,8 +49,8 @@ function renderProductCard(
     const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
     parts.push(
       url
-        ? `<div class="${imageWrapClass}"><a href="${url}">${imgTag}</a></div>`
-        : `<div class="${imageWrapClass}">${imgTag}</div>`,
+        ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}">${imgTag}</a></div>`
+        : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`,
     )
   }
 
@@ -65,13 +65,13 @@ function renderProductCard(
   if (title) {
     const titleInner = url ? `<p><a href="${url}">${title}</a></p>` : `<p>${title}</p>`
     parts.push(
-      `<div class="product-card-title text-lg font-semibold pt-2 line-clamp-2">${titleInner}</div>`,
+      `<div class="product-card-title text-lg font-semibold pt-2">${titleInner}</div>`,
     )
   }
 
   if (description) {
     parts.push(
-      `<div class="product-card-description text-sm text-gray-600 pt-1 line-clamp-3"><p>${description}</p></div>`,
+      `<div class="product-card-description text-sm text-gray-600 pt-1"><p>${description}</p></div>`,
     )
   }
 
