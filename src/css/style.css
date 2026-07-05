@@ -1049,6 +1049,10 @@
     @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2;
   }
 
+  .pbx-productSettingsToggleList {
+    @apply pbx-flex pbx-flex-col pbx-gap-2;
+  }
+
   .pbx-productSettingsToggleRow {
     @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
   }

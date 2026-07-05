@@ -90,30 +90,46 @@ watch(layout, (value) => {
     </section>
 
     <section class="pbx-productSettingsSection">
-      <div class="pbx-productSettingsToggleRow">
-        <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-          <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-            {{ translate('Open in new tab') }}
-          </p>
-          <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-            {{ translate('Product links open in a new browser tab') }}
-          </p>
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Product links') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Link behavior on product cards') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsToggleList">
+        <div class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Open in new tab') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Product links open in a new browser tab') }}
+            </p>
+          </div>
+          <ToggleInput v-model="openInNewTab" />
         </div>
-        <ToggleInput v-model="openInNewTab" />
       </div>
     </section>
 
     <section class="pbx-productSettingsSection">
-      <div class="pbx-productSettingsToggleRow">
-        <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-          <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-            {{ translate('Rounded images') }}
-          </p>
-          <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-            {{ translate('Rounded photo corners') }}
-          </p>
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Product images') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Photo appearance on each card') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsToggleList">
+        <div class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Rounded images') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Rounded photo corners') }}
+            </p>
+          </div>
+          <ToggleInput v-model="roundedImages" />
         </div>
-        <ToggleInput v-model="roundedImages" />
       </div>
     </section>
   </div>
