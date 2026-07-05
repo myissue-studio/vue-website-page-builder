@@ -919,7 +919,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalLibraryCard {
-    @apply pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
   }
 
   .pbx-modalLibraryCardIcon {

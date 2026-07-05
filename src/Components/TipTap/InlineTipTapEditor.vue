@@ -16,6 +16,7 @@ import {
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
+import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -438,12 +439,17 @@ watch(isInlineEditing, (active) => {
   removeDocumentMouseDownListener()
 })
 
+const closeTypographyOnScrollDown = function () {
+  showTypography.value = false
+}
+
 watch(showTypography, (isOpen) => {
   if (isOpen) {
     attachTypographyPositionListeners()
     document.addEventListener('pointerdown', closeTypographyOnOutsideClick)
     document.addEventListener('pointerdown', markTypographySelectInteraction, true)
     document.addEventListener('change', markTypographySelectInteraction, true)
+    window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeTypographyOnScrollDown)
     return
   }
 
@@ -451,6 +457,7 @@ watch(showTypography, (isOpen) => {
   document.removeEventListener('pointerdown', closeTypographyOnOutsideClick)
   document.removeEventListener('pointerdown', markTypographySelectInteraction, true)
   document.removeEventListener('change', markTypographySelectInteraction, true)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeTypographyOnScrollDown)
 })
 
 onBeforeUnmount(() => {
@@ -459,6 +466,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', closeTypographyOnOutsideClick)
   document.removeEventListener('pointerdown', markTypographySelectInteraction, true)
   document.removeEventListener('change', markTypographySelectInteraction, true)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeTypographyOnScrollDown)
 
   if (editor.value) {
     teardownEditor(getFinalEditorHtml(editor.value))

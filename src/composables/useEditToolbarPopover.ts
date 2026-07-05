@@ -1,5 +1,6 @@
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { getEditToolbarPopoverTop } from '../utils/builder/clamp-edit-toolbar-popover-top'
+import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../utils/builder/edit-toolbar-popover-events'
 
 type UseEditToolbarPopoverOptions = {
   width?: number
@@ -79,20 +80,27 @@ export function useEditToolbarPopover(options: UseEditToolbarPopoverOptions = {}
     isOpen.value = !isOpen.value
   }
 
+  const closeOnScrollDown = function () {
+    isOpen.value = false
+  }
+
   watch(isOpen, (openState) => {
     if (openState) {
       startPositionTracking()
       document.addEventListener('pointerdown', closeOnOutsideClick)
+      window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeOnScrollDown)
       return
     }
 
     stopPositionTracking()
     document.removeEventListener('pointerdown', closeOnOutsideClick)
+    window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeOnScrollDown)
   })
 
   onBeforeUnmount(() => {
     stopPositionTracking()
     document.removeEventListener('pointerdown', closeOnOutsideClick)
+    window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeOnScrollDown)
   })
 
   return {

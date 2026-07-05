@@ -28,6 +28,12 @@ import { useBuilderKeyboardShortcuts } from '../composables/useBuilderKeyboardSh
 import { resolveFontFamily } from '../utils/builder/font-family-map'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import {
+  dispatchCloseEditToolbarPopovers,
+  EDIT_TOOLBAR_POPOVER_SCROLL_DOWN_CLOSE_PX,
+  hasOpenEditToolbarPopovers,
+  isEditToolbarPopoverScrollCloseSuppressed,
+} from '../utils/builder/edit-toolbar-popover-events'
+import {
   applyPageBuilderBrandColor,
   clearPageBuilderBrandColor,
 } from '../utils/builder/apply-brand-color'
@@ -592,6 +598,36 @@ const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 const editToolbarPinned = ref(false)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
+let builderScrollTop = 0
+let scrollDownSincePopoverOpen = 0
+
+function handleBuilderContainerScroll() {
+  const container = pbxBuilderWrapper.value
+  if (container) {
+    const currentScrollTop = container.scrollTop
+    const delta = currentScrollTop - builderScrollTop
+
+    if (isEditToolbarPopoverScrollCloseSuppressed()) {
+      scrollDownSincePopoverOpen = 0
+    } else if (hasOpenEditToolbarPopovers()) {
+      if (delta > 0) {
+        scrollDownSincePopoverOpen += delta
+        if (scrollDownSincePopoverOpen >= EDIT_TOOLBAR_POPOVER_SCROLL_DOWN_CLOSE_PX) {
+          dispatchCloseEditToolbarPopovers()
+          scrollDownSincePopoverOpen = 0
+        }
+      } else if (delta < 0) {
+        scrollDownSincePopoverOpen = 0
+      }
+    } else {
+      scrollDownSincePopoverOpen = 0
+    }
+
+    builderScrollTop = currentScrollTop
+  }
+
+  updatePanelPositionOnScroll()
+}
 
 const hideToolbar = function () {
   const toolbar = document.querySelector('#pbxEditToolbar')
@@ -782,6 +818,8 @@ onMounted(async () => {
   const container = pbxBuilderWrapper.value
   if (!container) return
 
+  builderScrollTop = container.scrollTop
+
   panelPositionObserver = new MutationObserver(handlePanelMutation)
   panelPositionObserver.observe(container, {
     attributes: true,
@@ -790,7 +828,7 @@ onMounted(async () => {
     subtree: true,
   })
 
-  container.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
+  container.addEventListener('scroll', handleBuilderContainerScroll, { passive: true })
   window.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
   window.addEventListener('resize', updatePanelPosition)
   window.addEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
@@ -817,7 +855,7 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(panelPositionRaf)
   panelPositionObserver?.disconnect()
   panelPositionObserver = null
-  pbxBuilderWrapper.value?.removeEventListener('scroll', updatePanelPositionOnScroll)
+  pbxBuilderWrapper.value?.removeEventListener('scroll', handleBuilderContainerScroll)
   window.removeEventListener('scroll', updatePanelPositionOnScroll)
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)

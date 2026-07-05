@@ -16,6 +16,10 @@ import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
 import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
 import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/product-section-options'
 import { getEditToolbarPopoverTop } from '../../../../utils/builder/clamp-edit-toolbar-popover-top'
+import {
+  CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT,
+  suppressEditToolbarPopoverScrollClose,
+} from '../../../../utils/builder/edit-toolbar-popover-events'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -706,6 +710,7 @@ const closeMoreMenuOnOutsideClick = function (event: Event) {
   if (!(event.target instanceof Node)) return
   if (moreMenuTriggerRef.value?.contains(event.target)) return
   if (moreMenuPopoverRef.value?.contains(event.target)) return
+  if (event.target instanceof Element && event.target.closest('#pbxEditToolbar')) return
   openOptionsMoreOpen.value = false
 }
 
@@ -718,14 +723,47 @@ const syncMoreMenuPosition = () => {
   updateMoreMenuPosition()
 }
 
+let moreMenuSettleRaf = 0
+
+const settleMoreMenuPositionAfterLayout = function () {
+  suppressEditToolbarPopoverScrollClose()
+  cancelAnimationFrame(moreMenuSettleRaf)
+  let frame = 0
+  const maxFrames = 24
+
+  const tick = function () {
+    if (!openOptionsMoreOpen.value) {
+      moreMenuSettleRaf = 0
+      return
+    }
+
+    updateMoreMenuPosition()
+    frame++
+    if (frame < maxFrames) {
+      moreMenuSettleRaf = requestAnimationFrame(tick)
+      return
+    }
+
+    moreMenuSettleRaf = 0
+  }
+
+  moreMenuSettleRaf = requestAnimationFrame(tick)
+}
+
 const handleMoveComponentUp = async () => {
+  suppressEditToolbarPopoverScrollClose()
   await pageBuilderService.reorderComponent(-1)
-  syncMoreMenuPosition()
+  settleMoreMenuPositionAfterLayout()
 }
 
 const handleMoveComponentDown = async () => {
+  suppressEditToolbarPopoverScrollClose()
   await pageBuilderService.reorderComponent(1)
-  syncMoreMenuPosition()
+  settleMoreMenuPositionAfterLayout()
+}
+
+const closeMoreMenuOnScrollDown = function () {
+  openOptionsMoreOpen.value = false
 }
 
 watch(openOptionsMoreOpen, (isOpen) => {
@@ -734,20 +772,27 @@ watch(openOptionsMoreOpen, (isOpen) => {
     document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
     window.addEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
     window.addEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+    window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
     return
   }
 
+  cancelAnimationFrame(moreMenuSettleRaf)
+  moreMenuSettleRaf = 0
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(moreMenuSettleRaf)
+  moreMenuSettleRaf = 0
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
   if (productSettingsSaveToastTimer) {
     clearTimeout(productSettingsSaveToastTimer)
     productSettingsSaveToastTimer = null
