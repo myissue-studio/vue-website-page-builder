@@ -11,11 +11,3 @@ These styles affect all HTML elements (like input, button, h1, etc.) in the cons
   height: 100%;
   object-position: top; /* align to top */
 }
-
-#pagebuilder button {
-  font-family: 'Jost', Helvetica, Arial, sans-serif !important;
-}
-
-#pbx-modal button {
-  font-family: 'Jost', Helvetica, Arial, sans-serif !important;
-}
