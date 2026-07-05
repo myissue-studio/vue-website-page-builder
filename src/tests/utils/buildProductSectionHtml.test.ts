@@ -76,4 +76,48 @@ describe('buildProductSectionHtml', () => {
     expect(html).not.toContain('md:grid-cols-3')
     expect(html).toContain('data-pbx-product-layout="grid-6"')
   })
+
+  it('adds target="_blank" to product links when openInNewTab is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      openInNewTab: true,
+    })
+    expect(html).toContain('data-pbx-product-open-in-new-tab="true"')
+    expect(html).toContain('target="_blank" rel="noopener noreferrer"')
+    expect(html.match(/target="_blank"/g)?.length).toBe(3)
+  })
+
+  it('omits target="_blank" when openInNewTab is false', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      openInNewTab: false,
+    })
+    expect(html).toContain('data-pbx-product-open-in-new-tab="false"')
+    expect(html).not.toContain('target="_blank"')
+  })
+
+  it('hides price row when hidePrice is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hidePrice: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-price="true"')
+    expect(html).toContain('product-card-price-row flex flex-wrap items-baseline gap-2 pt-2 hidden')
+    expect(html).toContain('$10')
+  })
+
+  it('hides image when hideImage is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hideImage: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-image="true"')
+    expect(html).toContain('product-card-image shrink-0 hidden')
+    expect(html).toContain('https://example.com/a.jpg')
+  })
+
+  it('hides CTA when hideButton is true', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hideButton: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-button="true"')
+    expect(html).toContain('product-card-cta text-sm font-semibold pt-3 hidden')
+    expect(html).toContain('Buy')
+  })
 })

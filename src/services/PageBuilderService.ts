@@ -34,10 +34,14 @@ import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
+import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
   parseProductSectionFromElement,
+  sectionHasProductImages,
+  sectionHasProductPrices,
+  sectionHasProductButtons,
 } from '../utils/builder/product-section-options'
 import {
   applyPageMetaToElement,
@@ -1221,6 +1225,22 @@ export class PageBuilderService {
     return parseProductSectionFromElement(section)
   }
 
+  public getSelectedProductSectionContentAvailability(): {
+    hasPrices: boolean
+    hasImages: boolean
+    hasButtons: boolean
+  } {
+    const section = this.getSelectedComponentSection()
+    if (!section || !this.isSelectedProductSection()) {
+      return { hasPrices: false, hasImages: false, hasButtons: false }
+    }
+    return {
+      hasPrices: sectionHasProductPrices(section),
+      hasImages: sectionHasProductImages(section),
+      hasButtons: sectionHasProductButtons(section),
+    }
+  }
+
   public async updateSelectedProductSection(options: ProductSectionOptions): Promise<void> {
     const section = this.getSelectedComponentSection()
     if (!section || !this.isSelectedProductSection()) return
@@ -1816,11 +1836,10 @@ export class PageBuilderService {
    * @param {string} [userSelectedFontFamily] - The selected font family class.
    */
   public handleFontFamily(userSelectedFontFamily?: string): void {
-    this.applyElementClassChanges(
-      userSelectedFontFamily,
-      tailwindFontStyles.fontFamily,
-      'setFontFamily',
+    const fontClasses = getEditorFontFamilyClasses(
+      this.pageBuilderStateStore.getPageBuilderConfig?.userSettings,
     )
+    this.applyElementClassChanges(userSelectedFontFamily, fontClasses, 'setFontFamily')
   }
   /**
    * Handles changes to the font style of the selected element.
@@ -3951,6 +3970,10 @@ export class PageBuilderService {
     const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle, {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
+      openInNewTab: options.openInNewTab,
+      hidePrice: options.hidePrice,
+      hideImage: options.hideImage,
+      hideButton: options.hideButton,
       mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)

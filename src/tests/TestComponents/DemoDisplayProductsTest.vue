@@ -14,6 +14,9 @@ import ProductSectionSettingsFields from '../../Components/PageBuilder/EditorMen
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
+  productsHaveButtons,
+  productsHaveImages,
+  productsHavePrices,
 } from '../../utils/builder/product-section-options'
 import productsArray from '../productsArray.test.json'
 
@@ -30,6 +33,14 @@ const layout = ref<ProductGridLayout>('grid-3')
 const mobileColumns = ref<ProductMobileColumns>(1)
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(false)
+const openInNewTab = ref(false)
+const hidePrice = ref(false)
+const hideImage = ref(false)
+const hideButton = ref(false)
+
+const catalogHasPrices = computed(() => productsHavePrices(products))
+const catalogHasImages = computed(() => productsHaveImages(products))
+const catalogHasButtons = computed(() => productsHaveButtons(products))
 
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
@@ -86,6 +97,10 @@ async function insertSelectedProducts() {
     mobileColumns: mobileColumns.value,
     cardStyle: cardStyle.value,
     roundedImages: roundedImages.value,
+    openInNewTab: openInNewTab.value,
+    hidePrice: hidePrice.value,
+    hideImage: hideImage.value,
+    hideButton: hideButton.value,
   })
   showToast(translate('Products added to page'), 'success')
   closeProductLibraryModal()
@@ -115,7 +130,7 @@ async function insertSelectedProducts() {
         <div class="pbx-mysearchBarWithOptions">
           <div class="pbx-relative pbx-w-full pbx-flex pbx-gap-2">
             <label for="search-products" class="pbx-sr-only"
-              >{{ translate('Search products') }}hiii</label
+              >{{ translate('Search products') }}</label
             >
             <input
               v-model="searchQuery"
@@ -144,6 +159,13 @@ async function insertSelectedProducts() {
           v-model:mobile-columns="mobileColumns"
           v-model:card-style="cardStyle"
           v-model:rounded-images="roundedImages"
+          v-model:open-in-new-tab="openInNewTab"
+          v-model:hide-price="hidePrice"
+          v-model:hide-image="hideImage"
+          v-model:hide-button="hideButton"
+          :has-product-prices="catalogHasPrices"
+          :has-product-images="catalogHasImages"
+          :has-product-buttons="catalogHasButtons"
           :translate="translate"
         />
       </div>
@@ -244,6 +266,14 @@ async function insertSelectedProducts() {
                             ? translate('Two products per row')
                             : translate(activeLayout.hintKey)
                         }}
+                      </p>
+                    </div>
+
+                    <div v-if="openInNewTab" class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Open in new tab') }}</span>
+                      <p class="pbx-modalSidebarStatValue pbx-text-sm">{{ translate('Open in new tab') }}</p>
+                      <p class="pbx-modalSidebarStatHint">
+                        {{ translate('Product links open in a new browser tab') }}
                       </p>
                     </div>
 

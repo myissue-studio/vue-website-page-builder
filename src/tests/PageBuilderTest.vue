@@ -88,15 +88,17 @@ watch(
           disableLanguageDropDown: false,
         },
         autoSave: true,
-        fontFamily: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+        // Load custom fonts in your app CSS, e.g. dev-global.css or index.html:
+        // @import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap');
+        fontFamily: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
         elementFonts: {
-          h1: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          h2: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          h3: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          h4: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          h5: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          h6: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
-          p: `${fashionPreset.fontKey}, raleway, arial, fantasy`,
+          h1: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h2: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h3: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h4: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h5: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h6: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          p: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
         },
       },
 

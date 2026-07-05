@@ -3,6 +3,7 @@ import { ref, computed, nextTick, watch } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import tailwindFontSizes from '../../../../utils/builder/tailwind-font-sizes'
 import tailwindFontStyles from '../../../../utils/builder/tailwind-font-styles'
+import { getFontFamilyPickerOptions } from '../../../../utils/builder/font-family-map'
 import { resolveInheritedFontFamily } from '../../../../utils/builder/resolve-inherited-font-family'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
@@ -51,9 +52,9 @@ const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
 
-const availableFontFamilies = computed(() => {
-  return tailwindFontStyles.fontFamily
-})
+const availableFontFamilyOptions = computed(() =>
+  getFontFamilyPickerOptions(getPageBuilderConfig.value?.userSettings),
+)
 
 const hasExplicitFontFamily = computed(() => {
   return Boolean(fontFamily.value && fontFamily.value !== 'none')
@@ -74,6 +75,10 @@ const updateInheritedFontFamily = async () => {
   inheritedFontFamily.value = resolveInheritedFontFamily(
     getElement.value,
     getPageBuilderConfig.value,
+    {
+      globalPageDesignMode: pageBuilderStateStore.getToggleGlobalHtmlMode,
+      selectedFontClass: pageBuilderStateStore.getFontFamily,
+    },
   )
 }
 
@@ -245,8 +250,12 @@ watch(
           @change="handleFontFamilyChange"
         >
           <option :value="null">{{ translate('No font family') }}</option>
-          <option v-for="fontFamily in availableFontFamilies" :key="fontFamily">
-            {{ fontFamily }}
+          <option
+            v-for="option in availableFontFamilyOptions.filter((entry) => entry.value !== 'none')"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
           </option>
         </select>
         <p

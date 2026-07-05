@@ -84,6 +84,13 @@ export interface ProductSectionOptions {
   mobileColumns?: ProductMobileColumns
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
+  openInNewTab?: boolean
+  /** Hides price and compare-at price when product data includes them */
+  hidePrice?: boolean
+  /** Hides product photos when product data includes images */
+  hideImage?: boolean
+  /** Hides the CTA button when product data includes url and buttonText */
+  hideButton?: boolean
 }
 
 export interface InsertProductsOptions {
@@ -92,6 +99,14 @@ export interface InsertProductsOptions {
   cardStyle?: ProductCardStyle
   /** Adds rounded corners to product images */
   roundedImages?: boolean
+  /** Adds target="_blank" rel="noopener noreferrer" to product links */
+  openInNewTab?: boolean
+  /** Hides price and compare-at price when product data includes them */
+  hidePrice?: boolean
+  /** Hides product photos when product data includes images */
+  hideImage?: boolean
+  /** Hides the CTA button when product data includes url and buttonText */
+  hideButton?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
   method?: 'unshift' | 'push' | 'insert' | (string & {})
@@ -422,23 +437,19 @@ export interface PageBuilderConfig {
      * Default canvas font and, optionally, the restricted set of fonts shown in
      * the font-family picker.
      *
-     * - Single value: `'jost'` — sets the canvas default; picker shows all fonts.
-     * - Comma-separated list: `'jost, raleway, arial'` — first entry is the
-     *   canvas default; picker is restricted to the listed fonts.
+     * - Single built-in key: `'jost'` — canvas default; picker shows all built-in fonts.
+     * - Comma-separated list: first entry is the canvas default; picker is restricted
+     *   to the listed fonts.
      *
-     * Unknown font names (not in the built-in list) are silently ignored.
+     * Any name not in the built-in list is treated as a custom font (e.g.
+     * `'Bitcount Grid Double'`). You must load the font in your app CSS
+     * (`@import`, `@font-face`, or a `<link>`). The builder applies the name only.
      */
     fontFamily?: string
     /**
      * Per-element font overrides applied to the builder canvas.
-     * Each value follows the same format as `fontFamily` — a font key name or
-     * comma-separated list; the first recognised entry is used.
-     *
-     * Available font names: jost, raleway, palantino, arial, helvetica, georgia,
-     * times, times-new-roman, courier, courier-new, verdana, tahoma, trebuchet,
-     * garamond, bookman, comic-sans, impact, lucida, lucida-console, lucida-sans,
-     * candara, optima, avenir, futura, calibri, cambria, didot, franklin-gothic,
-     * rockwell, baskerville, sans, serif, mono
+     * Same format as `fontFamily` — built-in keys, comma-separated fallbacks,
+     * or custom font names you load yourself.
      */
     elementFonts?: PageBuilderElementFonts
   } | null // Allow null for maximum flexibility; no [key: string] here so typed UserSettings interfaces assign without error

@@ -64,4 +64,48 @@ describe('resolveInheritedFontFamily', () => {
     const h2 = document.querySelector('h2') as HTMLElement
     expect(resolveInheritedFontFamily(h2, baseConfig)).toBe('Jost')
   })
+
+  it('prefers elementFonts config over stale saved canvas fallback fonts', () => {
+    const bitcountConfig = {
+      userSettings: {
+        fontFamily: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+        elementFonts: {
+          h2: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+        },
+      },
+    } as PageBuilderConfig
+
+    document.body.innerHTML = `
+      <div id="pagebuilder" class="pbx-font-jost pbx-text-black">
+        <div>
+          <h2>Title</h2>
+        </div>
+      </div>
+    `
+
+    const h2 = document.querySelector('h2') as HTMLElement
+    expect(resolveInheritedFontFamily(h2, bitcountConfig)).toBe('Bitcount Grid Double')
+  })
+
+  it('ignores generic pbx-font-sans boilerplate when resolving inherited font', () => {
+    document.body.innerHTML = `
+      <div id="pagebuilder" class="pbx-font-custom-bitcount-grid-double">
+        <div class="pbx-font-sans">
+          <h2>Title</h2>
+        </div>
+      </div>
+    `
+
+    const bitcountConfig = {
+      userSettings: {
+        fontFamily: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+        elementFonts: {
+          h2: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
+        },
+      },
+    } as PageBuilderConfig
+
+    const h2 = document.querySelector('h2') as HTMLElement
+    expect(resolveInheritedFontFamily(h2, bitcountConfig)).toBe('Bitcount Grid Double')
+  })
 })

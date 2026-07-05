@@ -16,6 +16,10 @@ import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
 import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
 import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/product-section-options'
 import { getEditToolbarPopoverTop } from '../../../../utils/builder/clamp-edit-toolbar-popover-top'
+import {
+  CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT,
+  suppressEditToolbarPopoverScrollClose,
+} from '../../../../utils/builder/edit-toolbar-popover-events'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -118,6 +122,13 @@ const productCardStyle = ref<ProductCardStyle>(
   DEFAULT_PRODUCT_SECTION_OPTIONS.cardStyle ?? 'minimal',
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
+const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
+const productHidePrice = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hidePrice ?? false)
+const productHideImage = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideImage ?? false)
+const productHideButton = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideButton ?? false)
+const productSectionHasPrices = ref(false)
+const productSectionHasImages = ref(false)
+const productSectionHasButtons = ref(false)
 let productSettingsApplyQueued = false
 let productSettingsPendingSaveToast = false
 let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
@@ -126,6 +137,10 @@ let productSettingsBaseline: {
   mobileColumns: ProductMobileColumns
   cardStyle: ProductCardStyle
   roundedImages: boolean
+  openInNewTab: boolean
+  hidePrice: boolean
+  hideImage: boolean
+  hideButton: boolean
 } | null = null
 
 const productSettingsMatchBaseline = (): boolean => {
@@ -134,7 +149,11 @@ const productSettingsMatchBaseline = (): boolean => {
     productLayout.value === productSettingsBaseline.layout &&
     productMobileColumns.value === productSettingsBaseline.mobileColumns &&
     productCardStyle.value === productSettingsBaseline.cardStyle &&
-    productRoundedImages.value === productSettingsBaseline.roundedImages
+    productRoundedImages.value === productSettingsBaseline.roundedImages &&
+    productOpenInNewTab.value === productSettingsBaseline.openInNewTab &&
+    productHidePrice.value === productSettingsBaseline.hidePrice &&
+    productHideImage.value === productSettingsBaseline.hideImage &&
+    productHideButton.value === productSettingsBaseline.hideButton
   )
 }
 
@@ -168,18 +187,34 @@ const openProductSectionSettings = () => {
   const mobileColumns = options.mobileColumns ?? 1
   const cardStyle = options.cardStyle ?? 'minimal'
   const roundedImages = options.roundedImages ?? false
+  const openInNewTab = options.openInNewTab ?? false
+  const hidePrice = options.hidePrice ?? false
+  const hideImage = options.hideImage ?? false
+  const hideButton = options.hideButton ?? false
+  const availability = pageBuilderService.getSelectedProductSectionContentAvailability()
 
   productSettingsBaseline = {
     layout: options.layout,
     mobileColumns,
     cardStyle,
     roundedImages,
+    openInNewTab,
+    hidePrice,
+    hideImage,
+    hideButton,
   }
 
   productLayout.value = options.layout
   productMobileColumns.value = mobileColumns
   productCardStyle.value = cardStyle
   productRoundedImages.value = roundedImages
+  productOpenInNewTab.value = openInNewTab
+  productHidePrice.value = hidePrice
+  productHideImage.value = hideImage
+  productHideButton.value = hideButton
+  productSectionHasPrices.value = availability.hasPrices
+  productSectionHasImages.value = availability.hasImages
+  productSectionHasButtons.value = availability.hasButtons
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
 }
@@ -199,6 +234,10 @@ const applySelectedProductSectionSettings = async () => {
       mobileColumns: productMobileColumns.value,
       cardStyle: productCardStyle.value,
       roundedImages: productRoundedImages.value,
+      openInNewTab: productOpenInNewTab.value,
+      hidePrice: productHidePrice.value,
+      hideImage: productHideImage.value,
+      hideButton: productHideButton.value,
     })
     productSectionSettingsTick.value++
     if (!productSettingsMatchBaseline()) {
@@ -216,7 +255,18 @@ const applySelectedProductSectionSettings = async () => {
   }
 }
 
-watch([productLayout, productMobileColumns, productCardStyle, productRoundedImages], () => {
+watch(
+  [
+    productLayout,
+    productMobileColumns,
+    productCardStyle,
+    productRoundedImages,
+    productOpenInNewTab,
+    productHidePrice,
+    productHideImage,
+    productHideButton,
+  ],
+  () => {
   void applySelectedProductSectionSettings()
 })
 
@@ -706,6 +756,7 @@ const closeMoreMenuOnOutsideClick = function (event: Event) {
   if (!(event.target instanceof Node)) return
   if (moreMenuTriggerRef.value?.contains(event.target)) return
   if (moreMenuPopoverRef.value?.contains(event.target)) return
+  if (event.target instanceof Element && event.target.closest('#pbxEditToolbar')) return
   openOptionsMoreOpen.value = false
 }
 
@@ -718,14 +769,47 @@ const syncMoreMenuPosition = () => {
   updateMoreMenuPosition()
 }
 
+let moreMenuSettleRaf = 0
+
+const settleMoreMenuPositionAfterLayout = function () {
+  suppressEditToolbarPopoverScrollClose()
+  cancelAnimationFrame(moreMenuSettleRaf)
+  let frame = 0
+  const maxFrames = 24
+
+  const tick = function () {
+    if (!openOptionsMoreOpen.value) {
+      moreMenuSettleRaf = 0
+      return
+    }
+
+    updateMoreMenuPosition()
+    frame++
+    if (frame < maxFrames) {
+      moreMenuSettleRaf = requestAnimationFrame(tick)
+      return
+    }
+
+    moreMenuSettleRaf = 0
+  }
+
+  moreMenuSettleRaf = requestAnimationFrame(tick)
+}
+
 const handleMoveComponentUp = async () => {
+  suppressEditToolbarPopoverScrollClose()
   await pageBuilderService.reorderComponent(-1)
-  syncMoreMenuPosition()
+  settleMoreMenuPositionAfterLayout()
 }
 
 const handleMoveComponentDown = async () => {
+  suppressEditToolbarPopoverScrollClose()
   await pageBuilderService.reorderComponent(1)
-  syncMoreMenuPosition()
+  settleMoreMenuPositionAfterLayout()
+}
+
+const closeMoreMenuOnScrollDown = function () {
+  openOptionsMoreOpen.value = false
 }
 
 watch(openOptionsMoreOpen, (isOpen) => {
@@ -734,20 +818,27 @@ watch(openOptionsMoreOpen, (isOpen) => {
     document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
     window.addEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
     window.addEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+    window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
     return
   }
 
+  cancelAnimationFrame(moreMenuSettleRaf)
+  moreMenuSettleRaf = 0
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
 })
 
 onBeforeUnmount(() => {
+  cancelAnimationFrame(moreMenuSettleRaf)
+  moreMenuSettleRaf = 0
   detachMoreMenuPositionListeners()
   document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
   if (productSettingsSaveToastTimer) {
     clearTimeout(productSettingsSaveToastTimer)
     productSettingsSaveToastTimer = null
@@ -1167,6 +1258,13 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:mobile-columns="productMobileColumns"
               v-model:card-style="productCardStyle"
               v-model:rounded-images="productRoundedImages"
+              v-model:open-in-new-tab="productOpenInNewTab"
+              v-model:hide-price="productHidePrice"
+              v-model:hide-image="productHideImage"
+              v-model:hide-button="productHideButton"
+              :has-product-prices="productSectionHasPrices"
+              :has-product-images="productSectionHasImages"
+              :has-product-buttons="productSectionHasButtons"
               :translate="translate"
               compact
             />

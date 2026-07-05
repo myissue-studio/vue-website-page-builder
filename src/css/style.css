@@ -61,6 +61,9 @@
   #pagebuilder p {
     font-family: var(--pbx-el-p-font, inherit);
   }
+  #pagebuilder a {
+    font-family: inherit;
+  }
 
   /*
    * Element-level font classes chosen in the editor should override configured
@@ -117,7 +120,8 @@
       .pbx-font-work-sans,
       .pbx-font-quicksand,
       .pbx-font-pt-serif,
-      .pbx-font-crimson-text
+      .pbx-font-crimson-text,
+      [class*='pbx-font-custom-']
     )
     :is(h1, h2, h3, h4, h5, h6, p) {
     font-family: inherit;
@@ -919,7 +923,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalLibraryCard {
-    @apply pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
   }
 
   .pbx-modalLibraryCardIcon {
@@ -1049,8 +1053,20 @@
     @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2;
   }
 
+  .pbx-productSettingsToggleList {
+    @apply pbx-flex pbx-flex-col pbx-gap-2;
+  }
+
   .pbx-productSettingsToggleRow {
     @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
+  }
+
+  .pbx-productSettingsToggleGrid--twoCol {
+    @apply pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4;
+  }
+
+  .pbx-productSettingsToggleGrid--twoCol > .pbx-productSettingsSection {
+    @apply pbx-m-0;
   }
 
   /*

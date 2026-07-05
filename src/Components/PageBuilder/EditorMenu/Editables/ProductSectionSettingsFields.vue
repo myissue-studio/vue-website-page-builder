@@ -13,10 +13,17 @@ const layout = defineModel<ProductGridLayout>('layout', { required: true })
 const mobileColumns = defineModel<ProductMobileColumns>('mobileColumns', { required: true })
 const cardStyle = defineModel<ProductCardStyle>('cardStyle', { required: true })
 const roundedImages = defineModel<boolean>('roundedImages', { required: true })
+const openInNewTab = defineModel<boolean>('openInNewTab', { required: true })
+const hidePrice = defineModel<boolean>('hidePrice', { required: true })
+const hideImage = defineModel<boolean>('hideImage', { required: true })
+const hideButton = defineModel<boolean>('hideButton', { required: true })
 
 defineProps<{
   translate: (key: string) => string
   compact?: boolean
+  hasProductPrices?: boolean
+  hasProductImages?: boolean
+  hasProductButtons?: boolean
 }>()
 
 watch(layout, (value) => {
@@ -88,18 +95,100 @@ watch(layout, (value) => {
       </div>
     </section>
 
-    <section class="pbx-productSettingsSection">
-      <div class="pbx-productSettingsToggleRow">
-        <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-          <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-            {{ translate('Rounded images') }}
-          </p>
-          <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-            {{ translate('Rounded photo corners') }}
-          </p>
+    <div
+      class="pbx-productSettingsToggleGrid"
+      :class="compact ? '' : 'pbx-productSettingsToggleGrid--twoCol'"
+    >
+    <section
+      v-if="hasProductPrices || hasProductButtons"
+      class="pbx-productSettingsSection"
+    >
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Card content') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Choose what appears on each product card') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsToggleList">
+        <div v-if="hasProductPrices" class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Hide prices') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Do not show prices on product cards') }}
+            </p>
+          </div>
+          <ToggleInput v-model="hidePrice" />
         </div>
-        <ToggleInput v-model="roundedImages" />
+        <div v-if="hasProductButtons" class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Hide buy button') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Do not show the product CTA button on cards') }}
+            </p>
+          </div>
+          <ToggleInput v-model="hideButton" />
+        </div>
       </div>
     </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Product links') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Link behavior on product cards') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsToggleList">
+        <div class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Open in new tab') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Product links open in a new browser tab') }}
+            </p>
+          </div>
+          <ToggleInput v-model="openInNewTab" />
+        </div>
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Product images') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Photo appearance on each card') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsToggleList">
+        <div v-if="hasProductImages" class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Hide images') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Do not show product photos on cards') }}
+            </p>
+          </div>
+          <ToggleInput v-model="hideImage" />
+        </div>
+        <div class="pbx-productSettingsToggleRow">
+          <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+            <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+              {{ translate('Rounded images') }}
+            </p>
+            <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+              {{ translate('Rounded photo corners') }}
+            </p>
+          </div>
+          <ToggleInput v-model="roundedImages" />
+        </div>
+      </div>
+    </section>
+    </div>
   </div>
 </template>
