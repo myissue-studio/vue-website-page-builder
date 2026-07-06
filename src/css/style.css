@@ -952,7 +952,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalSidebarPanel {
-    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+    @apply pbx-bg-white pbx-py-4;
   }
 
   .pbx-modalSidebarPanelTitle {

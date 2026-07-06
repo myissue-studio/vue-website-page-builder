@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../../composables/usePageBuilderModal'
+import { delay } from '../../../composables/delay'
 import type {
   PageBuilderProduct,
   ProductCardStyle,
@@ -128,11 +129,14 @@ function customFieldEntries(product: PageBuilderProduct): [string, unknown][] {
 }
 
 async function insertSelectedProducts() {
+  isLoading.value = true
   if (!selectedProducts.value.length) {
+    await delay(300)
     showToast(translate('Select at least one product to insert.'), 'warning')
+    isLoading.value = false
     return
   }
-  isLoading.value = true
+
   await pageBuilderService.insertProducts(selectedProducts.value, {
     layout: layout.value,
     mobileColumns: mobileColumns.value,
@@ -151,22 +155,7 @@ async function insertSelectedProducts() {
 
 <template>
   <div>
-    <template v-if="isLoading">
-      <div class="pbx-min-h-[90vh] pbx-h-[90vh]">
-        <div class="pbx-flex pbx-items-center pbx-justify-center">
-          <div
-            class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-          >
-            <span
-              class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-              >{{ translate('Loading...') }}</span
-            >
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <div v-if="!isLoading">
+    <div>
       <div v-if="showSampleCatalogBanner" class="pbx-productSampleCatalogBanner" role="status">
         <span
           class="material-symbols-outlined pbx-productSampleCatalogBannerIcon"
@@ -339,7 +328,9 @@ async function insertSelectedProducts() {
               </p>
             </div>
 
-            <aside class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto">
+            <aside
+              class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-px-2"
+            >
               <div class="pbx-min-h-[10rem]">
                 <div class="pbx-modalSidebarPanel pbx-mt-4">
                   <p class="pbx-modalSidebarPanelTitle">{{ translate('Information') }}</p>
@@ -438,10 +429,16 @@ async function insertSelectedProducts() {
                 <button
                   type="button"
                   class="pbx-myPrimaryButton pbx-w-full"
-                  :disabled="!selectedProducts.length"
+                  :class="{ 'pbx-opacity-80': !selectedProducts.length }"
                   @click="insertSelectedProducts"
                 >
-                  {{ translate('Insert products') }}
+                  <span>
+                    {{ translate('Insert products') }}
+                  </span>
+                  <span v-if="!isLoading" class="material-symbols-outlined"> send </span>
+                  <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">
+                    refresh
+                  </span>
                 </button>
               </div>
             </aside>
@@ -468,10 +465,17 @@ async function insertSelectedProducts() {
             <button
               type="button"
               class="pbx-myPrimaryButton pbx-w-full"
-              :disabled="!selectedProducts.length"
+              :class="{ 'pbx-opacity-80': !selectedProducts.length }"
+              :aria-disabled="!selectedProducts.length"
               @click="insertSelectedProducts"
             >
-              {{ translate('Insert products') }}
+              <span>
+                {{ translate('Insert products') }}
+              </span>
+              <span v-if="!isLoading" class="material-symbols-outlined"> send </span>
+              <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">
+                refresh
+              </span>
             </button>
           </div>
         </div>
