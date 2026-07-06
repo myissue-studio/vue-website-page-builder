@@ -7,6 +7,8 @@ export default {
   darkMode: 'class',
   prefix: 'pbx-',
   safelist: [
+    'pbx-animate-spin',
+    'pbx-inline-block',
     'pbx-font-inter',
     'pbx-font-roboto',
     'pbx-font-open-sans',

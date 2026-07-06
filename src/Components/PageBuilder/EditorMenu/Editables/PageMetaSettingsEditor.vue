@@ -4,6 +4,7 @@ import EditorAccordion from '../EditorAccordion.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
+import { delay } from '../../../../composables/delay'
 
 defineOptions({
   name: 'PageMetaSettingsEditor',
@@ -26,6 +27,7 @@ onMounted(() => {
 const saveMeta = async () => {
   if (isSaving.value) return
   isSaving.value = true
+  await delay(300)
   try {
     await pageBuilderService.setPageMeta({
       title: metaTitle.value.trim(),
@@ -80,7 +82,9 @@ const saveMeta = async () => {
         :disabled="isSaving"
         @click="saveMeta"
       >
-        {{ isSaving ? translate('Loading...') : translate('Save') }}
+        {{ translate('Save') }}
+        <span v-if="!isSaving" class="material-symbols-outlined">check</span>
+        <span v-if="isSaving" class="material-symbols-outlined pbx-animate-spin">refresh</span>
       </button>
     </template>
   </EditorAccordion>

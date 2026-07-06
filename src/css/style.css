@@ -1757,3 +1757,8 @@
 #pbx-modal button {
   font-family: 'Jost', Helvetica, Arial, sans-serif;
 }
+
+/* Material Symbols are inline by default; spin needs inline-block for transform */
+.material-symbols-outlined.pbx-animate-spin {
+  display: inline-block;
+}

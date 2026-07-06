@@ -137,19 +137,22 @@ async function insertSelectedProducts() {
     return
   }
 
-  await pageBuilderService.insertProducts(selectedProducts.value, {
-    layout: layout.value,
-    mobileColumns: mobileColumns.value,
-    cardStyle: cardStyle.value,
-    roundedImages: roundedImages.value,
-    openInNewTab: openInNewTab.value,
-    hidePrice: hidePrice.value,
-    hideImage: hideImage.value,
-    hideButton: hideButton.value,
-  })
-  showToast(translate('Products added to page'), 'success')
-  closeProductLibraryModal()
-  isLoading.value = false
+  try {
+    await pageBuilderService.insertProducts(selectedProducts.value, {
+      layout: layout.value,
+      mobileColumns: mobileColumns.value,
+      cardStyle: cardStyle.value,
+      roundedImages: roundedImages.value,
+      openInNewTab: openInNewTab.value,
+      hidePrice: hidePrice.value,
+      hideImage: hideImage.value,
+      hideButton: hideButton.value,
+    })
+    showToast(translate('Products added to page'), 'success')
+    closeProductLibraryModal()
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -435,8 +438,8 @@ async function insertSelectedProducts() {
                   <span>
                     {{ translate('Insert products') }}
                   </span>
-                  <span v-if="!isLoading" class="material-symbols-outlined"> send </span>
-                  <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">
+                  <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
+                  <span v-if="isLoading" class="material-symbols-outlined pbx-inline-block pbx-animate-spin">
                     refresh
                   </span>
                 </button>
@@ -472,8 +475,8 @@ async function insertSelectedProducts() {
               <span>
                 {{ translate('Insert products') }}
               </span>
-              <span v-if="!isLoading" class="material-symbols-outlined"> send </span>
-              <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">
+              <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
+              <span v-if="isLoading" class="material-symbols-outlined pbx-inline-block pbx-animate-spin">
                 refresh
               </span>
             </button>
