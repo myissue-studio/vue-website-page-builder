@@ -93,7 +93,7 @@ function renderProductCard(
       : ''
 
   const titleHtml = title
-    ? `<div class="product-card-title text-lg font-semibold pt-2 min-h-16">${url ? `<p><a href="${url}"${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
+    ? `<div class="product-card-title text-lg font-semibold text-gray-900 pt-2 min-h-16">${url ? `<p><a href="${url}"${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
     : ''
 
   const descriptionHtml = description
@@ -125,7 +125,7 @@ function renderProductCard(
         compareAtPrice
           ? `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`
           : '',
-        price ? `<div class="product-card-price text-2xl font-semibold"><p>${price}</p></div>` : '',
+        price ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>` : '',
       ].filter(Boolean)
       const priceRowClass = [
         'product-card-price-row flex flex-wrap items-baseline gap-2 pt-2',
@@ -138,7 +138,7 @@ function renderProductCard(
 
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -147,7 +147,7 @@ function renderProductCard(
   return [
     `<div class="${productCardClass}" data-pbx-product-id="${escapeHtml(id)}">`,
     imageHtml,
-    '<div class="break-words py-2 product-card-body flex flex-col flex-1">',
+    '<div class="break-words py-2 product-card-body text-gray-900 flex flex-col flex-1">',
     '<div class="product-card-meta flex flex-col flex-1">',
     badgeHtml,
     titleHtml,
