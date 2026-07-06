@@ -3,6 +3,7 @@ defineProps<{
   icon: string
   label: string
   hint: string
+  isLoading?: boolean
 }>()
 
 defineEmits<{
@@ -11,8 +12,17 @@ defineEmits<{
 </script>
 
 <template>
-  <button type="button" class="pbx-pageDesignOpenButton" @click="$emit('click')">
-    <span class="material-symbols-outlined">{{ icon }}</span>
+  <button
+    type="button"
+    class="pbx-pageDesignOpenButton"
+    :disabled="isLoading"
+    :class="{ 'pbx-pointer-events-none pbx-opacity-70': isLoading }"
+    @click="$emit('click')"
+  >
+    <span class="pbx-pageDesignOpenButtonIcon material-symbols-outlined" aria-hidden="true">
+      <span v-if="!isLoading">{{ icon }}</span>
+      <span v-if="isLoading" class="pbx-inline-block pbx-animate-spin">refresh</span>
+    </span>
     <span class="pbx-pageDesignOpenButtonText">
       <span class="pbx-pageDesignOpenButtonLabel">{{ label }}</span>
       <span class="pbx-pageDesignOpenButtonHint">{{ hint }}</span>

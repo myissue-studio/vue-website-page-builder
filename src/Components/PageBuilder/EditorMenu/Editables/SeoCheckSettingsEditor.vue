@@ -7,6 +7,7 @@ import FloatingSidePanel from '../../../Overlays/FloatingSidePanel.vue'
 import SeoCheckPanel from './SeoCheckPanel.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
+import { delay } from '../../../../composables/delay'
 
 defineOptions({
   name: 'SeoCheckSettingsEditor',
@@ -20,8 +21,9 @@ const showSEO = ref(false)
 const isAnalyzing = ref(false)
 
 const openSeoCheck = async () => {
-  showSEO.value = true
   isAnalyzing.value = true
+  showSEO.value = true
+  await delay(300)
   try {
     seoResult.value = await pageBuilderService.analyzeSEO()
   } finally {
@@ -46,6 +48,7 @@ const closeSEO = () => {
         icon="circle_circle"
         :label="translate('Run SEO check')"
         :hint="translate('Analyze headings, images, links and word count')"
+        :is-loading="isAnalyzing"
         @click="openSeoCheck"
       />
     </template>
@@ -57,9 +60,6 @@ const closeSEO = () => {
     position="left"
     @closeSidebarPanel="closeSEO"
   >
-    <div v-if="isAnalyzing" class="pbx-py-12 pbx-text-center pbx-text-sm pbx-text-gray-500">
-      {{ translate('Loading...') }}
-    </div>
-    <SeoCheckPanel v-else :seo-result="seoResult" />
+    <SeoCheckPanel :seo-result="seoResult" />
   </FloatingSidePanel>
 </template>

@@ -142,7 +142,18 @@
   /*
    * Product cards (DisplayProducts) — typography lives on wrapper divs so TipTap
    * edits to inner <p>/<a> do not strip size/weight classes.
+   * Explicit text colors prevent inheriting page-level white text from #pagebuilder.
    */
+  #pagebuilder .pbx-product-card-body,
+  #pagebuilder .pbx-product-card-title,
+  #pagebuilder .pbx-product-card-price {
+    @apply pbx-text-gray-900;
+  }
+
+  #pagebuilder .pbx-product-card-cta {
+    @apply pbx-text-myPrimaryLinkColor;
+  }
+
   #pagebuilder .pbx-product-card-title a,
   #pagebuilder .pbx-product-card-cta a {
     @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
@@ -801,7 +812,7 @@
   }
 
   .pbx-pageDesignOpenButtonHint {
-    @apply pbx-truncate pbx-text-xs pbx-text-gray-500;
+    @apply pbx-text-xs pbx-text-gray-500;
   }
 
   .pbx-pageDesignOpenButtonArrow {
