@@ -1073,6 +1073,26 @@
     @apply pbx-m-0;
   }
 
+  .pbx-productSampleCatalogBanner {
+    @apply pbx-mb-4 pbx-flex pbx-gap-3 pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-sky-200 pbx-bg-sky-50 pbx-p-4;
+  }
+
+  .pbx-productSampleCatalogBannerIcon {
+    @apply pbx-mt-0.5 pbx-shrink-0 pbx-text-[22px] pbx-leading-none pbx-text-sky-700;
+  }
+
+  .pbx-productSampleCatalogBannerCopy {
+    @apply pbx-min-w-0 pbx-flex-1;
+  }
+
+  .pbx-productSampleCatalogBannerTitle {
+    @apply pbx-m-0 pbx-text-sm pbx-font-semibold pbx-text-sky-900;
+  }
+
+  .pbx-productSampleCatalogBannerDesc {
+    @apply pbx-m-0 pbx-mt-1 pbx-text-xs pbx-leading-relaxed pbx-text-sky-800/90;
+  }
+
   /*
     |--------------------------------------------------------------------------
     | Toolbar more menu

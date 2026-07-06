@@ -193,7 +193,7 @@ Pass `data-content` via a JSON script tag if HTML is large (avoid attribute size
 
 - Use a unique `resourceData.id` (or slug) per tenant page so **localStorage draft keys** do not collide across users on shared machines.
 - Scope Laravel policies so tenants only load their own `content`.
-- For product grids, pass `:DisplayProducts` with your catalog picker (see [Display Products](/display-products)).
+- For product grids, pass `:DisplayProducts` with your catalog picker when you need real SKUs, pagination, or API search (see [Display Products](/display-products)). Omit the prop to use the built-in sample catalog, or set `:enableDefaultProducts="false"` to hide product sections entirely.
 
 ## 8. Rendering public pages
 

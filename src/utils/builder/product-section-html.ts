@@ -1,5 +1,4 @@
 import type {
-  PageBuilderProduct,
   PageBuilderProductInput,
   ProductCardStyle,
   ProductGridLayout,
@@ -49,7 +48,7 @@ function productLinkAttrs(openInNewTab: boolean): string {
 }
 
 function renderProductCard(
-  product: PageBuilderProduct,
+  product: PageBuilderProductInput,
   styleOptions: BuildProductSectionStyleOptions = {},
   sectionHasBadge = false,
 ): string {
@@ -163,7 +162,7 @@ function renderProductCard(
 }
 
 export function buildProductSectionHtml(
-  products: ReadonlyArray<PageBuilderProduct>,
+  products: ReadonlyArray<PageBuilderProductInput>,
   layout: ProductGridLayout = 'grid-3',
   sectionTitle = 'Products',
   styleOptions: BuildProductSectionStyleOptions = {},

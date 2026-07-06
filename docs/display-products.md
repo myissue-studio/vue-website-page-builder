@@ -19,7 +19,48 @@ Shortcodes like `[featured_products]` or `[sale_products]` are convenient but ri
 
 The `:DisplayProducts` prop keeps the builder **layout-agnostic**: you own the picker UI and the HTML that lands on the page.
 
-## Quick setup
+## Built-in sample catalog (no setup required)
+
+The **Products** button is available by default in the navbar and between sections. If you do not pass `:DisplayProducts`, the builder opens a **built-in sample catalog** with placeholder products so editors can:
+
+- Try product grids, card styles, and section settings immediately
+- Prototype page layouts before your API is wired
+- Learn the insert → toolbar edit workflow without backend work
+
+The sample picker includes search, multi-select, layout options, and the same **Insert products** flow as a custom integration. A banner in the modal makes it clear these are placeholders — not your live storefront.
+
+**When to pass `:DisplayProducts`**
+
+| Your need | What to do |
+| --------- | ---------- |
+| Layout exploration, demos, first integration | Omit `:DisplayProducts` — use the built-in sample catalog (default) |
+| No product sections at all | `:enableDefaultProducts="false"` |
+| Real SKUs from Shopify, WooCommerce, Medusa, or your API | Pass `:DisplayProducts` with your own picker component |
+| Pagination, infinite scroll, categories, ERP filters | **Required** — implement these in your picker; the default catalog is a small static list |
+| Production admin panels | **Required** — replace the sample catalog so editors never publish placeholder products |
+
+Your custom component **fully replaces** the default picker when provided. The modal shell, **Products** entry points, `insertProducts()`, and toolbar section settings stay the same.
+
+Sample data ships in the package as `src/data/sample-products.json` (10 editorial placeholder items with `DEMO-001`–style SKUs). Hosts are not required to load or ship this file — it is bundled for the default picker only.
+
+### Disable the built-in sample catalog
+
+Use `:enableDefaultProducts="false"` when you do not want placeholder products — for example, a blog-only admin, a CMS without ecommerce, or while your catalog integration is still in progress and you prefer no **Products** button at all.
+
+```vue
+<PageBuilder :enableDefaultProducts="false" />
+```
+
+| Configuration | Products button | Catalog source |
+| ------------- | --------------- | -------------- |
+| Default (nothing passed) | Shown | Built-in sample catalog |
+| `:enableDefaultProducts="false"` | Hidden | — |
+| `:DisplayProducts="YourPicker"` | Shown | Your component only (sample catalog not used) |
+| Both props set | Shown | Your component only — `:DisplayProducts` wins |
+
+`:enableDefaultProducts` defaults to `true`. It only gates the built-in sample catalog. Passing `:DisplayProducts` always enables the **Products** flow with your own data source.
+
+## Quick setup (custom catalog)
 
 Create a folder for your integration components:
 
@@ -43,7 +84,7 @@ import YourDisplayProducts from './ComponentsPageBuilder/YourDisplayProducts.vue
 </template>
 ```
 
-When `:DisplayProducts` is provided, a **Products** button appears in the navbar (next to **Add**). It opens your component inside a modal — separate from the component library and from `:CustomBuilderComponents`.
+When `:DisplayProducts` is provided, your component replaces the built-in sample catalog inside the same modal. The **Products** button is shown when either `:DisplayProducts` is set or the built-in sample catalog is enabled (default).
 
 ## Your product picker component
 
@@ -99,11 +140,13 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
 
 | File                                                   | Purpose                                                         |
 | ------------------------------------------------------ | --------------------------------------------------------------- |
-| `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Full picker UI — search, multi-select, section settings, insert |
-| `src/tests/productsArray.test.json`                    | Sample product data                                             |
-| `src/tests/PageBuilderTest.vue`                        | Wiring `:DisplayProducts="DemoDisplayProductsTest"`             |
+| `src/data/sample-products.json`                        | Built-in default — 10 placeholder products bundled with the package |
+| `src/Components/PageBuilder/ProductPicker/`            | Default picker (`ProductPickerPanel`, `DefaultDisplayProducts`) |
+| `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Dev demo — larger static catalog for local `PageBuilderTest`    |
+| `src/tests/productsArray.test.json`                    | Extended sample data for the dev demo                             |
+| `src/tests/PageBuilderTest.vue`                        | Optional `:DisplayProducts="DemoDisplayProductsTest"` wiring      |
 
-Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API.
+Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API. Until then, omit `:DisplayProducts` and use the built-in sample catalog.
 
 **After insert:** editors change layout and card style from the canvas toolbar (grid icon) — you do not need to rebuild that in your picker unless you want those controls before the first insert.
 
@@ -131,7 +174,7 @@ When the user confirms a selection, call one of these APIs:
 
 ## Large catalogs (1,000+ products)
 
-**The package does not ship pagination, search, or catalog loading for products.** That is intentional — the same pattern as `:CustomMediaLibraryComponent`.
+**Production catalogs** (pagination, API search, categories, ERP feeds) belong in **your** `:DisplayProducts` component — the same pattern as `:CustomMediaLibraryComponent`. The built-in sample catalog is a small static list with client-side search for layout exploration only.
 
 | Responsibility                       | Who owns it                                           |
 | ------------------------------------ | ----------------------------------------------------- |
@@ -351,13 +394,15 @@ Inserted sections include `data-pbx-product-section` and `data-pbx-product-id` a
 | Prop                       | Purpose                                                               |
 | -------------------------- | --------------------------------------------------------------------- |
 | `:CustomBuilderComponents` | Extra **layout blocks** in the Add modal (heroes, grids, etc.)        |
-| `:DisplayProducts`         | **Catalog picker** — browse real products and insert product sections |
+| `:DisplayProducts`         | **Optional.** Your catalog picker — replaces the built-in sample catalog when set |
+| `:enableDefaultProducts` | **Optional.** `true` by default — built-in sample catalog when `:DisplayProducts` is omitted; set `false` to hide **Products** entirely |
+| Built-in sample catalog    | Used when `:DisplayProducts` is omitted and `:enableDefaultProducts` is not `false` |
 | Built-in components        | Default blocks when `CustomBuilderComponents` is omitted              |
 
 These do not conflict:
 
 - **Add** → structural/page blocks
-- **Products** → catalog-driven sections (only when `:DisplayProducts` is set)
+- **Products** → product sections (sample catalog by default, or your catalog when `:DisplayProducts` is set)
 
 You can use image + text blocks manually for products, or use `:DisplayProducts` when you want live catalog integration.
 

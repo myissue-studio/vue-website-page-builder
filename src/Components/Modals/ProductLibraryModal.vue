@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide } from 'vue'
-import DefaultDisplayProducts from '../../tests/DefaultComponents/DefaultDisplayProducts.vue'
+import DefaultDisplayProducts from '../PageBuilder/ProductPicker/DefaultDisplayProducts.vue'
 import BaseModal from './BaseModal.vue'
 
 defineProps({
