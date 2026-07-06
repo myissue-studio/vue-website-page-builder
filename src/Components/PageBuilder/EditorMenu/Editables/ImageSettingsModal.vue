@@ -119,7 +119,7 @@ const aspectPresets = [
       <div class="pbx-flex pbx-gap-2">
         <button
           type="button"
-          class="pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
+          class="pbx-font-sans pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedObjectFit === 'pbx-object-cover'
               ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
@@ -131,7 +131,7 @@ const aspectPresets = [
         </button>
         <button
           type="button"
-          class="pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
+          class="pbx-font-sans pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedObjectFit === 'pbx-object-contain'
               ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
@@ -186,7 +186,7 @@ const aspectPresets = [
           v-for="preset in aspectPresets"
           :key="preset.id"
           type="button"
-          class="pbx-rounded-xl pbx-border pbx-border-solid pbx-px-3 pbx-py-2.5 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
+          class="pbx-font-sans pbx-rounded-xl pbx-border pbx-border-solid pbx-px-3 pbx-py-2.5 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedAspectRatio === preset.id
               ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
