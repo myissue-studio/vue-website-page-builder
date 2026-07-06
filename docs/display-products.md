@@ -41,7 +41,7 @@ The sample picker includes search, multi-select, layout options, and the same **
 
 Your custom component **fully replaces** the default picker when provided. The modal shell, **Products** entry points, `insertProducts()`, and toolbar section settings stay the same.
 
-Sample data ships in the package as `src/data/sample-products.json` (10 editorial placeholder items with `DEMO-001`–style SKUs). Hosts are not required to load or ship this file — it is bundled for the default picker only.
+Sample data ships in the package as `src/data/sample-products.json` (8 neutral placeholder items with `DEMO-001`–style SKUs). Hosts are not required to load or ship this file — it is bundled for the default picker only.
 
 ### Disable the built-in sample catalog
 
