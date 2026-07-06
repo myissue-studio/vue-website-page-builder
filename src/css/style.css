@@ -812,7 +812,7 @@
   }
 
   .pbx-pageDesignOpenButtonHint {
-    @apply pbx-truncate pbx-text-xs pbx-text-gray-500;
+    @apply pbx-text-xs pbx-text-gray-500;
   }
 
   .pbx-pageDesignOpenButtonArrow {
