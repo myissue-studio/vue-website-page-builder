@@ -119,6 +119,10 @@ export function productsHaveButtons(products: ReadonlyArray<PageBuilderProductIn
   })
 }
 
+export function productsHaveLinks(products: ReadonlyArray<PageBuilderProductInput>): boolean {
+  return products.some((product) => Boolean(product.url?.trim()))
+}
+
 export function sectionHasProductImages(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
     const imageWrap = card.querySelector('[class*="product-card-image"]')
