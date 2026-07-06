@@ -351,10 +351,10 @@ async function insertSelectedProducts() {
             </div>
 
             <aside
-              class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-px-2"
+              class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-pt-2 pbx-pb-8 pbx-px-2"
             >
               <div class="pbx-min-h-[10rem]">
-                <div class="pbx-modalSidebarPanel pbx-mt-4">
+                <div class="pbx-modalSidebarPanel">
                   <p class="pbx-modalSidebarPanelTitle">{{ translate('Information') }}</p>
                   <div class="pbx-modalSidebarStatGrid">
                     <div
