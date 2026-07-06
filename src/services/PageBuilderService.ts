@@ -142,6 +142,8 @@ export class PageBuilderService {
   private _pendingPageSettings: PageSettings | null = null
   private _lastKnownPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
+  private hasCompletedBuilderMount: boolean = false
+  private builderMountPromise: Promise<void> | null = null
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
 
@@ -563,7 +565,7 @@ export class PageBuilderService {
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder) {
-        this.completeBuilderInitialization(passedComponentsArray)
+        await this.completeBuilderInitialization(passedComponentsArray)
       }
 
       // result to end user
@@ -592,11 +594,29 @@ export class PageBuilderService {
   }
 
   /**
+   * Whether PageBuilder.vue should run deferred mount on mount (DOM was missing at startBuilder).
+   */
+  public shouldCompleteBuilderMountOnMount(): boolean {
+    if (this.hasCompletedBuilderMount) return false
+    return this.isPageBuilderMissingOnStart || Boolean(this.pendingMountComponents)
+  }
+
+  /**
    * Completes the builder initialization process once the DOM is ready.
    * @param {BuilderResourceData} [passedComponentsArray] - Optional array of components to load.
    * @returns {Promise<void>}
    */
   async completeBuilderInitialization(passedComponentsArray?: BuilderResourceData): Promise<void> {
+    if (this.hasCompletedBuilderMount) return
+    if (!this.builderMountPromise) {
+      this.builderMountPromise = this.runCompleteBuilderInitialization(passedComponentsArray)
+    }
+    await this.builderMountPromise
+  }
+
+  private async runCompleteBuilderInitialization(
+    passedComponentsArray?: BuilderResourceData,
+  ): Promise<void> {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
     await sleep(400)
 
@@ -717,6 +737,7 @@ export class PageBuilderService {
     // Clean up any old localStorage items related to previous builder sessions
     this.deleteOldPageBuilderLocalStorage()
     this.pageBuilderStateStore.setIsRestoring(false)
+    this.hasCompletedBuilderMount = true
     this.pageBuilderStateStore.setIsLoadingGlobal(false)
   }
 

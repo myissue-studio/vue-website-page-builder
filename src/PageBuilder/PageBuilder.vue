@@ -869,7 +869,9 @@ const handlePageBuilderLayoutChange = function () {
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
 
 onMounted(async () => {
-  await pageBuilderService.completeBuilderInitialization(undefined)
+  if (pageBuilderService.shouldCompleteBuilderMountOnMount()) {
+    await pageBuilderService.completeBuilderInitialization(undefined)
+  }
 
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
