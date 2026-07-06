@@ -140,10 +140,9 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
 
 | File                                                   | Purpose                                                         |
 | ------------------------------------------------------ | --------------------------------------------------------------- |
-| `src/data/sample-products.json`                        | Built-in default — 10 placeholder products bundled with the package |
+| `src/data/sample-products.json`                        | Built-in default and dev demo — placeholder products bundled with the package |
 | `src/Components/PageBuilder/ProductPicker/`            | Default picker (`ProductPickerPanel`, `DefaultDisplayProducts`) |
-| `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Dev demo — larger static catalog for local `PageBuilderTest`    |
-| `src/tests/productsArray.test.json`                    | Extended sample data for the dev demo                             |
+| `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Dev demo — same sample catalog for local `PageBuilderTest`      |
 | `src/tests/PageBuilderTest.vue`                        | Optional `:DisplayProducts="DemoDisplayProductsTest"` wiring      |
 
 Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API. Until then, omit `:DisplayProducts` and use the built-in sample catalog.
@@ -209,7 +208,7 @@ Only the **selected** products become page HTML — not your full catalog. A com
 
 ### Demo vs production
 
-The repository demo (`DemoDisplayProductsTest.vue`) loads a small static JSON file (`productsArray.test.json`) with client-side search. That is a **UI reference**, not the recommended pattern for large catalogs.
+The repository demo (`DemoDisplayProductsTest.vue`) loads the same bundled `sample-products.json` with client-side search. That is a **UI reference**, not the recommended pattern for large catalogs.
 
 For production, replace the demo with `YourDisplayProducts.vue` that talks to your API.
 
@@ -494,7 +493,7 @@ After insertion, editors can still tweak borders, shadows, and spacing visually 
 
 ## Demo in this repository
 
-See `src/tests/PageBuilderTest.vue` and `src/tests/TestComponents/DemoDisplayProductsTest.vue` with sample data in `src/tests/productsArray.test.json`.
+See `src/tests/PageBuilderTest.vue` and `src/tests/TestComponents/DemoDisplayProductsTest.vue` with sample data in `src/data/sample-products.json`.
 
 ## How other page builders handle this
 
