@@ -17,6 +17,7 @@ import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
+import { delay } from '../../composables/delay'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -352,33 +353,40 @@ const startEditor = async function () {
 }
 
 const saveInlineEditor = async function () {
-  if (!editor.value) return
+  if (!editor.value || isSaving.value) return
 
   isSaving.value = true
-  const target = inlineElement.value
-  const html = getFinalEditorHtml(editor.value)
-  removeDocumentMouseDownListener()
-  teardownEditor(html)
-  await pageBuilderService.finishInlineTipTapEditor(target)
-  isSaving.value = false
+  await delay(300)
+  try {
+    const target = inlineElement.value
+    const html = getFinalEditorHtml(editor.value)
+    removeDocumentMouseDownListener()
+    teardownEditor(html)
+    await pageBuilderService.finishInlineTipTapEditor(target)
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | null) {
-  if (!editor.value) return
+  if (!editor.value || isSaving.value) return
 
   isSaving.value = true
-  const target = inlineElement.value
-  const html = getFinalEditorHtml(editor.value)
+  await delay(300)
+  try {
+    const target = inlineElement.value
+    const html = getFinalEditorHtml(editor.value)
 
-  removeDocumentMouseDownListener()
-  teardownEditor(html)
-  await pageBuilderService.finishInlineTipTapEditor(target)
+    removeDocumentMouseDownListener()
+    teardownEditor(html)
+    await pageBuilderService.finishInlineTipTapEditor(target)
 
-  if (nextElement && nextElement !== target) {
-    await pageBuilderService.selectEditableElement(nextElement)
+    if (nextElement && nextElement !== target) {
+      await pageBuilderService.selectEditableElement(nextElement)
+    }
+  } finally {
+    isSaving.value = false
   }
-
-  isSaving.value = false
 }
 
 const handleDocumentMouseDown = function (event: MouseEvent) {
@@ -534,9 +542,13 @@ onBeforeUnmount(() => {
     <div
       @mousedown.prevent.stop="saveInlineEditor"
       class="pbx-h-8 pbx-px-2 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-gap-1 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
+      :class="{ 'pbx-pointer-events-none pbx-opacity-60': isSaving }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> save </span>
-      <span class="pbx-text-xs">{{ isSaving ? translate('Saving') : translate('Save') }}</span>
+      <span class="pbx-text-xs">{{ translate('Save') }}</span>
+      <span v-if="!isSaving" class="material-symbols-outlined pbx-text-[18px]">check</span>
+      <span v-if="isSaving" class="material-symbols-outlined pbx-text-[18px] pbx-animate-spin"
+        >refresh</span
+      >
     </div>
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>

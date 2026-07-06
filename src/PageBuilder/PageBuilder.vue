@@ -242,9 +242,7 @@ const canvasFontClass = computed(() => {
   }
 
   const pagebuilder = document.getElementById('pagebuilder')
-  const domFont = pagebuilder
-    ? findFontFamilyClassOnElement(pagebuilder, userSettings)
-    : undefined
+  const domFont = pagebuilder ? findFontFamilyClassOnElement(pagebuilder, userSettings) : undefined
 
   if (
     domFont &&

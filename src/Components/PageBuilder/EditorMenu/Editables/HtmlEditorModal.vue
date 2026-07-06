@@ -98,26 +98,25 @@ async function copyHtml() {
     </div>
 
     <template #actions>
-      <template v-if="!isLoading">
-        <button type="button" class="pbx-mySecondaryButton" @click="$emit('close')">
-          {{ translate('Close') }}
-        </button>
-        <button v-if="!readOnly" type="button" class="pbx-myPrimaryButton" @click="$emit('save')">
-          {{ translate('Save') }}
-        </button>
-      </template>
-      <template v-else>
-        <div class="pbx-flex pbx-items-center pbx-my-2 pbx-justify-end">
-          <div
-            class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-          >
-            <span
-              class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-              >Loading...</span
-            >
-          </div>
-        </div>
-      </template>
+      <button
+        type="button"
+        class="pbx-mySecondaryButton"
+        :disabled="isLoading"
+        @click="$emit('close')"
+      >
+        {{ translate('Close') }}
+      </button>
+      <button
+        v-if="!readOnly"
+        type="button"
+        class="pbx-myPrimaryButton"
+        :disabled="isLoading"
+        @click="$emit('save')"
+      >
+        {{ translate('Save') }}
+        <span v-if="!isLoading" class="material-symbols-outlined">check</span>
+        <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
+      </button>
     </template>
   </BaseModal>
 </template>

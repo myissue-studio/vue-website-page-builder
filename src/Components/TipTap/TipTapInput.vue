@@ -283,7 +283,7 @@ onMounted(() => {
               @click="pageBuilderService.toggleTipTapModal(false)"
               class="pbx-myPrimaryButton pbx-mr-4 pbx-min-h-2"
             >
-              <span class="material-symbols-outlined"> save </span>
+              <span class="material-symbols-outlined">check</span>
               <span>{{ translate('Save') }}</span>
             </div>
 

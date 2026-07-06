@@ -952,7 +952,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalSidebarPanel {
-    @apply pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4;
+    @apply pbx-bg-white pbx-py-4;
   }
 
   .pbx-modalSidebarPanelTitle {
@@ -1756,4 +1756,9 @@
 
 #pbx-modal button {
   font-family: 'Jost', Helvetica, Arial, sans-serif;
+}
+
+/* Material Symbols are inline by default; spin needs inline-block for transform */
+.material-symbols-outlined.pbx-animate-spin {
+  display: inline-block;
 }

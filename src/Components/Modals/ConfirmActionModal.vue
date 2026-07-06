@@ -105,7 +105,7 @@ const thirdButtonBuilder = function () {
 
     <template #actions>
       <div
-        v-if="simpleModal !== true && !isLoading"
+        v-if="simpleModal !== true"
         class="pbx-flex sm:pbx-justify-end pbx-justify-center"
       >
         <slot name="footer" />
@@ -122,6 +122,7 @@ const thirdButtonBuilder = function () {
             ref="firstButtonRef"
             class="pbx-mySecondaryButton"
             type="button"
+            :disabled="isLoading"
             @click="firstButtonBuilder"
           >
             {{ firstButtonText }}
@@ -131,6 +132,7 @@ const thirdButtonBuilder = function () {
             v-if="secondButtonText"
             class="pbx-myPrimaryButton pbx-bg-yellow-300 hover:pbx-bg-yellow-400 pbx-text-myPrimaryDarkGrayColor hover:pbx-text-myPrimaryDarkGrayColor focus:pbx-ring-yellow-400 pbx-w-full"
             type="button"
+            :disabled="isLoading"
             @click="secondButtonBuilder"
           >
             {{ secondButtonText }}
@@ -145,25 +147,14 @@ const thirdButtonBuilder = function () {
                 : 'pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-myPrimaryLinkColor focus:pbx-ring-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor',
             ]"
             type="button"
+            :disabled="isLoading"
             @click="thirdButtonBuilder"
           >
             {{ thirdButtonText }}
+            <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
           </button>
         </div>
       </div>
-
-      <template v-if="isLoading">
-        <div class="pbx-flex pbx-items-center pbx-my-2 pbx-px-2 pbx-justify-end">
-          <div
-            class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
-          >
-            <span
-              class="!pbx-absolute !pbx-m-px !pbx-h-px !pbx-w-px !pbx-overflow-hidden !pbx-whitespace-nowrap !pbx-border-0 !pbx-p-0 !pbx-[clip:rect(0,0,0,0)]"
-              >Loading...</span
-            >
-          </div>
-        </div>
-      </template>
     </template>
   </BaseModal>
 </template>
