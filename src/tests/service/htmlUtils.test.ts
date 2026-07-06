@@ -13,6 +13,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { PageBuilderService } from '../../services/PageBuilderService'
 import { usePageBuilderStateStore } from '../../stores/page-builder-state'
+import { extractCleanHTMLFromPageBuilder } from '../../utils/builder/extract-clean-html'
+import type { PageBuilderConfig } from '../../types'
 
 function createMockStore() {
   return {
@@ -140,6 +142,14 @@ type SvcAny = {
   cloneAndRemoveSelectionAttributes: (element: HTMLElement) => HTMLElement
   renderComponentsToHtml: (components: unknown[]) => string
 }
+
+const configWithImagePrefix = (imageUrlPrefix: string): PageBuilderConfig => ({
+  updateOrCreate: {
+    formType: 'create',
+    formName: 'test',
+  },
+  imageUrlPrefix,
+})
 
 describe('HTML Utility Methods', () => {
   let svc: SvcAny
@@ -379,6 +389,50 @@ describe('HTML Utility Methods', () => {
       const components = [{ html_code: '<section data-componentid="abc">X</section>', title: 'X' }]
       const result = svc.renderComponentsToHtml(components)
       expect(result).not.toContain('#pagebuilder')
+    })
+  })
+
+  describe('extractCleanHTMLFromPageBuilder', () => {
+    it('preserves data image sources when imageUrlPrefix is configured', () => {
+      const root = document.createElement('div')
+      root.id = 'pagebuilder'
+      const dataSrc =
+        'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E'
+      root.innerHTML = `<img src="${dataSrc}" alt="Placeholder">`
+
+      const result = extractCleanHTMLFromPageBuilder(
+        root,
+        configWithImagePrefix('http://localhost:11001/storage/uploads/'),
+      )
+
+      expect(result).toContain(`src="${dataSrc}"`)
+      expect(result).not.toContain('/storage/uploads/data:image')
+    })
+
+    it('preserves blob image sources when imageUrlPrefix is configured', () => {
+      const root = document.createElement('div')
+      root.id = 'pagebuilder'
+      root.innerHTML = '<img src="blob:http://localhost:11001/image-id" alt="Preview">'
+
+      const result = extractCleanHTMLFromPageBuilder(
+        root,
+        configWithImagePrefix('http://localhost:11001/storage/uploads/'),
+      )
+
+      expect(result).toContain('src="blob:http://localhost:11001/image-id"')
+    })
+
+    it('prefixes relative image sources when imageUrlPrefix is configured', () => {
+      const root = document.createElement('div')
+      root.id = 'pagebuilder'
+      root.innerHTML = '<img src="hero.jpg" alt="Hero">'
+
+      const result = extractCleanHTMLFromPageBuilder(
+        root,
+        configWithImagePrefix('http://localhost:11001/storage/uploads/'),
+      )
+
+      expect(result).toContain('src="http://localhost:11001/storage/uploads/hero.jpg"')
     })
   })
 })

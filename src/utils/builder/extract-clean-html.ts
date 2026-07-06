@@ -1,5 +1,9 @@
 import type { PageBuilderConfig } from '../../types'
 
+const isAbsoluteOrInlineImageSrc = (src: string): boolean => {
+  return /^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('//')
+}
+
 export function extractCleanHTMLFromPageBuilder(
   pagebuilder: HTMLElement | null,
   config?: PageBuilderConfig,
@@ -47,7 +51,9 @@ export function extractCleanHTMLFromPageBuilder(
     imgs.forEach((img) => {
       const src = img.getAttribute('src') || ''
       if (
+        src &&
         !src.startsWith('http') &&
+        !isAbsoluteOrInlineImageSrc(src) &&
         // extra safety
         imageUrlPrefix &&
         !src.startsWith(imageUrlPrefix)
