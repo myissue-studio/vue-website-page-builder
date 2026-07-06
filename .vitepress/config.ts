@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'docs',
-  title: 'Vue Website Page Builder',
+  title: 'mybuilder',
   description:
     'Vue 3 page builder for ecommerce admin, multi-tenant SaaS, and CMS dashboards. Free, self-hosted, integration-first — embed in Laravel, Nuxt, or Vue apps with custom media library and product catalog hooks.',
   base: '/vue-website-page-builder/',
