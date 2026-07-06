@@ -785,7 +785,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-pageDesignOpenButton {
-    @apply pbx-font-sans pbx-box-border pbx-flex pbx-min-w-0 pbx-max-w-full pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-font-sans pbx-box-border pbx-flex pbx-min-w-0 pbx-max-w-full pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
   }
 
   .pbx-pageDesignOpenButtonIcon {
@@ -809,7 +809,7 @@
   }
 
   .pbx-pageDesignOpenButton--danger {
-    @apply hover:pbx-border-myPrimaryErrorColor hover:pbx-bg-red-50;
+    @apply hover:pbx-bg-red-50;
   }
 
   .pbx-pageDesignOpenButton--danger .material-symbols-outlined:first-child {

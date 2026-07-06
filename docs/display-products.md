@@ -79,14 +79,14 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
   if (!products.length) return
 
   await pageBuilderService.insertProducts(products, {
-    layout: 'grid-3',           // grid-1 | grid-2 | grid-3 | grid-4 | grid-6
-    mobileColumns: 1,           // 1 or 2
-    cardStyle: 'minimal',       // minimal | bordered | shadow | elevated
+    layout: 'grid-3', // grid-1 | grid-2 | grid-3 | grid-4 | grid-6
+    mobileColumns: 1, // 1 or 2
+    cardStyle: 'minimal', // minimal | bordered | shadow | elevated
     roundedImages: false,
-    openInNewTab: false,        // target="_blank" on product image, title, and CTA links
-    hidePrice: false,           // hide price row when products include prices
-    hideImage: false,           // hide photos when products include images
-    hideButton: false,          // hide CTA when products include url + buttonText
+    openInNewTab: false, // target="_blank" on product image, title, and CTA links
+    hidePrice: false, // hide price row when products include prices
+    hideImage: false, // hide photos when products include images
+    hideButton: false, // hide CTA when products include url + buttonText
     sectionTitle: 'Products',
   })
 
@@ -97,11 +97,11 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
 
 **Reference implementation in this repo**
 
-| File | Purpose |
-|------|---------|
+| File                                                   | Purpose                                                         |
+| ------------------------------------------------------ | --------------------------------------------------------------- |
 | `src/tests/TestComponents/DemoDisplayProductsTest.vue` | Full picker UI — search, multi-select, section settings, insert |
-| `src/tests/productsArray.test.json` | Sample product data |
-| `src/tests/PageBuilderTest.vue` | Wiring `:DisplayProducts="DemoDisplayProductsTest"` |
+| `src/tests/productsArray.test.json`                    | Sample product data                                             |
+| `src/tests/PageBuilderTest.vue`                        | Wiring `:DisplayProducts="DemoDisplayProductsTest"`             |
 
 Start by copying `DemoDisplayProductsTest.vue` into your project as `YourDisplayProducts.vue`, then replace the static JSON load with your API.
 
@@ -133,15 +133,15 @@ When the user confirms a selection, call one of these APIs:
 
 **The package does not ship pagination, search, or catalog loading for products.** That is intentional — the same pattern as `:CustomMediaLibraryComponent`.
 
-| Responsibility | Who owns it |
-|----------------|-------------|
-| Opening the Products modal | Page Builder |
-| Loading products (API, DB, CMS) | **Your** `:DisplayProducts` component |
-| Pagination, infinite scroll, search | **Your** component |
-| Categories, permissions, variants UI | **Your** component |
-| Multi-select across pages | **Your** component |
-| Inserting HTML on the page | Page Builder (`insertProducts` / `insertProductHtml`) |
-| Cart, checkout, inventory | **Your** backend / ecommerce platform |
+| Responsibility                       | Who owns it                                           |
+| ------------------------------------ | ----------------------------------------------------- |
+| Opening the Products modal           | Page Builder                                          |
+| Loading products (API, DB, CMS)      | **Your** `:DisplayProducts` component                 |
+| Pagination, infinite scroll, search  | **Your** component                                    |
+| Categories, permissions, variants UI | **Your** component                                    |
+| Multi-select across pages            | **Your** component                                    |
+| Inserting HTML on the page           | Page Builder (`insertProducts` / `insertProductHtml`) |
+| Cart, checkout, inventory            | **Your** backend / ecommerce platform                 |
 
 You can implement all of this **today** — no extra package feature is required. The builder only needs the final selection when the editor clicks insert.
 
@@ -202,6 +202,91 @@ async function insertFromApi(products: PageBuilderProduct[]) {
 
 Only fields you provide are rendered. All fields on `PageBuilderProduct` are optional.
 
+## Custom fields in the product picker and canvas
+
+`PageBuilderProduct` includes an index signature (`[key: string]: unknown`), so you can attach **any extra fields** from your data source. Both the demo picker and the built-in card HTML automatically surface non-standard fields — no configuration needed.
+
+This means if your product objects look like this (a GIS/geodata or B2B catalog, for example):
+
+```json
+{
+  "sku": "A1614",
+  "title": "Multiupdate Water",
+  "description": "...",
+  "city": "New York",
+  "name": "Freja",
+  "status": "inactive",
+  "expiryDate": "2026-11-11"
+}
+```
+
+The builder will automatically show `city`, `name`, `status`, and `expiryDate` — because they are not in the standard field set (`id`, `title`, `description`, `image`, `imageAlt`, `price`, `compareAtPrice`, `badge`, `url`, `buttonText`, `sku`).
+
+**No changes are needed in the builder or the package** — you just pass your enriched product objects to `insertProducts()`.
+
+### Custom fields in the picker
+
+The demo picker (`DemoDisplayProductsTest.vue`) shows custom field **values** (without keys) as small gray text below the title and price in each product card. This gives editors enough context to identify a product without cluttering the card.
+
+### Custom fields in the rendered canvas HTML
+
+`insertProducts()` renders custom fields into the page HTML below the description. Each field uses a `<strong>` key label so editors can edit the text inline without losing the key/value structure:
+
+```html
+<div class="product-card-custom-field product-card-custom-field-city">
+  <p><strong>city</strong>: New York</p>
+</div>
+<div class="product-card-custom-field product-card-custom-field-expiry-date">
+  <p><strong>expiryDate</strong>: 2026-11-11</p>
+</div>
+```
+
+Each field div gets two classes:
+
+- `product-card-custom-field` — targets all custom fields
+- `product-card-custom-field-{slug}` — targets a specific field, where `slug` is the key lowercased with non-alphanumeric characters replaced by hyphens (`expiryDate` → `expiry-date`, `city` → `city`)
+
+This lets you style individual fields from your own CSS:
+
+```css
+.product-card-custom-field-status {
+  color: #6b7280;
+}
+.product-card-custom-field-expiry-date {
+  font-size: 0.75rem;
+}
+```
+
+The `<strong>` tag is a TipTap StarterKit mark — it survives the editor's parse/serialize cycle, so the bold key label is preserved when editors click to edit a field inline.
+
+If you need custom fields with completely custom markup (e.g. `data-product-status` attributes, icons, or conditional styling), use `insertProductHtml()` with your own HTML instead.
+
+### How the demo picker detects custom fields
+
+```ts
+const STANDARD_PRODUCT_FIELDS = new Set([
+  'id',
+  'title',
+  'description',
+  'image',
+  'imageAlt',
+  'price',
+  'compareAtPrice',
+  'badge',
+  'url',
+  'buttonText',
+  'sku',
+])
+
+function customFieldEntries(product: PageBuilderProduct): [string, unknown][] {
+  return Object.entries(product).filter(
+    ([key, value]) => !STANDARD_PRODUCT_FIELDS.has(key) && value != null && value !== '',
+  )
+}
+```
+
+Copy this pattern into `YourDisplayProducts.vue` to render whatever metadata your catalog provides.
+
 ### Option B — Fully custom HTML (maximum flexibility)
 
 Call `insertProductHtml()` with any markup you generate:
@@ -236,10 +321,10 @@ interface PageBuilderProduct {
   price?: string | number
   compareAtPrice?: string | number
   badge?: string
-  url?: string        // product or checkout URL on your site
+  url?: string // product or checkout URL on your site
   buttonText?: string
   sku?: string
-  [key: string]: unknown  // custom fields for your templates
+  [key: string]: unknown // custom fields for your templates
 }
 ```
 
@@ -263,11 +348,11 @@ Inserted sections include `data-pbx-product-section` and `data-pbx-product-id` a
 
 ## Relationship to other props
 
-| Prop | Purpose |
-|------|---------|
-| `:CustomBuilderComponents` | Extra **layout blocks** in the Add modal (heroes, grids, etc.) |
-| `:DisplayProducts` | **Catalog picker** — browse real products and insert product sections |
-| Built-in components | Default blocks when `CustomBuilderComponents` is omitted |
+| Prop                       | Purpose                                                               |
+| -------------------------- | --------------------------------------------------------------------- |
+| `:CustomBuilderComponents` | Extra **layout blocks** in the Add modal (heroes, grids, etc.)        |
+| `:DisplayProducts`         | **Catalog picker** — browse real products and insert product sections |
+| Built-in components        | Default blocks when `CustomBuilderComponents` is omitted              |
 
 These do not conflict:
 
@@ -291,10 +376,7 @@ For dynamic carts on the published page, parse `data-pbx-product-id` in your fro
 Export for use outside the service (SSR, previews, tests):
 
 ```ts
-import {
-  buildProductSectionHtml,
-  type PageBuilderProduct,
-} from '@myissue/vue-website-page-builder'
+import { buildProductSectionHtml, type PageBuilderProduct } from '@myissue/vue-website-page-builder'
 
 const html = buildProductSectionHtml(products, 'grid-4', 'Sale', {
   cardStyle: 'bordered',
@@ -325,7 +407,11 @@ import type {
   InsertProductsOptions,
 } from '@myissue/vue-website-page-builder'
 
-interface ShopRow { id: string; name: string; price: number }
+interface ShopRow {
+  id: string
+  name: string
+  price: number
+}
 
 const selected: ShopRow[] = await fetchSelected()
 
@@ -367,12 +453,12 @@ See `src/tests/PageBuilderTest.vue` and `src/tests/TestComponents/DemoDisplayPro
 
 ## How other page builders handle this
 
-| Approach | Examples | Trade-off |
-|----------|----------|-----------|
-| **Injected app / data source** | Webflow CMS, Builder.io content models | Flexible; host connects API |
-| **Commerce widgets** | Shopify Buy Button, Squarespace | Easy checkout; less layout freedom |
-| **Shortcodes / blocks** | WordPress WooCommerce blocks | Fast defaults; hard to customize |
-| **Manual blocks only** | Many landing-page builders | Flexible design; no catalog sync |
+| Approach                       | Examples                               | Trade-off                          |
+| ------------------------------ | -------------------------------------- | ---------------------------------- |
+| **Injected app / data source** | Webflow CMS, Builder.io content models | Flexible; host connects API        |
+| **Commerce widgets**           | Shopify Buy Button, Squarespace        | Easy checkout; less layout freedom |
+| **Shortcodes / blocks**        | WordPress WooCommerce blocks           | Fast defaults; hard to customize   |
+| **Manual blocks only**         | Many landing-page builders             | Flexible design; no catalog sync   |
 
 `:DisplayProducts` follows the **injected data source** model (like your media library) — a strong fit for Vue apps, corporations, and custom storefronts that need both design freedom and real product data.
 

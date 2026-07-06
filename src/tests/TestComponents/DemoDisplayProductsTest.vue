@@ -104,6 +104,26 @@ function removeProduct(product: PageBuilderProduct) {
   selectedMap.value = next
 }
 
+const STANDARD_PRODUCT_FIELDS = new Set([
+  'id',
+  'title',
+  'description',
+  'image',
+  'imageAlt',
+  'price',
+  'compareAtPrice',
+  'badge',
+  'url',
+  'buttonText',
+  'sku',
+])
+
+function customFieldEntries(product: PageBuilderProduct): [string, unknown][] {
+  return Object.entries(product).filter(
+    ([key, value]) => !STANDARD_PRODUCT_FIELDS.has(key) && value != null && value !== '',
+  )
+}
+
 async function insertSelectedProducts() {
   if (!selectedProducts.value.length) return
   isLoading.value = true
@@ -274,6 +294,18 @@ async function insertSelectedProducts() {
                     >
                       {{ product.price }}
                     </p>
+                    <div
+                      v-if="customFieldEntries(product).length"
+                      class="pbx-mt-1 pbx-flex pbx-flex-wrap pbx-gap-x-2 pbx-gap-y-0.5"
+                    >
+                      <span
+                        v-for="[key, value] in customFieldEntries(product)"
+                        :key="key"
+                        class="pbx-text-xs pbx-text-gray-500 pbx-truncate"
+                      >
+                        {{ value }}
+                      </span>
+                    </div>
                   </div>
                 </button>
               </div>
