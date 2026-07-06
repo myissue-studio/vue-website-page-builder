@@ -1773,3 +1773,40 @@
 .material-symbols-outlined.pbx-animate-spin {
   display: inline-block;
 }
+
+/*
+ * Google’s Material Symbols stylesheet sets `.material-symbols-outlined { font-size: 24px }`
+ * as unlayered CSS. Tailwind utilities live in `@layer utilities`, so they lose the cascade
+ * and icons stay 24px in host apps. Re-apply sizes here (unlayered) when utilities are used.
+ */
+.material-symbols-outlined.pbx-text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.material-symbols-outlined.pbx-text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.material-symbols-outlined.pbx-text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.material-symbols-outlined.pbx-text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.material-symbols-outlined.pbx-text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.material-symbols-outlined.pbx-text-\[14px\] {
+  font-size: 14px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-text-\[18px\] {
+  font-size: 18px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-leading-none {
+  line-height: 1;
+}
