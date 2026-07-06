@@ -141,6 +141,14 @@ export function sectionHasProductButtons(section: HTMLElement): boolean {
   })
 }
 
+export function sectionHasProductLinks(section: HTMLElement): boolean {
+  return findProductCardsInSection(section).some((card) => {
+    return Array.from(card.querySelectorAll('a[href]')).some((a) => {
+      return Boolean(a.getAttribute('href')?.trim())
+    })
+  })
+}
+
 function setProductContentHidden(el: HTMLElement, hidden: boolean): void {
   el.classList.toggle(PRODUCT_CONTENT_HIDDEN_CLASS, hidden)
 }

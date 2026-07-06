@@ -1061,6 +1061,10 @@
     @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
   }
 
+  .pbx-productSettingsToggleGrid {
+    @apply pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4;
+  }
+
   .pbx-productSettingsToggleGrid--twoCol {
     @apply pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4;
   }
