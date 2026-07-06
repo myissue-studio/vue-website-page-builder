@@ -31,7 +31,7 @@ const typeClass: Record<ToastType, string> = {
           :aria-label="'Close'"
           @click="hideToast(toast.id)"
         >
-          <span class="material-symbols-outlined pbx-text-[18px]" aria-hidden="true">
+          <span class="material-symbols-outlined pbx-materialIcon18" aria-hidden="true">
             close_small
           </span>
         </button>

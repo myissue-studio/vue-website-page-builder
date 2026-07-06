@@ -229,7 +229,7 @@ async function insertSelectedProducts() {
             <div class="md:pbx-w-9/12 pbx-w-full pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
               <div
                 v-if="filteredProducts.length"
-                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 md:pbx-grid-cols-3 pbx-gap-4"
+                class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-4 md:pbx-grid-cols-3 pbx-gap-4"
               >
                 <button
                   v-for="product in filteredProducts"
@@ -265,7 +265,7 @@ async function insertSelectedProducts() {
                           : 'pbx-bg-white/90 pbx-text-gray-400 pbx-border pbx-border-gray-200'
                       "
                     >
-                      <span class="material-symbols-outlined pbx-text-lg">
+                      <span class="material-symbols-outlined pbx-materialIconLg">
                         {{ isSelected(product) ? 'check' : 'add' }}
                       </span>
                     </div>
@@ -293,7 +293,7 @@ async function insertSelectedProducts() {
                           : 'pbx-bg-white/90 pbx-text-gray-400 pbx-border pbx-border-gray-200'
                       "
                     >
-                      <span class="material-symbols-outlined pbx-text-lg">
+                      <span class="material-symbols-outlined pbx-materialIconLg">
                         {{ isSelected(product) ? 'check' : 'add' }}
                       </span>
                     </div>
@@ -422,7 +422,7 @@ async function insertSelectedProducts() {
                       :title="translate('Remove')"
                       @click.stop="removeProduct(product)"
                     >
-                      <span class="material-symbols-outlined pbx-text-lg">close</span>
+                      <span class="material-symbols-outlined pbx-materialIconLg">close</span>
                     </button>
                   </div>
                 </div>
@@ -439,7 +439,10 @@ async function insertSelectedProducts() {
                     {{ translate('Insert products') }}
                   </span>
                   <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
-                  <span v-if="isLoading" class="material-symbols-outlined pbx-inline-block pbx-animate-spin">
+                  <span
+                    v-if="isLoading"
+                    class="material-symbols-outlined pbx-inline-block pbx-animate-spin"
+                  >
                     refresh
                   </span>
                 </button>
@@ -476,7 +479,10 @@ async function insertSelectedProducts() {
                 {{ translate('Insert products') }}
               </span>
               <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
-              <span v-if="isLoading" class="material-symbols-outlined pbx-inline-block pbx-animate-spin">
+              <span
+                v-if="isLoading"
+                class="material-symbols-outlined pbx-inline-block pbx-animate-spin"
+              >
                 refresh
               </span>
             </button>

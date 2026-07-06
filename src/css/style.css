@@ -657,7 +657,8 @@
   }
 
   .pbx-htmlCodeViewerCopy .material-symbols-outlined {
-    @apply pbx-text-[14px];
+    font-size: 14px;
+    line-height: 1;
   }
 
   .pbx-htmlCodeViewerSurface {
@@ -1775,38 +1776,26 @@
 }
 
 /*
- * Google’s Material Symbols stylesheet sets `.material-symbols-outlined { font-size: 24px }`
- * as unlayered CSS. Tailwind utilities live in `@layer utilities`, so they lose the cascade
- * and icons stay 24px in host apps. Re-apply sizes here (unlayered) when utilities are used.
+ * Google’s Material Symbols CSS sets font-size: 24px (unlayered), which beats @layer utilities.
+ * Use these dedicated classes on icons — not pbx-text-* utilities (circular @apply in this file).
  */
-.material-symbols-outlined.pbx-text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-.material-symbols-outlined.pbx-text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-.material-symbols-outlined.pbx-text-base {
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-.material-symbols-outlined.pbx-text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-.material-symbols-outlined.pbx-text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-.material-symbols-outlined.pbx-text-\[14px\] {
+.material-symbols-outlined.pbx-materialIcon14 {
   font-size: 14px;
   line-height: 1;
 }
-.material-symbols-outlined.pbx-text-\[18px\] {
+.material-symbols-outlined.pbx-materialIcon18 {
   font-size: 18px;
   line-height: 1;
 }
-.material-symbols-outlined.pbx-leading-none {
+.material-symbols-outlined.pbx-materialIconBase {
+  font-size: 1rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconLg {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconXl {
+  font-size: 1.25rem;
   line-height: 1;
 }

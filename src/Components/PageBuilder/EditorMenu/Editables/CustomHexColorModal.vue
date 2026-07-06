@@ -132,7 +132,7 @@ function closeSaveModal(): void {
             <span class="pbx-customColorModalPreviewHex">{{ previewHex }}</span>
           </div>
           <span v-if="isCurrentDraftApplied" class="pbx-customColorModalAppliedBadge">
-            <span class="material-symbols-outlined pbx-text-[14px] pbx-leading-none">check</span>
+            <span class="material-symbols-outlined pbx-materialIcon14 pbx-leading-none">check</span>
             {{ translate('Applied') }}
           </span>
         </div>
@@ -164,7 +164,7 @@ function closeSaveModal(): void {
               :disabled="!validDraft"
               @click="applyDraft"
             >
-              <span class="material-symbols-outlined pbx-text-base pbx-leading-none">check</span>
+              <span class="material-symbols-outlined pbx-materialIconBase pbx-leading-none">check</span>
             </button>
           </div>
         </div>
