@@ -211,7 +211,7 @@ watch(
               >
                 <div class="pbx-flex pbx-items-center">
                   <div
-                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-full"
+                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
                     :style="{ backgroundColor: preset.color }"
                   ></div>
                   <span class="pbx-ml-3">{{ translate(preset.label) }}</span>
@@ -247,7 +247,7 @@ watch(
             >
               <div class="pbx-flex pbx-items-center">
                 <div
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-full"
+                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
                   :class="`pbx-bg-${color.replace('pbx-bg-', '')}`"
                 ></div>
                 <span class="pbx-ml-3">{{ color }}</span>
@@ -350,7 +350,7 @@ watch(
           type="button"
           class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
           :class="{
-            'pbx-bg-myPrimaryLinkColor pbx-text-white': backgroundColor === color,
+            'pbx-bg-myPrimaryLinkColor': backgroundColor === color,
           }"
           @click="selectTailwindBackgroundColor(color)"
         >

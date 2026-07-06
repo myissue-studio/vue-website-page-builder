@@ -1,0 +1,117 @@
+[
+  {
+    "id": "demo-product-01",
+    "title": "The Ivory Essential",
+    "description": "A refined wardrobe essential with a clean, contemporary finish and effortless appeal.",
+    "image": "https://images.unsplash.com/photo-1657815929003-b97cc426cb3d?w=600&h=600&fit=crop",
+    "imageAlt": "Editorial fashion photograph on a neutral background",
+    "price": "$185",
+    "compareAtPrice": "$220",
+    "badge": "Sale",
+    "url": "/products/sample-item-01",
+    "buttonText": "View product",
+    "sku": "DEMO-001"
+  },
+  {
+    "id": "demo-product-02",
+    "title": "The Draped Edit",
+    "description": "A versatile piece crafted for effortless, everyday styling with a relaxed silhouette.",
+    "image": "https://images.unsplash.com/photo-1626098841206-db37c9ef9b57?w=600&h=600&fit=crop",
+    "imageAlt": "Lifestyle fashion photograph in soft tones",
+    "price": "$220",
+    "url": "/products/sample-item-02",
+    "buttonText": "Shop now",
+    "sku": "DEMO-002"
+  },
+  {
+    "id": "demo-product-03",
+    "title": "The Statement Piece",
+    "description": "A carefully considered edit with a timeless, modern profile suited for any occasion.",
+    "image": "https://images.unsplash.com/photo-1753196732217-d255c5c52b0c?w=600&h=600&fit=crop",
+    "imageAlt": "Editorial fashion photograph with a refined composition",
+    "price": "$340",
+    "url": "/products/sample-item-03",
+    "buttonText": "View details",
+    "sku": "DEMO-003"
+  },
+  {
+    "id": "demo-product-04",
+    "title": "The Classic Silhouette",
+    "description": "A polished wardrobe addition with structured lines and a crisp, runway-ready finish.",
+    "image": "https://images.unsplash.com/photo-1779398763498-cf668c6dc725?w=600&h=600&fit=crop",
+    "imageAlt": "Fashion editorial photograph against a white background",
+    "price": "$168",
+    "url": "/products/sample-item-04",
+    "buttonText": "Buy now",
+    "sku": "DEMO-004"
+  },
+  {
+    "id": "demo-product-05",
+    "title": "The Evening Edit",
+    "description": "A season-ready piece with a refined silhouette and lasting, elevated appeal.",
+    "image": "https://images.unsplash.com/photo-1637536701369-f815af927b59?w=600&h=600&fit=crop",
+    "imageAlt": "Editorial fashion photograph in deep tones",
+    "price": "$245",
+    "badge": "New",
+    "url": "/products/sample-item-05",
+    "buttonText": "Add to cart",
+    "sku": "DEMO-005"
+  },
+  {
+    "id": "demo-product-06",
+    "title": "The Layered Look",
+    "description": "A minimal, well-crafted essential built for layered styling with a rich, textured feel.",
+    "image": "https://images.unsplash.com/photo-1585131552912-34847f8a5c60?w=600&h=600&fit=crop",
+    "imageAlt": "Lifestyle fashion photograph with a moody atmosphere",
+    "price": "$298",
+    "compareAtPrice": "$350",
+    "url": "/products/sample-item-06",
+    "buttonText": "View product",
+    "sku": "DEMO-006"
+  },
+  {
+    "id": "demo-product-07",
+    "title": "The Refined Essential",
+    "description": "A versatile addition with clean lines and a contemporary edge for everyday wear.",
+    "image": "https://images.unsplash.com/photo-1626122509259-ea8e0a136ada?w=600&h=600&fit=crop",
+    "imageAlt": "Close-up editorial product photograph",
+    "price": "$420",
+    "badge": "New",
+    "url": "/products/sample-item-07",
+    "buttonText": "View product",
+    "sku": "DEMO-007"
+  },
+  {
+    "id": "demo-product-08",
+    "title": "The Curated Set",
+    "description": "A curated collection of complementary pieces designed to work beautifully together.",
+    "image": "https://images.unsplash.com/photo-1742319269336-e18d7d04a345?w=600&h=600&fit=crop",
+    "imageAlt": "Editorial product photograph with a soft focus",
+    "price": "$156",
+    "url": "/products/sample-item-08",
+    "buttonText": "Shop now",
+    "sku": "DEMO-008"
+  },
+  {
+    "id": "demo-product-09",
+    "title": "The Compact Duo",
+    "description": "A pair of compact accessories with soft structure and a playful boutique feel.",
+    "image": "https://images.unsplash.com/photo-1685800750376-f4497f5da428?w=600&h=600&fit=crop",
+    "imageAlt": "Editorial product photograph in soft pink tones",
+    "price": "$94",
+    "url": "/products/sample-item-09",
+    "buttonText": "Buy now",
+    "sku": "DEMO-009"
+  },
+  {
+    "id": "demo-product-10",
+    "title": "The Everyday Carry",
+    "description": "A structured, practical accessory in a warm neutral tone for everyday essentials.",
+    "image": "https://images.unsplash.com/photo-1713425886176-2c618d1e63cd?w=600&h=600&fit=crop",
+    "imageAlt": "Lifestyle editorial photograph on a neutral surface",
+    "price": "$142",
+    "url": "/products/sample-item-10",
+    "buttonText": "View product",
+    "sku": "DEMO-010"
+  }
+]

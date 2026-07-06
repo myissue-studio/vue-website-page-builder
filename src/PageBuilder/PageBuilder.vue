@@ -65,7 +65,8 @@ const {
  * Props for PageBuilder component
  * @typedef {Object} Props
  * @property {Object|null} CustomMediaLibraryComponent - Custom media component
- * @property {Object|null} DisplayProducts - Custom product picker component
+ * @property {Object|null} DisplayProducts - Optional custom product picker (replaces built-in sample catalog)
+ * @property {boolean} enableDefaultProducts - Show built-in sample catalog when DisplayProducts is omitted (default true)
  * @property {Object|null} CustomBuilderComponents - Custom component
  * @property {Object} configPageBuilder - Configuration object containing:
  */
@@ -77,6 +78,10 @@ const props = defineProps({
   DisplayProducts: {
     type: Object,
     default: null,
+  },
+  enableDefaultProducts: {
+    type: Boolean,
+    default: true,
   },
   CustomBuilderComponents: {
     type: Object,
@@ -108,6 +113,11 @@ provide('internalPinia', internalPinia)
 provide('CustomMediaComponent', props.CustomMediaLibraryComponent)
 provide('DisplayProductsComponent', props.DisplayProducts)
 provide('CustomBuilderComponents', props.CustomBuilderComponents)
+
+/** Products UI: custom picker and/or built-in sample catalog (see enableDefaultProducts). */
+const showProductsFeature = computed(
+  () => Boolean(props.DisplayProducts) || props.enableDefaultProducts,
+)
 
 const emit = defineEmits(['handleClosePageBuilder', 'handlePublishPageBuilder'])
 
@@ -953,7 +963,7 @@ onBeforeUnmount(() => {
     ></ComponentLibraryModal>
 
     <ProductLibraryModal
-      v-if="props.DisplayProducts && showProductLibraryModal"
+      v-if="showProductsFeature && showProductLibraryModal"
       :open="showProductLibraryModal"
       :title="titleProductLibraryModal"
       :displayProductsComponent="props.DisplayProducts"
@@ -1195,7 +1205,7 @@ onBeforeUnmount(() => {
             </span>
           </button>
           <button
-            v-if="props.DisplayProducts"
+            v-if="showProductsFeature"
             type="button"
             class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
             :aria-label="translate('Add products')"
@@ -1454,7 +1464,7 @@ onBeforeUnmount(() => {
                 </div>
               </div>
               <div
-                v-if="props.DisplayProducts"
+                v-if="showProductsFeature"
                 @click="handleInsertProductButtonClick(0)"
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
@@ -1486,7 +1496,7 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
                 <div
-                  v-if="props.DisplayProducts"
+                  v-if="showProductsFeature"
                   @click="handleInsertProductButtonClick(0)"
                   class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
@@ -1530,7 +1540,7 @@ onBeforeUnmount(() => {
                     </div>
                   </div>
                   <div
-                    v-if="props.DisplayProducts"
+                    v-if="showProductsFeature"
                     @click="handleInsertProductButtonClick(idx + 1)"
                     class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >

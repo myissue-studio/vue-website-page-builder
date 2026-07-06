@@ -785,7 +785,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-pageDesignOpenButton {
-    @apply pbx-font-sans pbx-box-border pbx-flex pbx-min-w-0 pbx-max-w-full pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-myPrimaryLinkColor hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
+    @apply pbx-font-sans pbx-box-border pbx-flex pbx-min-w-0 pbx-max-w-full pbx-w-full pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-3 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-gray-50 hover:pbx-shadow-sm;
   }
 
   .pbx-pageDesignOpenButtonIcon {
@@ -809,7 +809,7 @@
   }
 
   .pbx-pageDesignOpenButton--danger {
-    @apply hover:pbx-border-myPrimaryErrorColor hover:pbx-bg-red-50;
+    @apply hover:pbx-bg-red-50;
   }
 
   .pbx-pageDesignOpenButton--danger .material-symbols-outlined:first-child {
@@ -1061,12 +1061,36 @@
     @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3;
   }
 
+  .pbx-productSettingsToggleGrid {
+    @apply pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4;
+  }
+
   .pbx-productSettingsToggleGrid--twoCol {
     @apply pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4;
   }
 
   .pbx-productSettingsToggleGrid--twoCol > .pbx-productSettingsSection {
     @apply pbx-m-0;
+  }
+
+  .pbx-productSampleCatalogBanner {
+    @apply pbx-mb-4 pbx-flex pbx-gap-3 pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-sky-200 pbx-bg-sky-50 pbx-p-4;
+  }
+
+  .pbx-productSampleCatalogBannerIcon {
+    @apply pbx-mt-0.5 pbx-shrink-0 pbx-text-[22px] pbx-leading-none pbx-text-sky-700;
+  }
+
+  .pbx-productSampleCatalogBannerCopy {
+    @apply pbx-min-w-0 pbx-flex-1;
+  }
+
+  .pbx-productSampleCatalogBannerTitle {
+    @apply pbx-m-0 pbx-text-sm pbx-font-semibold pbx-text-sky-900;
+  }
+
+  .pbx-productSampleCatalogBannerDesc {
+    @apply pbx-m-0 pbx-mt-1 pbx-text-xs pbx-leading-relaxed pbx-text-sky-800/90;
   }
 
   /*

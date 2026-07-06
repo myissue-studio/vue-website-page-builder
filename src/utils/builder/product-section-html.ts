@@ -1,4 +1,8 @@
-import type { PageBuilderProductInput, ProductCardStyle, ProductGridLayout } from '../../types'
+import type {
+  PageBuilderProductInput,
+  ProductCardStyle,
+  ProductGridLayout,
+} from '../../types'
 import {
   buildProductGridClass,
   getProductImageWrapClass,
@@ -25,6 +29,20 @@ export interface BuildProductSectionStyleOptions {
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'hidden'
 
+const STANDARD_PRODUCT_FIELDS = new Set([
+  'id',
+  'title',
+  'description',
+  'image',
+  'imageAlt',
+  'price',
+  'compareAtPrice',
+  'badge',
+  'url',
+  'buttonText',
+  'sku',
+])
+
 function productLinkAttrs(openInNewTab: boolean): string {
   return openInNewTab ? ' target="_blank" rel="noopener noreferrer"' : ''
 }
@@ -32,6 +50,7 @@ function productLinkAttrs(openInNewTab: boolean): string {
 function renderProductCard(
   product: PageBuilderProductInput,
   styleOptions: BuildProductSectionStyleOptions = {},
+  sectionHasBadge = false,
 ): string {
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
@@ -67,7 +86,11 @@ function renderProductCard(
       : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
   }
 
-  const badgeHtml = `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-10">${badge ? `<p>${badge}</p>` : '<p></p>'}</div>`
+  const badgeHtml = badge
+    ? `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2"><p>${badge}</p></div>`
+    : sectionHasBadge
+      ? `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-6"></div>`
+      : ''
 
   const titleHtml = title
     ? `<div class="product-card-title text-lg font-semibold pt-2 min-h-16">${url ? `<p><a href="${url}"${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
@@ -75,6 +98,22 @@ function renderProductCard(
 
   const descriptionHtml = description
     ? `<div class="product-card-description text-sm text-gray-600 pt-1"><p>${description}</p></div>`
+    : ''
+
+  const customEntries = Object.entries(product as Record<string, unknown>).filter(
+    ([key, value]) =>
+      !STANDARD_PRODUCT_FIELDS.has(key) && value != null && String(value).trim() !== '',
+  )
+  const customFieldsHtml = customEntries.length
+    ? `<div class="product-card-custom-fields text-sm text-gray-600 pt-1">${customEntries
+        .map(([key, value]) => {
+          const slug = key
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+          return `<div class="product-card-custom-field product-card-custom-field-${slug}"><p><strong>${escapeHtml(key)}</strong>: ${escapeHtml(String(value))}</p></div>`
+        })
+        .join('')}</div>`
     : ''
 
   let footerHtml = ''
@@ -113,6 +152,7 @@ function renderProductCard(
     badgeHtml,
     titleHtml,
     descriptionHtml,
+    customFieldsHtml,
     '</div>',
     footerHtml,
     '</div></div>',
@@ -142,7 +182,10 @@ export function buildProductSectionHtml(
   const hideImage = styleOptions.hideImage ?? false
   const hideButton = styleOptions.hideButton ?? false
 
-  const cards = products.map((product) => renderProductCard(product, styleOptions)).join('\n')
+  const sectionHasBadge = products.some((p) => Boolean(p.badge))
+  const cards = products
+    .map((product) => renderProductCard(product, styleOptions, sectionHasBadge))
+    .join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
   return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}">

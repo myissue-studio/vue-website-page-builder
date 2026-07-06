@@ -119,6 +119,10 @@ export function productsHaveButtons(products: ReadonlyArray<PageBuilderProductIn
   })
 }
 
+export function productsHaveLinks(products: ReadonlyArray<PageBuilderProductInput>): boolean {
+  return products.some((product) => Boolean(product.url?.trim()))
+}
+
 export function sectionHasProductImages(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
     const imageWrap = card.querySelector('[class*="product-card-image"]')
@@ -138,6 +142,14 @@ export function sectionHasProductButtons(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
     const cta = card.querySelector('[class*="product-card-cta"]')
     return Boolean(cta?.querySelector('a[href]')?.textContent?.trim())
+  })
+}
+
+export function sectionHasProductLinks(section: HTMLElement): boolean {
+  return findProductCardsInSection(section).some((card) => {
+    return Array.from(card.querySelectorAll('a[href]')).some((a) => {
+      return Boolean(a.getAttribute('href')?.trim())
+    })
   })
 }
 

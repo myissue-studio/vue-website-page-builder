@@ -129,6 +129,7 @@ const productHideButton = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideButton ?? fals
 const productSectionHasPrices = ref(false)
 const productSectionHasImages = ref(false)
 const productSectionHasButtons = ref(false)
+const productSectionHasLinks = ref(false)
 let productSettingsApplyQueued = false
 let productSettingsPendingSaveToast = false
 let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
@@ -215,6 +216,7 @@ const openProductSectionSettings = () => {
   productSectionHasPrices.value = availability.hasPrices
   productSectionHasImages.value = availability.hasImages
   productSectionHasButtons.value = availability.hasButtons
+  productSectionHasLinks.value = availability.hasLinks
   productSectionSettingsTick.value++
   showProductSectionSettingsModal.value = true
 }
@@ -267,8 +269,9 @@ watch(
     productHideButton,
   ],
   () => {
-  void applySelectedProductSectionSettings()
-})
+    void applySelectedProductSectionSettings()
+  },
+)
 
 const toggleSliderAutoRotate = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
@@ -1265,6 +1268,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               :has-product-prices="productSectionHasPrices"
               :has-product-images="productSectionHasImages"
               :has-product-buttons="productSectionHasButtons"
+              :has-product-links="productSectionHasLinks"
               :translate="translate"
               compact
             />

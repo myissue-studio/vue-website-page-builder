@@ -79,9 +79,11 @@ Most page builders are tied to one CMS, one storefront, or one cloud platform. T
 
 ## Ecommerce Product Sections
 
-Add real product catalog blocks to any page — without WooCommerce shortcodes or rigid storefront widgets.
+Add product catalog blocks to any page — without WooCommerce shortcodes or rigid storefront widgets.
 
-Pass `:DisplayProducts` with your own product picker component. The builder opens it in the **Products** modal; when the editor confirms, you call `insertProducts()` and the canvas gets a responsive product grid (1, 2, 3, 4, or 6 columns).
+**No integration required to start:** the **Products** button ships with a built-in **sample catalog** (placeholder items for layout and design) unless you set `:enableDefaultProducts="false"`. Editors can insert product grids immediately and refine copy on the canvas.
+
+For production, pass `:DisplayProducts` with your own picker — pagination, categories, API search, Shopify/WooCommerce feeds, and inventory all live in **your** component. It replaces the sample catalog inside the same modal.
 
 **What you get out of the box:**
 
@@ -97,7 +99,14 @@ import YourDisplayProducts from './YourDisplayProducts.vue'
 </script>
 
 <template>
+  <!-- Custom catalog (production) -->
   <PageBuilder :DisplayProducts="YourDisplayProducts" />
+
+  <!-- Or: sample catalog only (default) -->
+  <PageBuilder />
+
+  <!-- Or: no product picker at all -->
+  <PageBuilder :enableDefaultProducts="false" />
 </template>
 ```
 

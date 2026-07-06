@@ -42,6 +42,7 @@ import {
   sectionHasProductImages,
   sectionHasProductPrices,
   sectionHasProductButtons,
+  sectionHasProductLinks,
 } from '../utils/builder/product-section-options'
 import {
   applyPageMetaToElement,
@@ -1201,7 +1202,9 @@ export class PageBuilderService {
   }
 
   public selectedComponentIsFullWidth(): boolean {
-    return this.getSelectedComponentSection()?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+    return (
+      this.getSelectedComponentSection()?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
+    )
   }
 
   public async setSelectedComponentFullWidth(enabled: boolean): Promise<void> {
@@ -1229,15 +1232,17 @@ export class PageBuilderService {
     hasPrices: boolean
     hasImages: boolean
     hasButtons: boolean
+    hasLinks: boolean
   } {
     const section = this.getSelectedComponentSection()
     if (!section || !this.isSelectedProductSection()) {
-      return { hasPrices: false, hasImages: false, hasButtons: false }
+      return { hasPrices: false, hasImages: false, hasButtons: false, hasLinks: false }
     }
     return {
       hasPrices: sectionHasProductPrices(section),
       hasImages: sectionHasProductImages(section),
       hasButtons: sectionHasProductButtons(section),
+      hasLinks: sectionHasProductLinks(section),
     }
   }
 
@@ -1462,10 +1467,7 @@ export class PageBuilderService {
 
     const element = this.findEditableElementFromEventTarget(e.target)
     if (!element || !this.isValidTextElement(element)) {
-      if (
-        e.target instanceof Element &&
-        (e.target.tagName === 'IMG' || e.target.closest('img'))
-      ) {
+      if (e.target instanceof Element && (e.target.tagName === 'IMG' || e.target.closest('img'))) {
         e.stopPropagation()
         e.stopImmediatePropagation()
       }
@@ -1486,7 +1488,9 @@ export class PageBuilderService {
   public async finishActiveInlineTipTapEditorFromDom(
     nextElement: HTMLElement | null = null,
   ): Promise<void> {
-    const inlineElement = document.querySelector<HTMLElement>('#pagebuilder [data-pbx-inline-tiptap]')
+    const inlineElement = document.querySelector<HTMLElement>(
+      '#pagebuilder [data-pbx-inline-tiptap]',
+    )
 
     if (!inlineElement) {
       await this.toggleInlineTipTapEditor(false)
@@ -1495,7 +1499,10 @@ export class PageBuilderService {
 
     const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
     const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
-    const html = finalizeInlineTipTapHtml(prosemirror?.innerHTML ?? inlineElement.innerHTML, originalHtml)
+    const html = finalizeInlineTipTapHtml(
+      prosemirror?.innerHTML ?? inlineElement.innerHTML,
+      originalHtml,
+    )
 
     inlineElement.innerHTML = html
     inlineElement.removeAttribute('data-pbx-inline-tiptap')
@@ -2353,9 +2360,7 @@ export class PageBuilderService {
     for (const selector of twoColumnSelectors) {
       const candidates = Array.from(section.querySelectorAll(selector)) as HTMLElement[]
       for (const candidate of candidates) {
-        const children = Array.from(candidate.children).filter(
-          (el) => el instanceof HTMLElement,
-        )
+        const children = Array.from(candidate.children).filter((el) => el instanceof HTMLElement)
         if (children.length === 2) {
           return candidate
         }
@@ -3180,11 +3185,8 @@ export class PageBuilderService {
    * styles on #pagebuilder. Settings must be captured before the remount and
    * re-applied after Vue renders.
    */
-  private async setComponentsPreservingPageSettings(
-    components: ComponentObject[],
-  ): Promise<void> {
-    const pageSettings =
-      this.readCurrentPageSettings() ?? this._lastKnownPageSettings ?? null
+  private async setComponentsPreservingPageSettings(components: ComponentObject[]): Promise<void> {
+    const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings ?? null
 
     const shouldReconnectObserver = this.globalStylesObserver !== null
     this.globalStylesObserver?.disconnect()
@@ -3670,8 +3672,8 @@ export class PageBuilderService {
       applyPageMetaToElement(pagebuilder, next)
     }
 
-    const base: PageSettings =
-      this.readCurrentPageSettings() ?? this._lastKnownPageSettings ?? { classes: '', style: '' }
+    const base: PageSettings = this.readCurrentPageSettings() ??
+      this._lastKnownPageSettings ?? { classes: '', style: '' }
     this._lastKnownPageSettings = mergePageMetaIntoSettings(base, next)
     await this.handleAutoSave()
   }
