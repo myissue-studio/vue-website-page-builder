@@ -12,6 +12,18 @@ Use the `pageSettings` config to apply custom CSS classes and inline styles to t
 The Page Builder renders all components wrapped inside a single parent container, `<div id="pagebuilder">`.
 You can pass global CSS `classes` and `style` to this wrapper by adding a `pageSettings` object in your config:
 
+## Add Icons to Selected Elements (Phase 1)
+
+You can add a Material icon to a selected non-image element from the right sidebar:
+
+1. Select an element in the canvas.
+2. Open the **Styles** tab.
+3. Use the **Icon** section to set icon name, size, and color.
+
+The icon is written directly into the selected element as HTML (`span.material-symbols-outlined`) and persisted in exported/saved page content via data attributes (`data-pbx-icon`, `data-pbx-icon-size`, `data-pbx-icon-color`).
+
+This keeps output portable and does not require runtime builder state to render icons.
+
 ```ts
 const configPageBuilder = {
   // other config options...

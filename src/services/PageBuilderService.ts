@@ -1848,6 +1848,94 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setElement(element)
   }
 
+  private getDirectInlineIconElement(element: HTMLElement): HTMLElement | null {
+    for (const child of Array.from(element.children)) {
+      if (
+        child instanceof HTMLElement &&
+        child.getAttribute('data-pbx-inline-icon') === 'true' &&
+        child.classList.contains('material-symbols-outlined')
+      ) {
+        return child
+      }
+    }
+    return null
+  }
+
+  public getSelectedElementInlineIconSettings(): {
+    enabled: boolean
+    name: string
+    size: string
+    color: string
+  } {
+    const element = this.getElement.value
+    if (!element) {
+      return { enabled: false, name: '', size: '', color: '' }
+    }
+
+    const icon = this.getDirectInlineIconElement(element)
+    if (!icon) {
+      return { enabled: false, name: '', size: '', color: '' }
+    }
+
+    return {
+      enabled: true,
+      name: icon.textContent?.trim() ?? '',
+      size: icon.style.fontSize ?? '',
+      color: icon.style.color ?? '',
+    }
+  }
+
+  public setSelectedElementInlineIcon(options: {
+    name: string
+    size?: string
+    color?: string
+  }): void {
+    const element = this.getElement.value
+    if (!element || !options.name.trim()) return
+    if (element.tagName === 'IMG') return
+
+    let icon = this.getDirectInlineIconElement(element)
+    if (!icon) {
+      icon = document.createElement('span')
+      icon.setAttribute('data-pbx-inline-icon', 'true')
+      icon.className =
+        'material-symbols-outlined pbx-inline-flex pbx-items-center pbx-align-middle pbx-mr-2'
+      element.insertBefore(icon, element.firstChild)
+    }
+
+    const name = options.name.trim()
+    icon.textContent = name
+    icon.setAttribute('aria-hidden', 'true')
+    icon.style.fontSize = options.size?.trim() || '20px'
+    icon.style.color = options.color?.trim() || ''
+
+    element.setAttribute('data-pbx-icon', name)
+    element.setAttribute('data-pbx-icon-size', icon.style.fontSize)
+    if (icon.style.color) {
+      element.setAttribute('data-pbx-icon-color', icon.style.color)
+    } else {
+      element.removeAttribute('data-pbx-icon-color')
+    }
+
+    this.pageBuilderStateStore.setElement(element)
+  }
+
+  public removeSelectedElementInlineIcon(): void {
+    const element = this.getElement.value
+    if (!element) return
+
+    const icon = this.getDirectInlineIconElement(element)
+    if (icon) {
+      icon.remove()
+    }
+
+    element.removeAttribute('data-pbx-icon')
+    element.removeAttribute('data-pbx-icon-size')
+    element.removeAttribute('data-pbx-icon-color')
+
+    this.pageBuilderStateStore.setElement(element)
+  }
+
   /**
    * Removes an inline style property from the currently selected element.
    * @param {string} property - The CSS property to remove.

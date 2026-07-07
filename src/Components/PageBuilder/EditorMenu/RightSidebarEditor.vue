@@ -10,6 +10,7 @@ import PaddingControl from './Editables/PaddingControl.vue'
 import MarginControl from './Editables/MarginControl.vue'
 import BorderRadiusControl from './Editables/BorderRadiusControl.vue'
 import BorderControls from './Editables/BorderControls.vue'
+import IconEditor from './Editables/IconEditor.vue'
 import ThemeColorSettingsEditor from './Editables/ThemeColorSettingsEditor.vue'
 import PageMetaSettingsEditor from './Editables/PageMetaSettingsEditor.vue'
 import SeoCheckSettingsEditor from './Editables/SeoCheckSettingsEditor.vue'
@@ -132,7 +133,7 @@ const closeHTMLSettings = async function () {
         type="button"
         @click="$emit('closeEditor')"
         :aria-label="translate('Close properties panel')"
-        class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+        class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black"
       >
         <span class="material-symbols-outlined" aria-hidden="true"> close </span>
       </button>
@@ -211,6 +212,7 @@ const closeHTMLSettings = async function () {
           <MarginControl />
           <BorderRadiusControl />
           <BorderControls />
+          <IconEditor />
           <ClassEditor />
           <StyleEditor />
           <ElementHtmlEditorSettingsEditor />
