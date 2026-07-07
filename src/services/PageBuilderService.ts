@@ -1695,9 +1695,16 @@ export class PageBuilderService {
           '#pagebuilder [data-pbx-inline-tiptap]',
         )
         if (inlineEl && e.target instanceof Node && !inlineEl.contains(e.target)) {
-          e.preventDefault()
-          e.stopPropagation()
-          const nextElement = this.findEditableElementFromEventTarget(e.target)
+          // If the click landed on an insert-section button, let its own @click handler
+          // fire (don't stop propagation) but still close TipTap without selecting the
+          // button element as the "next" editable target.
+          const isInsertBtn =
+            e.target instanceof Element && Boolean(e.target.closest('[data-pbx-insert-btn]'))
+          if (!isInsertBtn) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
+          const nextElement = isInsertBtn ? null : this.findEditableElementFromEventTarget(e.target)
           void this.finishActiveInlineTipTapEditorFromDom(nextElement)
         }
       }

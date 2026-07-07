@@ -1454,6 +1454,7 @@ onBeforeUnmount(() => {
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
             data-pbx-insert-btn
+            data-pb-no-select
           >
             <div
               class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3"
@@ -1488,7 +1489,11 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Insert button at the top -->
-          <div v-if="Array.isArray(getComponents) && getComponents.length != 0" data-pbx-insert-btn>
+          <div
+            v-if="Array.isArray(getComponents) && getComponents.length != 0"
+            data-pbx-insert-btn
+            data-pb-no-select
+          >
             <div
               class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
             >
@@ -1532,6 +1537,7 @@ onBeforeUnmount(() => {
             <div
               v-if="Array.isArray(getComponents) && getComponents.length != 0"
               data-pbx-insert-btn
+              data-pb-no-select
             >
               <div
                 class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
