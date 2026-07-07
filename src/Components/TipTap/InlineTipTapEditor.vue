@@ -18,6 +18,7 @@ import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
 import { delay } from '../../composables/delay'
+import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -26,7 +27,6 @@ const { translate } = useTranslations()
 const editor = ref<Editor | null>(null)
 const inlineElement = ref<HTMLElement | null>(null)
 const originalHTML = ref('')
-const isSaving = ref(false)
 const showTypography = ref(false)
 const typographyMenuRef = ref<HTMLElement | null>(null)
 const typographyPopoverRef = ref<HTMLElement | null>(null)
@@ -72,9 +72,9 @@ const validateUrl = function (): boolean {
   urlError.value = null
   const nextUrl = urlEntered.value.trim()
 
-  if (!/^https?:\/\//.test(nextUrl)) {
+  if (!isValidHyperlinkInput(nextUrl)) {
     urlError.value =
-      "The provided URL is invalid. Please ensure that it begins with 'https://' for proper formatting and security."
+      "The provided URL is invalid. Use an internal path like '/page' or a full URL such as 'https://example.com'."
     return false
   }
 
@@ -353,25 +353,21 @@ const startEditor = async function () {
 }
 
 const saveInlineEditor = async function () {
-  if (!editor.value || isSaving.value) return
-
-  isSaving.value = true
-  await delay(300)
+  if (!editor.value) return
   try {
     const target = inlineElement.value
     const html = getFinalEditorHtml(editor.value)
     removeDocumentMouseDownListener()
     teardownEditor(html)
     await pageBuilderService.finishInlineTipTapEditor(target)
-  } finally {
-    isSaving.value = false
+  } catch (error) {
+    console.error(error)
   }
 }
 
 const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | null) {
-  if (!editor.value || isSaving.value) return
+  if (!editor.value) return
 
-  isSaving.value = true
   await delay(300)
   try {
     const target = inlineElement.value
@@ -384,8 +380,8 @@ const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | nul
     if (nextElement && nextElement !== target) {
       await pageBuilderService.selectEditableElement(nextElement)
     }
-  } finally {
-    isSaving.value = false
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -542,13 +538,8 @@ onBeforeUnmount(() => {
     <div
       @mousedown.prevent.stop="saveInlineEditor"
       class="pbx-h-8 pbx-px-2 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-gap-1 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500"
-      :class="{ 'pbx-pointer-events-none pbx-opacity-60': isSaving }"
     >
       <span class="pbx-text-xs">{{ translate('Save') }}</span>
-      <span v-if="!isSaving" class="material-symbols-outlined pbx-text-[18px]">check</span>
-      <span v-if="isSaving" class="material-symbols-outlined pbx-text-[18px] pbx-animate-spin"
-        >refresh</span
-      >
     </div>
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>
@@ -569,7 +560,7 @@ onBeforeUnmount(() => {
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bold') }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_bold </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_bold </span>
     </div>
 
     <div
@@ -577,7 +568,7 @@ onBeforeUnmount(() => {
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('italic') }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_italic </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_italic </span>
     </div>
 
     <div
@@ -597,7 +588,7 @@ onBeforeUnmount(() => {
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('link') }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> link </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> link </span>
     </div>
 
     <div
@@ -605,7 +596,7 @@ onBeforeUnmount(() => {
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive('bulletList') }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_list_bulleted </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_list_bulleted </span>
     </div>
 
     <div
@@ -613,7 +604,7 @@ onBeforeUnmount(() => {
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{ 'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'left' }) }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_align_left </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_align_left </span>
     </div>
 
     <div
@@ -623,7 +614,7 @@ onBeforeUnmount(() => {
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'center' }),
       }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_align_center </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_align_center </span>
     </div>
 
     <div
@@ -633,7 +624,7 @@ onBeforeUnmount(() => {
         'pbx-bg-myPrimaryLinkColor pbx-text-white': editorIsActive({ textAlign: 'right' }),
       }"
     >
-      <span class="material-symbols-outlined pbx-text-[18px]"> format_align_right </span>
+      <span class="material-symbols-outlined pbx-materialIcon18"> format_align_right </span>
     </div>
 
     <div class="pbx-h-6 pbx-border-l pbx-border-gray-300"></div>

@@ -220,7 +220,6 @@
   "Do not show the product CTA button on cards": "Do not show the product CTA button on cards",
   "Mobile columns": "Mobile columns",
   "1 column": "1 column",
-  "2 columns": "2 columns",
   "Single product per row": "Single product per row",
   "Two products per row": "Two products per row",
   "Product section settings": "Product section settings",
@@ -394,7 +393,6 @@
   "Hyperlink added": "Hyperlink added",
   "No hyperlink added": "No hyperlink added",
   "URL..": "URL..",
-  "Open in new tab": "Open in new tab",
   "Please enter a property and a value.": "Please enter a property and a value.",
   "already exists. Remove it first to add a new one.": "already exists. Remove it first to add a new one.",
   "Opacity": "Opacity",
@@ -568,5 +566,14 @@
   "block.desc.image_editorial_text": "Image with long-form editorial text.",
   "block.desc.profile_card": "Profile or author card with photo.",
   "block.desc.contact_minimal": "Minimal contact section with email.",
-  "block.desc.editorial_list": "Numbered or bulleted editorial list."
+  "block.desc.editorial_list": "Numbered or bulleted editorial list.",
+  "Text link": "Text link",
+  "Use a text-only CTA": "Use a text-only CTA",
+  "Button design": "Button design",
+  "Use brand-color button CTA": "Use brand-color button CTA",
+  "Rounded buttons": "Rounded buttons",
+  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
+  "Button links": "Button links",
+  "Link behavior on helper button components": "Link behavior on helper button components",
+  "No additional settings for this category": "No additional settings for this category"
 }

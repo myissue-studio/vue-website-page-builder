@@ -661,6 +661,7 @@ const ensureBuilderInitialized = function () {
 }
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
+const pageBuilderCanvas = ref<HTMLElement | null>(null)
 const editToolbarPinned = ref(false)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
@@ -869,7 +870,14 @@ const handlePageBuilderLayoutChange = function () {
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
 
 onMounted(async () => {
-  await pageBuilderService.completeBuilderInitialization(undefined)
+  if (pageBuilderService.shouldCompleteBuilderMountOnMount(pageBuilderCanvas.value ?? undefined)) {
+    await pageBuilderService.completeBuilderInitialization(undefined)
+  } else {
+    // Full initialization was skipped (already mounted) but Vue has re-rendered the
+    // sections into new DOM nodes (e.g. modal v-if reopen).  Re-attach listeners so
+    // the canvas is immediately interactive without needing a startBuilder() call.
+    await pageBuilderService.refreshListeners()
+  }
 
   if (userSettings && userSettings.lang) {
     languageSelction.value = userSettings.lang
@@ -1437,6 +1445,7 @@ onBeforeUnmount(() => {
 
         <div
           id="pagebuilder"
+          ref="pageBuilderCanvas"
           data-builder-canvas
           :class="[canvasFontClass, 'pbx-text-black']"
           @dblclick.capture="handleCanvasDoubleClick"

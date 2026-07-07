@@ -306,12 +306,12 @@ onMounted(async () => {
           </nav>
         </div>
 
-        <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-2">
-          <div class="md:pbx-w-9/12 pbx-w-6/12 pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
+        <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6">
+          <div class="md:pbx-w-9/12 pbx-w-full pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
             <div v-if="getUnsplashImages && getUnsplashImages.results">
               <div
                 v-if="!getIsLoading"
-                class="pbx-grid lg:pbx-grid-cols-6 md:pbx-grid-cols-4 sm:pbx-grid-cols-4 pbx-grid-cols-1 pbx-gap-2"
+                class="pbx-grid lg:pbx-grid-cols-6 md:pbx-grid-cols-4 sm:pbx-grid-cols-4 pbx-grid-cols-2 pbx-gap-2"
               >
                 <div
                   v-for="image in getUnsplashImages.results"
@@ -358,7 +358,9 @@ onMounted(async () => {
             </div>
           </div>
           <!-- Sidebar # start -->
-          <aside class="md:pbx-w-3/12 pbx-w-6/12 pbx-overflow-y-auto pbx-px-2">
+          <aside
+            class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-pt-2 pbx-pb-8 pbx-px-2"
+          >
             <template v-if="getIsLoadingImage">
               <div class="pbx-flex pbx-items-start pbx-justify-center pbx-min-h-[40rem] pbx-pt-12">
                 <div
@@ -402,7 +404,7 @@ onMounted(async () => {
                   <button
                     v-if="getApplyImageToSelection && typeof getApplyImageToSelection === 'string'"
                     @click="applySelectedImage(getApplyImageToSelection)"
-                    class="pbx-myPrimaryButton"
+                    class="pbx-myPrimaryButton pbx-w-full"
                     type="button"
                   >
                     {{ translate(' Select image') }}
@@ -411,6 +413,55 @@ onMounted(async () => {
               </div>
             </template>
           </aside>
+        </div>
+
+        <div
+          class="pbx-flex md:pbx-hidden pbx-flex-col pbx-gap-3 pbx-mt-6 pbx-rounded-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-bg-white pbx-p-3"
+        >
+          <template v-if="getIsLoadingImage">
+            <div class="pbx-flex pbx-items-center pbx-justify-center pbx-min-h-[10rem]">
+              <div
+                class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent pbx-align-[-0.125em] motion-reduce:pbx-animate-[spin_1.5s_linear_infinite]"
+              ></div>
+            </div>
+          </template>
+
+          <template v-if="getApplyImageToSelection && !getIsLoadingImage">
+            <img
+              class="pbx-mx-auto pbx-block pbx-w-full pbx-rounded-xl pbx-object-cover pbx-object-center pbx-cursor-pointer"
+              :src="`${getApplyImageToSelection}`"
+              alt="file"
+            />
+            <div>
+              <p class="pbx-myPrimaryParagraph pbx-font-normal pbx-text-gray-900 pbx-pt-1">
+                {{ translate('Information') }}
+              </p>
+              <dl
+                class="pbx-mt-2 pbx-border-t pbx-border-b pbx-border-gray-200 pbx-divide-y pbx-divide-gray-200"
+              >
+                <div
+                  class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
+                >
+                  <dt class="pbx-text-gray-500">{{ translate('From:') }}</dt>
+                  <dd class="pbx-text-gray-900">Unsplash</dd>
+                </div>
+                <div
+                  class="pbx-py-3 pbx-flex pbx-justify-between pbx-text-sm pbx-font-normal pbx-items-center"
+                >
+                  <dt class="pbx-text-gray-500">{{ translate('By:') }}</dt>
+                  <dd class="pbx-text-gray-900">{{ getCurrentUser }}</dd>
+                </div>
+              </dl>
+            </div>
+            <button
+              v-if="getApplyImageToSelection && typeof getApplyImageToSelection === 'string'"
+              @click="applySelectedImage(getApplyImageToSelection)"
+              class="pbx-myPrimaryButton pbx-w-full"
+              type="button"
+            >
+              {{ translate(' Select image') }}
+            </button>
+          </template>
         </div>
         <!-- Sidebar # end -->
       </div>

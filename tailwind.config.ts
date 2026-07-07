@@ -9,6 +9,11 @@ export default {
   safelist: [
     'pbx-animate-spin',
     'pbx-inline-block',
+    'pbx-materialIcon14',
+    'pbx-materialIcon18',
+    'pbx-materialIconBase',
+    'pbx-materialIconLg',
+    'pbx-materialIconXl',
     'pbx-font-inter',
     'pbx-font-roboto',
     'pbx-font-open-sans',

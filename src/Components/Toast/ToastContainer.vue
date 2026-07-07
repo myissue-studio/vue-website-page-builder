@@ -24,14 +24,14 @@ const typeClass: Record<ToastType, string> = {
         :class="['pbx-toast', typeClass[toast.type]]"
         role="status"
       >
-        <span class="pbx-toastMessage">{{ toast.message }}</span>
+        <span class="pbx-font-sans pbx-toastMessage">{{ toast.message }}</span>
         <button
           type="button"
           class="pbx-toastClose"
           :aria-label="'Close'"
           @click="hideToast(toast.id)"
         >
-          <span class="material-symbols-outlined pbx-text-[18px]" aria-hidden="true">
+          <span class="material-symbols-outlined pbx-materialIcon18" aria-hidden="true">
             close_small
           </span>
         </button>

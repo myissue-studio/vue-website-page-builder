@@ -13,7 +13,12 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
-import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
+import type {
+  ProductButtonStyle,
+  ProductCardStyle,
+  ProductGridLayout,
+  ProductMobileColumns,
+} from '../../../../types'
 import { DEFAULT_PRODUCT_SECTION_OPTIONS } from '../../../../utils/builder/product-section-options'
 import { getEditToolbarPopoverTop } from '../../../../utils/builder/clamp-edit-toolbar-popover-top'
 import {
@@ -123,6 +128,10 @@ const productCardStyle = ref<ProductCardStyle>(
 )
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
 const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
+const productButtonStyle = ref<ProductButtonStyle>(
+  DEFAULT_PRODUCT_SECTION_OPTIONS.buttonStyle ?? 'text',
+)
+const productRoundedButtons = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedButtons ?? false)
 const productHidePrice = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hidePrice ?? false)
 const productHideImage = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideImage ?? false)
 const productHideButton = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideButton ?? false)
@@ -139,6 +148,8 @@ let productSettingsBaseline: {
   cardStyle: ProductCardStyle
   roundedImages: boolean
   openInNewTab: boolean
+  buttonStyle: ProductButtonStyle
+  roundedButtons: boolean
   hidePrice: boolean
   hideImage: boolean
   hideButton: boolean
@@ -152,6 +163,8 @@ const productSettingsMatchBaseline = (): boolean => {
     productCardStyle.value === productSettingsBaseline.cardStyle &&
     productRoundedImages.value === productSettingsBaseline.roundedImages &&
     productOpenInNewTab.value === productSettingsBaseline.openInNewTab &&
+    productButtonStyle.value === productSettingsBaseline.buttonStyle &&
+    productRoundedButtons.value === productSettingsBaseline.roundedButtons &&
     productHidePrice.value === productSettingsBaseline.hidePrice &&
     productHideImage.value === productSettingsBaseline.hideImage &&
     productHideButton.value === productSettingsBaseline.hideButton
@@ -189,6 +202,8 @@ const openProductSectionSettings = () => {
   const cardStyle = options.cardStyle ?? 'minimal'
   const roundedImages = options.roundedImages ?? false
   const openInNewTab = options.openInNewTab ?? false
+  const buttonStyle = options.buttonStyle ?? 'text'
+  const roundedButtons = options.roundedButtons ?? false
   const hidePrice = options.hidePrice ?? false
   const hideImage = options.hideImage ?? false
   const hideButton = options.hideButton ?? false
@@ -200,6 +215,8 @@ const openProductSectionSettings = () => {
     cardStyle,
     roundedImages,
     openInNewTab,
+    buttonStyle,
+    roundedButtons,
     hidePrice,
     hideImage,
     hideButton,
@@ -210,6 +227,8 @@ const openProductSectionSettings = () => {
   productCardStyle.value = cardStyle
   productRoundedImages.value = roundedImages
   productOpenInNewTab.value = openInNewTab
+  productButtonStyle.value = buttonStyle
+  productRoundedButtons.value = roundedButtons
   productHidePrice.value = hidePrice
   productHideImage.value = hideImage
   productHideButton.value = hideButton
@@ -237,6 +256,8 @@ const applySelectedProductSectionSettings = async () => {
       cardStyle: productCardStyle.value,
       roundedImages: productRoundedImages.value,
       openInNewTab: productOpenInNewTab.value,
+      buttonStyle: productButtonStyle.value,
+      roundedButtons: productRoundedButtons.value,
       hidePrice: productHidePrice.value,
       hideImage: productHideImage.value,
       hideButton: productHideButton.value,
@@ -264,6 +285,8 @@ watch(
     productCardStyle,
     productRoundedImages,
     productOpenInNewTab,
+    productButtonStyle,
+    productRoundedButtons,
     productHidePrice,
     productHideImage,
     productHideButton,
@@ -1248,6 +1271,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           :showDynamicModalBuilder="showProductSectionSettingsModal"
           :isLoading="false"
           type="success"
+          maxWidth="4xl"
           :gridColumnAmount="1"
           :title="translate('Product section settings')"
           description=""
@@ -1262,6 +1286,8 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:card-style="productCardStyle"
               v-model:rounded-images="productRoundedImages"
               v-model:open-in-new-tab="productOpenInNewTab"
+              v-model:button-style="productButtonStyle"
+              v-model:rounded-buttons="productRoundedButtons"
               v-model:hide-price="productHidePrice"
               v-model:hide-image="productHideImage"
               v-model:hide-button="productHideButton"
@@ -1299,7 +1325,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span
-                      class="material-symbols-outlined pbx-text-xl"
+                      class="material-symbols-outlined pbx-materialIconXl"
                       :class="
                         sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
                       "
@@ -1354,7 +1380,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
                   <span
-                    class="material-symbols-outlined pbx-text-xl pbx-text-myPrimaryDarkGrayColor"
+                    class="material-symbols-outlined pbx-materialIconXl pbx-text-myPrimaryDarkGrayColor"
                     >photo_library</span
                   >
                   <p
@@ -1410,7 +1436,9 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           :title="props.toolbarPinned ? translate('Unpin toolbar') : translate('Pin toolbar')"
           @click="emit('toggle-toolbar-pin')"
         >
-          <span class="material-symbols-outlined" aria-hidden="true"> push_pin </span>
+          <span class="material-symbols-outlined pbx-materialIcon18" aria-hidden="true">
+            push_pin
+          </span>
         </button>
         <div
           v-if="getElement && getComponent"

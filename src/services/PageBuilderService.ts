@@ -35,6 +35,7 @@ import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tipta
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
 import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
+import { isValidHyperlinkInput } from '../utils/builder/url-validation'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
@@ -142,6 +143,9 @@ export class PageBuilderService {
   private _pendingPageSettings: PageSettings | null = null
   private _lastKnownPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
+  private hasCompletedBuilderMount: boolean = false
+  private builderMountPromise: Promise<void> | null = null
+  private activeBuilderSessionToken: number = 0
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
 
@@ -527,10 +531,64 @@ export class PageBuilderService {
     config: PageBuilderConfig,
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
+    const sessionToken = ++this.activeBuilderSessionToken
+
+    // Detect the current DOM state BEFORE any resets so we can decide whether a
+    // full remount is needed.  When the builder is used with v-show (the component
+    // stays mounted across close/reopen cycles), #pagebuilder persists with the
+    // user's already-edited content and listeners.  Forcing a full remount in that
+    // case would clear the canvas and, worse, trigger the "resume from draft" modal
+    // every single reopen.  We only do a full lifecycle reset when the DOM wrapper
+    // is absent or empty (v-if pattern — the component was destroyed on close).
+    const pagebuilderBeforeReset = document.querySelector('#pagebuilder')
+    const hasLiveMountedContent = Boolean(
+      pagebuilderBeforeReset?.querySelector('section[data-componentid]'),
+    )
+
+    if (!hasLiveMountedContent) {
+      // DOM is missing or the canvas has no sections — needs a fresh mount cycle.
+      this.hasCompletedBuilderMount = false
+      this.builderMountPromise = null
+      this.pendingMountComponents = null
+      this.isPageBuilderMissingOnStart = false
+    }
+
+    // Always reset transient UI/editor state — these must never persist across
+    // open/close cycles regardless of whether a full remount is needed.
+    if (typeof this.pageBuilderStateStore.setInlineTipTapEditor === 'function') {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+    if (typeof this.pageBuilderStateStore.setShowModalTipTap === 'function') {
+      this.pageBuilderStateStore.setShowModalTipTap(false)
+    }
+    if (typeof this.pageBuilderStateStore.setImageSettingsPanelOpen === 'function') {
+      this.pageBuilderStateStore.setImageSettingsPanelOpen(false)
+    }
+    if (typeof this.pageBuilderStateStore.setElement === 'function') {
+      this.pageBuilderStateStore.setElement(null)
+    }
+    if (typeof this.pageBuilderStateStore.setComponent === 'function') {
+      this.pageBuilderStateStore.setComponent(null)
+    }
+    // Clear any loading overlay left by a stale previous session. A racing
+    // completeMountProcess may have set setIsLoadingGlobal(true) but never
+    // cleared it when its session token was invalidated. This explicit reset
+    // ensures the GlobalLoader overlay does not permanently block canvas clicks.
+    if (typeof this.pageBuilderStateStore.setIsLoadingGlobal === 'function') {
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+    }
+
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
     this.pageBuilderStateStore.setBuilderStarted(true)
     const pagebuilder = document.querySelector('#pagebuilder')
+
+    // Snapshot page-level settings whenever a live wrapper exists so they can be
+    // restored even if subsequent reopen payloads contain sections only.
+    const currentStartSettings = this.readCurrentPageSettings()
+    if (this.hasMeaningfulPageSettings(currentStartSettings)) {
+      this._lastKnownPageSettings = currentStartSettings
+    }
 
     let validation
     try {
@@ -547,23 +605,59 @@ export class PageBuilderService {
 
       validation = this.validateUserProvidedComponents(passedComponentsArray)
 
+      const usablePassedComponents =
+        Array.isArray(passedComponentsArray) && passedComponentsArray.length > 0
+          ? passedComponentsArray
+          : null
+      const hasUsablePassedComponents = usablePassedComponents !== null
+
       // Update the localStorage key name based on the config/resource
       this.updateLocalStorageItemName()
       this.initializeHistory()
 
-      if (passedComponentsArray) {
-        this.savedMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents) {
+        this.savedMountComponents = usablePassedComponents
       }
       // Page Builder is not Present in the DOM but Components have been passed to the Builder
       if (!pagebuilder) {
         this.isPageBuilderMissingOnStart = true
       }
-      if (passedComponentsArray && !pagebuilder) {
-        this.pendingMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents && !pagebuilder) {
+        this.pendingMountComponents = usablePassedComponents
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
+      if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
+        await this.completeBuilderInitializationWithSession(
+          hasUsablePassedComponents ? usablePassedComponents : undefined,
+          sessionToken,
+        )
+      }
+
+      // Safety net: if the host already rendered #pagebuilder content and a full mount
+      // was skipped (for example due to invalid/non-array passed data), still attach
+      // interaction listeners so the canvas cannot get stuck as non-editable.
       if (pagebuilder) {
-        this.completeBuilderInitialization(passedComponentsArray)
+        await this.addListenersToEditableElements()
+      }
+
+      // Re-apply config pageSettings when the full remount was skipped (hasLiveMountedContent).
+      // On a v-if reopen where startBuilder() is called after the DOM is ready, Vue renders
+      // #pagebuilder with only its default :class binding — no style attribute.  Config-provided
+      // styles (e.g. a background color set via pageSettings.style) must be applied explicitly
+      // because mountComponentsToDOM (which normally calls applyPageSettingsToPage) was bypassed.
+      // We only apply when the DOM element has no inline style so we do not overwrite user edits
+      // that are already present (v-show pattern where styles persist across open/close cycles).
+      if (hasLiveMountedContent && pagebuilder) {
+        const configPageSettings =
+          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        if (this.hasMeaningfulPageSettings(configPageSettings)) {
+          const configStyleStr = this.convertStyleObjectToString(configPageSettings.style)
+          const domStyle = pagebuilder.getAttribute('style') || ''
+          if (configStyleStr.trim() && !domStyle.trim()) {
+            await nextTick()
+            this.applyPageSettingsToPage(configPageSettings)
+          }
+        }
       }
 
       // result to end user
@@ -592,13 +686,68 @@ export class PageBuilderService {
   }
 
   /**
+   * Whether PageBuilder.vue should run deferred mount on mount (DOM was missing at startBuilder).
+   *
+   * @param ownCanvas - The component's own #pagebuilder element (passed from PageBuilder.vue ref).
+   *   Using this instead of document.querySelector ensures the correct canvas is checked when
+   *   multiple PageBuilder instances exist on the same page (e.g. one always-visible + one in a
+   *   modal).  When the modal's canvas is empty while another instance already has content, the
+   *   document.querySelector approach would miss the empty canvas entirely.
+   */
+  public shouldCompleteBuilderMountOnMount(ownCanvas?: HTMLElement): boolean {
+    if (this.hasCompletedBuilderMount) {
+      // A previous PageBuilder session completed mounting. Check THIS component instance's
+      // canvas (not the first matching document element) — covers the case of a PageBuilder
+      // inside a v-if modal that just opened: its canvas is empty even though another instance
+      // on the page already has content loaded.
+      const canvas = ownCanvas ?? (document.querySelector('#pagebuilder') as HTMLElement | null)
+      const hasSections = Boolean(canvas?.querySelector('section[data-componentid]'))
+      if (canvas && !hasSections) {
+        // Fresh empty canvas — reset lifecycle so the deferred init will run.
+        this.hasCompletedBuilderMount = false
+        this.builderMountPromise = null
+        return true
+      }
+      return false
+    }
+    return this.isPageBuilderMissingOnStart || Boolean(this.pendingMountComponents)
+  }
+
+  /**
    * Completes the builder initialization process once the DOM is ready.
    * @param {BuilderResourceData} [passedComponentsArray] - Optional array of components to load.
    * @returns {Promise<void>}
    */
   async completeBuilderInitialization(passedComponentsArray?: BuilderResourceData): Promise<void> {
-    this.pageBuilderStateStore.setIsLoadingGlobal(true)
+    return this.completeBuilderInitializationWithSession(
+      passedComponentsArray,
+      this.activeBuilderSessionToken,
+    )
+  }
+
+  private async completeBuilderInitializationWithSession(
+    passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
+    if (this.hasCompletedBuilderMount) return
+    if (!this.builderMountPromise) {
+      this.builderMountPromise = this.runCompleteBuilderInitialization(
+        passedComponentsArray,
+        sessionToken,
+      )
+    }
+    await this.builderMountPromise
+  }
+
+  private async runCompleteBuilderInitialization(
+    passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     await sleep(400)
+    if (sessionToken !== this.activeBuilderSessionToken) return
+    this.pageBuilderStateStore.setIsLoadingGlobal(true)
 
     // Always clear DOM and store before mounting new resource
     this.deleteAllComponentsFromDOM()
@@ -610,49 +759,50 @@ export class PageBuilderService {
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     if (formType === 'update' || formType === 'create') {
       // Page Builder is initially present in the DOM
       if (!this.pendingMountComponents) {
         if (!passedComponentsArray && this.isPageBuilderMissingOnStart && localStorageData) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (passedComponentsArray && !localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (passedComponentsArray && localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           return
         }
 
         if (!passedComponentsArray && localStorageData && !this.savedMountComponents) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (!passedComponentsArray && this.savedMountComponents && localStorageData) {
           const htmlString = this.renderComponentsToHtml(this.savedMountComponents)
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
 
           return
         }
 
         if (!this.isPageBuilderMissingOnStart && !localStorageData && !passedComponentsArray) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
       }
@@ -661,7 +811,7 @@ export class PageBuilderService {
       if (this.pendingMountComponents) {
         if (localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           this.pendingMountComponents = null
@@ -669,14 +819,14 @@ export class PageBuilderService {
         }
         if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
@@ -711,12 +861,29 @@ export class PageBuilderService {
    * @param {boolean} [useConfigPageSettings] - Whether to use page settings from the passed data.
    * @private
    */
-  private async completeMountProcess(html: string, useConfigPageSettings?: boolean) {
+  private async completeMountProcess(
+    html: string,
+    useConfigPageSettings?: boolean,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ) {
+    if (sessionToken !== this.activeBuilderSessionToken) {
+      // A new startBuilder() call has already taken over — ensure loading is cleared
+      // so the GlobalLoader overlay does not permanently block canvas interactions.
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+      return
+    }
     await this.mountComponentsToDOM(html, useConfigPageSettings)
+    if (sessionToken !== this.activeBuilderSessionToken) {
+      // A new startBuilder() call arrived while mountComponentsToDOM was running.
+      // Ensure the loading overlay is not left blocking the canvas.
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+      return
+    }
 
     // Clean up any old localStorage items related to previous builder sessions
     this.deleteOldPageBuilderLocalStorage()
     this.pageBuilderStateStore.setIsRestoring(false)
+    this.hasCompletedBuilderMount = true
     this.pageBuilderStateStore.setIsLoadingGlobal(false)
   }
 
@@ -737,9 +904,56 @@ export class PageBuilderService {
 
     if (!currentHTMLElement) return
 
-    const currentCSS = CSSArray.find((CSS) => {
-      return currentHTMLElement.classList.contains(CSS)
-    })
+    const isBorderRadiusControl =
+      CSSArray === tailwindBorderRadius.roundedGlobal ||
+      CSSArray === tailwindBorderRadius.roundedTopLeft ||
+      CSSArray === tailwindBorderRadius.roundedTopRight ||
+      CSSArray === tailwindBorderRadius.roundedBottomLeft ||
+      CSSArray === tailwindBorderRadius.roundedBottomRight
+
+    const helperButtonAnchor = (() => {
+      if (!isBorderRadiusControl || currentHTMLElement.tagName === 'A') return null
+
+      const anchors = Array.from(currentHTMLElement.querySelectorAll('a')).filter(
+        (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement,
+      )
+
+      // Prefer anchors that already carry one of the border-radius classes.
+      const withRadiusClass = anchors.find((anchor) =>
+        CSSArray.some((cls) => cls !== 'none' && anchor.classList.contains(cls)),
+      )
+      if (withRadiusClass) return withRadiusClass
+
+      // Known wrappers where visual rounding is on the nested link element.
+      if (
+        currentHTMLElement.id === 'linktree' ||
+        currentHTMLElement.classList.contains('pbx-product-card-cta')
+      ) {
+        return anchors[0] ?? null
+      }
+
+      return null
+    })()
+
+    const productImageWrapper =
+      isBorderRadiusControl && currentHTMLElement.tagName === 'IMG'
+        ? currentHTMLElement.closest('.pbx-product-card-image')
+        : null
+
+    const classTarget =
+      helperButtonAnchor instanceof HTMLElement
+        ? helperButtonAnchor
+        : productImageWrapper instanceof HTMLElement
+          ? productImageWrapper
+          : currentHTMLElement
+
+    const currentCSS =
+      CSSArray.find((CSS) => {
+        return classTarget.classList.contains(CSS)
+      }) ||
+      (helperButtonAnchor instanceof HTMLElement
+        ? CSSArray.find((CSS) => currentHTMLElement.classList.contains(CSS))
+        : undefined)
 
     // set to 'none' if undefined
     let elementClass = currentCSS || 'none'
@@ -765,8 +979,14 @@ export class PageBuilderService {
 
     // cssUserSelection examples: bg-zinc-200, px-10, rounded-full etc.
     if (typeof cssUserSelection === 'string' && cssUserSelection !== 'none') {
-      if (elementClass && currentHTMLElement.classList.contains(elementClass)) {
-        currentHTMLElement.classList.remove(elementClass)
+      if (elementClass) {
+        if (classTarget.classList.contains(elementClass)) classTarget.classList.remove(elementClass)
+        if (
+          helperButtonAnchor instanceof HTMLElement &&
+          currentHTMLElement.classList.contains(elementClass)
+        ) {
+          currentHTMLElement.classList.remove(elementClass)
+        }
       }
 
       // Remove any legacy lg:- and md:-prefixed variants that may have been saved before the
@@ -777,28 +997,39 @@ export class PageBuilderService {
         if (cls !== 'none') {
           ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
             const prefixed = `${bp}:${cls}`
-            if (currentHTMLElement.classList.contains(prefixed)) {
+            if (classTarget.classList.contains(prefixed)) classTarget.classList.remove(prefixed)
+            if (
+              helperButtonAnchor instanceof HTMLElement &&
+              currentHTMLElement.classList.contains(prefixed)
+            ) {
               currentHTMLElement.classList.remove(prefixed)
             }
           })
         }
       })
 
-      currentHTMLElement.classList.add(cssUserSelection)
+      classTarget.classList.add(cssUserSelection)
       elementClass = cssUserSelection
     } else if (
       typeof cssUserSelection === 'string' &&
       cssUserSelection === 'none' &&
       elementClass
     ) {
-      currentHTMLElement.classList.remove(elementClass)
+      classTarget.classList.remove(elementClass)
+      if (helperButtonAnchor instanceof HTMLElement) {
+        currentHTMLElement.classList.remove(elementClass)
+      }
 
       // Also clean up any legacy responsive-prefixed variants on reset to 'none'.
       CSSArray.forEach((cls) => {
         if (cls !== 'none') {
           ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
             const prefixed = `${bp}:${cls}`
-            if (currentHTMLElement.classList.contains(prefixed)) {
+            if (classTarget.classList.contains(prefixed)) classTarget.classList.remove(prefixed)
+            if (
+              helperButtonAnchor instanceof HTMLElement &&
+              currentHTMLElement.classList.contains(prefixed)
+            ) {
               currentHTMLElement.classList.remove(prefixed)
             }
           })
@@ -1419,8 +1650,8 @@ export class PageBuilderService {
       pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
     }
 
-    this.canvasClickCaptureListener = () => {
-      void this.handleCanvasClickCapture()
+    this.canvasClickCaptureListener = (event: Event) => {
+      void this.handleCanvasClickCapture(event)
     }
     this.canvasDblClickCaptureListener = (event: Event) => {
       void this.handleCanvasDoubleClickCapture(event)
@@ -1447,10 +1678,29 @@ export class PageBuilderService {
     return null
   }
 
-  private handleCanvasClickCapture = async (): Promise<void> => {
+  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
-    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
-      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) {
+      if (!this.hasInlineTipTapElement()) {
+        // No inline TipTap element in the DOM — clear the stale flag.
+        this.pageBuilderStateStore.setInlineTipTapEditor(false)
+      } else {
+        // TipTap is active. If the click is OUTSIDE the inline-editor element:
+        //  1. Prevent default to stop link navigation and other browser actions.
+        //  2. Close TipTap.  The document pointerdown handler may be blocked by
+        //     shouldPreserveInlineEditorForToolbarPopover when toolbar popovers
+        //     exist in the DOM (v-show), so we close reliably from the click event.
+        const inlineEl = document.querySelector<HTMLElement>(
+          '#pagebuilder [data-pbx-inline-tiptap]',
+        )
+        if (inlineEl && e.target instanceof Node && !inlineEl.contains(e.target)) {
+          e.preventDefault()
+          e.stopPropagation()
+          const nextElement = this.findEditableElementFromEventTarget(e.target)
+          void this.finishActiveInlineTipTapEditorFromDom(nextElement)
+        }
+      }
     }
   }
 
@@ -1469,14 +1719,15 @@ export class PageBuilderService {
     if (!element || !this.isValidTextElement(element)) {
       if (e.target instanceof Element && (e.target.tagName === 'IMG' || e.target.closest('img'))) {
         e.stopPropagation()
-        e.stopImmediatePropagation()
       }
       return
     }
 
     e.preventDefault()
     e.stopPropagation()
-    e.stopImmediatePropagation()
+
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
     await this.openInlineTipTapForElement(element)
   }
@@ -1510,11 +1761,17 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setTextAreaVueModel(html)
     this.pageBuilderStateStore.setElement(inlineElement)
 
-    await this.finishInlineTipTapEditor(inlineElement)
+    // Close TipTap without blocking on auto-save so the next element can be
+    // selected immediately.  A single background save is fired at the end.
+    await this.finishInlineTipTapEditor(inlineElement, false)
 
     if (nextElement && nextElement !== inlineElement) {
-      await this.selectEditableElement(nextElement)
+      // Select without triggering a second auto-save — the one below covers both.
+      await this.selectEditableElement(nextElement, false)
     }
+
+    // One background auto-save for the whole close+select operation.
+    void this.handleAutoSave()
   }
 
   /**
@@ -1525,7 +1782,13 @@ export class PageBuilderService {
    */
   private handleElementClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
-    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) {
+      // While TipTap is active, prevent default so links and other browser actions
+      // are not triggered when the user clicks outside the inline editor.
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -1550,16 +1813,22 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
+
     await this.openInlineTipTapForElement(element)
+
+    // If the element became invalid between the check and the actual editor open
+    // (e.g. DOM replaced mid-async), reset the flag so clicks are not blocked.
+    if (!this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
   }
 
   private async openInlineTipTapForElement(element: HTMLElement): Promise<void> {
     if (!this.isValidTextElement(element)) return
 
     await this.selectEditableElement(element, false)
-
-    this.pageBuilderStateStore.setElement(element)
-    this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
     await nextTick()
     await this.addListenersToEditableElements()
@@ -3295,6 +3564,27 @@ export class PageBuilderService {
   public async refreshListeners(): Promise<void> {
     await nextTick()
     await this.addListenersToEditableElements()
+    // Re-apply config page settings if the canvas is missing its inline styles.
+    // This covers the v-if modal reopen where #pagebuilder is freshly rendered by
+    // Vue with only its :class binding (no style attribute applied yet).
+    this.reapplyConfigPageSettingsIfMissing()
+  }
+
+  /**
+   * Applies config-provided pageSettings.style to #pagebuilder when the element
+   * has no inline style attribute.  Safe to call on every canvas refresh because
+   * the guard `!domStyle` means user-edited styles are never overwritten.
+   */
+  private reapplyConfigPageSettingsIfMissing(): void {
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (!pagebuilder) return
+    const configSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+    if (!this.hasMeaningfulPageSettings(configSettings)) return
+    const configStyleStr = this.convertStyleObjectToString(configSettings.style)
+    const domStyle = pagebuilder.getAttribute('style') || ''
+    if (configStyleStr.trim() && !domStyle.trim()) {
+      this.applyPageSettingsToPage(configSettings)
+    }
   }
 
   /**
@@ -3307,8 +3597,8 @@ export class PageBuilderService {
     const localStorageData = this.getSavedPageHtml()
 
     if (localStorageData) {
-      await sleep(400)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(true)
+      await sleep(400)
       await this.mountComponentsToDOM(localStorageData)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(false)
     }
@@ -3383,7 +3673,9 @@ export class PageBuilderService {
     // Object with components and pageSettings
     if (parsed && Array.isArray(parsed.components)) {
       const classes = (parsed.pageSettings && parsed.pageSettings.classes) || ''
-      const style = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const rawStyle = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const style =
+        typeof rawStyle === 'string' ? rawStyle : this.convertStyleObjectToString(rawStyle)
 
       const sectionsHtml = parsed.components
         .map((c: ComponentObject) => {
@@ -3475,13 +3767,10 @@ export class PageBuilderService {
 
     this.pageBuilderStateStore.setHyperlinkError(null)
 
-    // url validation
-    const urlRegex = /^https?:\/\//
-
     const isValidURL = ref(true)
 
     if (hyperlinkEnable === true && urlInput !== null) {
-      isValidURL.value = urlRegex.test(urlInput)
+      isValidURL.value = isValidHyperlinkInput(urlInput)
     }
 
     if (isValidURL.value === false) {
@@ -3492,10 +3781,11 @@ export class PageBuilderService {
     }
 
     if (hyperlinkEnable === true && typeof urlInput === 'string') {
+      const normalizedUrl = urlInput.trim()
       // check if element contains child hyperlink tag
       // updated existing url
-      if (hyperlink !== null && urlInput.length !== 0) {
-        hyperlink.href = urlInput
+      if (hyperlink !== null && normalizedUrl.length !== 0) {
+        hyperlink.href = normalizedUrl
 
         // Conditionally set the target attribute if openHyperlinkInNewTab is true
         if (openHyperlinkInNewTab === true) {
@@ -3515,11 +3805,11 @@ export class PageBuilderService {
       }
 
       // check if element contains child a tag
-      if (hyperlink === null && urlInput.length !== 0) {
+      if (hyperlink === null && normalizedUrl.length !== 0) {
         // add a href
         if (parentHyperlink === null) {
           const link = document.createElement('a')
-          link.href = urlInput
+          link.href = normalizedUrl
 
           // Conditionally set the target attribute if openHyperlinkInNewTab is true
           if (openHyperlinkInNewTab === true) {
@@ -3973,6 +4263,8 @@ export class PageBuilderService {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
+      buttonStyle: options.buttonStyle,
+      roundedButtons: options.roundedButtons,
       hidePrice: options.hidePrice,
       hideImage: options.hideImage,
       hideButton: options.hideButton,
@@ -4020,6 +4312,24 @@ export class PageBuilderService {
         return `${kebabKey}: ${value};`
       })
       .join(' ')
+  }
+
+  private hasMeaningfulPageSettings(
+    pageSettings: PageSettings | null | undefined,
+  ): pageSettings is PageSettings {
+    if (!pageSettings) return false
+
+    const classes = (pageSettings.classes || '').trim()
+    const styleString =
+      typeof pageSettings.style === 'string'
+        ? pageSettings.style.trim()
+        : this.convertStyleObjectToString(pageSettings.style).trim()
+    const hasMeta = Boolean(
+      pageSettings.meta &&
+        ((pageSettings.meta.title || '').trim() || (pageSettings.meta.description || '').trim()),
+    )
+
+    return classes.length > 0 || styleString.length > 0 || hasMeta
   }
 
   /**
@@ -4305,13 +4615,50 @@ export class PageBuilderService {
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
-        // Prefer config.pageSettings, but fall back to the current DOM state so that
-        // global page styles applied by the user are not wiped on re-initialization.
-        configPageSettings =
-          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || currentDomPageSettings
+        // Prefer explicit config, then memory (last known from previous session), then live DOM.
+        // Memory takes priority over DOM because on a v-if reopen the DOM is a freshly
+        // rendered wrapper with only Vue's default :class; _lastKnownPageSettings has the
+        // user's previously saved custom classes/styles captured in startBuilder().
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromMemory = this._lastKnownPageSettings
+        const fromDom = currentDomPageSettings
+
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromMemory)
+            ? fromMemory
+            : this.hasMeaningfulPageSettings(fromDom)
+              ? fromDom
+              : null
       }
 
-      // Use imported page builder settings if available and pageSettings is still null
+      // When the builder was MISSING at start (v-if reopen pattern), the live #pagebuilder
+      // DOM has just been freshly rendered with only Vue's default :class binding. The HTML
+      // being mounted (from getSavedPageHtml) is the authoritative source: its class/style
+      // was rebuilt from the persisted localStorage pageSettings which includes the user's
+      // custom classes. Use it BEFORE the live DOM to avoid wiping the saved custom styling.
+      if (
+        !usePassedPageSettings &&
+        !pageSettingsFromHistory &&
+        !configPageSettings &&
+        importedPageBuilder &&
+        this.isPageBuilderMissingOnStart
+      ) {
+        configPageSettings = {
+          classes: importedPageBuilder.className || '',
+          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+          meta: readPageMetaFromElement(importedPageBuilder),
+        }
+      }
+
+      // When the builder WAS PRESENT at start (in-session remount), the live DOM still
+      // holds the current session's settings — preserve them.
+      if (!configPageSettings && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
+        configPageSettings = currentDomPageSettings
+      }
+
+      // importedPageBuilder as a secondary fallback for the present-at-start case
+      // (handles edge where the live DOM has only default classes despite being present).
       if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
         configPageSettings = {
           classes: importedPageBuilder.className || '',
@@ -4320,9 +4667,15 @@ export class PageBuilderService {
         }
       }
 
-      // Fallback to stored page settings if pageSettings is still null
+      // Final fallback: config or memory
       if (!configPageSettings) {
-        configPageSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || null
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromMemory = this._lastKnownPageSettings
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromMemory)
+            ? fromMemory
+            : null
       }
 
       // Apply the page settings to the live page builder

@@ -1,6 +1,6 @@
 {
   "name": "@myissue/vue-website-page-builder",
-  "version": "3.5.48",
+  "version": "3.5.50",
   "description": "Vue 3 page builder for ecommerce admin, multi-tenant SaaS, and CMS dashboards. Drag-and-drop editor with custom media library and product catalog integration.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
@@ -77,6 +77,7 @@
     "format": "prettier --write src/",
     "prepublishOnly": "npm run build",
     "test": "vitest",
+    "test:nuxt:manual": "./scripts/nuxt-manual-smoke-test.sh",
     "docs:dev": "vitepress dev --port 5181",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"

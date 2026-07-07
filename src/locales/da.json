@@ -393,7 +393,6 @@
   "Hyperlink added": "Hyperlink tilføjet",
   "No hyperlink added": "Intet hyperlink tilføjet",
   "URL..": "URL..",
-  "Open in new tab": "Åbn i ny fane",
   "Please enter a property and a value.": "Angiv venligst en egenskab og en værdi.",
   "already exists. Remove it first to add a new one.": "findes allerede. Fjern den først for at tilføje en ny.",
   "Opacity": "Gennemsigtighed",
@@ -567,5 +566,14 @@
   "block.desc.image_editorial_text": "Billede med lang redaktionel tekst.",
   "block.desc.profile_card": "Profil- eller forfatterkort med foto.",
   "block.desc.contact_minimal": "Minimal kontaktsektion med e-mail.",
-  "block.desc.editorial_list": "Nummereret eller punktopstillet redaktionel liste."
+  "block.desc.editorial_list": "Nummereret eller punktopstillet redaktionel liste.",
+  "Text link": "Tekstlink",
+  "Use a text-only CTA": "Brug en CTA kun med tekst",
+  "Button design": "Knapdesign",
+  "Use brand-color button CTA": "Brug CTA-knap i brandfarve",
+  "Rounded buttons": "Afrundede knapper",
+  "Use rounded corners for CTA buttons": "Brug afrundede hjørner til CTA-knapper",
+  "Button links": "Knaplinks",
+  "Link behavior on helper button components": "Linkadfærd for hjælper-knapkomponenter",
+  "No additional settings for this category": "Ingen yderligere indstillinger for denne kategori"
 }
