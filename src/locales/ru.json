@@ -570,13 +570,13 @@
   "Page layout": "Макет страницы",
   "Remove all components description": "Удалите все секции со страницы. Перед удалением потребуется подтверждение.",
   "Clear every section from the page": "Удалить все секции со страницы",
-  "Text link": "Text link",
-  "Use a text-only CTA": "Use a text-only CTA",
-  "Button design": "Button design",
-  "Use brand-color button CTA": "Use brand-color button CTA",
-  "Rounded buttons": "Rounded buttons",
-  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
-  "Button links": "Button links",
-  "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "Text link": "Текстовая ссылка",
+  "Use a text-only CTA": "Использовать CTA только в виде текста",
+  "Button design": "Дизайн кнопки",
+  "Use brand-color button CTA": "Использовать CTA-кнопку фирменного цвета",
+  "Rounded buttons": "Скругленные кнопки",
+  "Use rounded corners for CTA buttons": "Использовать скругленные углы для CTA-кнопок",
+  "Button links": "Ссылки кнопок",
+  "Link behavior on helper button components": "Поведение ссылок в компонентах вспомогательных кнопок",
+  "No additional settings for this category": "Для этой категории нет дополнительных настроек"
 }

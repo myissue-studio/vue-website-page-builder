@@ -570,13 +570,13 @@
   "Page layout": "Seitenlayout",
   "Remove all components description": "Entfernen Sie alle Abschnitte von der Seite. Sie werden vor dem Löschen zur Bestätigung aufgefordert.",
   "Clear every section from the page": "Alle Abschnitte von der Seite entfernen",
-  "Text link": "Text link",
-  "Use a text-only CTA": "Use a text-only CTA",
-  "Button design": "Button design",
-  "Use brand-color button CTA": "Use brand-color button CTA",
-  "Rounded buttons": "Rounded buttons",
-  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
-  "Button links": "Button links",
-  "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "Text link": "Textlink",
+  "Use a text-only CTA": "Nur-Text-CTA verwenden",
+  "Button design": "Button-Design",
+  "Use brand-color button CTA": "CTA-Schaltfläche in Markenfarbe verwenden",
+  "Rounded buttons": "Abgerundete Schaltflächen",
+  "Use rounded corners for CTA buttons": "Abgerundete Ecken für CTA-Schaltflächen verwenden",
+  "Button links": "Schaltflächen-Links",
+  "Link behavior on helper button components": "Linkverhalten bei Hilfs-Schaltflächenkomponenten",
+  "No additional settings for this category": "Keine weiteren Einstellungen für diese Kategorie"
 }

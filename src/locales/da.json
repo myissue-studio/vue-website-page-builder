@@ -567,13 +567,13 @@
   "block.desc.profile_card": "Profil- eller forfatterkort med foto.",
   "block.desc.contact_minimal": "Minimal kontaktsektion med e-mail.",
   "block.desc.editorial_list": "Nummereret eller punktopstillet redaktionel liste.",
-  "Text link": "Text link",
-  "Use a text-only CTA": "Use a text-only CTA",
-  "Button design": "Button design",
-  "Use brand-color button CTA": "Use brand-color button CTA",
-  "Rounded buttons": "Rounded buttons",
-  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
-  "Button links": "Button links",
-  "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "Text link": "Tekstlink",
+  "Use a text-only CTA": "Brug en CTA kun med tekst",
+  "Button design": "Knapdesign",
+  "Use brand-color button CTA": "Brug CTA-knap i brandfarve",
+  "Rounded buttons": "Afrundede knapper",
+  "Use rounded corners for CTA buttons": "Brug afrundede hjørner til CTA-knapper",
+  "Button links": "Knaplinks",
+  "Link behavior on helper button components": "Linkadfærd for hjælper-knapkomponenter",
+  "No additional settings for this category": "Ingen yderligere indstillinger for denne kategori"
 }
