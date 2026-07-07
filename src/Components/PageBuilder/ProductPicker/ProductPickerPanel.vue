@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { usePageBuilderModal } from '../../../composables/usePageBuilderModal'
 import { delay } from '../../../composables/delay'
@@ -43,6 +43,8 @@ const openInNewTab = ref(true)
 const hidePrice = ref(false)
 const hideImage = ref(false)
 const hideButton = ref(false)
+const movedProductKey = ref<string | number | PageBuilderProduct | null>(null)
+let movedKeyTimer: ReturnType<typeof setTimeout> | null = null
 
 const catalogHasPrices = computed(() => productsHavePrices(props.products))
 const catalogHasImages = computed(() => productsHaveImages(props.products))
@@ -118,6 +120,7 @@ function moveUp(index: number) {
   const arr = [...selectedOrder.value]
   ;[arr[index - 1], arr[index]] = [arr[index], arr[index - 1]]
   selectedOrder.value = arr
+  markMovedProduct(arr[index - 1])
 }
 
 function moveDown(index: number) {
@@ -125,7 +128,31 @@ function moveDown(index: number) {
   const arr = [...selectedOrder.value]
   ;[arr[index], arr[index + 1]] = [arr[index + 1], arr[index]]
   selectedOrder.value = arr
+  markMovedProduct(arr[index + 1])
 }
+
+function markMovedProduct(product: PageBuilderProduct): void {
+  movedProductKey.value = productKey(product)
+
+  if (movedKeyTimer) {
+    clearTimeout(movedKeyTimer)
+  }
+
+  movedKeyTimer = setTimeout(() => {
+    movedProductKey.value = null
+    movedKeyTimer = null
+  }, 500)
+}
+
+function isMovedProduct(product: PageBuilderProduct): boolean {
+  return movedProductKey.value === productKey(product)
+}
+
+onBeforeUnmount(() => {
+  if (movedKeyTimer) {
+    clearTimeout(movedKeyTimer)
+  }
+})
 
 const STANDARD_PRODUCT_FIELDS = new Set([
   'id',
@@ -406,62 +433,69 @@ async function insertSelectedProducts() {
 
                 <div v-if="selectedProducts.length" class="pbx-modalSidebarSelectedList">
                   <p class="pbx-modalSidebarSelectedTitle">{{ translate('Selected') }}</p>
-                  <div
-                    v-for="(product, index) in selectedProducts"
-                    :key="String(productKey(product))"
-                    class="pbx-modalSidebarSelectedItem"
+                  <TransitionGroup
+                    name="pbx-selected-products"
+                    tag="div"
+                    class="pbx-flex pbx-flex-col pbx-gap-2"
                   >
-                    <img
-                      v-if="product.image"
-                      :src="product.image"
-                      :alt="product.imageAlt ?? product.title ?? 'Product'"
-                      class="pbx-h-12 pbx-w-12 pbx-shrink-0 pbx-rounded-lg pbx-object-cover"
-                    />
-                    <div class="pbx-min-w-0 pbx-flex-1">
-                      <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-medium">
-                        {{ product.title }}
-                      </p>
-                      <p
-                        v-if="product.price != null"
-                        class="pbx-myPrimaryParagraph pbx-text-xs pbx-text-gray-500"
-                      >
-                        {{ product.price }}
-                      </p>
-                    </div>
-                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-                      <button
-                        type="button"
-                        class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                        :disabled="index === 0"
-                        :aria-label="translate('Move up')"
-                        @click.stop="moveUp(index)"
-                      >
-                        <span class="material-symbols-outlined" style="font-size: 14px"
-                          >arrow_upward</span
-                        >
-                      </button>
-                      <button
-                        type="button"
-                        class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                        :disabled="index === selectedProducts.length - 1"
-                        :aria-label="translate('Move down')"
-                        @click.stop="moveDown(index)"
-                      >
-                        <span class="material-symbols-outlined" style="font-size: 14px"
-                          >arrow_downward</span
-                        >
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      class="pbx-select-none pbx-h-9 pbx-w-9 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-                      :aria-label="translate('Remove')"
-                      :title="translate('Remove')"
-                      @click.stop="removeProduct(product)"
+                    <div
+                      v-for="(product, index) in selectedProducts"
+                      :key="String(productKey(product))"
+                      class="pbx-modalSidebarSelectedItem"
+                      :class="{ 'pbx-modalSidebarSelectedItem--moved': isMovedProduct(product) }"
                     >
-                      <span class="material-symbols-outlined pbx-materialIconLg">close</span>
-                    </button>
-                  </div>
+                      <img
+                        v-if="product.image"
+                        :src="product.image"
+                        :alt="product.imageAlt ?? product.title ?? 'Product'"
+                        class="pbx-h-12 pbx-w-12 pbx-shrink-0 pbx-rounded-lg pbx-object-cover"
+                      />
+                      <div class="pbx-min-w-0 pbx-flex-1">
+                        <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-medium">
+                          {{ product.title }}
+                        </p>
+                        <p
+                          v-if="product.price != null"
+                          class="pbx-myPrimaryParagraph pbx-text-xs pbx-text-gray-500"
+                        >
+                          {{ product.price }}
+                        </p>
+                      </div>
+                      <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+                        <button
+                          type="button"
+                          class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                          :disabled="index === 0"
+                          :aria-label="translate('Move up')"
+                          @click.stop="moveUp(index)"
+                        >
+                          <span class="material-symbols-outlined" style="font-size: 14px"
+                            >arrow_upward</span
+                          >
+                        </button>
+                        <button
+                          type="button"
+                          class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                          :disabled="index === selectedProducts.length - 1"
+                          :aria-label="translate('Move down')"
+                          @click.stop="moveDown(index)"
+                        >
+                          <span class="material-symbols-outlined" style="font-size: 14px"
+                            >arrow_downward</span
+                          >
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        class="pbx-select-none pbx-h-9 pbx-w-9 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+                        :aria-label="translate('Remove')"
+                        :title="translate('Remove')"
+                        @click.stop="removeProduct(product)"
+                      >
+                        <span class="material-symbols-outlined pbx-materialIconLg">close</span>
+                      </button>
+                    </div>
+                  </TransitionGroup>
                 </div>
               </div>
 
@@ -533,3 +567,25 @@ async function insertSelectedProducts() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pbx-selected-products-move {
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 260ms ease;
+}
+
+.pbx-modalSidebarSelectedItem {
+  transition:
+    transform 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+  transform-origin: center;
+}
+
+.pbx-modalSidebarSelectedItem--moved {
+  background-color: rgba(59, 130, 246, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.24);
+  transform: scale(1.01);
+}
+</style>
