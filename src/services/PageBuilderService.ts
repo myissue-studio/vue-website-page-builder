@@ -533,16 +533,28 @@ export class PageBuilderService {
   ): Promise<StartBuilderResult> {
     const sessionToken = ++this.activeBuilderSessionToken
 
-    // Reset mount lifecycle guards for each new builder start call.
-    // The service is a singleton, so stale flags from a previous open/close cycle
-    // must not block remounting when the DOM is created again.
-    this.hasCompletedBuilderMount = false
-    this.builderMountPromise = null
-    this.pendingMountComponents = null
-    this.isPageBuilderMissingOnStart = false
+    // Detect the current DOM state BEFORE any resets so we can decide whether a
+    // full remount is needed.  When the builder is used with v-show (the component
+    // stays mounted across close/reopen cycles), #pagebuilder persists with the
+    // user's already-edited content and listeners.  Forcing a full remount in that
+    // case would clear the canvas and, worse, trigger the "resume from draft" modal
+    // every single reopen.  We only do a full lifecycle reset when the DOM wrapper
+    // is absent or empty (v-if pattern — the component was destroyed on close).
+    const pagebuilderBeforeReset = document.querySelector('#pagebuilder')
+    const hasLiveMountedContent = Boolean(
+      pagebuilderBeforeReset?.querySelector('section[data-componentid]'),
+    )
 
-    // Reset transient UI/editor state that should never persist across open/close cycles.
-    // The service/store are singletons, so stale flags can block click selection on reopen.
+    if (!hasLiveMountedContent) {
+      // DOM is missing or the canvas has no sections — needs a fresh mount cycle.
+      this.hasCompletedBuilderMount = false
+      this.builderMountPromise = null
+      this.pendingMountComponents = null
+      this.isPageBuilderMissingOnStart = false
+    }
+
+    // Always reset transient UI/editor state — these must never persist across
+    // open/close cycles regardless of whether a full remount is needed.
     if (typeof this.pageBuilderStateStore.setInlineTipTapEditor === 'function') {
       this.pageBuilderStateStore.setInlineTipTapEditor(false)
     }
@@ -655,9 +667,29 @@ export class PageBuilderService {
 
   /**
    * Whether PageBuilder.vue should run deferred mount on mount (DOM was missing at startBuilder).
+   *
+   * @param ownCanvas - The component's own #pagebuilder element (passed from PageBuilder.vue ref).
+   *   Using this instead of document.querySelector ensures the correct canvas is checked when
+   *   multiple PageBuilder instances exist on the same page (e.g. one always-visible + one in a
+   *   modal).  When the modal's canvas is empty while another instance already has content, the
+   *   document.querySelector approach would miss the empty canvas entirely.
    */
-  public shouldCompleteBuilderMountOnMount(): boolean {
-    if (this.hasCompletedBuilderMount) return false
+  public shouldCompleteBuilderMountOnMount(ownCanvas?: HTMLElement): boolean {
+    if (this.hasCompletedBuilderMount) {
+      // A previous PageBuilder session completed mounting. Check THIS component instance's
+      // canvas (not the first matching document element) — covers the case of a PageBuilder
+      // inside a v-if modal that just opened: its canvas is empty even though another instance
+      // on the page already has content loaded.
+      const canvas = ownCanvas ?? (document.querySelector('#pagebuilder') as HTMLElement | null)
+      const hasSections = Boolean(canvas?.querySelector('section[data-componentid]'))
+      if (canvas && !hasSections) {
+        // Fresh empty canvas — reset lifecycle so the deferred init will run.
+        this.hasCompletedBuilderMount = false
+        this.builderMountPromise = null
+        return true
+      }
+      return false
+    }
     return this.isPageBuilderMissingOnStart || Boolean(this.pendingMountComponents)
   }
 
@@ -693,15 +725,6 @@ export class PageBuilderService {
     sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
     if (sessionToken !== this.activeBuilderSessionToken) return
-
-    // Immediately attach listeners to any already-rendered sections so the canvas
-    // is interactive during the loading delay window. On a v-if reopen, Vue has
-    // already rendered the previous session's components from the store into new
-    // DOM elements, but those elements have no listeners yet (they were on the
-    // destroyed elements). Attaching here bridges the gap before the loading
-    // overlay takes over.
-    await this.addListenersToEditableElements()
-
     await sleep(400)
     if (sessionToken !== this.activeBuilderSessionToken) return
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
