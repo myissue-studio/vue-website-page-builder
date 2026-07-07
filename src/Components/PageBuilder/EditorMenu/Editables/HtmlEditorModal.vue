@@ -93,10 +93,6 @@ async function copyHtml() {
       </div>
     </div>
 
-    <div class="pbx-flex pbx-justify-end pbx-min-h-6 pbx-mt-2">
-      <p v-if="error" class="pbx-myPrimaryParagraphError">Error: {{ error }}</p>
-    </div>
-
     <template #actions>
       <button
         type="button"

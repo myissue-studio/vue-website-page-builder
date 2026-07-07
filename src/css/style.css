@@ -485,7 +485,7 @@
   }
 
   .pbx-inspectorEmpty {
-    @apply pbx-m-0 pbx-rounded-lg pbx-border pbx-border-dashed pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-6 pbx-text-center pbx-text-xs pbx-text-gray-500;
+    @apply pbx-m-0 pbx-rounded-lg pbx-border pbx-border-dashed pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-6 pbx-text-center pbx-text-xs pbx-text-gray-500 pbx-min-h-[30rem];
   }
 
   .pbx-inspectorField {
