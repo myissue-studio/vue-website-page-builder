@@ -1650,8 +1650,8 @@ export class PageBuilderService {
       pagebuilder.removeEventListener('dblclick', this.canvasDblClickCaptureListener, true)
     }
 
-    this.canvasClickCaptureListener = () => {
-      void this.handleCanvasClickCapture()
+    this.canvasClickCaptureListener = (event: Event) => {
+      void this.handleCanvasClickCapture(event)
     }
     this.canvasDblClickCaptureListener = (event: Event) => {
       void this.handleCanvasDoubleClickCapture(event)
@@ -1678,10 +1678,29 @@ export class PageBuilderService {
     return null
   }
 
-  private handleCanvasClickCapture = async (): Promise<void> => {
+  private handleCanvasClickCapture = async (e: Event): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
-    if (this.pageBuilderStateStore.getInlineTipTapEditor && !this.hasInlineTipTapElement()) {
-      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) {
+      if (!this.hasInlineTipTapElement()) {
+        // No inline TipTap element in the DOM — clear the stale flag.
+        this.pageBuilderStateStore.setInlineTipTapEditor(false)
+      } else {
+        // TipTap is active. If the click is OUTSIDE the inline-editor element:
+        //  1. Prevent default to stop link navigation and other browser actions.
+        //  2. Close TipTap.  The document pointerdown handler may be blocked by
+        //     shouldPreserveInlineEditorForToolbarPopover when toolbar popovers
+        //     exist in the DOM (v-show), so we close reliably from the click event.
+        const inlineEl = document.querySelector<HTMLElement>(
+          '#pagebuilder [data-pbx-inline-tiptap]',
+        )
+        if (inlineEl && e.target instanceof Node && !inlineEl.contains(e.target)) {
+          e.preventDefault()
+          e.stopPropagation()
+          const nextElement = this.findEditableElementFromEventTarget(e.target)
+          void this.finishActiveInlineTipTapEditorFromDom(nextElement)
+        }
+      }
     }
   }
 
@@ -1742,11 +1761,17 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setTextAreaVueModel(html)
     this.pageBuilderStateStore.setElement(inlineElement)
 
-    await this.finishInlineTipTapEditor(inlineElement)
+    // Close TipTap without blocking on auto-save so the next element can be
+    // selected immediately.  A single background save is fired at the end.
+    await this.finishInlineTipTapEditor(inlineElement, false)
 
     if (nextElement && nextElement !== inlineElement) {
-      await this.selectEditableElement(nextElement)
+      // Select without triggering a second auto-save — the one below covers both.
+      await this.selectEditableElement(nextElement, false)
     }
+
+    // One background auto-save for the whole close+select operation.
+    void this.handleAutoSave()
   }
 
   /**
@@ -1757,7 +1782,13 @@ export class PageBuilderService {
    */
   private handleElementClick = async (e: Event, element: HTMLElement): Promise<void> => {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
-    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+    if (this.pageBuilderStateStore.getInlineTipTapEditor) {
+      // While TipTap is active, prevent default so links and other browser actions
+      // are not triggered when the user clicks outside the inline editor.
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
 
     e.preventDefault()
     e.stopPropagation()
@@ -3533,6 +3564,27 @@ export class PageBuilderService {
   public async refreshListeners(): Promise<void> {
     await nextTick()
     await this.addListenersToEditableElements()
+    // Re-apply config page settings if the canvas is missing its inline styles.
+    // This covers the v-if modal reopen where #pagebuilder is freshly rendered by
+    // Vue with only its :class binding (no style attribute applied yet).
+    this.reapplyConfigPageSettingsIfMissing()
+  }
+
+  /**
+   * Applies config-provided pageSettings.style to #pagebuilder when the element
+   * has no inline style attribute.  Safe to call on every canvas refresh because
+   * the guard `!domStyle` means user-edited styles are never overwritten.
+   */
+  private reapplyConfigPageSettingsIfMissing(): void {
+    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    if (!pagebuilder) return
+    const configSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+    if (!this.hasMeaningfulPageSettings(configSettings)) return
+    const configStyleStr = this.convertStyleObjectToString(configSettings.style)
+    const domStyle = pagebuilder.getAttribute('style') || ''
+    if (configStyleStr.trim() && !domStyle.trim()) {
+      this.applyPageSettingsToPage(configSettings)
+    }
   }
 
   /**
