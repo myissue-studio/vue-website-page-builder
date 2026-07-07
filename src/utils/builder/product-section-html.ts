@@ -1,9 +1,11 @@
 import type {
+  ProductButtonStyle,
   PageBuilderProductInput,
   ProductCardStyle,
   ProductGridLayout,
 } from '../../types'
 import {
+  buildProductCtaAnchorClass,
   buildProductGridClass,
   getProductImageWrapClass,
   PRODUCT_CARD_STYLE_CLASS,
@@ -21,6 +23,8 @@ export interface BuildProductSectionStyleOptions {
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
   openInNewTab?: boolean
+  buttonStyle?: ProductButtonStyle
+  roundedButtons?: boolean
   hidePrice?: boolean
   hideImage?: boolean
   hideButton?: boolean
@@ -55,6 +59,8 @@ function renderProductCard(
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
+  const buttonStyle = styleOptions.buttonStyle ?? 'text'
+  const roundedButtons = styleOptions.roundedButtons ?? false
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
   const hideButton = styleOptions.hideButton ?? false
@@ -125,7 +131,9 @@ function renderProductCard(
         compareAtPrice
           ? `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`
           : '',
-        price ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>` : '',
+        price
+          ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>`
+          : '',
       ].filter(Boolean)
       const priceRowClass = [
         'product-card-price-row flex flex-wrap items-baseline gap-2 pt-2',
@@ -136,9 +144,10 @@ function renderProductCard(
       priceRowHtml = `<div class="${priceRowClass}">${priceParts.join('')}</div>`
     }
 
+    const ctaAnchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}" href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -178,6 +187,8 @@ export function buildProductSectionHtml(
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
+  const buttonStyle = styleOptions.buttonStyle ?? 'text'
+  const roundedButtons = styleOptions.roundedButtons ?? false
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
   const hideButton = styleOptions.hideButton ?? false
@@ -188,7 +199,7 @@ export function buildProductSectionHtml(
     .join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-button-style="${escapeHtml(buttonStyle)}" data-pbx-product-rounded-buttons="${roundedButtons ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

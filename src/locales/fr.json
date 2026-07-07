@@ -569,5 +569,14 @@
   "Could not apply theme": "Impossible d'appliquer le thème",
   "Page layout": "Mise en page",
   "Remove all components description": "Supprimez toutes les sections de la page. Une confirmation vous sera demandée avant toute suppression.",
-  "Clear every section from the page": "Supprimer toutes les sections de la page"
+  "Clear every section from the page": "Supprimer toutes les sections de la page",
+  "Text link": "Text link",
+  "Use a text-only CTA": "Use a text-only CTA",
+  "Button design": "Button design",
+  "Use brand-color button CTA": "Use brand-color button CTA",
+  "Rounded buttons": "Rounded buttons",
+  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
+  "Button links": "Button links",
+  "Link behavior on helper button components": "Link behavior on helper button components",
+  "No additional settings for this category": "No additional settings for this category"
 }
