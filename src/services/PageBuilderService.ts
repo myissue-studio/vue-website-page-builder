@@ -686,9 +686,9 @@ export class PageBuilderService {
     sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
     if (sessionToken !== this.activeBuilderSessionToken) return
-    this.pageBuilderStateStore.setIsLoadingGlobal(true)
     await sleep(400)
     if (sessionToken !== this.activeBuilderSessionToken) return
+    this.pageBuilderStateStore.setIsLoadingGlobal(true)
 
     // Always clear DOM and store before mounting new resource
     this.deleteAllComponentsFromDOM()
