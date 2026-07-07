@@ -561,6 +561,13 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setBuilderStarted(true)
     const pagebuilder = document.querySelector('#pagebuilder')
 
+    // Snapshot page-level settings whenever a live wrapper exists so they can be
+    // restored even if subsequent reopen payloads contain sections only.
+    const currentStartSettings = this.readCurrentPageSettings()
+    if (this.hasMeaningfulPageSettings(currentStartSettings)) {
+      this._lastKnownPageSettings = currentStartSettings
+    }
+
     let validation
     try {
       this.originalComponents = passedComponentsArray
@@ -576,23 +583,38 @@ export class PageBuilderService {
 
       validation = this.validateUserProvidedComponents(passedComponentsArray)
 
+      const usablePassedComponents =
+        Array.isArray(passedComponentsArray) && passedComponentsArray.length > 0
+          ? passedComponentsArray
+          : null
+      const hasUsablePassedComponents = usablePassedComponents !== null
+
       // Update the localStorage key name based on the config/resource
       this.updateLocalStorageItemName()
       this.initializeHistory()
 
-      if (passedComponentsArray) {
-        this.savedMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents) {
+        this.savedMountComponents = usablePassedComponents
       }
       // Page Builder is not Present in the DOM but Components have been passed to the Builder
       if (!pagebuilder) {
         this.isPageBuilderMissingOnStart = true
       }
-      if (passedComponentsArray && !pagebuilder) {
-        this.pendingMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents && !pagebuilder) {
+        this.pendingMountComponents = usablePassedComponents
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
-        await this.completeBuilderInitialization(passedComponentsArray)
+        await this.completeBuilderInitialization(
+          hasUsablePassedComponents ? usablePassedComponents : undefined,
+        )
+      }
+
+      // Safety net: if the host already rendered #pagebuilder content and a full mount
+      // was skipped (for example due to invalid/non-array passed data), still attach
+      // interaction listeners so the canvas cannot get stuck as non-editable.
+      if (pagebuilder) {
+        await this.addListenersToEditableElements()
       }
 
       // result to end user
@@ -3496,7 +3518,9 @@ export class PageBuilderService {
     // Object with components and pageSettings
     if (parsed && Array.isArray(parsed.components)) {
       const classes = (parsed.pageSettings && parsed.pageSettings.classes) || ''
-      const style = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const rawStyle = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const style =
+        typeof rawStyle === 'string' ? rawStyle : this.convertStyleObjectToString(rawStyle)
 
       const sectionsHtml = parsed.components
         .map((c: ComponentObject) => {
@@ -4135,6 +4159,24 @@ export class PageBuilderService {
       .join(' ')
   }
 
+  private hasMeaningfulPageSettings(
+    pageSettings: PageSettings | null | undefined,
+  ): pageSettings is PageSettings {
+    if (!pageSettings) return false
+
+    const classes = (pageSettings.classes || '').trim()
+    const styleString =
+      typeof pageSettings.style === 'string'
+        ? pageSettings.style.trim()
+        : this.convertStyleObjectToString(pageSettings.style).trim()
+    const hasMeta = Boolean(
+      pageSettings.meta &&
+        ((pageSettings.meta.title || '').trim() || (pageSettings.meta.description || '').trim()),
+    )
+
+    return classes.length > 0 || styleString.length > 0 || hasMeta
+  }
+
   /**
    * Parses a string of HTML and extracts builder components and global page settings.
    * - This method expects an **HTML string** containing one or more `<section>...</section>` elements (such as the output from `getSavedPageHtml()` or a previously saved builder HTML string).
@@ -4418,10 +4460,25 @@ export class PageBuilderService {
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
-        // Prefer config.pageSettings, but fall back to the current DOM state so that
-        // global page styles applied by the user are not wiped on re-initialization.
-        configPageSettings =
-          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || currentDomPageSettings
+        // Prefer meaningful config.pageSettings, then meaningful current DOM state,
+        // then meaningful singleton memory from prior sessions.
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromDom = currentDomPageSettings
+        const fromMemory = this._lastKnownPageSettings
+
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromDom)
+            ? fromDom
+            : this.hasMeaningfulPageSettings(fromMemory)
+              ? fromMemory
+              : null
+      }
+
+      // Even outside `usePassedPageSettings`, preserve meaningful live wrapper settings
+      // across remounts so defaults from generated wrappers don't overwrite user styling.
+      if (!configPageSettings && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
+        configPageSettings = currentDomPageSettings
       }
 
       // Use imported page builder settings if available and pageSettings is still null
@@ -4435,7 +4492,13 @@ export class PageBuilderService {
 
       // Fallback to stored page settings if pageSettings is still null
       if (!configPageSettings) {
-        configPageSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || null
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromMemory = this._lastKnownPageSettings
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromMemory)
+            ? fromMemory
+            : null
       }
 
       // Apply the page settings to the live page builder
