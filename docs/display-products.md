@@ -97,13 +97,13 @@ Design the modal however you want: API search, categories, Shopify sync, ERP fee
 - The **Products** button in the navbar and between sections
 - The modal shell (“Add Products to Page”) — your component renders inside it
 - `insertProducts()` / `insertProductHtml()` to add sections to the canvas
-- **Product section settings** on the toolbar after insert (grid, mobile columns, card style, rounded images, open in new tab) — no extra work from you
+- **Product section settings** on the toolbar after insert (grid, mobile columns, card style, rounded images, open in new tab, CTA text vs button, rounded CTA button) — no extra work from you
 
 **What you implement in `YourDisplayProducts.vue`**
 
 1. **Load products** — static list, REST API, CMS, etc. (your data layer)
 2. **Browse & select** — search, filters, multi-select, pagination — whatever your catalog needs
-3. **Layout options (optional)** — grid, mobile columns, card style, rounded images, open in new tab before insert; copy the pattern from `DemoDisplayProductsTest.vue` or use your own UI
+3. **Layout options (optional)** — grid, mobile columns, card style, rounded images, open in new tab, CTA style (text/button), rounded CTA button before insert; copy the pattern from `DemoDisplayProductsTest.vue` or use your own UI
 4. **Insert** — on confirm, call `insertProducts()` then close the modal
 
 **Minimum insert code** (required when the editor confirms):
@@ -125,6 +125,8 @@ async function onInsertSelected(products: PageBuilderProduct[]) {
     cardStyle: 'minimal', // minimal | bordered | shadow | elevated
     roundedImages: false,
     openInNewTab: false, // target="_blank" on product image, title, and CTA links
+    buttonStyle: 'text', // text | button
+    roundedButtons: false, // only used when buttonStyle is 'button'
     hidePrice: false, // hide price row when products include prices
     hideImage: false, // hide photos when products include images
     hideButton: false, // hide CTA when products include url + buttonText
@@ -170,6 +172,8 @@ Pass `hidePrice: true`, `hideImage: true`, or `hideButton: true` to `insertProdu
 Use **Hide buy button** with **Hide prices** for catalog-style grids where title/image still link to the product but you do not want a “Shop now” CTA without a visible price.
 
 Stored as `data-pbx-product-hide-price`, `data-pbx-product-hide-image`, and `data-pbx-product-hide-button` on the section.
+
+CTA appearance is stored as `data-pbx-product-button-style` (`text` or `button`) and `data-pbx-product-rounded-buttons` (`true` / `false`).
 
 When the user confirms a selection, call one of these APIs:
 

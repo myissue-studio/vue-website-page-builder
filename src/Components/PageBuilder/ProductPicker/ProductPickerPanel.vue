@@ -5,6 +5,7 @@ import { usePageBuilderModal } from '../../../composables/usePageBuilderModal'
 import { delay } from '../../../composables/delay'
 import type {
   PageBuilderProduct,
+  ProductButtonStyle,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -40,6 +41,8 @@ const mobileColumns = ref<ProductMobileColumns>(2)
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(true)
 const openInNewTab = ref(true)
+const buttonStyle = ref<ProductButtonStyle>('button')
+const roundedButtons = ref(true)
 const hidePrice = ref(false)
 const hideImage = ref(false)
 const hideButton = ref(false)
@@ -190,6 +193,8 @@ async function insertSelectedProducts() {
       cardStyle: cardStyle.value,
       roundedImages: roundedImages.value,
       openInNewTab: openInNewTab.value,
+      buttonStyle: buttonStyle.value,
+      roundedButtons: roundedButtons.value,
       hidePrice: hidePrice.value,
       hideImage: hideImage.value,
       hideButton: hideButton.value,
@@ -206,7 +211,7 @@ async function insertSelectedProducts() {
   <div>
     <div>
       <div
-        v-if="true || showSampleCatalogBanner"
+        v-if="false || showSampleCatalogBanner"
         class="pbx-productSampleCatalogBanner pbx-flex pbx-items-center"
         role="status"
       >
@@ -252,6 +257,8 @@ async function insertSelectedProducts() {
           v-model:card-style="cardStyle"
           v-model:rounded-images="roundedImages"
           v-model:open-in-new-tab="openInNewTab"
+          v-model:button-style="buttonStyle"
+          v-model:rounded-buttons="roundedButtons"
           v-model:hide-price="hidePrice"
           v-model:hide-image="hideImage"
           v-model:hide-button="hideButton"

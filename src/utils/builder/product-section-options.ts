@@ -1,4 +1,5 @@
 import type {
+  ProductButtonStyle,
   PageBuilderProductInput,
   ProductCardStyle,
   ProductGridLayout,
@@ -43,6 +44,26 @@ export const PRODUCT_CARD_STYLE_OPTIONS: {
     labelKey: 'Elevated',
     hintKey: 'Border and shadow',
     iconKey: 'contrast',
+  },
+]
+
+export const PRODUCT_BUTTON_STYLE_OPTIONS: {
+  value: ProductButtonStyle
+  labelKey: string
+  hintKey: string
+  iconKey: string
+}[] = [
+  {
+    value: 'text',
+    labelKey: 'Text link',
+    hintKey: 'Use a text-only CTA',
+    iconKey: 'radio_button_checked',
+  },
+  {
+    value: 'button',
+    labelKey: 'Button design',
+    hintKey: 'Use brand-color button CTA',
+    iconKey: 'radio_button_checked',
   },
 ]
 
@@ -97,6 +118,30 @@ export function getProductImageWrapClass(roundedImages: boolean): string {
 }
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'pbx-hidden'
+
+export function buildProductCtaAnchorClass(
+  buttonStyle: ProductButtonStyle,
+  roundedButtons: boolean,
+): string {
+  if (buttonStyle === 'button') {
+    return [
+      'product-card-cta-link',
+      'inline-flex',
+      'items-center',
+      'justify-center',
+      'px-4',
+      'py-2',
+      'text-sm',
+      'font-semibold',
+      'bg-myPrimaryLinkColor',
+      'text-white',
+      'hover:text-white',
+      roundedButtons ? 'rounded-full' : 'rounded-md',
+    ].join(' ')
+  }
+
+  return 'product-card-cta-link text-myPrimaryLinkColor text-sm font-semibold'
+}
 
 export function productsHaveImages(products: ReadonlyArray<PageBuilderProductInput>): boolean {
   return products.some((product) => Boolean(product.image?.trim()))
@@ -219,6 +264,11 @@ function normalizeCardStyle(value: string | null): ProductCardStyle {
   return 'minimal'
 }
 
+function normalizeButtonStyle(value: string | null): ProductButtonStyle {
+  if (value === 'text' || value === 'button') return value
+  return 'text'
+}
+
 export function parseProductSectionFromElement(section: HTMLElement): ProductSectionOptions {
   const layout = normalizeLayout(section.getAttribute('data-pbx-product-layout'))
   const mobileRaw = section.getAttribute('data-pbx-product-mobile-cols')
@@ -226,6 +276,8 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const cardStyle = normalizeCardStyle(section.getAttribute('data-pbx-product-card-style'))
   const roundedImages = section.getAttribute('data-pbx-product-rounded-images') === 'true'
   const openInNewTab = section.getAttribute('data-pbx-product-open-in-new-tab') === 'true'
+  const buttonStyle = normalizeButtonStyle(section.getAttribute('data-pbx-product-button-style'))
+  const roundedButtons = section.getAttribute('data-pbx-product-rounded-buttons') === 'true'
   const hidePrice = section.getAttribute('data-pbx-product-hide-price') === 'true'
   const hideImage = section.getAttribute('data-pbx-product-hide-image') === 'true'
   const hideButton = section.getAttribute('data-pbx-product-hide-button') === 'true'
@@ -236,10 +288,26 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
     cardStyle,
     roundedImages,
     openInNewTab,
+    buttonStyle,
+    roundedButtons,
     hidePrice,
     hideImage,
     hideButton,
   }
+}
+
+function applyProductButtonStyleInSection(
+  section: HTMLElement,
+  buttonStyle: ProductButtonStyle,
+  roundedButtons: boolean,
+): void {
+  const anchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
+  findProductCardsInSection(section).forEach((card) => {
+    const ctaAnchor = card.querySelector('[class*="product-card-cta"] a')
+    if (ctaAnchor instanceof HTMLElement) {
+      ctaAnchor.className = prefixBuilderClasses(anchorClass)
+    }
+  })
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
@@ -261,6 +329,8 @@ export function applyProductSectionOptionsToElement(
   const mobileColumns: ProductMobileColumns = options.mobileColumns === 2 ? 2 : 1
   const roundedImages = Boolean(options.roundedImages)
   const openInNewTab = Boolean(options.openInNewTab)
+  const buttonStyle = normalizeButtonStyle(options.buttonStyle ?? 'text')
+  const roundedButtons = Boolean(options.roundedButtons)
   const hidePrice = Boolean(options.hidePrice)
   const hideImage = Boolean(options.hideImage)
   const hideButton = Boolean(options.hideButton)
@@ -270,6 +340,8 @@ export function applyProductSectionOptionsToElement(
   section.setAttribute('data-pbx-product-card-style', cardStyle)
   section.setAttribute('data-pbx-product-rounded-images', roundedImages ? 'true' : 'false')
   section.setAttribute('data-pbx-product-open-in-new-tab', openInNewTab ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-button-style', buttonStyle)
+  section.setAttribute('data-pbx-product-rounded-buttons', roundedButtons ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-price', hidePrice ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-image', hideImage ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-button', hideButton ? 'true' : 'false')
@@ -293,6 +365,7 @@ export function applyProductSectionOptionsToElement(
   })
 
   applyProductLinkTargetsInSection(section, openInNewTab)
+  applyProductButtonStyleInSection(section, buttonStyle, roundedButtons)
   applyProductContentVisibilityInSection(section, hidePrice, hideImage, hideButton)
 }
 
@@ -302,6 +375,8 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   cardStyle: 'minimal',
   roundedImages: false,
   openInNewTab: false,
+  buttonStyle: 'button',
+  roundedButtons: true,
   hidePrice: false,
   hideImage: false,
   hideButton: false,

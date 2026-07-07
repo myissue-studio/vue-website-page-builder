@@ -35,6 +35,7 @@ import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tipta
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
 import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
+import { isValidHyperlinkInput } from '../utils/builder/url-validation'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
@@ -758,9 +759,56 @@ export class PageBuilderService {
 
     if (!currentHTMLElement) return
 
-    const currentCSS = CSSArray.find((CSS) => {
-      return currentHTMLElement.classList.contains(CSS)
-    })
+    const isBorderRadiusControl =
+      CSSArray === tailwindBorderRadius.roundedGlobal ||
+      CSSArray === tailwindBorderRadius.roundedTopLeft ||
+      CSSArray === tailwindBorderRadius.roundedTopRight ||
+      CSSArray === tailwindBorderRadius.roundedBottomLeft ||
+      CSSArray === tailwindBorderRadius.roundedBottomRight
+
+    const helperButtonAnchor = (() => {
+      if (!isBorderRadiusControl || currentHTMLElement.tagName === 'A') return null
+
+      const anchors = Array.from(currentHTMLElement.querySelectorAll('a')).filter(
+        (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement,
+      )
+
+      // Prefer anchors that already carry one of the border-radius classes.
+      const withRadiusClass = anchors.find((anchor) =>
+        CSSArray.some((cls) => cls !== 'none' && anchor.classList.contains(cls)),
+      )
+      if (withRadiusClass) return withRadiusClass
+
+      // Known wrappers where visual rounding is on the nested link element.
+      if (
+        currentHTMLElement.id === 'linktree' ||
+        currentHTMLElement.classList.contains('pbx-product-card-cta')
+      ) {
+        return anchors[0] ?? null
+      }
+
+      return null
+    })()
+
+    const productImageWrapper =
+      isBorderRadiusControl && currentHTMLElement.tagName === 'IMG'
+        ? currentHTMLElement.closest('.pbx-product-card-image')
+        : null
+
+    const classTarget =
+      helperButtonAnchor instanceof HTMLElement
+        ? helperButtonAnchor
+        : productImageWrapper instanceof HTMLElement
+          ? productImageWrapper
+          : currentHTMLElement
+
+    const currentCSS =
+      CSSArray.find((CSS) => {
+        return classTarget.classList.contains(CSS)
+      }) ||
+      (helperButtonAnchor instanceof HTMLElement
+        ? CSSArray.find((CSS) => currentHTMLElement.classList.contains(CSS))
+        : undefined)
 
     // set to 'none' if undefined
     let elementClass = currentCSS || 'none'
@@ -786,8 +834,14 @@ export class PageBuilderService {
 
     // cssUserSelection examples: bg-zinc-200, px-10, rounded-full etc.
     if (typeof cssUserSelection === 'string' && cssUserSelection !== 'none') {
-      if (elementClass && currentHTMLElement.classList.contains(elementClass)) {
-        currentHTMLElement.classList.remove(elementClass)
+      if (elementClass) {
+        if (classTarget.classList.contains(elementClass)) classTarget.classList.remove(elementClass)
+        if (
+          helperButtonAnchor instanceof HTMLElement &&
+          currentHTMLElement.classList.contains(elementClass)
+        ) {
+          currentHTMLElement.classList.remove(elementClass)
+        }
       }
 
       // Remove any legacy lg:- and md:-prefixed variants that may have been saved before the
@@ -798,28 +852,39 @@ export class PageBuilderService {
         if (cls !== 'none') {
           ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
             const prefixed = `${bp}:${cls}`
-            if (currentHTMLElement.classList.contains(prefixed)) {
+            if (classTarget.classList.contains(prefixed)) classTarget.classList.remove(prefixed)
+            if (
+              helperButtonAnchor instanceof HTMLElement &&
+              currentHTMLElement.classList.contains(prefixed)
+            ) {
               currentHTMLElement.classList.remove(prefixed)
             }
           })
         }
       })
 
-      currentHTMLElement.classList.add(cssUserSelection)
+      classTarget.classList.add(cssUserSelection)
       elementClass = cssUserSelection
     } else if (
       typeof cssUserSelection === 'string' &&
       cssUserSelection === 'none' &&
       elementClass
     ) {
-      currentHTMLElement.classList.remove(elementClass)
+      classTarget.classList.remove(elementClass)
+      if (helperButtonAnchor instanceof HTMLElement) {
+        currentHTMLElement.classList.remove(elementClass)
+      }
 
       // Also clean up any legacy responsive-prefixed variants on reset to 'none'.
       CSSArray.forEach((cls) => {
         if (cls !== 'none') {
           ;['lg', 'md', 'sm', 'xl', '2xl'].forEach((bp) => {
             const prefixed = `${bp}:${cls}`
-            if (currentHTMLElement.classList.contains(prefixed)) {
+            if (classTarget.classList.contains(prefixed)) classTarget.classList.remove(prefixed)
+            if (
+              helperButtonAnchor instanceof HTMLElement &&
+              currentHTMLElement.classList.contains(prefixed)
+            ) {
               currentHTMLElement.classList.remove(prefixed)
             }
           })
@@ -3497,13 +3562,10 @@ export class PageBuilderService {
 
     this.pageBuilderStateStore.setHyperlinkError(null)
 
-    // url validation
-    const urlRegex = /^https?:\/\//
-
     const isValidURL = ref(true)
 
     if (hyperlinkEnable === true && urlInput !== null) {
-      isValidURL.value = urlRegex.test(urlInput)
+      isValidURL.value = isValidHyperlinkInput(urlInput)
     }
 
     if (isValidURL.value === false) {
@@ -3514,10 +3576,11 @@ export class PageBuilderService {
     }
 
     if (hyperlinkEnable === true && typeof urlInput === 'string') {
+      const normalizedUrl = urlInput.trim()
       // check if element contains child hyperlink tag
       // updated existing url
-      if (hyperlink !== null && urlInput.length !== 0) {
-        hyperlink.href = urlInput
+      if (hyperlink !== null && normalizedUrl.length !== 0) {
+        hyperlink.href = normalizedUrl
 
         // Conditionally set the target attribute if openHyperlinkInNewTab is true
         if (openHyperlinkInNewTab === true) {
@@ -3537,11 +3600,11 @@ export class PageBuilderService {
       }
 
       // check if element contains child a tag
-      if (hyperlink === null && urlInput.length !== 0) {
+      if (hyperlink === null && normalizedUrl.length !== 0) {
         // add a href
         if (parentHyperlink === null) {
           const link = document.createElement('a')
-          link.href = urlInput
+          link.href = normalizedUrl
 
           // Conditionally set the target attribute if openHyperlinkInNewTab is true
           if (openHyperlinkInNewTab === true) {
@@ -3995,6 +4058,8 @@ export class PageBuilderService {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
+      buttonStyle: options.buttonStyle,
+      roundedButtons: options.roundedButtons,
       hidePrice: options.hidePrice,
       hideImage: options.hideImage,
       hideButton: options.hideButton,

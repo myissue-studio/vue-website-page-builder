@@ -159,6 +159,14 @@
     @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
   }
 
+  /*
+   * Product CTA button variant: keep white text on brand-color backgrounds.
+   * This must be more specific than the global `#pagebuilder a { color: inherit; }` rule.
+   */
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor {
+    @apply pbx-text-white hover:pbx-text-white;
+  }
+
   /* Let product copy grow naturally in the builder and on saved pages. */
   #pagebuilder .pbx-product-card-title,
   #pagebuilder .pbx-product-card-description,
@@ -1013,7 +1021,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalPreviewCard {
-    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border-2 pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
+    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
   }
 
   .pbx-modalPreviewCardMedia {
@@ -1564,6 +1572,14 @@
   cursor: pointer;
   display: block;
   padding: 18px 14px;
+}
+
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
+  color: #fff;
+}
+
+#pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
+  color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
 }
 
 .pbx-reorder-highlight {

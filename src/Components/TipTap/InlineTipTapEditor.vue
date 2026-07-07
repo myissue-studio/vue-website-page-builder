@@ -18,6 +18,7 @@ import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
 import { delay } from '../../composables/delay'
+import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -71,9 +72,9 @@ const validateUrl = function (): boolean {
   urlError.value = null
   const nextUrl = urlEntered.value.trim()
 
-  if (!/^https?:\/\//.test(nextUrl)) {
+  if (!isValidHyperlinkInput(nextUrl)) {
     urlError.value =
-      "The provided URL is invalid. Please ensure that it begins with 'https://' for proper formatting and security."
+      "The provided URL is invalid. Use an internal path like '/page' or a full URL such as 'https://example.com'."
     return false
   }
 
