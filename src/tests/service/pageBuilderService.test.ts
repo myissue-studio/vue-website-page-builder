@@ -391,6 +391,25 @@ describe('PageBuilderService', () => {
       expect(selectable.hasAttribute('selected')).toBe(true)
       expect(mockStore.setElement).toHaveBeenCalledWith(selectable)
     })
+
+    it('ignores stale completeBuilderInitialization calls from previous sessions', async () => {
+      const fresh = new PageBuilderService(mockStore) as unknown as {
+        activeBuilderSessionToken: number
+        completeBuilderInitializationWithSession: (
+          passedComponentsArray?: unknown,
+          sessionToken?: number,
+        ) => Promise<void>
+      }
+
+      const loadingSpy = mockStore.setIsLoadingGlobal as unknown as ReturnType<typeof vi.fn>
+      const staleToken = fresh.activeBuilderSessionToken
+      fresh.activeBuilderSessionToken = staleToken + 1
+
+      await fresh.completeBuilderInitializationWithSession(undefined, staleToken)
+
+      // Stale session must be ignored entirely and not start loading/mount work.
+      expect(loadingSpy).not.toHaveBeenCalledWith(true)
+    })
   })
 
   // --- availableLanguage ---

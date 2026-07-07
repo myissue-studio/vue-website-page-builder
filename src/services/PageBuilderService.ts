@@ -145,6 +145,7 @@ export class PageBuilderService {
   private isPageBuilderMissingOnStart: boolean = false
   private hasCompletedBuilderMount: boolean = false
   private builderMountPromise: Promise<void> | null = null
+  private activeBuilderSessionToken: number = 0
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
 
@@ -530,6 +531,8 @@ export class PageBuilderService {
     config: PageBuilderConfig,
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
+    const sessionToken = ++this.activeBuilderSessionToken
+
     // Reset mount lifecycle guards for each new builder start call.
     // The service is a singleton, so stale flags from a previous open/close cycle
     // must not block remounting when the DOM is created again.
@@ -605,8 +608,9 @@ export class PageBuilderService {
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
-        await this.completeBuilderInitialization(
+        await this.completeBuilderInitializationWithSession(
           hasUsablePassedComponents ? usablePassedComponents : undefined,
+          sessionToken,
         )
       }
 
@@ -656,18 +660,35 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   async completeBuilderInitialization(passedComponentsArray?: BuilderResourceData): Promise<void> {
+    return this.completeBuilderInitializationWithSession(
+      passedComponentsArray,
+      this.activeBuilderSessionToken,
+    )
+  }
+
+  private async completeBuilderInitializationWithSession(
+    passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     if (this.hasCompletedBuilderMount) return
     if (!this.builderMountPromise) {
-      this.builderMountPromise = this.runCompleteBuilderInitialization(passedComponentsArray)
+      this.builderMountPromise = this.runCompleteBuilderInitialization(
+        passedComponentsArray,
+        sessionToken,
+      )
     }
     await this.builderMountPromise
   }
 
   private async runCompleteBuilderInitialization(
     passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
     await sleep(400)
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     // Always clear DOM and store before mounting new resource
     this.deleteAllComponentsFromDOM()
@@ -679,49 +700,50 @@ export class PageBuilderService {
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     if (formType === 'update' || formType === 'create') {
       // Page Builder is initially present in the DOM
       if (!this.pendingMountComponents) {
         if (!passedComponentsArray && this.isPageBuilderMissingOnStart && localStorageData) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (passedComponentsArray && !localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (passedComponentsArray && localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           return
         }
 
         if (!passedComponentsArray && localStorageData && !this.savedMountComponents) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (!passedComponentsArray && this.savedMountComponents && localStorageData) {
           const htmlString = this.renderComponentsToHtml(this.savedMountComponents)
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
 
           return
         }
 
         if (!this.isPageBuilderMissingOnStart && !localStorageData && !passedComponentsArray) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
       }
@@ -730,7 +752,7 @@ export class PageBuilderService {
       if (this.pendingMountComponents) {
         if (localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           this.pendingMountComponents = null
@@ -738,14 +760,14 @@ export class PageBuilderService {
         }
         if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
@@ -780,8 +802,14 @@ export class PageBuilderService {
    * @param {boolean} [useConfigPageSettings] - Whether to use page settings from the passed data.
    * @private
    */
-  private async completeMountProcess(html: string, useConfigPageSettings?: boolean) {
+  private async completeMountProcess(
+    html: string,
+    useConfigPageSettings?: boolean,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ) {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     await this.mountComponentsToDOM(html, useConfigPageSettings)
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     // Clean up any old localStorage items related to previous builder sessions
     this.deleteOldPageBuilderLocalStorage()
