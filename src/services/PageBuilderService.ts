@@ -693,6 +693,15 @@ export class PageBuilderService {
     sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
     if (sessionToken !== this.activeBuilderSessionToken) return
+
+    // Immediately attach listeners to any already-rendered sections so the canvas
+    // is interactive during the loading delay window. On a v-if reopen, Vue has
+    // already rendered the previous session's components from the store into new
+    // DOM elements, but those elements have no listeners yet (they were on the
+    // destroyed elements). Attaching here bridges the gap before the loading
+    // overlay takes over.
+    await this.addListenersToEditableElements()
+
     await sleep(400)
     if (sessionToken !== this.activeBuilderSessionToken) return
     this.pageBuilderStateStore.setIsLoadingGlobal(true)

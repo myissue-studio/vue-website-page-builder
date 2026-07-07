@@ -448,7 +448,43 @@ describe('PageBuilderService', () => {
       // does not cover the canvas and block all click interactions.
       expect(mockStore.setIsLoadingGlobal).toHaveBeenCalledWith(false)
     })
+    it('REGRESSION (editability): listeners are attached to existing sections before the 400ms loading delay', async () => {
+      // Seed existing sections — simulates Vue having re-rendered previous session
+      // components into new DOM elements on a v-if reopen BEFORE startBuilder runs.
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
 
+      pagebuilder.innerHTML = `
+        <section data-componentid="existing-reopen" data-component-title="Hero">
+          <div id="reopen-editable" class="pbx-break-words pbx-text-xl">Content</div>
+        </section>
+      `
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      // Start a new session - this should attach listeners BEFORE the 400ms sleep
+      const startPromise = service.startBuilder(updateConfig, componentsArray)
+
+      // Poll briefly until the immediate pre-sleep listener attachment has run.
+      // The listener is attached synchronously before the first await in
+      // runCompleteBuilderInitialization, so after the first microtask the
+      // section element should already have a listener.
+      await Promise.resolve()
+      await Promise.resolve()
+      await Promise.resolve()
+
+      const editable = pagebuilder.querySelector<HTMLElement>('#reopen-editable')
+      if (editable) {
+        editable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+        await Promise.resolve()
+        // The element should have been selected (listener was active before loading started).
+        expect(mockStore.setElement).toHaveBeenCalledWith(editable)
+      }
+
+      await startPromise
+    })
     it('REGRESSION (editability): completeMountProcess clears loading even when session is stale', async () => {
       const svc = service as unknown as {
         activeBuilderSessionToken: number
