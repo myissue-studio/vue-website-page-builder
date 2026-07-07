@@ -640,6 +640,26 @@ export class PageBuilderService {
         await this.addListenersToEditableElements()
       }
 
+      // Re-apply config pageSettings when the full remount was skipped (hasLiveMountedContent).
+      // On a v-if reopen where startBuilder() is called after the DOM is ready, Vue renders
+      // #pagebuilder with only its default :class binding — no style attribute.  Config-provided
+      // styles (e.g. a background color set via pageSettings.style) must be applied explicitly
+      // because mountComponentsToDOM (which normally calls applyPageSettingsToPage) was bypassed.
+      // We only apply when the DOM element has no inline style so we do not overwrite user edits
+      // that are already present (v-show pattern where styles persist across open/close cycles).
+      if (hasLiveMountedContent && pagebuilder) {
+        const configPageSettings =
+          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        if (this.hasMeaningfulPageSettings(configPageSettings)) {
+          const configStyleStr = this.convertStyleObjectToString(configPageSettings.style)
+          const domStyle = pagebuilder.getAttribute('style') || ''
+          if (configStyleStr.trim() && !domStyle.trim()) {
+            await nextTick()
+            this.applyPageSettingsToPage(configPageSettings)
+          }
+        }
+      }
+
       // result to end user
       const result: StartBuilderResult = {
         message: 'Page builder started successfully.',
