@@ -569,14 +569,5 @@
   "Could not apply theme": "تعذر تطبيق السمة",
   "Page layout": "تخطيط الصفحة",
   "Remove all components description": "أزل كل الأقسام من الصفحة. سيُطلب منك التأكيد قبل الحذف.",
-  "Clear every section from the page": "مسح كل الأقسام من الصفحة",
-  "Text link": "رابط نصي",
-  "Use a text-only CTA": "استخدم عبارة حث لاتخاذ إجراء كنص فقط",
-  "Button design": "تصميم الزر",
-  "Use brand-color button CTA": "استخدم زر CTA بلون العلامة التجارية",
-  "Rounded buttons": "أزرار مستديرة",
-  "Use rounded corners for CTA buttons": "استخدم زوايا مستديرة لأزرار CTA",
-  "Button links": "روابط الأزرار",
-  "Link behavior on helper button components": "سلوك الروابط في مكونات أزرار المساعدة",
-  "No additional settings for this category": "لا توجد إعدادات إضافية لهذه الفئة"
+  "Clear every section from the page": "مسح كل الأقسام من الصفحة"
 }

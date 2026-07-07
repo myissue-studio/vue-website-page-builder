@@ -569,14 +569,5 @@
   "Could not apply theme": "Impossibile applicare il tema",
   "Page layout": "Layout pagina",
   "Remove all components description": "Rimuovi tutte le sezioni dalla pagina. Ti verrà chiesta conferma prima di eliminare.",
-  "Clear every section from the page": "Rimuovi tutte le sezioni dalla pagina",
-  "Text link": "Link di testo",
-  "Use a text-only CTA": "Usa una CTA solo testuale",
-  "Button design": "Stile pulsante",
-  "Use brand-color button CTA": "Usa un pulsante CTA con colore del brand",
-  "Rounded buttons": "Pulsanti arrotondati",
-  "Use rounded corners for CTA buttons": "Usa angoli arrotondati per i pulsanti CTA",
-  "Button links": "Link dei pulsanti",
-  "Link behavior on helper button components": "Comportamento dei link nei componenti pulsante helper",
-  "No additional settings for this category": "Nessuna impostazione aggiuntiva per questa categoria"
+  "Clear every section from the page": "Rimuovi tutte le sezioni dalla pagina"
 }

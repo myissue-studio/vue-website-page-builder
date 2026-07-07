@@ -569,14 +569,5 @@
   "Could not apply theme": "Не удалось применить тему",
   "Page layout": "Макет страницы",
   "Remove all components description": "Удалите все секции со страницы. Перед удалением потребуется подтверждение.",
-  "Clear every section from the page": "Удалить все секции со страницы",
-  "Text link": "Текстовая ссылка",
-  "Use a text-only CTA": "Использовать CTA только в виде текста",
-  "Button design": "Дизайн кнопки",
-  "Use brand-color button CTA": "Использовать CTA-кнопку фирменного цвета",
-  "Rounded buttons": "Скругленные кнопки",
-  "Use rounded corners for CTA buttons": "Использовать скругленные углы для CTA-кнопок",
-  "Button links": "Ссылки кнопок",
-  "Link behavior on helper button components": "Поведение ссылок в компонентах вспомогательных кнопок",
-  "No additional settings for this category": "Для этой категории нет дополнительных настроек"
+  "Clear every section from the page": "Удалить все секции со страницы"
 }

@@ -569,14 +569,5 @@
   "Could not apply theme": "テーマを適用できませんでした",
   "Page layout": "ページレイアウト",
   "Remove all components description": "ページからすべてのセクションを削除します。削除前に確認が求められます。",
-  "Clear every section from the page": "ページからすべてのセクションを削除",
-  "Text link": "テキストリンク",
-  "Use a text-only CTA": "テキストのみのCTAを使用",
-  "Button design": "ボタンデザイン",
-  "Use brand-color button CTA": "ブランドカラーのCTAボタンを使用",
-  "Rounded buttons": "角丸ボタン",
-  "Use rounded corners for CTA buttons": "CTAボタンに角丸を使用",
-  "Button links": "ボタンリンク",
-  "Link behavior on helper button components": "ヘルパーボタンコンポーネントのリンク動作",
-  "No additional settings for this category": "このカテゴリに追加設定はありません"
+  "Clear every section from the page": "ページからすべてのセクションを削除"
 }

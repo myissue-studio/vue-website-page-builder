@@ -569,14 +569,5 @@
   "Could not apply theme": "थीम लागू नहीं हो सकी",
   "Page layout": "पेज लेआउट",
   "Remove all components description": "पेज से हर सेक्शन हटाएँ। हटाने से पहले पुष्टि माँगी जाएगी।",
-  "Clear every section from the page": "पेज से हर सेक्शन साफ़ करें",
-  "Text link": "टेक्स्ट लिंक",
-  "Use a text-only CTA": "केवल टेक्स्ट CTA का उपयोग करें",
-  "Button design": "बटन डिज़ाइन",
-  "Use brand-color button CTA": "ब्रांड रंग वाला CTA बटन उपयोग करें",
-  "Rounded buttons": "गोल किनारों वाले बटन",
-  "Use rounded corners for CTA buttons": "CTA बटनों के लिए गोल कोनों का उपयोग करें",
-  "Button links": "बटन लिंक",
-  "Link behavior on helper button components": "हेल्पर बटन कंपोनेंट्स पर लिंक का व्यवहार",
-  "No additional settings for this category": "इस श्रेणी के लिए कोई अतिरिक्त सेटिंग नहीं"
+  "Clear every section from the page": "पेज से हर सेक्शन साफ़ करें"
 }

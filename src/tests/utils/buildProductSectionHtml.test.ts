@@ -117,8 +117,7 @@ describe('buildProductSectionHtml', () => {
       hideButton: true,
     })
     expect(html).toContain('data-pbx-product-hide-button="true"')
-    expect(html).toContain('product-card-cta text-sm font-semibold pt-3 hidden')
-    expect(html).toContain('product-card-cta-link text-myPrimaryLinkColor text-sm font-semibold')
+    expect(html).toContain('product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3 hidden')
     expect(html).toContain('Buy')
   })
 })
