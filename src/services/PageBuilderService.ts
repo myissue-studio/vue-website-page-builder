@@ -540,11 +540,21 @@ export class PageBuilderService {
 
     // Reset transient UI/editor state that should never persist across open/close cycles.
     // The service/store are singletons, so stale flags can block click selection on reopen.
-    this.pageBuilderStateStore.setInlineTipTapEditor(false)
-    this.pageBuilderStateStore.setShowModalTipTap(false)
-    this.pageBuilderStateStore.setImageSettingsPanelOpen(false)
-    this.pageBuilderStateStore.setElement(null)
-    this.pageBuilderStateStore.setComponent(null)
+    if (typeof this.pageBuilderStateStore.setInlineTipTapEditor === 'function') {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
+    if (typeof this.pageBuilderStateStore.setShowModalTipTap === 'function') {
+      this.pageBuilderStateStore.setShowModalTipTap(false)
+    }
+    if (typeof this.pageBuilderStateStore.setImageSettingsPanelOpen === 'function') {
+      this.pageBuilderStateStore.setImageSettingsPanelOpen(false)
+    }
+    if (typeof this.pageBuilderStateStore.setElement === 'function') {
+      this.pageBuilderStateStore.setElement(null)
+    }
+    if (typeof this.pageBuilderStateStore.setComponent === 'function') {
+      this.pageBuilderStateStore.setComponent(null)
+    }
 
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
