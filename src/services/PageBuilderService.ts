@@ -558,6 +558,13 @@ export class PageBuilderService {
     if (typeof this.pageBuilderStateStore.setComponent === 'function') {
       this.pageBuilderStateStore.setComponent(null)
     }
+    // Clear any loading overlay left by a stale previous session. A racing
+    // completeMountProcess may have set setIsLoadingGlobal(true) but never
+    // cleared it when its session token was invalidated. This explicit reset
+    // ensures the GlobalLoader overlay does not permanently block canvas clicks.
+    if (typeof this.pageBuilderStateStore.setIsLoadingGlobal === 'function') {
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+    }
 
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
@@ -807,9 +814,19 @@ export class PageBuilderService {
     useConfigPageSettings?: boolean,
     sessionToken: number = this.activeBuilderSessionToken,
   ) {
-    if (sessionToken !== this.activeBuilderSessionToken) return
+    if (sessionToken !== this.activeBuilderSessionToken) {
+      // A new startBuilder() call has already taken over — ensure loading is cleared
+      // so the GlobalLoader overlay does not permanently block canvas interactions.
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+      return
+    }
     await this.mountComponentsToDOM(html, useConfigPageSettings)
-    if (sessionToken !== this.activeBuilderSessionToken) return
+    if (sessionToken !== this.activeBuilderSessionToken) {
+      // A new startBuilder() call arrived while mountComponentsToDOM was running.
+      // Ensure the loading overlay is not left blocking the canvas.
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+      return
+    }
 
     // Clean up any old localStorage items related to previous builder sessions
     this.deleteOldPageBuilderLocalStorage()
@@ -1717,6 +1734,12 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
     await this.openInlineTipTapForElement(element)
+
+    // If the element became invalid between the check and the actual editor open
+    // (e.g. DOM replaced mid-async), reset the flag so clicks are not blocked.
+    if (!this.hasInlineTipTapElement()) {
+      this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    }
   }
 
   private async openInlineTipTapForElement(element: HTMLElement): Promise<void> {
@@ -4488,28 +4511,50 @@ export class PageBuilderService {
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
-        // Prefer meaningful config.pageSettings, then meaningful current DOM state,
-        // then meaningful singleton memory from prior sessions.
+        // Prefer explicit config, then memory (last known from previous session), then live DOM.
+        // Memory takes priority over DOM because on a v-if reopen the DOM is a freshly
+        // rendered wrapper with only Vue's default :class; _lastKnownPageSettings has the
+        // user's previously saved custom classes/styles captured in startBuilder().
         const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
-        const fromDom = currentDomPageSettings
         const fromMemory = this._lastKnownPageSettings
+        const fromDom = currentDomPageSettings
 
         configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
           ? fromConfig
-          : this.hasMeaningfulPageSettings(fromDom)
-            ? fromDom
-            : this.hasMeaningfulPageSettings(fromMemory)
-              ? fromMemory
+          : this.hasMeaningfulPageSettings(fromMemory)
+            ? fromMemory
+            : this.hasMeaningfulPageSettings(fromDom)
+              ? fromDom
               : null
       }
 
-      // Even outside `usePassedPageSettings`, preserve meaningful live wrapper settings
-      // across remounts so defaults from generated wrappers don't overwrite user styling.
+      // When the builder was MISSING at start (v-if reopen pattern), the live #pagebuilder
+      // DOM has just been freshly rendered with only Vue's default :class binding. The HTML
+      // being mounted (from getSavedPageHtml) is the authoritative source: its class/style
+      // was rebuilt from the persisted localStorage pageSettings which includes the user's
+      // custom classes. Use it BEFORE the live DOM to avoid wiping the saved custom styling.
+      if (
+        !usePassedPageSettings &&
+        !pageSettingsFromHistory &&
+        !configPageSettings &&
+        importedPageBuilder &&
+        this.isPageBuilderMissingOnStart
+      ) {
+        configPageSettings = {
+          classes: importedPageBuilder.className || '',
+          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+          meta: readPageMetaFromElement(importedPageBuilder),
+        }
+      }
+
+      // When the builder WAS PRESENT at start (in-session remount), the live DOM still
+      // holds the current session's settings — preserve them.
       if (!configPageSettings && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
         configPageSettings = currentDomPageSettings
       }
 
-      // Use imported page builder settings if available and pageSettings is still null
+      // importedPageBuilder as a secondary fallback for the present-at-start case
+      // (handles edge where the live DOM has only default classes despite being present).
       if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
         configPageSettings = {
           classes: importedPageBuilder.className || '',
@@ -4518,7 +4563,7 @@ export class PageBuilderService {
         }
       }
 
-      // Fallback to stored page settings if pageSettings is still null
+      // Final fallback: config or memory
       if (!configPageSettings) {
         const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
         const fromMemory = this._lastKnownPageSettings

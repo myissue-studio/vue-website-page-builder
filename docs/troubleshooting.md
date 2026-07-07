@@ -68,6 +68,8 @@ An additional fix now also resets transient interaction state on `startBuilder()
 
 Another intermittent cause was async initialization from an older session continuing after a reopen. The service now uses a per-session token and ignores stale async work before enabling the global loading overlay, preventing old sessions from leaving the canvas blocked.
 
+A third root cause (now also fixed) was a **settings priority inversion** inside `mountComponentsToDOM`. When the builder is used with `v-if` (the most common modal pattern), the `#pagebuilder` DOM element is destroyed on close and recreated on reopen. At the moment the saved HTML is being mounted, the freshly-rendered Vue `#pagebuilder` only has its default `:class` binding (`pbx-text-black pbx-font-sans`). The old code read those default DOM classes and used them as the authoritative page settings, silently wiping the user's saved custom classes (background, border, etc.) that were in the HTML being restored from localStorage. The fix gates the check on `isPageBuilderMissingOnStart`: when the builder was absent at `startBuilder()` time (v-if reopen), the imported HTML's settings take priority over the fresh DOM; when it was present (in-session remount), the live DOM still holds the user's settings and remains authoritative.
+
 If you still observe this behavior, make sure you are on a version that includes this fix and that `startBuilder()` is called every time the builder is reopened.
 
 ## Use with `onMounted`
