@@ -104,7 +104,10 @@ const thirdButtonBuilder = function () {
     </div>
 
     <template #actions>
-      <div v-if="simpleModal !== true" class="pbx-flex sm:pbx-justify-end pbx-justify-center">
+      <div
+        v-if="simpleModal !== true"
+        class="pbx-flex sm:pbx-justify-end pbx-justify-center"
+      >
         <slot name="footer" />
         <div
           :class="{
@@ -147,10 +150,7 @@ const thirdButtonBuilder = function () {
             :disabled="isLoading"
             @click="thirdButtonBuilder"
           >
-            <span>
-              {{ thirdButtonText }}
-            </span>
-            <span v-if="!isLoading" class="material-symbols-outlined">check</span>
+            {{ thirdButtonText }}
             <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
           </button>
         </div>

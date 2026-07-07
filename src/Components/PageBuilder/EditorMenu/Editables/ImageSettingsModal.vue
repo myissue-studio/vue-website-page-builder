@@ -170,7 +170,7 @@ const aspectPresets = [
             :title="positionClass.replace('pbx-object-', '')"
             @click="setObjectPosition(positionClass)"
           >
-            <span class="material-symbols-outlined pbx-materialIconBase">crop_free</span>
+            <span class="material-symbols-outlined pbx-text-base">crop_free</span>
           </button>
         </div>
       </div>
@@ -230,7 +230,7 @@ const aspectPresets = [
           :title="translate('Save')"
           @click="saveAltText"
         >
-          <span v-if="!isSavingAlt" class="material-symbols-outlined pbx-materialIconXl">check</span>
+          <span v-if="!isSavingAlt" class="material-symbols-outlined pbx-text-xl">check</span>
           <span v-if="isSavingAlt" class="material-symbols-outlined pbx-animate-spin">refresh</span>
         </button>
       </div>

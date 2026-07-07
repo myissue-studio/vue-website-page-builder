@@ -21,7 +21,7 @@ defineEmits<{
       class="pbx-flex pbx-h-7 pbx-w-7 pbx-shrink-0 pbx-cursor-pointer pbx-items-center pbx-justify-center pbx-rounded-md pbx-border-none pbx-bg-white pbx-text-gray-600 pbx-shadow-sm pbx-transition-colors hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none"
       @click="$emit('decrement')"
     >
-      <span class="material-symbols-outlined pbx-materialIcon18">remove</span>
+      <span class="material-symbols-outlined pbx-text-[18px]">remove</span>
     </button>
     <div
       class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center"
@@ -45,7 +45,7 @@ defineEmits<{
       class="pbx-flex pbx-h-7 pbx-w-7 pbx-shrink-0 pbx-cursor-pointer pbx-items-center pbx-justify-center pbx-rounded-md pbx-border-none pbx-bg-white pbx-text-gray-600 pbx-shadow-sm pbx-transition-colors hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none"
       @click="$emit('increment')"
     >
-      <span class="material-symbols-outlined pbx-materialIcon18">add</span>
+      <span class="material-symbols-outlined pbx-text-[18px]">add</span>
     </button>
   </div>
 </template>

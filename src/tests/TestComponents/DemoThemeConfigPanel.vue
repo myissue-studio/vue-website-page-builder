@@ -209,7 +209,7 @@ onMounted(() => {
         aria-label="Dismiss welcome hint"
         @click="dismissWelcome"
       >
-        <span class="material-symbols-outlined pbx-materialIconBase">close</span>
+        <span class="material-symbols-outlined pbx-text-base">close</span>
       </button>
     </div>
 

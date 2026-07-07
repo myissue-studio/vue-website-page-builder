@@ -251,7 +251,7 @@ function handleDownloadHTML() {
             {{ translate('Version Information') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-min-w-full">
@@ -310,7 +310,7 @@ function handleDownloadHTML() {
             {{ translate('Resource Data') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-min-w-full">
@@ -379,7 +379,7 @@ function handleDownloadHTML() {
             {{ translate('Logo Configuration') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-min-w-full">
@@ -455,7 +455,7 @@ function handleDownloadHTML() {
             {{ translate('Form Type') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-w-max pbx-min-w-full">
@@ -547,7 +547,7 @@ function handleDownloadHTML() {
             {{ translate('User Information') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-min-w-full">
@@ -662,7 +662,7 @@ function handleDownloadHTML() {
             {{ translate('User Settings') }}
           </h4>
           <div
-            class="pbx-overflow-hidden pbx-shadow-xs md:pbx-rounded-lg pbx-border pbx-border-gray-200"
+            class="pbx-overflow-hidden pbx-shadow pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 md:pbx-rounded-lg"
           >
             <div class="pbx-overflow-x-auto">
               <table class="pbx-min-w-full">

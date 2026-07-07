@@ -41,7 +41,7 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     hint: 'SaaS & enterprise',
     themeTitle: 'Corporate Page',
     brandColor: '#2563EB',
-    fontKey: 'futura',
+    fontKey: 'inter',
     themeColorPresets: {
       enabled: true,
       colors: [
@@ -62,7 +62,7 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     hint: 'Editorial & media',
     themeTitle: 'Blog Post',
     brandColor: '#C45C26',
-    fontKey: 'palantino',
+    fontKey: 'georgia',
     themeColorPresets: {
       enabled: true,
       colors: [

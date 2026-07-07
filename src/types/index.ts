@@ -62,11 +62,20 @@ export type PageBuilderProduct = PageBuilderProductInput & {
   [key: string]: unknown
 }
 
-export type ProductGridLayout = 'grid-1' | 'grid-2' | 'grid-3' | 'grid-4' | 'grid-6' | (string & {})
+export type ProductGridLayout =
+  | 'grid-1'
+  | 'grid-2'
+  | 'grid-3'
+  | 'grid-4'
+  | 'grid-6'
+  | (string & {})
 
-export type ProductCardStyle = 'minimal' | 'bordered' | 'shadow' | 'elevated' | (string & {})
-
-export type ProductButtonStyle = 'text' | 'button' | (string & {})
+export type ProductCardStyle =
+  | 'minimal'
+  | 'bordered'
+  | 'shadow'
+  | 'elevated'
+  | (string & {})
 
 export type ProductMobileColumns = 1 | 2
 
@@ -76,10 +85,6 @@ export interface ProductSectionOptions {
   cardStyle?: ProductCardStyle
   roundedImages?: boolean
   openInNewTab?: boolean
-  /** Product CTA appearance: plain text link or button style */
-  buttonStyle?: ProductButtonStyle
-  /** Applies rounded/full corners when CTA button style is enabled */
-  roundedButtons?: boolean
   /** Hides price and compare-at price when product data includes them */
   hidePrice?: boolean
   /** Hides product photos when product data includes images */
@@ -96,10 +101,6 @@ export interface InsertProductsOptions {
   roundedImages?: boolean
   /** Adds target="_blank" rel="noopener noreferrer" to product links */
   openInNewTab?: boolean
-  /** Product CTA appearance: plain text link or button style */
-  buttonStyle?: ProductButtonStyle
-  /** Applies rounded/full corners when CTA button style is enabled */
-  roundedButtons?: boolean
   /** Hides price and compare-at price when product data includes them */
   hidePrice?: boolean
   /** Hides product photos when product data includes images */

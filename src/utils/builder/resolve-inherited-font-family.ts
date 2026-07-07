@@ -2,6 +2,7 @@ import type { PageBuilderConfig } from '../../types'
 import tailwindFontStyles from './tailwind-font-styles'
 import fontFamilyMap, {
   findFontTokenByCustomClass,
+  findFontFamilyClassOnElement,
   hasUserPageCanvasFontOverride,
   isPassThroughFontStackClass,
   resolveFontFamily,
@@ -12,16 +13,13 @@ const FONT_FAMILY_CLASSES = tailwindFontStyles.fontFamily.filter((cls) => cls !=
 const TEXT_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'])
 
 export function formatFontFamily(value: string): string {
-  return (
-    value
-      .split(',')[0]
-      ?.trim()
-      .replace(/^["']|["']$/g, '') ?? ''
-  )
+  return value.split(',')[0]?.trim().replace(/^["']|["']$/g, '') ?? ''
 }
 
 export function getFontTargetElement(element: HTMLElement): HTMLElement {
-  return element.querySelector<HTMLElement>('h1,h2,h3,h4,h5,h6,p,li,blockquote,span,a') ?? element
+  return (
+    element.querySelector<HTMLElement>('h1,h2,h3,h4,h5,h6,p,li,blockquote,span,a') ?? element
+  )
 }
 
 function findFontFamilyClass(element: HTMLElement): string | undefined {
@@ -40,7 +38,10 @@ function findExplicitFontFamilyClass(element: HTMLElement): string | undefined {
   return cls
 }
 
-function formatFontFamilyFromClass(className: string, config?: PageBuilderConfig | null): string {
+function formatFontFamilyFromClass(
+  className: string,
+  config?: PageBuilderConfig | null,
+): string {
   const customToken = findFontTokenByCustomClass(className, config?.userSettings)
   if (customToken) {
     const resolved = resolveFontFamilyFromToken(customToken)

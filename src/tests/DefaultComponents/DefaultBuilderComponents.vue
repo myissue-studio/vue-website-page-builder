@@ -15,8 +15,6 @@ import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
 import ConfirmActionModal from '../../Components/Modals/ConfirmActionModal.vue'
-import type { ProductButtonStyle } from '../../types'
-import LinkStyleSettingsPanel from '../../Components/PageBuilder/EditorMenu/Editables/LinkStyleSettingsPanel.vue'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -43,18 +41,11 @@ const componentOrThemes = computed(() => {
 const selectedCategory = ref('All')
 
 const selectedHelperCategory = ref('All')
-const helperButtonStyle = ref<ProductButtonStyle>('button')
-const helperOpenInNewTab = ref(true)
-const helperRoundedButtons = ref(true)
 
 const helperCategories = computed(() => {
   const allCategories = componentHelpers.map((comp) => comp.category)
   return ['All', ...new Set(allCategories)]
 })
-
-const showButtonsHelperStyleControls = computed(
-  () => selectedThemeSelection.value === 'Components' && selectedHelperCategory.value === 'Buttons',
-)
 
 const categories = computed(() => {
   const allCategories = components[0].components.data.map((comp) => comp.category)
@@ -191,9 +182,8 @@ const handleDropTheme = function (themeHtml: string) {
 // Super simple component addition with professional modal closing!
 const handleDropComponent = async function (componentObject: ComponentObject) {
   isLoading.value = true
-  const componentWithButtonSettings = applyHelperButtonStyle(componentObject)
   // Translate all occurrences of the hardcoded strings in the html_code
-  const translatedHtmlCode = componentWithButtonSettings.html_code
+  const translatedHtmlCode = componentObject.html_code
     .replace(/Layouts and visual\./g, translate('Layouts and visual.'))
     .replace(
       /Start customizing by editing this default text directly in the editor\./g,
@@ -202,74 +192,15 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
 
   // Create a new component object with the translated html_code and title
   const translatedComponentObject = {
-    ...componentWithButtonSettings,
+    ...componentObject,
     html_code: translatedHtmlCode,
-    title: componentWithButtonSettings.title,
+    title: componentObject.title,
   }
 
   await pageBuilderService.addComponent(translatedComponentObject)
   showToast(translate('Component added to page'), 'success')
   closeAddComponentModal()
   isLoading.value = false
-}
-
-const applyHelperButtonStyle = (componentObject: ComponentObject): ComponentObject => {
-  if (!componentObject.title.includes('Button')) return componentObject
-
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(componentObject.html_code, 'text/html')
-  const buttonBlocks = doc.querySelectorAll<HTMLElement>('#linktree')
-
-  buttonBlocks.forEach((block) => {
-    const link = block.querySelector('a')
-    if (!(link instanceof HTMLElement)) return
-
-    block.classList.remove('pbx-bg-myPrimaryLinkColor', 'pbx-text-myPrimaryDarkGrayColor')
-    link.classList.remove(
-      'pbx-bg-myPrimaryLinkColor',
-      'pbx-bg-transparent',
-      'pbx-text-myPrimaryDarkGrayColor',
-      'pbx-text-myPrimaryLinkColor',
-      'pbx-text-white',
-      'pbx-inline-flex',
-      'pbx-items-center',
-      'pbx-justify-center',
-      'pbx-px-4',
-      'pbx-py-2',
-      'pbx-rounded-full',
-      'pbx-rounded-md',
-    )
-
-    link.classList.add(
-      'pbx-inline-flex',
-      'pbx-items-center',
-      'pbx-justify-center',
-      'pbx-px-4',
-      'pbx-py-2',
-    )
-
-    if (helperButtonStyle.value === 'button') {
-      link.classList.add('pbx-bg-myPrimaryLinkColor', 'pbx-text-white')
-      if (helperRoundedButtons.value) {
-        link.classList.add('pbx-rounded-full')
-      }
-    } else {
-      link.classList.add('pbx-bg-transparent', 'pbx-text-myPrimaryLinkColor')
-    }
-
-    if (helperOpenInNewTab.value) {
-      link.setAttribute('target', '_blank')
-      link.setAttribute('rel', 'noopener noreferrer nofollow')
-    } else {
-      link.removeAttribute('target')
-      link.removeAttribute('rel')
-    }
-  })
-
-  return {
-    ...componentObject,
-    html_code: doc.body.innerHTML,
-  }
 }
 
 // Helper function to convert ComponentData to ComponentObject
@@ -428,45 +359,22 @@ const convertToComponentObject = function (comp: {
                 />
               </div>
             </div>
-            <div class="pbx-grid pbx-gap-3 lg:pbx-grid-cols-[minmax(0,1fr)_22rem]">
+            <div class="pbx-min-h-[10rem] pbx-max-h-[30rem] pbx-overflow-y-auto">
               <div
-                class="pbx-min-h-[10rem] pbx-max-h-[30rem] pbx-overflow-y-auto pbx-border pbx-border-gray-200 pbx-rounded-2xl pbx-p-4"
+                v-if="filteredHelpers.length"
+                class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-3 pbx-gap-3"
               >
-                <div
-                  v-if="filteredHelpers.length"
-                  class="pbx-px-2 pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-3 pbx-gap-3"
-                >
-                  <ModalLibraryCard
-                    v-for="helper in filteredHelpers"
-                    :key="helper.title"
-                    :label="translate(helper.title)"
-                    :hint="translate(helper.category)"
-                    @click="handleDropComponent(helper)"
-                  />
-                </div>
-                <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
-                  {{ translate('No components found.') }}
-                </p>
-              </div>
-              <div class="pbx-sticky pbx-top-0 pbx-self-start pbx-h-full pbx-overflow-y-auto">
-                <LinkStyleSettingsPanel
-                  v-if="showButtonsHelperStyleControls"
-                  v-model:button-style="helperButtonStyle"
-                  v-model:open-in-new-tab="helperOpenInNewTab"
-                  v-model:rounded-buttons="helperRoundedButtons"
-                  :translate="translate"
-                  title="Button links"
-                  description="Link behavior on helper button components"
+                <ModalLibraryCard
+                  v-for="helper in filteredHelpers"
+                  :key="helper.title"
+                  :label="translate(helper.title)"
+                  :hint="translate(helper.category)"
+                  @click="handleDropComponent(helper)"
                 />
-                <div
-                  v-else
-                  class="pbx-productSettingsSection pbx-h-full pbx-flex pbx-items-center pbx-justify-center"
-                >
-                  <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-                    {{ translate('No additional settings for this category') }}
-                  </p>
-                </div>
               </div>
+              <p v-else class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-400 pbx-px-2">
+                {{ translate('No components found.') }}
+              </p>
             </div>
           </div>
 
@@ -531,7 +439,7 @@ const convertToComponentObject = function (comp: {
                     v-for="page in componentsTotalPages"
                     :key="page"
                     type="button"
-                    class="pbx-h-10 pbx-w-10 pbx-text-xs pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
+                    class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                     :class="
                       page === componentsPage
                         ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'

@@ -80,32 +80,3 @@ await pageBuilderService.startBuilder(configPageBuilder, components)
 ```
 
 The key is to save the complete builder HTML, including the outer `<div id="pagebuilder">`. That wrapper is where the Page Builder stores global classes and styles.
-
-## Button Style Controls In Modals
-
-The builder now uses a wider **Product section settings** modal so product layout and link controls have more room.
-
-In **Add Components to Page** under **Helper Components → Category: Buttons**, you can now choose button link styling before insert:
-
-- **Text link**: renders helper buttons as text-only links with brand link color.
-- **Button design**: renders helper buttons with brand background and white text.
-- **Rounded buttons**: toggle full-rounded vs standard rounded corners for button design.
-
-This matches the product CTA styling behavior and keeps contrast readable on brand-colored button backgrounds.
-
-The Buttons helper category now uses a right-side settings panel (same link controls as Product section settings):
-
-- Text link / Button design
-- Open in new tab
-- Rounded buttons
-
-Selections apply to new helper button inserts, and button-style classes are applied on the anchor element so border-radius controls in the right sidebar can be edited reliably after insert.
-
-For Helper categories without extra options, the right-side settings area stays visible and shows a subtle placeholder message instead of collapsing.
-
-When editing inserted product cards, border-radius controls now map to the visual wrapper where needed:
-
-- Product CTA wrappers target the nested anchor when that anchor owns rounded classes.
-- Product image selections (`img`) target the surrounding `.pbx-product-card-image` wrapper when it owns rounded classes.
-
-This keeps right-sidebar border radius values in sync with what is rendered on the canvas.

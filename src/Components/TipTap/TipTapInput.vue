@@ -9,7 +9,6 @@ import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
-import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
 
 const pageBuilderService = getPageBuilder()
 
@@ -158,13 +157,15 @@ const validateURL = function () {
   // initial value
   urlError.value = null
 
-  const nextUrl = newUpdatedExistingURL.value.trim()
-  const isValidURL = ref(isValidHyperlinkInput(nextUrl))
+  // url validation
+  const urlRegex = /^https?:\/\//
+  const isValidURL = ref(true)
+  isValidURL.value = urlRegex.test(newUpdatedExistingURL.value)
 
   // cancelled
   if (isValidURL.value === false) {
     urlError.value =
-      "The provided URL is invalid. Use an internal path like '/page' or a full URL such as 'https://example.com'."
+      "The provided URL is invalid. Please ensure that it begins with 'https://' for proper formatting and security."
     return true
   }
 
@@ -176,7 +177,7 @@ const setEnteretURL = function () {
     ?.chain()
     .focus()
     .extendMarkRange('link')
-    .setLink({ href: newUpdatedExistingURL.value.trim() })
+    .setLink({ href: newUpdatedExistingURL.value })
     .run()
 }
 

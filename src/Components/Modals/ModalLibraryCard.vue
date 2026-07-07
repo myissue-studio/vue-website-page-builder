@@ -18,7 +18,6 @@ defineEmits<{
     <span class="pbx-modalLibraryCardText">
       <span class="pbx-modalLibraryCardLabel">{{ label }}</span>
       <span v-if="hint" class="pbx-modalLibraryCardHint">{{ hint }}</span>
-      <slot name="preview" />
     </span>
     <span class="pbx-modalFilterChipIcon">
       <span class="material-symbols-outlined" aria-hidden="true">add</span>

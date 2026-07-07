@@ -1,14 +1,8 @@
 <script setup lang="ts">
 import { watch } from 'vue'
-import type {
-  ProductButtonStyle,
-  ProductCardStyle,
-  ProductGridLayout,
-  ProductMobileColumns,
-} from '../../../../types'
+import type { ProductCardStyle, ProductGridLayout, ProductMobileColumns } from '../../../../types'
 import ModalFilterChip from '../../../Modals/ModalFilterChip.vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
-import LinkStyleSettingsPanel from './LinkStyleSettingsPanel.vue'
 import {
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
@@ -20,8 +14,6 @@ const mobileColumns = defineModel<ProductMobileColumns>('mobileColumns', { requi
 const cardStyle = defineModel<ProductCardStyle>('cardStyle', { required: true })
 const roundedImages = defineModel<boolean>('roundedImages', { required: true })
 const openInNewTab = defineModel<boolean>('openInNewTab', { required: true })
-const buttonStyle = defineModel<ProductButtonStyle>('buttonStyle', { required: true })
-const roundedButtons = defineModel<boolean>('roundedButtons', { required: true })
 const hidePrice = defineModel<boolean>('hidePrice', { required: true })
 const hideImage = defineModel<boolean>('hideImage', { required: true })
 const hideButton = defineModel<boolean>('hideButton', { required: true })
@@ -141,14 +133,27 @@ watch(layout, (value) => {
         </div>
       </section>
 
-      <LinkStyleSettingsPanel
-        v-if="hasProductLinks"
-        v-model:button-style="buttonStyle"
-        v-model:open-in-new-tab="openInNewTab"
-        v-model:rounded-buttons="roundedButtons"
-        :translate="translate"
-        :show-button-style="Boolean(hasProductButtons)"
-      />
+      <section v-if="hasProductLinks" class="pbx-productSettingsSection">
+        <div class="pbx-productSettingsSectionHeader">
+          <p class="pbx-productSettingsSectionTitle">{{ translate('Product links') }}</p>
+          <p class="pbx-productSettingsSectionDesc">
+            {{ translate('Link behavior on product cards') }}
+          </p>
+        </div>
+        <div class="pbx-productSettingsToggleList">
+          <div class="pbx-productSettingsToggleRow">
+            <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+              <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+                {{ translate('Open in new tab') }}
+              </p>
+              <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+                {{ translate('Product links open in a new browser tab') }}
+              </p>
+            </div>
+            <ToggleInput v-model="openInNewTab" />
+          </div>
+        </div>
+      </section>
 
       <section v-if="hasProductImages" class="pbx-productSettingsSection">
         <div class="pbx-productSettingsSectionHeader">

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { PageBuilderProduct } from '../../types'
 import ProductPickerPanel from '../../Components/PageBuilder/ProductPicker/ProductPickerPanel.vue'
-import sampleProducts from '../../data/sample-products.json'
+import productsArray from '../productsArray.test.json'
 
-const products = sampleProducts as PageBuilderProduct[]
+const products = productsArray as PageBuilderProduct[]
 </script>
 
 <template>
