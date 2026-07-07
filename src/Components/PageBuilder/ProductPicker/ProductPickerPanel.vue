@@ -178,22 +178,16 @@ async function insertSelectedProducts() {
 <template>
   <div>
     <div>
-      <div v-if="showSampleCatalogBanner" class="pbx-productSampleCatalogBanner" role="status">
-        <span
-          class="material-symbols-outlined pbx-productSampleCatalogBannerIcon"
-          aria-hidden="true"
-        >
-          shopping_bag
+      <div
+        v-if="true || showSampleCatalogBanner"
+        class="pbx-productSampleCatalogBanner pbx-flex pbx-items-center"
+        role="status"
+      >
+        <span class="pbx-productSampleCatalogBannerIcon">
+          <span class="material-symbols-outlined" aria-hidden="true"> shopping_bag </span>
         </span>
         <div class="pbx-productSampleCatalogBannerCopy">
           <p class="pbx-productSampleCatalogBannerTitle">{{ translate('Sample catalog') }}</p>
-          <p class="pbx-productSampleCatalogBannerDesc">
-            {{
-              translate(
-                'Placeholder products for layout and design. Pass :DisplayProducts with your own picker when you connect a real catalog.',
-              )
-            }}
-          </p>
         </div>
       </div>
 

@@ -59,11 +59,12 @@ const seoGroups = computed(() => {
             :class="check.passed ? 'pbx-seoCheckRow--pass' : 'pbx-seoCheckRow--fail'"
           >
             <span
-              class="pbx-seoCheckRowIcon material-symbols-outlined"
+              class="pbx-seoCheckRowIcon"
               :class="check.passed ? 'pbx-seoCheckRowIcon--pass' : 'pbx-seoCheckRowIcon--fail'"
-              aria-hidden="true"
             >
-              {{ check.passed ? 'check' : 'close' }}
+              <span class="material-symbols-outlined" aria-hidden="true">
+                {{ check.passed ? 'check' : 'close' }}
+              </span>
             </span>
             <span class="pbx-pageDesignOpenButtonText">
               <span class="pbx-pageDesignOpenButtonLabel">{{ translate(check.check) }}</span>
