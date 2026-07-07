@@ -159,6 +159,14 @@
     @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
   }
 
+  /*
+   * Product CTA button variant: keep white text on brand-color backgrounds.
+   * This must be more specific than the global `#pagebuilder a { color: inherit; }` rule.
+   */
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor {
+    @apply pbx-text-white hover:pbx-text-white;
+  }
+
   /* Let product copy grow naturally in the builder and on saved pages. */
   #pagebuilder .pbx-product-card-title,
   #pagebuilder .pbx-product-card-description,
@@ -485,7 +493,7 @@
   }
 
   .pbx-inspectorEmpty {
-    @apply pbx-m-0 pbx-rounded-lg pbx-border pbx-border-dashed pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-6 pbx-text-center pbx-text-xs pbx-text-gray-500;
+    @apply pbx-m-0 pbx-rounded-lg pbx-border pbx-border-dashed pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3 pbx-py-6 pbx-text-center pbx-text-xs pbx-text-gray-500 pbx-min-h-[30rem];
   }
 
   .pbx-inspectorField {
@@ -657,7 +665,8 @@
   }
 
   .pbx-htmlCodeViewerCopy .material-symbols-outlined {
-    @apply pbx-text-[14px];
+    font-size: 14px;
+    line-height: 1;
   }
 
   .pbx-htmlCodeViewerSurface {
@@ -1012,7 +1021,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-modalPreviewCard {
-    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border-2 pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
+    @apply pbx-w-full pbx-text-left pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3 pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-border-gray-300 hover:pbx-shadow-sm;
   }
 
   .pbx-modalPreviewCardMedia {
@@ -1565,6 +1574,14 @@
   padding: 18px 14px;
 }
 
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
+  color: #fff;
+}
+
+#pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
+  color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
 .pbx-reorder-highlight {
   animation: pbx-reorder-flash 0.28s ease-out;
 }
@@ -1772,4 +1789,29 @@
 /* Material Symbols are inline by default; spin needs inline-block for transform */
 .material-symbols-outlined.pbx-animate-spin {
   display: inline-block;
+}
+
+/*
+ * Google’s Material Symbols CSS sets font-size: 24px (unlayered), which beats @layer utilities.
+ * Use these dedicated classes on icons — not pbx-text-* utilities (circular @apply in this file).
+ */
+.material-symbols-outlined.pbx-materialIcon14 {
+  font-size: 14px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIcon18 {
+  font-size: 18px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconBase {
+  font-size: 1rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconLg {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconXl {
+  font-size: 1.25rem;
+  line-height: 1;
 }

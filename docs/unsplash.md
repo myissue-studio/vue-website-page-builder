@@ -33,6 +33,8 @@ Inject your media library component easily to tailor the builder to your applica
 You can copy following this code into your own media library modal and customize the UI as needed.  
 For a full working example, see the demo project or reach out for support!
 
+The demo layout follows the same responsive split used by the product picker modal: a larger results column and a desktop-only details sidebar, with a dedicated stacked details panel on mobile.
+
 > **Security Note:**  
 > For production use, it is recommended to fetch Unsplash images from your own backend server, not directly from the frontend.  
 > If you use the Unsplash API key in frontend code, it will be visible in browser devtools and can be misused.  

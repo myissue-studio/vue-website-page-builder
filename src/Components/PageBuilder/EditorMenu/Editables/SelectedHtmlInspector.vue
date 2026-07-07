@@ -276,20 +276,13 @@ function getComponentClassList(component: ComponentObject): string[] {
           <button
             v-if="componentsCount"
             type="button"
-            class="pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryToggle"
+            class="pbx-font-sans pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryToggle"
             :class="{ 'pbx-inspectorComponentsSummaryOpen': componentsListOpen }"
             :aria-expanded="componentsListOpen"
             :aria-label="translate('Components')"
             @click="toggleComponentsList"
           >
             <span class="pbx-inspectorComponentsSummaryContent">
-              <span>{{ translate('You have added') }}</span>
-              <span
-                class="pbx-inspectorCountBadge"
-                :aria-label="`${componentsCount} ${translate('Components')}`"
-              >
-                {{ componentsCount }}
-              </span>
               <span>{{ translate('Components') }}</span>
             </span>
             <span
@@ -299,10 +292,7 @@ function getComponentClassList(component: ComponentObject): string[] {
               {{ componentsListOpen ? 'expand_less' : 'expand_more' }}
             </span>
           </button>
-          <div
-            v-else
-            class="pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryEmpty"
-          >
+          <div v-else class="pbx-inspectorComponentsSummary pbx-inspectorComponentsSummaryEmpty">
             {{ translate('No Components added yet') }}
           </div>
 
@@ -314,7 +304,7 @@ function getComponentClassList(component: ComponentObject): string[] {
             >
               <button
                 type="button"
-                class="pbx-inspectorComponentCardToggle"
+                class="pbx-font-sans pbx-inspectorComponentCardToggle"
                 :aria-expanded="isComponentCardOpen(component, index)"
                 :aria-label="component.title || translate('Component')"
                 @click="toggleComponentCard(component, index)"
@@ -333,14 +323,19 @@ function getComponentClassList(component: ComponentObject): string[] {
                 </span>
               </button>
 
-              <div v-show="isComponentCardOpen(component, index)" class="pbx-inspectorComponentCardBody">
+              <div
+                v-show="isComponentCardOpen(component, index)"
+                class="pbx-inspectorComponentCardBody"
+              >
                 <div class="pbx-inspectorMeta pbx-inspectorComponentCardMeta">
                   <div class="pbx-inspectorMetaRow">
                     <span class="pbx-inspectorFieldLabel">{{ translate('ID:') }}</span>
                     <InspectorIdValue :value="component.id" />
                   </div>
                   <div class="pbx-inspectorMetaRow pbx-inspectorMetaRowStacked">
-                    <span class="pbx-inspectorFieldLabel">{{ translate('Component classes:') }}</span>
+                    <span class="pbx-inspectorFieldLabel">{{
+                      translate('Component classes:')
+                    }}</span>
                     <ClassTagsList :classes="getComponentClassList(component)" empty-placeholder />
                   </div>
                 </div>
