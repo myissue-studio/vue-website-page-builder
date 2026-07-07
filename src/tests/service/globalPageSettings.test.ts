@@ -498,6 +498,72 @@ describe('Global Page Settings', () => {
   })
 
   // -------------------------------------------------------------------------
+  // REGRESSION: v-if reopen — importedPageBuilder before live DOM
+  // -------------------------------------------------------------------------
+  it('REGRESSION (reopen): mounted HTML class overrides fresh DOM defaults when builder was missing at start', async () => {
+    // Simulate a v-if reopen: #pagebuilder just rendered by Vue with only default classes.
+    pagebuilderEl.setAttribute('class', 'pbx-text-black pbx-font-sans')
+
+    // The saved HTML (from getSavedPageHtml) carries the user's custom class.
+    const savedHtml = `<div id="pagebuilder" class="pbx-text-black pbx-bg-red-500">\n${SECTION_HTML}\n</div>`
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    const svc = service as unknown as {
+      isPageBuilderMissingOnStart: boolean
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
+
+    // Flag that the builder was missing at start (v-if reopen pattern).
+    svc.isPageBuilderMissingOnStart = true
+
+    await svc.mountComponentsToDOM(savedHtml, undefined)
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    // Custom class from saved HTML must win over the fresh DOM default.
+    expect(resultEl?.getAttribute('class')).toContain('pbx-bg-red-500')
+  })
+
+  it('REGRESSION (reopen, usePassedPageSettings): memory beats fresh DOM when builder was missing at start', async () => {
+    // Simulate fresh DOM after v-if reopen — only default Vue :class binding.
+    pagebuilderEl.setAttribute('class', 'pbx-text-black pbx-font-sans')
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    const svc = service as unknown as {
+      _lastKnownPageSettings: { classes: string; style: string } | null
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
+
+    // _lastKnownPageSettings was captured in startBuilder() from localStorage.
+    svc._lastKnownPageSettings = {
+      classes: 'pbx-text-black pbx-bg-sky-600',
+      style: '',
+    }
+
+    // usePassedPageSettings = true is the path taken when fresh components are passed.
+    await svc.mountComponentsToDOM(SECTION_HTML, true)
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    // Memory (previous session's saved classes) must win over fresh DOM defaults.
+    expect(resultEl?.getAttribute('class')).toContain('pbx-bg-sky-600')
+  })
+
+  // -------------------------------------------------------------------------
   // clearInlineStylesFromPage
   // -------------------------------------------------------------------------
   it('clearInlineStylesFromPage removes inline styles from #pagebuilder', async () => {

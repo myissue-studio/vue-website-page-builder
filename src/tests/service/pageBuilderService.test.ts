@@ -437,6 +437,48 @@ describe('PageBuilderService', () => {
         vi.useRealTimers()
       }
     })
+
+    it('REGRESSION (editability): startBuilder clears any stale loading overlay so canvas is not blocked', async () => {
+      // Simulate a stale loading overlay left from a previous session race condition.
+      ;(mockStore as unknown as Record<string, unknown>).getIsLoadingGlobal = true
+
+      await service.startBuilder(updateConfig, componentsArray)
+
+      // startBuilder must immediately clear the loading overlay so GlobalLoader
+      // does not cover the canvas and block all click interactions.
+      expect(mockStore.setIsLoadingGlobal).toHaveBeenCalledWith(false)
+    })
+
+    it('REGRESSION (editability): completeMountProcess clears loading even when session is stale', async () => {
+      const svc = service as unknown as {
+        activeBuilderSessionToken: number
+        completeMountProcess: (
+          html: string,
+          usePassedPageSettings?: boolean,
+          sessionToken?: number,
+        ) => Promise<void>
+      }
+
+      const loadingSpy = mockStore.setIsLoadingGlobal as unknown as ReturnType<typeof vi.fn>
+
+      // Simulate loading overlay shown by a previous session.
+      ;(mockStore as unknown as Record<string, unknown>).getIsLoadingGlobal = true
+
+      // Force a stale session by incrementing the token before the mount process checks it.
+      const staleToken = svc.activeBuilderSessionToken
+      svc.activeBuilderSessionToken = staleToken + 1
+
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      if (pagebuilder) {
+        pagebuilder.innerHTML = `<section data-componentid="t1" data-component-title="T"><div>x</div></section>`
+      }
+
+      await svc.completeMountProcess('<div id="pagebuilder"></div>', undefined, staleToken)
+
+      // Loading must be cleared even when the session is stale so the overlay
+      // does not permanently block canvas interactions for the new session.
+      expect(loadingSpy).toHaveBeenCalledWith(false)
+    })
   })
 
   // --- availableLanguage ---
