@@ -162,6 +162,14 @@ describe('PageBuilderService', () => {
 
   beforeEach(() => {
     localStorage.clear()
+    const existing = document.querySelector<HTMLElement>('#pagebuilder')
+    if (existing) {
+      existing.innerHTML = ''
+    } else {
+      const div = document.createElement('div')
+      div.id = 'pagebuilder'
+      document.body.appendChild(div)
+    }
     mockStore = createMockStore()
     service = new PageBuilderService(mockStore)
   })
@@ -252,6 +260,104 @@ describe('PageBuilderService', () => {
       const restoredPagebuilder = document.createElement('div')
       restoredPagebuilder.id = 'pagebuilder'
       document.body.appendChild(restoredPagebuilder)
+    })
+
+    it('resets transient interaction flags on each start to avoid stale non-editable state', async () => {
+      await service.startBuilder(updateConfig, componentsArray)
+
+      expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(false)
+      expect(mockStore.setShowModalTipTap).toHaveBeenCalledWith(false)
+      expect(mockStore.setImageSettingsPanelOpen).toHaveBeenCalledWith(false)
+      expect(mockStore.setElement).toHaveBeenCalledWith(null)
+      expect(mockStore.setComponent).toHaveBeenCalledWith(null)
+    })
+
+    it('keeps canvas selectable after close/reopen without opening page HTML modal', async () => {
+      const firstMount = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(firstMount).not.toBeNull()
+      if (!firstMount) return
+
+      await service.startBuilder(updateConfig, componentsArray)
+
+      // Simulate host app closing/unmounting the builder.
+      firstMount.remove()
+
+      // Host re-opens and calls startBuilder before the DOM wrapper is re-mounted.
+      await service.startBuilder(updateConfig, componentsArray)
+      expect(service.shouldCompleteBuilderMountOnMount()).toBe(true)
+
+      const reopened = document.createElement('div')
+      reopened.id = 'pagebuilder'
+      document.body.appendChild(reopened)
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      await service.completeBuilderInitialization(undefined)
+
+      // In this unit test we don't mount the Vue tree, so seed rendered section markup manually.
+      reopened.innerHTML = `
+        <section data-componentid="reopen-1" data-component-title="Test">
+          <div class="pbx-break-words pbx-text-xl">Selectable after reopen</div>
+        </section>
+      `
+
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      const selectable = reopened.querySelector<HTMLElement>(
+        'section img, section div[class*="pbx-break-words"], section div[class*="pbx-text-"]',
+      )
+      expect(selectable).not.toBeNull()
+      if (!selectable) return
+
+      selectable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+
+      expect(selectable.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(selectable)
+    })
+
+    it('clears stale singleton interaction state so click selection is not blocked on reopen', async () => {
+      ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = true
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
+      service = new PageBuilderService(mockStore)
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      await service.startBuilder(updateConfig, componentsArray)
+
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      // In this unit test we don't mount the Vue tree, so seed rendered section markup manually.
+      pagebuilder.innerHTML = `
+        <section data-componentid="stale-1" data-component-title="Test">
+          <img src="https://example.com/demo.jpg" alt="demo" />
+        </section>
+      `
+
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      const selectable = pagebuilder.querySelector<HTMLElement>('section img')
+      expect(selectable).not.toBeNull()
+      if (!selectable) return
+
+      selectable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+
+      expect(mockStore.setImageSettingsPanelOpen).toHaveBeenCalledWith(false)
+      expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(false)
+      expect(selectable.hasAttribute('selected')).toBe(true)
     })
   })
 

@@ -72,7 +72,9 @@ const handleDeleteComponentsFromDOM = function () {
       >
         <span class="material-symbols-outlined">delete_forever</span>
         <span class="pbx-pageDesignOpenButtonText">
-          <span class="pbx-pageDesignOpenButtonLabel">{{ translate('Remove all Components') }}</span>
+          <span class="pbx-pageDesignOpenButtonLabel">{{
+            translate('Remove all Components')
+          }}</span>
           <span class="pbx-pageDesignOpenButtonHint">
             {{ translate('Clear every section from the page') }}
           </span>

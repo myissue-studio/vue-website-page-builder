@@ -64,6 +64,8 @@ If sections render but you cannot click/select/edit them after closing and reope
 
 This was fixed by resetting internal mount guards on each `startBuilder()` call, so deferred mounting can run again when `#pagebuilder` is recreated.
 
+An additional fix now also resets transient interaction state on `startBuilder()` (inline editor mode, image settings panel state, and stale selected element references). If these singleton flags leak between sessions, clicks can be ignored until another modal action re-initializes state.
+
 If you still observe this behavior, make sure you are on a version that includes this fix and that `startBuilder()` is called every time the builder is reopened.
 
 ## Use with `onMounted`

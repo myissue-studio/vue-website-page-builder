@@ -538,6 +538,14 @@ export class PageBuilderService {
     this.pendingMountComponents = null
     this.isPageBuilderMissingOnStart = false
 
+    // Reset transient UI/editor state that should never persist across open/close cycles.
+    // The service/store are singletons, so stale flags can block click selection on reopen.
+    this.pageBuilderStateStore.setInlineTipTapEditor(false)
+    this.pageBuilderStateStore.setShowModalTipTap(false)
+    this.pageBuilderStateStore.setImageSettingsPanelOpen(false)
+    this.pageBuilderStateStore.setElement(null)
+    this.pageBuilderStateStore.setComponent(null)
+
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
     this.pageBuilderStateStore.setBuilderStarted(true)
@@ -3402,8 +3410,8 @@ export class PageBuilderService {
     const localStorageData = this.getSavedPageHtml()
 
     if (localStorageData) {
-      await sleep(400)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(true)
+      await sleep(400)
       await this.mountComponentsToDOM(localStorageData)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(false)
     }
