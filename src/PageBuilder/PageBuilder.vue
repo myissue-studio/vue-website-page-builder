@@ -1500,7 +1500,7 @@ onBeforeUnmount(() => {
               <div class="pbx-flex pbx-items-center">
                 <div
                   @click="handleInsertButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> add </span>
@@ -1510,7 +1510,7 @@ onBeforeUnmount(() => {
                 <div
                   v-if="showProductsFeature"
                   @click="handleInsertProductButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                  class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
                   <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> shopping_bag </span>
@@ -1545,7 +1545,7 @@ onBeforeUnmount(() => {
                 <div class="pbx-flex pbx-items-center">
                   <div
                     @click="handleInsertButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                    class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                   >
                     <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> add </span>
@@ -1555,7 +1555,7 @@ onBeforeUnmount(() => {
                   <div
                     v-if="showProductsFeature"
                     @click="handleInsertProductButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                    class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
                     <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> shopping_bag </span>
