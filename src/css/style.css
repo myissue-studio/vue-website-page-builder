@@ -657,7 +657,8 @@
   }
 
   .pbx-htmlCodeViewerCopy .material-symbols-outlined {
-    @apply pbx-text-[14px];
+    font-size: 14px;
+    line-height: 1;
   }
 
   .pbx-htmlCodeViewerSurface {
@@ -1772,4 +1773,29 @@
 /* Material Symbols are inline by default; spin needs inline-block for transform */
 .material-symbols-outlined.pbx-animate-spin {
   display: inline-block;
+}
+
+/*
+ * Google’s Material Symbols CSS sets font-size: 24px (unlayered), which beats @layer utilities.
+ * Use these dedicated classes on icons — not pbx-text-* utilities (circular @apply in this file).
+ */
+.material-symbols-outlined.pbx-materialIcon14 {
+  font-size: 14px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIcon18 {
+  font-size: 18px;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconBase {
+  font-size: 1rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconLg {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.material-symbols-outlined.pbx-materialIconXl {
+  font-size: 1.25rem;
+  line-height: 1;
 }

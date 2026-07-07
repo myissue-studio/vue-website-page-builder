@@ -224,7 +224,7 @@ function confirmReset(): void {
         class="pbx-mySecondaryButton pbx-flex pbx-items-center pbx-gap-1 pbx-shrink-0"
         @click="openResetModal"
       >
-        <span class="material-symbols-outlined pbx-text-base pbx-leading-none">restart_alt</span>
+        <span class="material-symbols-outlined pbx-materialIconBase pbx-leading-none">restart_alt</span>
         {{ translate('Reset') }}
       </button>
     </div>

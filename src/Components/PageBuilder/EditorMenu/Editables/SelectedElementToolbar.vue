@@ -1299,7 +1299,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
                 >
                   <div class="pbx-flex pbx-items-center pbx-gap-2">
                     <span
-                      class="material-symbols-outlined pbx-text-xl"
+                      class="material-symbols-outlined pbx-materialIconXl"
                       :class="
                         sliderAutoRotate ? 'pbx-text-white' : 'pbx-text-myPrimaryDarkGrayColor'
                       "
@@ -1354,7 +1354,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
                   <span
-                    class="material-symbols-outlined pbx-text-xl pbx-text-myPrimaryDarkGrayColor"
+                    class="material-symbols-outlined pbx-materialIconXl pbx-text-myPrimaryDarkGrayColor"
                     >photo_library</span
                   >
                   <p
@@ -1410,7 +1410,9 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
           :title="props.toolbarPinned ? translate('Unpin toolbar') : translate('Pin toolbar')"
           @click="emit('toggle-toolbar-pin')"
         >
-          <span class="material-symbols-outlined" aria-hidden="true"> push_pin </span>
+          <span class="material-symbols-outlined pbx-materialIcon18" aria-hidden="true">
+            push_pin
+          </span>
         </button>
         <div
           v-if="getElement && getComponent"
