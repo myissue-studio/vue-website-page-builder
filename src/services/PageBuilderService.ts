@@ -564,7 +564,7 @@ export class PageBuilderService {
         this.pendingMountComponents = passedComponentsArray
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
-      if (pagebuilder) {
+      if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
         await this.completeBuilderInitialization(passedComponentsArray)
       }
 
@@ -1490,14 +1490,15 @@ export class PageBuilderService {
     if (!element || !this.isValidTextElement(element)) {
       if (e.target instanceof Element && (e.target.tagName === 'IMG' || e.target.closest('img'))) {
         e.stopPropagation()
-        e.stopImmediatePropagation()
       }
       return
     }
 
     e.preventDefault()
     e.stopPropagation()
-    e.stopImmediatePropagation()
+
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
     await this.openInlineTipTapForElement(element)
   }
@@ -1571,6 +1572,9 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
+    this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setInlineTipTapEditor(true)
+
     await this.openInlineTipTapForElement(element)
   }
 
@@ -1578,9 +1582,6 @@ export class PageBuilderService {
     if (!this.isValidTextElement(element)) return
 
     await this.selectEditableElement(element, false)
-
-    this.pageBuilderStateStore.setElement(element)
-    this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
     await nextTick()
     await this.addListenersToEditableElements()

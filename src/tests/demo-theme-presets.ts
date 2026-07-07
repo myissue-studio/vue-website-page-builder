@@ -62,7 +62,7 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     hint: 'Editorial & media',
     themeTitle: 'Blog Post',
     brandColor: '#C45C26',
-    fontKey: 'poppins',
+    fontKey: 'palantino',
     themeColorPresets: {
       enabled: true,
       colors: [

@@ -83,3 +83,20 @@ onMounted(async () => {
 })
 </script>
 ```
+
+## Vitest: Inline TipTap Double-Click Test Fails Intermittently
+
+If this assertion fails in `src/tests/service/pageBuilderService.test.ts`:
+
+```text
+expected "spy" to be called with arguments: [ true ]
+```
+
+make sure your branch includes the latest `PageBuilderService` inline-edit listener handling.
+The service now uses `stopPropagation()` (not `stopImmediatePropagation()`) for canvas inline-edit capture, so older/stale listeners from earlier test instances do not block the active one.
+
+Then re-run:
+
+```bash
+npx vitest run src/tests/service/pageBuilderService.test.ts --reporter=dot
+```
