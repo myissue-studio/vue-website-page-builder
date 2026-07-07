@@ -66,6 +66,8 @@ This was fixed by resetting internal mount guards on each `startBuilder()` call,
 
 An additional fix now also resets transient interaction state on `startBuilder()` (inline editor mode, image settings panel state, and stale selected element references). If these singleton flags leak between sessions, clicks can be ignored until another modal action re-initializes state.
 
+Another intermittent cause was async initialization from an older session continuing after a reopen. The service now uses a per-session token and ignores stale async work before enabling the global loading overlay, preventing old sessions from leaving the canvas blocked.
+
 If you still observe this behavior, make sure you are on a version that includes this fix and that `startBuilder()` is called every time the builder is reopened.
 
 ## Use with `onMounted`

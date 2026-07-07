@@ -410,6 +410,33 @@ describe('PageBuilderService', () => {
       // Stale session must be ignored entirely and not start loading/mount work.
       expect(loadingSpy).not.toHaveBeenCalledWith(true)
     })
+
+    it('does not set loading when session becomes stale during init sleep window', async () => {
+      vi.useFakeTimers()
+      try {
+        const fresh = new PageBuilderService(mockStore) as unknown as {
+          activeBuilderSessionToken: number
+          completeBuilderInitializationWithSession: (
+            passedComponentsArray?: unknown,
+            sessionToken?: number,
+          ) => Promise<void>
+        }
+
+        const loadingSpy = mockStore.setIsLoadingGlobal as unknown as ReturnType<typeof vi.fn>
+        const currentToken = fresh.activeBuilderSessionToken
+
+        const pendingInit = fresh.completeBuilderInitializationWithSession(undefined, currentToken)
+
+        // Session invalidates while initialization is still awaiting the sleep gate.
+        fresh.activeBuilderSessionToken = currentToken + 1
+        await vi.advanceTimersByTimeAsync(450)
+        await pendingInit
+
+        expect(loadingSpy).not.toHaveBeenCalledWith(true)
+      } finally {
+        vi.useRealTimers()
+      }
+    })
   })
 
   // --- availableLanguage ---
