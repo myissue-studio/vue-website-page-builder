@@ -75,7 +75,7 @@ watch(
         formName: 'collection',
       },
       pageBuilderLogo: {
-        src: '/logo/mybuilder_new_lowercase.svg',
+        src: '/logo/logo.svg',
       },
       resourceData: {
         title: demoPost.value.title,

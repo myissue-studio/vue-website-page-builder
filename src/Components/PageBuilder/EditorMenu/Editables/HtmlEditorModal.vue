@@ -60,7 +60,7 @@ async function copyHtml() {
     :z-index="10001"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-min-h-[10rem] pbx-py-6">
+    <div>
       <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
 
       <div v-else class="pbx-htmlCodeViewer">
@@ -91,10 +91,6 @@ async function copyHtml() {
           ></textarea>
         </div>
       </div>
-    </div>
-
-    <div class="pbx-flex pbx-justify-end pbx-min-h-6 pbx-mt-2">
-      <p v-if="error" class="pbx-myPrimaryParagraphError">Error: {{ error }}</p>
     </div>
 
     <template #actions>
