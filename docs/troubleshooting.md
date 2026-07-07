@@ -58,6 +58,14 @@ import '@myissue/vue-website-page-builder/style.css'
 
 You do not need to mount the Page Builder component just to render saved HTML.
 
+## Components Not Editable After Closing And Reopening Builder
+
+If sections render but you cannot click/select/edit them after closing and reopening the modal, the issue is usually a stale singleton lifecycle state.
+
+This was fixed by resetting internal mount guards on each `startBuilder()` call, so deferred mounting can run again when `#pagebuilder` is recreated.
+
+If you still observe this behavior, make sure you are on a version that includes this fix and that `startBuilder()` is called every time the builder is reopened.
+
 ## Use with `onMounted`
 
 Initialize Page Builder with `onMounted` Troubleshooting.

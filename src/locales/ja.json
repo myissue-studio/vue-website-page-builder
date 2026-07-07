@@ -570,13 +570,13 @@
   "Page layout": "ページレイアウト",
   "Remove all components description": "ページからすべてのセクションを削除します。削除前に確認が求められます。",
   "Clear every section from the page": "ページからすべてのセクションを削除",
-  "Text link": "Text link",
-  "Use a text-only CTA": "Use a text-only CTA",
-  "Button design": "Button design",
-  "Use brand-color button CTA": "Use brand-color button CTA",
-  "Rounded buttons": "Rounded buttons",
-  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
-  "Button links": "Button links",
-  "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "Text link": "テキストリンク",
+  "Use a text-only CTA": "テキストのみのCTAを使用",
+  "Button design": "ボタンデザイン",
+  "Use brand-color button CTA": "ブランドカラーのCTAボタンを使用",
+  "Rounded buttons": "角丸ボタン",
+  "Use rounded corners for CTA buttons": "CTAボタンに角丸を使用",
+  "Button links": "ボタンリンク",
+  "Link behavior on helper button components": "ヘルパーボタンコンポーネントのリンク動作",
+  "No additional settings for this category": "このカテゴリに追加設定はありません"
 }

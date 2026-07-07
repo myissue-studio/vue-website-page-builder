@@ -530,6 +530,14 @@ export class PageBuilderService {
     config: PageBuilderConfig,
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
+    // Reset mount lifecycle guards for each new builder start call.
+    // The service is a singleton, so stale flags from a previous open/close cycle
+    // must not block remounting when the DOM is created again.
+    this.hasCompletedBuilderMount = false
+    this.builderMountPromise = null
+    this.pendingMountComponents = null
+    this.isPageBuilderMissingOnStart = false
+
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
     this.pageBuilderStateStore.setBuilderStarted(true)

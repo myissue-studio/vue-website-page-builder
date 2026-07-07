@@ -570,13 +570,13 @@
   "Page layout": "页面布局",
   "Remove all components description": "从页面移除所有区块。删除前会要求确认。",
   "Clear every section from the page": "清除页面上的所有区块",
-  "Text link": "Text link",
-  "Use a text-only CTA": "Use a text-only CTA",
-  "Button design": "Button design",
-  "Use brand-color button CTA": "Use brand-color button CTA",
-  "Rounded buttons": "Rounded buttons",
-  "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
-  "Button links": "Button links",
-  "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "Text link": "文本链接",
+  "Use a text-only CTA": "使用纯文本 CTA",
+  "Button design": "按钮样式",
+  "Use brand-color button CTA": "使用品牌色 CTA 按钮",
+  "Rounded buttons": "圆角按钮",
+  "Use rounded corners for CTA buttons": "为 CTA 按钮使用圆角",
+  "Button links": "按钮链接",
+  "Link behavior on helper button components": "助手按钮组件上的链接行为",
+  "No additional settings for this category": "此类别没有其他设置"
 }
