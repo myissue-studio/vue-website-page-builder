@@ -60,7 +60,7 @@ async function copyHtml() {
     :z-index="10001"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-min-h-[10rem] pbx-py-6">
+    <div>
       <p v-if="!html" class="pbx-inspectorEmpty">{{ translate('No HTML available') }}</p>
 
       <div v-else class="pbx-htmlCodeViewer">
