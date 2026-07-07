@@ -231,6 +231,28 @@ describe('PageBuilderService', () => {
       const result = await service.startBuilder(config, componentsArray)
       expect(result).toHaveProperty('message', 'Page builder started successfully.')
     })
+
+    it('allows deferred mount again after close/reopen when #pagebuilder is missing', async () => {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+
+      // First session mounts with DOM present.
+      await service.startBuilder(updateConfig, componentsArray)
+
+      // Simulate modal close/unmount where #pagebuilder is removed from DOM.
+      pagebuilder?.remove()
+
+      // Reopen session: startBuilder is called before DOM is mounted again.
+      await service.startBuilder(updateConfig, componentsArray)
+
+      // Builder should request deferred mount on the next component mount.
+      expect(service.shouldCompleteBuilderMountOnMount()).toBe(true)
+
+      // Restore test DOM for subsequent test cases in this file.
+      const restoredPagebuilder = document.createElement('div')
+      restoredPagebuilder.id = 'pagebuilder'
+      document.body.appendChild(restoredPagebuilder)
+    })
   })
 
   // --- availableLanguage ---
