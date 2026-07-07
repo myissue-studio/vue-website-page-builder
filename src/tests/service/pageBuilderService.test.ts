@@ -448,42 +448,39 @@ describe('PageBuilderService', () => {
       // does not cover the canvas and block all click interactions.
       expect(mockStore.setIsLoadingGlobal).toHaveBeenCalledWith(false)
     })
-    it('REGRESSION (editability): listeners are attached to existing sections before the 400ms loading delay', async () => {
-      // Seed existing sections — simulates Vue having re-rendered previous session
-      // components into new DOM elements on a v-if reopen BEFORE startBuilder runs.
+    it('REGRESSION (editability, v-show reopen): canvas is selectable when modal reopens with existing sections', async () => {
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      // First open: complete a full mount so hasCompletedBuilderMount = true.
+      await service.startBuilder(updateConfig, componentsArray)
+
       const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
       expect(pagebuilder).not.toBeNull()
       if (!pagebuilder) return
 
+      // Simulate v-show/modal reopen: Vue has re-rendered sections from the store
+      // into new DOM elements but startBuilder() was not called again.
       pagebuilder.innerHTML = `
-        <section data-componentid="existing-reopen" data-component-title="Hero">
-          <div id="reopen-editable" class="pbx-break-words pbx-text-xl">Content</div>
+        <section data-componentid="vshow-section" data-component-title="Hero">
+          <div id="vshow-editable" class="pbx-break-words pbx-text-xl">Content</div>
         </section>
       `
+      ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = false
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = false
 
-      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
-      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+      // Reopen call: hasCompletedBuilderMount stays true + sections exist → no full remount.
+      // The safety net / refreshListeners path must still attach listeners.
+      await service.startBuilder(updateConfig, componentsArray)
 
-      // Start a new session - this should attach listeners BEFORE the 400ms sleep
-      const startPromise = service.startBuilder(updateConfig, componentsArray)
+      const editable = pagebuilder.querySelector<HTMLElement>('#vshow-editable')
+      expect(editable).not.toBeNull()
+      if (!editable) return
 
-      // Poll briefly until the immediate pre-sleep listener attachment has run.
-      // The listener is attached synchronously before the first await in
-      // runCompleteBuilderInitialization, so after the first microtask the
-      // section element should already have a listener.
+      editable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
       await Promise.resolve()
-      await Promise.resolve()
-      await Promise.resolve()
 
-      const editable = pagebuilder.querySelector<HTMLElement>('#reopen-editable')
-      if (editable) {
-        editable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
-        await Promise.resolve()
-        // The element should have been selected (listener was active before loading started).
-        expect(mockStore.setElement).toHaveBeenCalledWith(editable)
-      }
-
-      await startPromise
+      expect(mockStore.setElement).toHaveBeenCalledWith(editable)
     })
     it('REGRESSION (editability): completeMountProcess clears loading even when session is stale', async () => {
       const svc = service as unknown as {

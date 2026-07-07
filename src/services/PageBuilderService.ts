@@ -667,9 +667,29 @@ export class PageBuilderService {
 
   /**
    * Whether PageBuilder.vue should run deferred mount on mount (DOM was missing at startBuilder).
+   *
+   * @param ownCanvas - The component's own #pagebuilder element (passed from PageBuilder.vue ref).
+   *   Using this instead of document.querySelector ensures the correct canvas is checked when
+   *   multiple PageBuilder instances exist on the same page (e.g. one always-visible + one in a
+   *   modal).  When the modal's canvas is empty while another instance already has content, the
+   *   document.querySelector approach would miss the empty canvas entirely.
    */
-  public shouldCompleteBuilderMountOnMount(): boolean {
-    if (this.hasCompletedBuilderMount) return false
+  public shouldCompleteBuilderMountOnMount(ownCanvas?: HTMLElement): boolean {
+    if (this.hasCompletedBuilderMount) {
+      // A previous PageBuilder session completed mounting. Check THIS component instance's
+      // canvas (not the first matching document element) — covers the case of a PageBuilder
+      // inside a v-if modal that just opened: its canvas is empty even though another instance
+      // on the page already has content loaded.
+      const canvas = ownCanvas ?? (document.querySelector('#pagebuilder') as HTMLElement | null)
+      const hasSections = Boolean(canvas?.querySelector('section[data-componentid]'))
+      if (canvas && !hasSections) {
+        // Fresh empty canvas — reset lifecycle so the deferred init will run.
+        this.hasCompletedBuilderMount = false
+        this.builderMountPromise = null
+        return true
+      }
+      return false
+    }
     return this.isPageBuilderMissingOnStart || Boolean(this.pendingMountComponents)
   }
 
