@@ -145,6 +145,7 @@ export class PageBuilderService {
   private isPageBuilderMissingOnStart: boolean = false
   private hasCompletedBuilderMount: boolean = false
   private builderMountPromise: Promise<void> | null = null
+  private activeBuilderSessionToken: number = 0
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
 
@@ -530,6 +531,8 @@ export class PageBuilderService {
     config: PageBuilderConfig,
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
+    const sessionToken = ++this.activeBuilderSessionToken
+
     // Reset mount lifecycle guards for each new builder start call.
     // The service is a singleton, so stale flags from a previous open/close cycle
     // must not block remounting when the DOM is created again.
@@ -561,6 +564,13 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setBuilderStarted(true)
     const pagebuilder = document.querySelector('#pagebuilder')
 
+    // Snapshot page-level settings whenever a live wrapper exists so they can be
+    // restored even if subsequent reopen payloads contain sections only.
+    const currentStartSettings = this.readCurrentPageSettings()
+    if (this.hasMeaningfulPageSettings(currentStartSettings)) {
+      this._lastKnownPageSettings = currentStartSettings
+    }
+
     let validation
     try {
       this.originalComponents = passedComponentsArray
@@ -576,23 +586,39 @@ export class PageBuilderService {
 
       validation = this.validateUserProvidedComponents(passedComponentsArray)
 
+      const usablePassedComponents =
+        Array.isArray(passedComponentsArray) && passedComponentsArray.length > 0
+          ? passedComponentsArray
+          : null
+      const hasUsablePassedComponents = usablePassedComponents !== null
+
       // Update the localStorage key name based on the config/resource
       this.updateLocalStorageItemName()
       this.initializeHistory()
 
-      if (passedComponentsArray) {
-        this.savedMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents) {
+        this.savedMountComponents = usablePassedComponents
       }
       // Page Builder is not Present in the DOM but Components have been passed to the Builder
       if (!pagebuilder) {
         this.isPageBuilderMissingOnStart = true
       }
-      if (passedComponentsArray && !pagebuilder) {
-        this.pendingMountComponents = passedComponentsArray
+      if (hasUsablePassedComponents && !pagebuilder) {
+        this.pendingMountComponents = usablePassedComponents
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
-        await this.completeBuilderInitialization(passedComponentsArray)
+        await this.completeBuilderInitializationWithSession(
+          hasUsablePassedComponents ? usablePassedComponents : undefined,
+          sessionToken,
+        )
+      }
+
+      // Safety net: if the host already rendered #pagebuilder content and a full mount
+      // was skipped (for example due to invalid/non-array passed data), still attach
+      // interaction listeners so the canvas cannot get stuck as non-editable.
+      if (pagebuilder) {
+        await this.addListenersToEditableElements()
       }
 
       // result to end user
@@ -634,18 +660,35 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   async completeBuilderInitialization(passedComponentsArray?: BuilderResourceData): Promise<void> {
+    return this.completeBuilderInitializationWithSession(
+      passedComponentsArray,
+      this.activeBuilderSessionToken,
+    )
+  }
+
+  private async completeBuilderInitializationWithSession(
+    passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     if (this.hasCompletedBuilderMount) return
     if (!this.builderMountPromise) {
-      this.builderMountPromise = this.runCompleteBuilderInitialization(passedComponentsArray)
+      this.builderMountPromise = this.runCompleteBuilderInitialization(
+        passedComponentsArray,
+        sessionToken,
+      )
     }
     await this.builderMountPromise
   }
 
   private async runCompleteBuilderInitialization(
     passedComponentsArray?: BuilderResourceData,
+    sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
     await sleep(400)
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     // Always clear DOM and store before mounting new resource
     this.deleteAllComponentsFromDOM()
@@ -657,49 +700,50 @@ export class PageBuilderService {
 
     // Deselect any selected or hovered elements in the builder UI
     await this.clearHtmlSelection()
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     if (formType === 'update' || formType === 'create') {
       // Page Builder is initially present in the DOM
       if (!this.pendingMountComponents) {
         if (!passedComponentsArray && this.isPageBuilderMissingOnStart && localStorageData) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (passedComponentsArray && !localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (passedComponentsArray && localStorageData) {
           const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           return
         }
 
         if (!passedComponentsArray && localStorageData && !this.savedMountComponents) {
-          await this.completeMountProcess(localStorageData)
+          await this.completeMountProcess(localStorageData, undefined, sessionToken)
           return
         }
         if (!passedComponentsArray && this.savedMountComponents && localStorageData) {
           const htmlString = this.renderComponentsToHtml(this.savedMountComponents)
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
 
           return
         }
 
         if (!this.isPageBuilderMissingOnStart && !localStorageData && !passedComponentsArray) {
           const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString)
+          await this.completeMountProcess(htmlString, undefined, sessionToken)
           return
         }
       }
@@ -708,7 +752,7 @@ export class PageBuilderService {
       if (this.pendingMountComponents) {
         if (localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           await sleep(500)
           this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
           this.pendingMountComponents = null
@@ -716,14 +760,14 @@ export class PageBuilderService {
         }
         if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
 
         if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
           const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true)
+          await this.completeMountProcess(htmlString, true, sessionToken)
           this.saveDomComponentsToLocalStorage()
           return
         }
@@ -758,8 +802,14 @@ export class PageBuilderService {
    * @param {boolean} [useConfigPageSettings] - Whether to use page settings from the passed data.
    * @private
    */
-  private async completeMountProcess(html: string, useConfigPageSettings?: boolean) {
+  private async completeMountProcess(
+    html: string,
+    useConfigPageSettings?: boolean,
+    sessionToken: number = this.activeBuilderSessionToken,
+  ) {
+    if (sessionToken !== this.activeBuilderSessionToken) return
     await this.mountComponentsToDOM(html, useConfigPageSettings)
+    if (sessionToken !== this.activeBuilderSessionToken) return
 
     // Clean up any old localStorage items related to previous builder sessions
     this.deleteOldPageBuilderLocalStorage()
@@ -3496,7 +3546,9 @@ export class PageBuilderService {
     // Object with components and pageSettings
     if (parsed && Array.isArray(parsed.components)) {
       const classes = (parsed.pageSettings && parsed.pageSettings.classes) || ''
-      const style = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const rawStyle = (parsed.pageSettings && parsed.pageSettings.style) || ''
+      const style =
+        typeof rawStyle === 'string' ? rawStyle : this.convertStyleObjectToString(rawStyle)
 
       const sectionsHtml = parsed.components
         .map((c: ComponentObject) => {
@@ -4135,6 +4187,24 @@ export class PageBuilderService {
       .join(' ')
   }
 
+  private hasMeaningfulPageSettings(
+    pageSettings: PageSettings | null | undefined,
+  ): pageSettings is PageSettings {
+    if (!pageSettings) return false
+
+    const classes = (pageSettings.classes || '').trim()
+    const styleString =
+      typeof pageSettings.style === 'string'
+        ? pageSettings.style.trim()
+        : this.convertStyleObjectToString(pageSettings.style).trim()
+    const hasMeta = Boolean(
+      pageSettings.meta &&
+        ((pageSettings.meta.title || '').trim() || (pageSettings.meta.description || '').trim()),
+    )
+
+    return classes.length > 0 || styleString.length > 0 || hasMeta
+  }
+
   /**
    * Parses a string of HTML and extracts builder components and global page settings.
    * - This method expects an **HTML string** containing one or more `<section>...</section>` elements (such as the output from `getSavedPageHtml()` or a previously saved builder HTML string).
@@ -4418,10 +4488,25 @@ export class PageBuilderService {
 
       // Use stored page settings if the flag is true
       if (usePassedPageSettings) {
-        // Prefer config.pageSettings, but fall back to the current DOM state so that
-        // global page styles applied by the user are not wiped on re-initialization.
-        configPageSettings =
-          this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || currentDomPageSettings
+        // Prefer meaningful config.pageSettings, then meaningful current DOM state,
+        // then meaningful singleton memory from prior sessions.
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromDom = currentDomPageSettings
+        const fromMemory = this._lastKnownPageSettings
+
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromDom)
+            ? fromDom
+            : this.hasMeaningfulPageSettings(fromMemory)
+              ? fromMemory
+              : null
+      }
+
+      // Even outside `usePassedPageSettings`, preserve meaningful live wrapper settings
+      // across remounts so defaults from generated wrappers don't overwrite user styling.
+      if (!configPageSettings && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
+        configPageSettings = currentDomPageSettings
       }
 
       // Use imported page builder settings if available and pageSettings is still null
@@ -4435,7 +4520,13 @@ export class PageBuilderService {
 
       // Fallback to stored page settings if pageSettings is still null
       if (!configPageSettings) {
-        configPageSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings || null
+        const fromConfig = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
+        const fromMemory = this._lastKnownPageSettings
+        configPageSettings = this.hasMeaningfulPageSettings(fromConfig)
+          ? fromConfig
+          : this.hasMeaningfulPageSettings(fromMemory)
+            ? fromMemory
+            : null
       }
 
       // Apply the page settings to the live page builder

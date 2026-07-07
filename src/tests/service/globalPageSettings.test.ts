@@ -257,6 +257,103 @@ describe('Global Page Settings', () => {
     expect(contentEl.hasAttribute('style')).toBe(false)
   })
 
+  it('REGRESSION: uses last known page settings when DOM/config/localStorage are missing wrapper settings', async () => {
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    const svc = service as unknown as {
+      _lastKnownPageSettings: { classes: string; style: string }
+      mountComponentsToDOM: (html: string, usePassedPageSettings?: boolean) => Promise<void>
+    }
+
+    // Simulate persisted singleton memory from a previous open session.
+    svc._lastKnownPageSettings = {
+      classes: 'pbx-font-jost pbx-text-black pbx-bg-emerald-300',
+      style: 'background-color: rgb(52, 211, 153);',
+    }
+
+    await svc.mountComponentsToDOM(SECTION_HTML, true)
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    expect(resultEl?.getAttribute('class')).toContain('pbx-bg-emerald-300')
+    expect(resultEl?.getAttribute('style')).toContain('background-color')
+  })
+
+  it('startBuilder snapshots existing wrapper classes/styles as last known settings', async () => {
+    pagebuilderEl.setAttribute('class', 'pbx-font-jost pbx-text-black pbx-bg-zinc-100')
+    pagebuilderEl.setAttribute('style', 'letter-spacing: 0.5px;')
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    const svc = service as unknown as {
+      _lastKnownPageSettings: { classes?: string; style?: string } | null
+    }
+
+    await service.startBuilder(
+      {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      [],
+    )
+
+    expect(svc._lastKnownPageSettings).not.toBeNull()
+    expect(svc._lastKnownPageSettings?.classes).toContain('pbx-bg-zinc-100')
+    expect(String(svc._lastKnownPageSettings?.style || '')).toContain('letter-spacing')
+  })
+
+  it('REGRESSION: startBuilder with empty incoming array still restores pageSettings from localStorage', async () => {
+    localStorage.setItem(
+      'test-key',
+      JSON.stringify({
+        components: [
+          {
+            html_code:
+              '<section data-component-title="Text"><div><p>Recovered from draft</p></div></section>',
+            title: 'Text',
+          },
+        ],
+        pageBuilderContentSavedAt: new Date().toISOString(),
+        pageSettings: {
+          classes: 'pbx-font-jost pbx-text-black pbx-bg-emerald-300',
+          style: { letterSpacing: '0.5px' },
+        },
+      }),
+    )
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'create', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+
+    await service.startBuilder(
+      {
+        updateOrCreate: { formType: 'create', formName: 'article' },
+      },
+      [],
+    )
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    expect(resultEl?.getAttribute('class')).toContain('pbx-bg-emerald-300')
+    expect(resultEl?.getAttribute('style')).toContain('letter-spacing')
+  })
+
   it('REGRESSION: preserves both classes and styles simultaneously', async () => {
     pagebuilderEl.setAttribute('class', 'pbx-font-jost pbx-bg-black')
     pagebuilderEl.setAttribute('style', 'color: red;')

@@ -359,6 +359,57 @@ describe('PageBuilderService', () => {
       expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(false)
       expect(selectable.hasAttribute('selected')).toBe(true)
     })
+
+    it('keeps existing canvas editable even when passedComponentsArray is invalid', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      // Simulate host-rendered content already in DOM.
+      pagebuilder.innerHTML = `
+        <section data-componentid="existing-1" data-component-title="Text">
+          <div id="existing-editable" class="pbx-break-words pbx-text-xl">
+            <p>Existing content from host app</p>
+          </div>
+        </section>
+      `
+
+      vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      // Invalid payload triggers validation error and skips full mount path.
+      const result = await service.startBuilder(updateConfig, { bad: true } as unknown as never[])
+      expect(result).toHaveProperty('validation.error', true)
+
+      const selectable = pagebuilder.querySelector<HTMLElement>('#existing-editable')
+      expect(selectable).not.toBeNull()
+      if (!selectable) return
+
+      selectable.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+
+      expect(selectable.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(selectable)
+    })
+
+    it('ignores stale completeBuilderInitialization calls from previous sessions', async () => {
+      const fresh = new PageBuilderService(mockStore) as unknown as {
+        activeBuilderSessionToken: number
+        completeBuilderInitializationWithSession: (
+          passedComponentsArray?: unknown,
+          sessionToken?: number,
+        ) => Promise<void>
+      }
+
+      const loadingSpy = mockStore.setIsLoadingGlobal as unknown as ReturnType<typeof vi.fn>
+      const staleToken = fresh.activeBuilderSessionToken
+      fresh.activeBuilderSessionToken = staleToken + 1
+
+      await fresh.completeBuilderInitializationWithSession(undefined, staleToken)
+
+      // Stale session must be ignored entirely and not start loading/mount work.
+      expect(loadingSpy).not.toHaveBeenCalledWith(true)
+    })
   })
 
   // --- availableLanguage ---
