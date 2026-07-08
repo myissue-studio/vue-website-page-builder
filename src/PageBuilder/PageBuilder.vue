@@ -229,10 +229,6 @@ const configDefaultFontClass = computed(() =>
  * config `elementFonts` still apply until a different global page font is set.
  */
 const canvasFontClass = computed(() => {
-  void pageBuilderStateStore.getFontFamily
-  void pageBuilderStateStore.getToggleGlobalHtmlMode
-  void pageBuilderStateStore.getComponents?.length
-
   const userSettings = getPageBuilderConfig.value?.userSettings
   const globalMode = pageBuilderStateStore.getToggleGlobalHtmlMode
   const storeFont = pageBuilderStateStore.getFontFamily
@@ -258,10 +254,6 @@ const canvasFontClass = computed(() => {
 })
 
 const hasPageDesignFontOverride = computed(() => {
-  void pageBuilderStateStore.getFontFamily
-  void pageBuilderStateStore.getToggleGlobalHtmlMode
-  void pageBuilderStateStore.getComponents?.length
-
   const userSettings = getPageBuilderConfig.value?.userSettings
   const pagebuilder = document.getElementById('pagebuilder')
 
@@ -297,6 +289,26 @@ const canvasElementFontStyle = computed((): Record<string, string> => {
     }
   }
   return style
+})
+
+const canvasPageSettings = computed(() => {
+  return getPageBuilderConfig.value?.pageSettings
+})
+
+const canvasPageClass = computed(() => {
+  const cls = canvasPageSettings.value?.classes
+  if (!cls || typeof cls !== 'string') return ''
+  return cls
+})
+
+const canvasPageStyle = computed(() => {
+  const style = canvasPageSettings.value?.style
+  if (!style) return ''
+  if (typeof style === 'string') return style
+  // style object form: convert to CSS string
+  return Object.entries(style as Record<string, string>)
+    .map(([k, v]) => `${k.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${v};`)
+    .join(' ')
 })
 
 watch(
@@ -519,6 +531,11 @@ const getIsRestoring = computed(() => {
   return pageBuilderStateStore.getIsRestoring
 })
 
+const showGlobalLoader = ref(false)
+// Stays true for the full onMounted init await, even if the service toggles
+// isLoadingGlobal off early inside completeMountProcess().
+const isMountInitializing = ref(false)
+
 const gridColumnModalResumeEditing = ref(Number(1))
 const typeModal = ref('')
 const showModalResumeEditing = ref(false)
@@ -714,7 +731,7 @@ function applyToolbarFlexWidth(toolbar: HTMLElement, maxToolbarWidth: number) {
   innerFlex.style.flexWrap = 'nowrap'
   innerFlex.style.removeProperty('max-width')
   innerFlex.style.width = 'max-content'
-  void innerFlex.offsetHeight
+  innerFlex.getBoundingClientRect()
 
   // Measure the actual one-line width of the current controls. This keeps the
   // toolbar compact, but automatically grows when new controls are added.
@@ -785,7 +802,7 @@ function updatePanelPositionNow(options: { remeasureWidth?: boolean } = {}) {
       editToolbarElement.style.removeProperty('width')
       applyToolbarFlexWidth(editToolbarElement, maxToolbarWidth)
       // Force layout so inner flex wraps within max-width before measuring size/position.
-      void editToolbarElement.offsetHeight
+      editToolbarElement.getBoundingClientRect()
     }
 
     const GAP = 20 // px
@@ -851,17 +868,30 @@ function updatePanelPosition() {
 watch(
   () => pageBuilderStateStore.getInlineTipTapEditor,
   () => {
-    void nextTick(settleToolbarPosition)
+    nextTick(settleToolbarPosition)
   },
 )
 
 watch(getElement, () => {
-  void nextTick(settleToolbarPosition)
+  nextTick(settleToolbarPosition)
 })
 
 watch(getComponents, () => {
-  void nextTick(settleToolbarPosition)
+  nextTick(settleToolbarPosition)
 })
+
+watch(
+  [
+    getIsLoadingGlobal,
+    getIsLoadingResumeEditing,
+    getIsRestoring,
+    isLoadingLang,
+    openAppNotStartedModal,
+  ],
+  () => {
+    recomputeShowGlobalLoader()
+  },
+)
 
 const handlePageBuilderLayoutChange = function () {
   settleToolbarPosition()
@@ -869,14 +899,39 @@ const handlePageBuilderLayoutChange = function () {
 
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
 
+const recomputeShowGlobalLoader = function () {
+  showGlobalLoader.value =
+    isMountInitializing.value ||
+    (getIsLoadingGlobal.value && !openAppNotStartedModal.value) ||
+    isLoadingLang.value ||
+    getIsLoadingResumeEditing.value ||
+    getIsRestoring.value
+}
+
 onMounted(async () => {
-  if (pageBuilderService.shouldCompleteBuilderMountOnMount(pageBuilderCanvas.value ?? undefined)) {
-    await pageBuilderService.completeBuilderInitialization(undefined)
-  } else {
-    // Full initialization was skipped (already mounted) but Vue has re-rendered the
-    // sections into new DOM nodes (e.g. modal v-if reopen).  Re-attach listeners so
-    // the canvas is immediately interactive without needing a startBuilder() call.
-    await pageBuilderService.refreshListeners()
+  const needsDeferredMount = pageBuilderService.shouldCompleteBuilderMountOnMount(
+    pageBuilderCanvas.value ?? undefined,
+  )
+
+  if (needsDeferredMount) {
+    isMountInitializing.value = true
+    pageBuilderStateStore.setIsLoadingGlobal(true)
+    recomputeShowGlobalLoader()
+  }
+
+  try {
+    if (needsDeferredMount) {
+      await pageBuilderService.completeBuilderInitialization(undefined)
+    } else {
+      // Full initialization was skipped (already mounted) but Vue has re-rendered the
+      // sections into new DOM nodes (e.g. modal v-if reopen).  Re-attach listeners so
+      // the canvas is immediately interactive without needing a startBuilder() call.
+      await pageBuilderService.refreshListeners()
+    }
+  } finally {
+    isMountInitializing.value = false
+    pageBuilderStateStore.setIsLoadingGlobal(false)
+    recomputeShowGlobalLoader()
   }
 
   if (userSettings && userSettings.lang) {
@@ -885,6 +940,7 @@ onMounted(async () => {
 
   await loadTranslations(languageSelction.value)
   isInitializingLang = false
+  recomputeShowGlobalLoader()
 
   updatePanelPosition()
 
@@ -926,6 +982,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  pageBuilderService.flushPendingEditsToLocalStorage()
+  pageBuilderService.markCanvasUnmountedForNextMount()
   cancelAnimationFrame(panelPositionRaf)
   panelPositionObserver?.disconnect()
   panelPositionObserver = null
@@ -943,9 +1001,7 @@ onBeforeUnmount(() => {
   <div
     class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-mx-auto pbx-flex pbx-flex-col pbx-font-sans pbx-text-black pbx-border-solid pbx-border pbx-border-gray-400 pbx-inset-x-0 pbx-z-10 pbx-bg-white pbx-overflow-x-auto pbx-h-full"
   >
-    <GlobalLoader
-      v-if="(getIsLoadingGlobal && !openAppNotStartedModal) || isLoadingLang"
-    ></GlobalLoader>
+    <GlobalLoader v-if="showGlobalLoader"></GlobalLoader>
     <BaseModal
       title="The builder hasn’t started yet"
       :showModalBuilder="openAppNotStartedModal"
@@ -1447,13 +1503,15 @@ onBeforeUnmount(() => {
           id="pagebuilder"
           ref="pageBuilderCanvas"
           data-builder-canvas
-          :class="[canvasFontClass, 'pbx-text-black']"
+          :class="[canvasFontClass, 'pbx-text-black', canvasPageClass]"
+          :style="canvasPageStyle ? canvasPageStyle : undefined"
           @dblclick.capture="handleCanvasDoubleClick"
         >
           <!-- Insert button when empty of componenets -->
           <div
             v-if="Array.isArray(getComponents) && getComponents.length === 0"
             data-pbx-insert-btn
+            data-pb-no-select
           >
             <div
               class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3"
@@ -1488,14 +1546,18 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Insert button at the top -->
-          <div v-if="Array.isArray(getComponents) && getComponents.length != 0" data-pbx-insert-btn>
+          <div
+            v-if="Array.isArray(getComponents) && getComponents.length != 0"
+            data-pbx-insert-btn
+            data-pb-no-select
+          >
             <div
               class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
             >
               <div class="pbx-flex pbx-items-center">
                 <div
                   @click="handleInsertButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                  class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                 >
                   <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> add </span>
@@ -1505,7 +1567,7 @@ onBeforeUnmount(() => {
                 <div
                   v-if="showProductsFeature"
                   @click="handleInsertProductButtonClick(0)"
-                  class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                  class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
                   <div class="pbx-flex pbx-items-center">
                     <span class="material-symbols-outlined"> shopping_bag </span>
@@ -1532,6 +1594,7 @@ onBeforeUnmount(() => {
             <div
               v-if="Array.isArray(getComponents) && getComponents.length != 0"
               data-pbx-insert-btn
+              data-pb-no-select
             >
               <div
                 class="pbx-flex pbx-justify-end pbx-w-full pbx-h-0 pbx-items-center pbx-rounded-r-full pbx-z-10"
@@ -1539,7 +1602,7 @@ onBeforeUnmount(() => {
                 <div class="pbx-flex pbx-items-center">
                   <div
                     @click="handleInsertButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
+                    class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-full pbx-rounded-r-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
                   >
                     <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> add </span>
@@ -1549,7 +1612,7 @@ onBeforeUnmount(() => {
                   <div
                     v-if="showProductsFeature"
                     @click="handleInsertProductButtonClick(idx + 1)"
-                    class="pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
+                    class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
                     <div class="pbx-flex pbx-items-center">
                       <span class="material-symbols-outlined"> shopping_bag </span>

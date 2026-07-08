@@ -360,6 +360,9 @@ const saveInlineEditor = async function () {
     removeDocumentMouseDownListener()
     teardownEditor(html)
     await pageBuilderService.finishInlineTipTapEditor(target)
+    // Inline "Save" should behave like a page save (persist draft + history),
+    // not just close the editor.
+    await pageBuilderService.handleManualSave(true)
   } catch (error) {
     console.error(error)
   }

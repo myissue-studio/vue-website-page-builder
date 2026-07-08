@@ -131,7 +131,9 @@ function renderProductCard(
         compareAtPrice
           ? `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`
           : '',
-        price ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>` : '',
+        price
+          ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>`
+          : '',
       ].filter(Boolean)
       const priceRowClass = [
         'product-card-price-row flex flex-wrap items-baseline gap-2 pt-2',
@@ -145,7 +147,7 @@ function renderProductCard(
     const ctaAnchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}" href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
