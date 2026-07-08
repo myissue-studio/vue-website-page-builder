@@ -1466,6 +1466,11 @@
   z-index: 60;
 }
 
+/* Toolbar popovers must sit above BaseModal (z-index: 9999) when PageBuilder is in a modal */
+[data-pbx-edit-toolbar-popover] {
+  z-index: 10000 !important;
+}
+
 #pbxEditToolbar {
   opacity: 0;
   pointer-events: none;
