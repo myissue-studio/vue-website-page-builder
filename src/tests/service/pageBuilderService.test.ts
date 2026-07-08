@@ -488,7 +488,7 @@ describe('PageBuilderService', () => {
       expect(mockStore.setElement).toHaveBeenCalledWith(editable)
     })
 
-    it('REGRESSION (modal v-if reopen): restores local draft after close and startBuilder re-run', async () => {
+    it('REGRESSION (modal v-if reopen): shows passed update content first and offers local draft resume', async () => {
       document.querySelector('#pagebuilder')?.remove()
 
       const config = {
@@ -541,8 +541,66 @@ describe('PageBuilderService', () => {
         .map((component) => `<div data-pagebuilder-content>${component.html_code}</div>`)
         .join('')
 
-      expect(reopened.textContent).toContain('Edited text')
-      expect(reopened.textContent).not.toContain('Original text')
+      expect(reopened.textContent).toContain('Original text')
+      expect(reopened.textContent).not.toContain('Edited text')
+      expect(mockStore.setHasLocalDraftForUpdate).toHaveBeenCalledWith(true)
+    })
+
+    it('REGRESSION (startup): mounts passed update content even when saved draft exists', async () => {
+      document.querySelectorAll('#pagebuilder').forEach((element) => element.remove())
+
+      const config = {
+        updateOrCreate: { formType: 'update' as const, formName: 'collection' },
+        resourceData: { title: 'Existing Blog', id: 7 },
+        userSettings: { autoSave: true },
+      }
+      const possibleStorageKeys = [
+        'test-key',
+        'page-builder-update-resource-collection-existing-blog-7',
+        'page-builder-update-resource-collection-existing-blog',
+        'page-builder-update-resource-collection-default-post',
+      ]
+      const existingBlogComponents = [
+        {
+          id: 'blog-1',
+          title: 'Blog body',
+          html_code:
+            '<section data-component-title="Blog body"><div><p>Existing blog from host app</p></div></section>',
+        },
+      ]
+
+      possibleStorageKeys.forEach((storageKey) => {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            components: [
+              {
+                title: 'Draft body',
+                html_code:
+                  '<section data-component-title="Draft body"><div><p>Saved draft from local storage</p></div></section>',
+              },
+            ],
+            pageBuilderContentSavedAt: new Date().toISOString(),
+            pageSettings: { classes: '', style: '' },
+          }),
+        )
+      })
+
+      await service.startBuilder(config, existingBlogComponents)
+
+      const reopened = document.createElement('div')
+      reopened.id = 'pagebuilder'
+      document.body.appendChild(reopened)
+
+      expect(service.shouldCompleteBuilderMountOnMount(reopened)).toBe(true)
+      await service.completeBuilderInitialization(undefined)
+
+      const mounted = (mockStore.getComponents as { html_code: string }[]) || []
+      const mountedHtml = mounted.map((component) => component.html_code).join('\n')
+      expect(mountedHtml).toContain('Existing blog from host app')
+      expect(mountedHtml).not.toContain('Saved draft from local storage')
+      expect(localStorage.getItem('test-key')).toContain('Saved draft from local storage')
+      expect(mockStore.setHasLocalDraftForUpdate).toHaveBeenCalledWith(true)
     })
 
     it('REGRESSION (editability): completeMountProcess clears loading even when session is stale', async () => {
