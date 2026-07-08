@@ -199,12 +199,18 @@ watch(
                   'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
                 ]"
               >
-                <div class="pbx-flex pbx-items-center">
+                <div class="pbx-flex pbx-items-center pbx-gap-3">
                   <div
-                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
                     :style="{ backgroundColor: preset.color }"
                   ></div>
-                  <span class="pbx-ml-3">{{ translate(preset.label) }}</span>
+                  <span class="pbx-flex-1">{{ translate(preset.label) }}</span>
+                  <span
+                    v-if="textColor === `custom:${preset.color}`"
+                    class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+                    :style="{ backgroundColor: preset.color }"
+                    aria-hidden="true"
+                  ></span>
                 </div>
               </li>
             </ListboxOption>
@@ -317,17 +323,19 @@ watch(
             :key="preset.id"
             type="button"
             class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-            :class="{
-              'pbx-bg-myPrimaryLinkColor pbx-text-myPrimaryDarkGrayColor':
-                textColor === `custom:${preset.color}`,
-            }"
             @click="applyThemeTextColor(preset.color)"
           >
             <div
               class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
               :style="{ backgroundColor: preset.color }"
             ></div>
-            <span>{{ translate(preset.label) }}</span>
+            <span class="pbx-flex-1">{{ translate(preset.label) }}</span>
+            <span
+              v-if="textColor === `custom:${preset.color}`"
+              class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+              :style="{ backgroundColor: preset.color }"
+              aria-hidden="true"
+            ></span>
           </button>
           <div
             v-if="tailwindTextColors.length > 0"
@@ -345,16 +353,19 @@ watch(
           :key="color"
           type="button"
           class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-          :class="{
-            'pbx-bg-myPrimaryLinkColor': textColor === color,
-          }"
           @click="selectTailwindTextColor(color)"
         >
           <div
             class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
             :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
           ></div>
-          <span>{{ color }}</span>
+          <span class="pbx-flex-1">{{ color }}</span>
+          <span
+            v-if="textColor === color"
+            class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+            :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
+            aria-hidden="true"
+          ></span>
         </button>
       </div>
     </Teleport>

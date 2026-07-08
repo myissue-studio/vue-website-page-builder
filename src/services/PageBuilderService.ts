@@ -136,6 +136,7 @@ export class PageBuilderService {
   private hasStartedEditing: boolean = false
   // Hold data from Database or Backend for updated post
   private originalComponents: BuilderResourceData | undefined = undefined
+  private originalPageSettings: PageSettings | null = null
   // Holds data to be mounted when pagebuilder is not yet present in the DOM
   private savedMountComponents: BuilderResourceData | null = null
   private pendingMountComponents: BuilderResourceData | null = null
@@ -629,6 +630,7 @@ export class PageBuilderService {
     let validation
     try {
       this.originalComponents = passedComponentsArray
+      this.originalPageSettings = config.pageSettings ?? null
       this.pageBuilderStateStore.setPageBuilderConfig(config)
 
       // Apply language default from config if localStorage has no saved preference
@@ -3899,7 +3901,8 @@ export class PageBuilderService {
       await this.clearClassesFromPage()
       await this.clearInlineStylesFromPage()
       const htmlString = this.renderComponentsToHtml(this.originalComponents)
-      await this.mountComponentsToDOM(htmlString)
+      // Pass original page settings to restore the original page layout (bg color, classes, styles)
+      await this.mountComponentsToDOM(htmlString, false, this.originalPageSettings ?? undefined)
       this.removeCurrentComponentsFromLocalStorage()
     }
 
