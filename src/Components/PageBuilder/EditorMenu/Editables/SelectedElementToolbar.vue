@@ -1461,7 +1461,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
         data-pbx-more-menu-popover
         role="menu"
         :style="moreMenuPopoverStyle"
-        class="pbx-toolbarMoreMenu"
+        class="pbx-toolbarMoreMenu pbx-pb-12"
         @mousedown.stop
         @pointerdown.stop
         @click.stop
