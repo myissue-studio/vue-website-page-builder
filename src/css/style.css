@@ -1574,10 +1574,6 @@
   padding: 18px 14px;
 }
 
-#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
-  color: #fff;
-}
-
 #pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
   color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
 }
