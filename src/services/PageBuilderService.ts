@@ -664,14 +664,11 @@ export class PageBuilderService {
         this.debugLog('warn', 'startBuilder(): deferred mount decision', {
           existingDraft: Boolean(existingDraft),
           builderWasMountedBeforeClose: this.builderWasMountedBeforeClose,
-          willQueuePendingMount: !existingDraft,
+          willQueuePendingMount: true,
         })
-        // Only queue deferred DB mount when there is no draft yet, or on the very
-        // first open before the user has ever mounted the builder this page load.
-        // If a local draft exists already, it must win.
-        if (!existingDraft) {
-          this.pendingMountComponents = usablePassedComponents
-        }
+        // Passed update/create content is the source of truth for the initial canvas.
+        // A local draft may still exist, but it should be resumed explicitly by the user.
+        this.pendingMountComponents = usablePassedComponents
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
@@ -878,22 +875,9 @@ export class PageBuilderService {
           }
 
           if (passedComponentsArray && localStorageData) {
-            // Modal v-if reopen path: when the canvas is recreated and a local draft
-            // exists, always mount draft first. Showing the "passed + draft" resume
-            // flow here causes the UI to appear as if recent edits were not saved.
-            if (this.isPageBuilderMissingOnStart) {
-              this.debugLog(
-                'warn',
-                'completeBuilderInitialization(): missing-on-start + passed + draft → mount draft directly',
-                { key: this.getLocalStorageItemName.value },
-              )
-              await this.completeMountProcess(localStorageData, undefined, sessionToken)
-              return
-            }
-
             this.debugLog(
               'warn',
-              'completeBuilderInitialization(): both passed + draft exist → showing resume modal',
+              'completeBuilderInitialization(): both passed + draft exist → mounting passed content + showing resume modal',
               { key: this.getLocalStorageItemName.value },
             )
             const htmlString = this.renderComponentsToHtml(passedComponentsArray)
@@ -925,15 +909,14 @@ export class PageBuilderService {
         // Page Builder is not initially present in the DOM
         if (this.pendingMountComponents) {
           if (localStorageData && this.isPageBuilderMissingOnStart) {
-            // When the canvas is missing on start (modal v-if reopen pattern) and a draft exists,
-            // prefer restoring the draft directly. Mounting pending "DB/demo" content first would
-            // overwrite the draft visually and make users think their edits were lost.
             this.debugLog(
               'warn',
-              'completeBuilderInitialization(): pending mount + draft → mounting draft (draft wins)',
+              'completeBuilderInitialization(): pending mount + draft → mounting passed content + showing resume modal',
             )
-            this.pendingMountComponents = null
-            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
+            await this.completeMountProcess(htmlString, true, sessionToken)
+            await sleep(500)
+            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
             this.pendingMountComponents = null
             return
           }
