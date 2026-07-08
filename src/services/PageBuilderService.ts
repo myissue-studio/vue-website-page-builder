@@ -557,7 +557,9 @@ export class PageBuilderService {
     this.debugLog('warn', 'startBuilder(): begin', {
       sessionToken,
       hasPassedComponentsArray: Array.isArray(passedComponentsArray),
-      passedComponentsLength: Array.isArray(passedComponentsArray) ? passedComponentsArray.length : null,
+      passedComponentsLength: Array.isArray(passedComponentsArray)
+        ? passedComponentsArray.length
+        : null,
     })
 
     // Detect the current DOM state BEFORE any resets so we can decide whether a
@@ -867,7 +869,10 @@ export class PageBuilderService {
             return
           }
           if (passedComponentsArray && !localStorageData) {
-            this.debugLog('warn', 'completeBuilderInitialization(): mounting from passed components (no draft)')
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): mounting from passed components (no draft)',
+            )
             const htmlString = this.renderComponentsToHtml(passedComponentsArray)
             await this.completeMountProcess(htmlString, true, sessionToken)
             this.saveDomComponentsToLocalStorage()
@@ -888,7 +893,10 @@ export class PageBuilderService {
           }
 
           if (!passedComponentsArray && localStorageData && !this.pendingMountComponents) {
-            this.debugLog('warn', 'completeBuilderInitialization(): mounting from local draft (default path)')
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): mounting from local draft (default path)',
+            )
             await this.completeMountProcess(localStorageData, undefined, sessionToken)
             return
           }
@@ -921,7 +929,10 @@ export class PageBuilderService {
             return
           }
           if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
-            this.debugLog('warn', 'completeBuilderInitialization(): pending mount (no draft) → mount and save')
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): pending mount (no draft) → mount and save',
+            )
             const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
             await this.completeMountProcess(htmlString, true, sessionToken)
             this.saveDomComponentsToLocalStorage()
@@ -1895,7 +1906,7 @@ export class PageBuilderService {
     const htmlSource =
       typeof modelHtml === 'string' && modelHtml.trim().length > 0
         ? modelHtml
-        : prosemirror?.innerHTML ?? inlineElement.innerHTML
+        : (prosemirror?.innerHTML ?? inlineElement.innerHTML)
     const html = finalizeInlineTipTapHtml(htmlSource, originalHtml)
 
     inlineElement.innerHTML = html
@@ -2045,9 +2056,7 @@ export class PageBuilderService {
     if (shouldAutoSave) {
       const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
       const autoSaveSetting =
-        passedConfig && passedConfig.userSettings
-          ? passedConfig.userSettings.autoSave
-          : undefined
+        passedConfig && passedConfig.userSettings ? passedConfig.userSettings.autoSave : undefined
 
       // Always persist a draft snapshot on selection change. This is the lightest,
       // most reliable persistence path (DOM → localStorage) and covers edits like
@@ -3453,8 +3462,7 @@ export class PageBuilderService {
       hasInlineTipTap: Boolean(pagebuilder.querySelector('[data-pbx-inline-tiptap]')),
     })
 
-    const pageSettings =
-      this.readCurrentPageSettings() ??
+    const pageSettings = this.readCurrentPageSettings() ??
       this._lastKnownPageSettings ?? {
         classes: '',
         style: '',
