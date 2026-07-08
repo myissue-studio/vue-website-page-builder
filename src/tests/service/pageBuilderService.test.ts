@@ -72,7 +72,9 @@ function createMockStore() {
     }),
     setHistoryIndex: vi.fn(),
     setHistoryLength: vi.fn(),
-    setLocalStorageItemName: vi.fn(),
+    setLocalStorageItemName: vi.fn((payload: string | null) => {
+      base.getLocalStorageItemName = payload
+    }),
     setShowModalTipTap: vi.fn(),
     setMenuRight: vi.fn(),
     setBorderStyle: vi.fn(),
@@ -114,7 +116,9 @@ function createMockStore() {
       base.getElement = payload
     }),
     setComponent: vi.fn(),
-    setComponents: vi.fn(),
+    setComponents: vi.fn((payload: unknown) => {
+      base.getComponents = payload
+    }),
     setPushComponents: vi.fn(),
     setBasePrimaryImage: vi.fn(),
     setCurrentLayoutPreview: vi.fn(),
@@ -411,7 +415,7 @@ describe('PageBuilderService', () => {
       expect(loadingSpy).not.toHaveBeenCalledWith(true)
     })
 
-    it('does not set loading when session becomes stale during init sleep window', async () => {
+    it('clears loading when session becomes stale during init sleep window', async () => {
       vi.useFakeTimers()
       try {
         const fresh = new PageBuilderService(mockStore) as unknown as {
@@ -432,7 +436,8 @@ describe('PageBuilderService', () => {
         await vi.advanceTimersByTimeAsync(450)
         await pendingInit
 
-        expect(loadingSpy).not.toHaveBeenCalledWith(true)
+        expect(loadingSpy).toHaveBeenCalledWith(true)
+        expect(loadingSpy).toHaveBeenCalledWith(false)
       } finally {
         vi.useRealTimers()
       }
@@ -482,6 +487,64 @@ describe('PageBuilderService', () => {
 
       expect(mockStore.setElement).toHaveBeenCalledWith(editable)
     })
+
+    it('REGRESSION (modal v-if reopen): restores local draft after close and startBuilder re-run', async () => {
+      document.querySelector('#pagebuilder')?.remove()
+
+      const config = {
+        updateOrCreate: { formType: 'update' as const, formName: 'collection' },
+        resourceData: { title: 'Demo Page', id: 1 },
+        userSettings: { autoSave: true },
+      }
+      const demoComponents = [
+        {
+          id: 'demo-1',
+          title: 'Text',
+          html_code:
+            '<section data-component-title="Text"><div><p>Original text</p></div></section>',
+        },
+      ]
+
+      await service.startBuilder(config, demoComponents)
+
+      const pagebuilder = document.createElement('div')
+      pagebuilder.id = 'pagebuilder'
+      document.body.appendChild(pagebuilder)
+
+      await service.completeBuilderInitialization(undefined)
+
+      const mounted = (mockStore.getComponents as { html_code: string }[]) || []
+      pagebuilder.innerHTML = mounted
+        .map((component) => `<div data-pagebuilder-content>${component.html_code}</div>`)
+        .join('')
+
+      const paragraph = pagebuilder.querySelector('p')
+      expect(paragraph).not.toBeNull()
+      if (paragraph) paragraph.textContent = 'Edited text'
+
+      await service.handleManualSave()
+
+      pagebuilder.remove()
+      service.flushPendingEditsToLocalStorage()
+
+      await service.startBuilder(config, demoComponents)
+
+      const reopened = document.createElement('div')
+      reopened.id = 'pagebuilder'
+      document.body.appendChild(reopened)
+
+      expect(service.shouldCompleteBuilderMountOnMount(reopened)).toBe(true)
+      await service.completeBuilderInitialization(undefined)
+
+      const remounted = (mockStore.getComponents as { html_code: string }[]) || []
+      reopened.innerHTML = remounted
+        .map((component) => `<div data-pagebuilder-content>${component.html_code}</div>`)
+        .join('')
+
+      expect(reopened.textContent).toContain('Edited text')
+      expect(reopened.textContent).not.toContain('Original text')
+    })
+
     it('REGRESSION (editability): completeMountProcess clears loading even when session is stale', async () => {
       const svc = service as unknown as {
         activeBuilderSessionToken: number

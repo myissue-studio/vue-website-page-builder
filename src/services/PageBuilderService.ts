@@ -144,6 +144,7 @@ export class PageBuilderService {
   private _lastKnownPageSettings: PageSettings | null = null
   private isPageBuilderMissingOnStart: boolean = false
   private hasCompletedBuilderMount: boolean = false
+  private builderWasMountedBeforeClose: boolean = false
   private builderMountPromise: Promise<void> | null = null
   private activeBuilderSessionToken: number = 0
   private canvasClickCaptureListener: EventListener | null = null
@@ -216,6 +217,27 @@ export class PageBuilderService {
       'FIGURE',
       'FIGCAPTION',
     ]
+  }
+
+  // ---------------------------------------------------------------------------
+  // Debug logging (enable via localStorage: pbx-debug = "1")
+  // ---------------------------------------------------------------------------
+  private isDebugEnabled(): boolean {
+    try {
+      return typeof localStorage !== 'undefined' && localStorage.getItem('pbx-debug') === '1'
+    } catch {
+      return false
+    }
+  }
+
+  private debugLog(level: 'log' | 'warn' | 'error', message: string, data?: unknown): void {
+    if (!this.isDebugEnabled()) return
+    const prefix = '[PBX]'
+    if (data !== undefined) {
+      console[level](`${prefix} ${message}`, data)
+      return
+    }
+    console[level](`${prefix} ${message}`)
   }
 
   /**
@@ -532,6 +554,11 @@ export class PageBuilderService {
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
     const sessionToken = ++this.activeBuilderSessionToken
+    this.debugLog('warn', 'startBuilder(): begin', {
+      sessionToken,
+      hasPassedComponentsArray: Array.isArray(passedComponentsArray),
+      passedComponentsLength: Array.isArray(passedComponentsArray) ? passedComponentsArray.length : null,
+    })
 
     // Detect the current DOM state BEFORE any resets so we can decide whether a
     // full remount is needed.  When the builder is used with v-show (the component
@@ -544,6 +571,12 @@ export class PageBuilderService {
     const hasLiveMountedContent = Boolean(
       pagebuilderBeforeReset?.querySelector('section[data-componentid]'),
     )
+
+    this.debugLog('warn', 'startBuilder(): dom snapshot', {
+      hasLiveMountedContent,
+      hasPagebuilderEl: Boolean(pagebuilderBeforeReset),
+      hasCompletedBuilderMount: this.hasCompletedBuilderMount,
+    })
 
     if (!hasLiveMountedContent) {
       // DOM is missing or the canvas has no sections — needs a fresh mount cycle.
@@ -582,6 +615,7 @@ export class PageBuilderService {
     // Prevents builder actions to prevent errors caused by missing DOM .
     this.pageBuilderStateStore.setBuilderStarted(true)
     const pagebuilder = document.querySelector('#pagebuilder')
+    this.debugLog('warn', 'startBuilder(): #pagebuilder present?', Boolean(pagebuilder))
 
     // Snapshot page-level settings whenever a live wrapper exists so they can be
     // restored even if subsequent reopen payloads contain sections only.
@@ -614,6 +648,9 @@ export class PageBuilderService {
       // Update the localStorage key name based on the config/resource
       this.updateLocalStorageItemName()
       this.initializeHistory()
+      this.debugLog('warn', 'startBuilder(): storage key', {
+        key: this.getLocalStorageItemName.value,
+      })
 
       if (hasUsablePassedComponents) {
         this.savedMountComponents = usablePassedComponents
@@ -623,10 +660,25 @@ export class PageBuilderService {
         this.isPageBuilderMissingOnStart = true
       }
       if (hasUsablePassedComponents && !pagebuilder) {
-        this.pendingMountComponents = usablePassedComponents
+        const existingDraft = this.getSavedPageHtml()
+        this.debugLog('warn', 'startBuilder(): deferred mount decision', {
+          existingDraft: Boolean(existingDraft),
+          builderWasMountedBeforeClose: this.builderWasMountedBeforeClose,
+          willQueuePendingMount: !existingDraft,
+        })
+        // Only queue deferred DB mount when there is no draft yet, or on the very
+        // first open before the user has ever mounted the builder this page load.
+        // If a local draft exists already, it must win.
+        if (!existingDraft) {
+          this.pendingMountComponents = usablePassedComponents
+        }
       }
       // Page Builder is Present in the DOM & Components have been passed to the Builder
       if (pagebuilder && (!passedComponentsArray || Array.isArray(passedComponentsArray))) {
+        this.debugLog('warn', 'startBuilder(): calling completeBuilderInitialization', {
+          hasUsablePassedComponents,
+          isPageBuilderMissingOnStart: this.isPageBuilderMissingOnStart,
+        })
         await this.completeBuilderInitializationWithSession(
           hasUsablePassedComponents ? usablePassedComponents : undefined,
           sessionToken,
@@ -638,6 +690,7 @@ export class PageBuilderService {
       // interaction listeners so the canvas cannot get stuck as non-editable.
       if (pagebuilder) {
         await this.addListenersToEditableElements()
+        this.debugLog('warn', 'startBuilder(): listeners attached (safety net)')
       }
 
       // Re-apply config pageSettings when the full remount was skipped (hasLiveMountedContent).
@@ -678,6 +731,7 @@ export class PageBuilderService {
       return result
     } catch (err) {
       console.error('Not able to start the Page Builder', err)
+      this.debugLog('error', 'startBuilder(): error', err)
       return {
         error: true as const,
         reason: 'Failed to start the Page Builder due to an unexpected error.',
@@ -696,6 +750,16 @@ export class PageBuilderService {
    */
   public shouldCompleteBuilderMountOnMount(ownCanvas?: HTMLElement): boolean {
     if (this.hasCompletedBuilderMount) {
+      // v-if modal reopen path:
+      // startBuilder() marks this session as missing-on-start while the modal is closed.
+      // Even if Vue renders sections from stale singleton store state, we must still
+      // run deferred mount so the latest localStorage draft is applied.
+      if (this.isPageBuilderMissingOnStart) {
+        this.hasCompletedBuilderMount = false
+        this.builderMountPromise = null
+        return true
+      }
+
       // A previous PageBuilder session completed mounting. Check THIS component instance's
       // canvas (not the first matching document element) — covers the case of a PageBuilder
       // inside a v-if modal that just opened: its canvas is empty even though another instance
@@ -711,6 +775,17 @@ export class PageBuilderService {
       return false
     }
     return this.isPageBuilderMissingOnStart || Boolean(this.pendingMountComponents)
+  }
+
+  /**
+   * Marks the builder canvas lifecycle as "missing on start" for the next mount.
+   * Used by PageBuilder.vue on unmount (v-if modal close) so reopen performs
+   * a full draft-aware initialization instead of reusing potentially stale store DOM.
+   */
+  public markCanvasUnmountedForNextMount(): void {
+    this.hasCompletedBuilderMount = false
+    this.builderMountPromise = null
+    this.isPageBuilderMissingOnStart = true
   }
 
   /**
@@ -730,14 +805,21 @@ export class PageBuilderService {
     sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
     if (sessionToken !== this.activeBuilderSessionToken) return
-    if (this.hasCompletedBuilderMount) return
+    if (this.hasCompletedBuilderMount) {
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+      return
+    }
     if (!this.builderMountPromise) {
       this.builderMountPromise = this.runCompleteBuilderInitialization(
         passedComponentsArray,
         sessionToken,
       )
     }
-    await this.builderMountPromise
+    try {
+      await this.builderMountPromise
+    } finally {
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
+    }
   }
 
   private async runCompleteBuilderInitialization(
@@ -745,91 +827,138 @@ export class PageBuilderService {
     sessionToken: number = this.activeBuilderSessionToken,
   ): Promise<void> {
     if (sessionToken !== this.activeBuilderSessionToken) return
-    await sleep(400)
-    if (sessionToken !== this.activeBuilderSessionToken) return
-    this.pageBuilderStateStore.setIsLoadingGlobal(true)
+    let turnedLoadingOn = false
+    try {
+      this.pageBuilderStateStore.setIsLoadingGlobal(true)
+      turnedLoadingOn = true
+      await sleep(400)
+      if (sessionToken !== this.activeBuilderSessionToken) return
+      this.debugLog('warn', 'completeBuilderInitialization(): loading ON', {
+        sessionToken,
+        key: this.getLocalStorageItemName.value,
+      })
 
-    // Always clear DOM and store before mounting new resource
-    this.deleteAllComponentsFromDOM()
+      // Always clear DOM and store before mounting new resource
+      this.deleteAllComponentsFromDOM()
 
-    const config = this.pageBuilderStateStore.getPageBuilderConfig
-    const formType = config && config.updateOrCreate && config.updateOrCreate.formType
+      const config = this.pageBuilderStateStore.getPageBuilderConfig
+      const formType = config && config.updateOrCreate && config.updateOrCreate.formType
 
-    const localStorageData = this.getSavedPageHtml()
+      const localStorageData = this.getSavedPageHtml()
+      this.debugLog('warn', 'completeBuilderInitialization(): draft presence', {
+        key: this.getLocalStorageItemName.value,
+        hasLocalDraft: Boolean(localStorageData),
+        draftBytes: typeof localStorageData === 'string' ? localStorageData.length : 0,
+        isPageBuilderMissingOnStart: this.isPageBuilderMissingOnStart,
+        hasPendingMountComponents: Boolean(this.pendingMountComponents),
+        hasPassedComponents: Boolean(passedComponentsArray),
+      })
 
-    // Deselect any selected or hovered elements in the builder UI
-    await this.clearHtmlSelection()
-    if (sessionToken !== this.activeBuilderSessionToken) return
+      // Deselect any selected or hovered elements in the builder UI
+      await this.clearHtmlSelection()
+      if (sessionToken !== this.activeBuilderSessionToken) return
 
-    if (formType === 'update' || formType === 'create') {
-      // Page Builder is initially present in the DOM
-      if (!this.pendingMountComponents) {
-        if (!passedComponentsArray && this.isPageBuilderMissingOnStart && localStorageData) {
-          await this.completeMountProcess(localStorageData, undefined, sessionToken)
-          return
+      if (formType === 'update' || formType === 'create') {
+        // Page Builder is initially present in the DOM
+        if (!this.pendingMountComponents) {
+          if (!passedComponentsArray && this.isPageBuilderMissingOnStart && localStorageData) {
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): mounting from local draft (missing-on-start)',
+            )
+            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            return
+          }
+          if (passedComponentsArray && !localStorageData) {
+            this.debugLog('warn', 'completeBuilderInitialization(): mounting from passed components (no draft)')
+            const htmlString = this.renderComponentsToHtml(passedComponentsArray)
+            await this.completeMountProcess(htmlString, true, sessionToken)
+            this.saveDomComponentsToLocalStorage()
+            return
+          }
+
+          if (passedComponentsArray && localStorageData) {
+            // Modal v-if reopen path: when the canvas is recreated and a local draft
+            // exists, always mount draft first. Showing the "passed + draft" resume
+            // flow here causes the UI to appear as if recent edits were not saved.
+            if (this.isPageBuilderMissingOnStart) {
+              this.debugLog(
+                'warn',
+                'completeBuilderInitialization(): missing-on-start + passed + draft → mount draft directly',
+                { key: this.getLocalStorageItemName.value },
+              )
+              await this.completeMountProcess(localStorageData, undefined, sessionToken)
+              return
+            }
+
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): both passed + draft exist → showing resume modal',
+              { key: this.getLocalStorageItemName.value },
+            )
+            const htmlString = this.renderComponentsToHtml(passedComponentsArray)
+            await this.completeMountProcess(htmlString, true, sessionToken)
+            await sleep(500)
+            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
+            return
+          }
+
+          if (!passedComponentsArray && localStorageData && !this.pendingMountComponents) {
+            this.debugLog('warn', 'completeBuilderInitialization(): mounting from local draft (default path)')
+            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            return
+          }
+
+          if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
+            const htmlString = this.renderComponentsToHtml([])
+            await this.completeMountProcess(htmlString, undefined, sessionToken)
+            return
+          }
+
+          if (!this.isPageBuilderMissingOnStart && !localStorageData && !passedComponentsArray) {
+            const htmlString = this.renderComponentsToHtml([])
+            await this.completeMountProcess(htmlString, undefined, sessionToken)
+            return
+          }
         }
-        if (passedComponentsArray && !localStorageData) {
-          const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true, sessionToken)
-          this.saveDomComponentsToLocalStorage()
-          return
-        }
 
-        if (passedComponentsArray && localStorageData) {
-          const htmlString = this.renderComponentsToHtml(passedComponentsArray)
-          await this.completeMountProcess(htmlString, true, sessionToken)
-          await sleep(500)
-          this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
-          return
-        }
+        // Page Builder is not initially present in the DOM
+        if (this.pendingMountComponents) {
+          if (localStorageData && this.isPageBuilderMissingOnStart) {
+            // When the canvas is missing on start (modal v-if reopen pattern) and a draft exists,
+            // prefer restoring the draft directly. Mounting pending "DB/demo" content first would
+            // overwrite the draft visually and make users think their edits were lost.
+            this.debugLog(
+              'warn',
+              'completeBuilderInitialization(): pending mount + draft → mounting draft (draft wins)',
+            )
+            this.pendingMountComponents = null
+            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            this.pendingMountComponents = null
+            return
+          }
+          if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
+            this.debugLog('warn', 'completeBuilderInitialization(): pending mount (no draft) → mount and save')
+            const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
+            await this.completeMountProcess(htmlString, true, sessionToken)
+            this.saveDomComponentsToLocalStorage()
+            return
+          }
 
-        if (!passedComponentsArray && localStorageData && !this.savedMountComponents) {
-          await this.completeMountProcess(localStorageData, undefined, sessionToken)
-          return
-        }
-        if (!passedComponentsArray && this.savedMountComponents && localStorageData) {
-          const htmlString = this.renderComponentsToHtml(this.savedMountComponents)
-          await this.completeMountProcess(htmlString, undefined, sessionToken)
-          return
-        }
-
-        if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
-          const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString, undefined, sessionToken)
-
-          return
-        }
-
-        if (!this.isPageBuilderMissingOnStart && !localStorageData && !passedComponentsArray) {
-          const htmlString = this.renderComponentsToHtml([])
-          await this.completeMountProcess(htmlString, undefined, sessionToken)
-          return
+          if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
+            const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
+            await this.completeMountProcess(htmlString, true, sessionToken)
+            this.saveDomComponentsToLocalStorage()
+            return
+          }
         }
       }
-
-      // Page Builder is not initially present in the DOM
-      if (this.pendingMountComponents) {
-        if (localStorageData && this.isPageBuilderMissingOnStart) {
-          const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true, sessionToken)
-          await sleep(500)
-          this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
-          this.pendingMountComponents = null
-          return
-        }
-        if (!localStorageData && passedComponentsArray && this.isPageBuilderMissingOnStart) {
-          const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true, sessionToken)
-          this.saveDomComponentsToLocalStorage()
-          return
-        }
-
-        if (!passedComponentsArray && !localStorageData && this.isPageBuilderMissingOnStart) {
-          const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
-          await this.completeMountProcess(htmlString, true, sessionToken)
-          this.saveDomComponentsToLocalStorage()
-          return
-        }
+    } finally {
+      // Always clear if this init turned loading on. Do not gate on session token:
+      // a concurrent startBuilder() can bump the token while we are mid-init and
+      // would otherwise leave isLoadingGlobal stuck true forever.
+      if (turnedLoadingOn) {
+        this.pageBuilderStateStore.setIsLoadingGlobal(false)
       }
     }
   }
@@ -884,7 +1013,14 @@ export class PageBuilderService {
     this.deleteOldPageBuilderLocalStorage()
     this.pageBuilderStateStore.setIsRestoring(false)
     this.hasCompletedBuilderMount = true
+    this.builderWasMountedBeforeClose = true
+    this.pendingMountComponents = null
+    this.isPageBuilderMissingOnStart = false
     this.pageBuilderStateStore.setIsLoadingGlobal(false)
+    this.debugLog('warn', 'completeMountProcess(): loading OFF + mount complete', {
+      sessionToken,
+      hasCompletedBuilderMount: this.hasCompletedBuilderMount,
+    })
   }
 
   /**
@@ -1299,7 +1435,9 @@ export class PageBuilderService {
     await this.addListenersToEditableElements()
 
     if (!status) {
-      await this.handleAutoSave()
+      // Persist inline edits even if userSettings.autoSave is disabled.
+      this.commitActiveInlineTipTapEditorSync()
+      this.saveDomComponentsToLocalStorage()
     }
   }
 
@@ -1335,7 +1473,9 @@ export class PageBuilderService {
     await this.addListenersToEditableElements()
 
     if (shouldAutoSave) {
-      await this.handleAutoSave()
+      // Persist inline edits even if userSettings.autoSave is disabled.
+      this.commitActiveInlineTipTapEditorSync()
+      this.saveDomComponentsToLocalStorage()
     }
   }
 
@@ -1603,8 +1743,11 @@ export class PageBuilderService {
 
     this.attachCanvasInlineEditListeners(pagebuilder)
 
+    let eligible = 0
+    let attached = 0
     pagebuilder.querySelectorAll('section *').forEach((element) => {
       if (this.isEditableElement(element)) {
+        eligible++
         const htmlElement = element as HTMLElement
 
         // If the element already has listeners, remove them to avoid duplicates.
@@ -1629,6 +1772,7 @@ export class PageBuilderService {
         htmlElement.addEventListener('dblclick', dblclickListener)
         htmlElement.addEventListener('mouseover', mouseoverListener)
         htmlElement.addEventListener('mouseleave', mouseleaveListener)
+        attached++
 
         // Store the new listeners in the WeakMap to track them.
         this.elementsWithListeners.set(htmlElement, {
@@ -1638,6 +1782,12 @@ export class PageBuilderService {
           mouseleave: mouseleaveListener,
         })
       }
+    })
+
+    this.debugLog('log', 'addListenersToEditableElements(): attached listeners', {
+      eligible,
+      attached,
+      hasSections: Boolean(pagebuilder.querySelector('section')),
     })
   }
 
@@ -1743,29 +1893,56 @@ export class PageBuilderService {
     return Boolean(document.querySelector('#pagebuilder [data-pbx-inline-tiptap]'))
   }
 
-  public async finishActiveInlineTipTapEditorFromDom(
-    nextElement: HTMLElement | null = null,
-  ): Promise<void> {
+  /**
+   * Writes any active inline TipTap editor back to the live DOM synchronously.
+   * Used before localStorage persistence and before the builder unmounts.
+   */
+  private commitActiveInlineTipTapEditorSync(): HTMLElement | null {
     const inlineElement = document.querySelector<HTMLElement>(
       '#pagebuilder [data-pbx-inline-tiptap]',
     )
+
+    if (!inlineElement) return null
+
+    const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
+    const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
+    // Prefer the Vue store's live model (updated on every TipTap onUpdate) because
+    // DOM reads from ProseMirror can lag behind the editor state in some cases.
+    const modelHtml = this.pageBuilderStateStore.getTextAreaVueModel
+    const htmlSource =
+      typeof modelHtml === 'string' && modelHtml.trim().length > 0
+        ? modelHtml
+        : prosemirror?.innerHTML ?? inlineElement.innerHTML
+    const html = finalizeInlineTipTapHtml(htmlSource, originalHtml)
+
+    inlineElement.innerHTML = html
+    inlineElement.removeAttribute('data-pbx-inline-tiptap')
+    inlineElement.removeAttribute('data-pbx-inline-original-html')
+    this.pageBuilderStateStore.setTextAreaVueModel(html)
+    this.pageBuilderStateStore.setInlineTipTapEditor(false)
+
+    return inlineElement
+  }
+
+  /**
+   * Commits open inline editors and persists the current canvas to localStorage.
+   * Call before destroying the PageBuilder component (e.g. modal v-if close).
+   */
+  public flushPendingEditsToLocalStorage(): void {
+    this.commitActiveInlineTipTapEditorSync()
+    this.saveDomComponentsToLocalStorage()
+  }
+
+  public async finishActiveInlineTipTapEditorFromDom(
+    nextElement: HTMLElement | null = null,
+  ): Promise<void> {
+    const inlineElement = this.commitActiveInlineTipTapEditorSync()
 
     if (!inlineElement) {
       await this.toggleInlineTipTapEditor(false)
       return
     }
 
-    const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
-    const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
-    const html = finalizeInlineTipTapHtml(
-      prosemirror?.innerHTML ?? inlineElement.innerHTML,
-      originalHtml,
-    )
-
-    inlineElement.innerHTML = html
-    inlineElement.removeAttribute('data-pbx-inline-tiptap')
-    inlineElement.removeAttribute('data-pbx-inline-original-html')
-    this.pageBuilderStateStore.setTextAreaVueModel(html)
     this.pageBuilderStateStore.setElement(inlineElement)
 
     // Close TipTap without blocking on auto-save so the next element can be
@@ -1777,7 +1954,11 @@ export class PageBuilderService {
       await this.selectEditableElement(nextElement, false)
     }
 
-    // One background auto-save for the whole close+select operation.
+    // Persist the committed inline HTML immediately, even if autoSave is disabled.
+    this.saveDomComponentsToLocalStorage()
+
+    // If autoSave is enabled, still run it (non-blocking) so any other
+    // DOM-only changes are captured by the normal pipeline.
     void this.handleAutoSave()
   }
 
@@ -1853,7 +2034,14 @@ export class PageBuilderService {
   ): Promise<void> {
     const pagebuilder = document.querySelector('#pagebuilder')
 
-    if (!pagebuilder) return
+    if (!pagebuilder) {
+      this.debugLog('warn', 'selectEditableElement(): #pagebuilder missing; cannot select/save', {
+        elementTag: element?.tagName,
+        elementId: element?.id ?? null,
+        key: this.getLocalStorageItemName.value,
+      })
+      return
+    }
 
     this.pageBuilderStateStore.setMenuRight(true)
 
@@ -1872,7 +2060,21 @@ export class PageBuilderService {
     await this.initializeElementStyles()
 
     if (shouldAutoSave) {
-      await this.handleAutoSave()
+      const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
+      const autoSaveSetting =
+        passedConfig && passedConfig.userSettings
+          ? passedConfig.userSettings.autoSave
+          : undefined
+
+      // Always persist a draft snapshot on selection change. This is the lightest,
+      // most reliable persistence path (DOM → localStorage) and covers edits like
+      // image src changes, link href changes, and inline text edits.
+      this.saveDomComponentsToLocalStorage()
+
+      // If auto-save is enabled, also run the full auto-save pipeline (non-blocking).
+      if (autoSaveSetting !== false) {
+        void this.handleAutoSave()
+      }
     }
   }
 
@@ -1910,13 +2112,13 @@ export class PageBuilderService {
         if (this.pageBuilderStateStore.getIsSaving) return
 
         try {
+          this.commitActiveInlineTipTapEditorSync()
           this.pageBuilderStateStore.setIsSaving(true)
-          // Deselect any selected or hovered elements in the builder UI
-          //
           this.saveDomComponentsToLocalStorage()
           await sleep(400)
         } catch (err) {
           console.error('Error trying auto save.', err)
+          this.debugLog('error', 'handleAutoSave(): error', err)
           const { showToast } = useToast()
           const { translate } = useTranslations()
           showToast(translate('Auto-save failed — please save manually'), 'error')
@@ -1927,11 +2129,13 @@ export class PageBuilderService {
     }
     if (passedConfig && !passedConfig.userSettings) {
       try {
+        this.commitActiveInlineTipTapEditorSync()
         this.pageBuilderStateStore.setIsSaving(true)
         this.saveDomComponentsToLocalStorage()
         await sleep(400)
       } catch (err) {
         console.error('Error trying saving.', err)
+        this.debugLog('error', 'handleAutoSave(): error (no userSettings)', err)
         const { showToast } = useToast()
         const { translate } = useTranslations()
         showToast(translate('Auto-save failed — please save manually'), 'error')
@@ -1945,12 +2149,18 @@ export class PageBuilderService {
    * Manually saves the current page builder content to local storage.
    */
   public handleManualSave = async (doNoClearHTML?: boolean) => {
+    // Sync DOM → store BEFORE toggling isSaving (re-render), otherwise Vue will
+    // overwrite the user's live edits with stale store HTML on save click.
+    this.commitActiveInlineTipTapEditorSync()
+    await this.syncDomToStoreOnly()
+
     this.pageBuilderStateStore.setIsSaving(true)
     if (!doNoClearHTML) {
       this.clearHtmlSelection()
     }
     this.startEditing()
     this.saveDomComponentsToLocalStorage()
+    await this.refreshListeners()
     await sleep(300)
     this.pageBuilderStateStore.setIsSaving(false)
   }
@@ -3213,9 +3423,27 @@ export class PageBuilderService {
    * @private
    */
   private saveDomComponentsToLocalStorage() {
-    this.updateLocalStorageItemName()
+    this.commitActiveInlineTipTapEditorSync()
+    // IMPORTANT: Do not continuously recompute the storage key while editing.
+    // If the key changes between "save" and "reopen", the builder will load from
+    // a different key and it will look like the draft never persisted.
+    // Only compute a key if one doesn't exist yet.
+    if (!this.getLocalStorageItemName.value) {
+      this.updateLocalStorageItemName()
+    }
+    const resolvedKey = this.getLocalStorageItemName.value
+    if (!resolvedKey) {
+      this.debugLog('warn', 'saveDomComponentsToLocalStorage(): no storage key resolved', {
+        config: this.pageBuilderStateStore.getPageBuilderConfig ?? null,
+      })
+    }
     const pagebuilder = document.querySelector('#pagebuilder')
-    if (!pagebuilder) return
+    if (!pagebuilder) {
+      this.debugLog('warn', 'saveDomComponentsToLocalStorage(): no #pagebuilder in DOM', {
+        key: resolvedKey,
+      })
+      return
+    }
 
     const hoveredElement = pagebuilder.querySelector('[hovered]')
     if (hoveredElement) {
@@ -3235,11 +3463,40 @@ export class PageBuilderService {
         title: sanitizedSection.getAttribute('data-component-title') || 'Untitled Component',
       })
     })
+    this.debugLog('warn', 'saveDomComponentsToLocalStorage(): collected sections', {
+      key: resolvedKey,
+      sections: componentsToSave.length,
+      hasSelected: Boolean(pagebuilder.querySelector('[selected]')),
+      hasInlineTipTap: Boolean(pagebuilder.querySelector('[data-pbx-inline-tiptap]')),
+    })
 
-    const pageSettings = this.readCurrentPageSettings() ?? {
-      classes: '',
-      style: '',
+    const pageSettings =
+      this.readCurrentPageSettings() ??
+      this._lastKnownPageSettings ?? {
+        classes: '',
+        style: '',
+      }
+
+    // Persist page settings into the in-memory config so Vue bindings can use it.
+    // Without this, PageBuilder.vue's :class binding on #pagebuilder will overwrite
+    // the DOM class/style on each reopen.
+    const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
+    if (currentConfig && typeof currentConfig === 'object') {
+      this.pageBuilderStateStore.setPageBuilderConfig({
+        ...(currentConfig as Record<string, unknown>),
+        pageSettings,
+      } as never)
     }
+
+    this.debugLog('warn', 'saveDomComponentsToLocalStorage(): pageSettings snapshot', {
+      classes: pageSettings?.classes ?? '',
+      style:
+        typeof pageSettings?.style === 'string'
+          ? pageSettings.style
+          : pageSettings?.style
+            ? this.convertStyleObjectToString(pageSettings.style)
+            : '',
+    })
 
     const dataToSave = {
       components: componentsToSave,
@@ -3251,10 +3508,25 @@ export class PageBuilderService {
 
     if (baseKey) {
       const currentDataRaw = localStorage.getItem(baseKey)
+      this.debugLog('warn', 'saveDomComponentsToLocalStorage(): existing key?', {
+        baseKey,
+        hasExisting: Boolean(currentDataRaw),
+      })
 
-      if (!currentDataRaw) {
+      // Always write the latest DOM snapshot. We previously only wrote when we
+      // detected a structural diff, but that can miss TipTap edits due to
+      // sanitization/normalization differences. History deduping below still
+      // prevents redundant undo states.
+      try {
         localStorage.setItem(baseKey, JSON.stringify(dataToSave))
+      } catch (err) {
+        this.debugLog('error', 'saveDomComponentsToLocalStorage(): localStorage.setItem failed', {
+          baseKey,
+          err,
+        })
+        return
       }
+
       if (currentDataRaw) {
         const currentData = JSON.parse(currentDataRaw)
 
@@ -3283,7 +3555,10 @@ export class PageBuilderService {
 
         // Only save to local storage if there's a difference between the existing saved data and the current DOM data
         if (hasChanges || hasPageSettingsChanges) {
-          localStorage.setItem(baseKey, JSON.stringify(dataToSave))
+          this.debugLog('error', 'saveDomComponentsToLocalStorage(): wrote draft', {
+            baseKey,
+            sections: dataToSave.components.length,
+          })
           let history = LocalStorageManager.getHistory(baseKey)
 
           const lastState = history[history.length - 1] as

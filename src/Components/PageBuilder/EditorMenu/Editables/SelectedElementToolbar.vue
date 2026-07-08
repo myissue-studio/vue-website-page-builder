@@ -653,7 +653,7 @@ const handleModalIframeSrc = function () {
     showModalIframeSrc.value = false
   }
   // handle click
-  secondModalButtonFunctionDynamicModalBuilderTipTap.value = function () {
+  secondModalButtonFunctionDynamicModalBuilderTipTap.value = async function () {
     const isNotValidated = validateURL()
     if (isNotValidated) {
       return
@@ -711,6 +711,7 @@ const handleModalIframeSrc = function () {
       }
 
       ;(getElement.value.firstElementChild as HTMLIFrameElement).src = embedUrl
+      await pageBuilderService.handleAutoSave()
     }
 
     showModalIframeSrc.value = false
