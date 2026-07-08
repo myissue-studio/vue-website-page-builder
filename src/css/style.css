@@ -776,7 +776,7 @@
   }
 
   .pbx-toast {
-    @apply pbx-pointer-events-auto pbx-flex pbx-min-w-[15rem] pbx-max-w-sm pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-2xl pbx-px-5 pbx-py-3.5 pbx-shadow-lg;
+    @apply pbx-pointer-events-auto pbx-flex pbx-min-w-[15rem] pbx-max-w-sm pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-full pbx-px-5 pbx-py-3.5 pbx-shadow-lg;
   }
 
   .pbx-toastMessage {
