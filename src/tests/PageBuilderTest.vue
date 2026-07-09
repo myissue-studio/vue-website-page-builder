@@ -10,11 +10,18 @@ import { getPageBuilder } from '../composables/usePageBuilder'
 import { useTranslations } from '../composables/useTranslations'
 import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from '../tests/demo-theme-presets'
 import { getDemoPageHtml, translateThemePlaceholderText } from '../tests/demo-theme-utils'
-
+import BaseModal from '@/Components/Modals/BaseModal.vue'
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()
 
 const showDemoThemePanel = ref(false)
+
+const showBuilderModal = ref(false)
+
+const toggleModalBuilder = function () {
+  showBuilderModal.value = !showBuilderModal.value
+}
+
 const showWelcomeHint = ref(false)
 const highlightThemeTrigger = ref(false)
 
@@ -117,14 +124,22 @@ watch(
 
 <template>
   <div class="pbx-bg-white">
+    <div class="pbx-py-6 pbx-px-4 pbx-bg-indigo-500">
+      <p>
+        show
+        <button type="button" class="pbx-myPrimaryButton" @click="toggleModalBuilder">
+          showwwww
+        </button>
+      </p>
+    </div>
     <div class="lg:pbx-p-2">
-      <PageBuilder
+      <!-- <PageBuilder
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
         :DisplayProducts="DemoDisplayProductsTest"
         :showPublishButton="true"
         :showCloseButton="true"
         @handlePublishPageBuilder="publishPageBuilder"
-      />
+      /> -->
 
       <button
         v-if="!showDemoThemePanel"
@@ -155,6 +170,23 @@ watch(
           @dismiss-welcome-hint="dismissWelcomeHint"
         />
       </FloatingSidePanel>
+
+      <BaseModal
+        title="mybuilder"
+        maxWidth="screen"
+        :showModalBuilder="showBuilderModal"
+        @closeMainModalBuilder="toggleModalBuilder"
+        minHeight=""
+        maxHeight=""
+      >
+        <PageBuilder
+          :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
+          :DisplayProducts="DemoDisplayProductsTest"
+          :showPublishButton="true"
+          :showCloseButton="true"
+          @handlePublishPageBuilder="publishPageBuilder"
+        />
+      </BaseModal>
     </div>
   </div>
 </template>

@@ -115,6 +115,8 @@ In Page Design, the Typography panel now opens by default and uses a clearer hig
 
 Typography in Page Design is now progressively disclosed: core controls (font family, size, weight) stay visible by default, while less-used controls are grouped under a `More options` toggle.
 
+The Page Design Typography card is now denser: controls are grouped into a compact visual panel and key fields are arranged in a responsive two-column layout on wider screens to reduce vertical space.
+
 At the bottom of Page Design, a danger action is available to clear global page wrapper classes and inline styles (`#pagebuilder` only) without removing sections/components. This action now uses a confirmation modal before applying the reset.
 
 Classes and inline styles added from Advanced controls now update immediately in the inspector list for both Page Design (`#pagebuilder`) and selected elements, without closing/reopening modals or reselecting elements.
