@@ -940,6 +940,36 @@ describe('PageBuilderService', () => {
       fresh.handleRemoveClasses('pbx-font-bold')
       expect(el.classList.contains('pbx-text-black')).toBe(true)
     })
+
+    it('in global page-design mode, adds class to #pagebuilder even when no element is selected', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.className = ''
+      ;(mockStore as unknown as Record<string, unknown>).getElement = null
+      ;(mockStore as unknown as Record<string, unknown>).getToggleGlobalHtmlMode = true
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleAddClasses('font-bold')
+
+      expect(pagebuilder.classList.contains('pbx-font-bold')).toBe(true)
+    })
+
+    it('in global page-design mode, removes class from #pagebuilder even when no element is selected', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.className = 'pbx-font-bold'
+      ;(mockStore as unknown as Record<string, unknown>).getElement = null
+      ;(mockStore as unknown as Record<string, unknown>).getToggleGlobalHtmlMode = true
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleRemoveClasses('pbx-font-bold')
+
+      expect(pagebuilder.classList.contains('pbx-font-bold')).toBe(false)
+    })
   })
 
   // --- handleAddStyle / handleRemoveStyle ---
@@ -963,6 +993,25 @@ describe('PageBuilderService', () => {
 
     it('does nothing when no element selected', () => {
       expect(() => service.handleAddStyle('color', 'red')).not.toThrow()
+    })
+
+    it('in global page-design mode, applies border classes to #pagebuilder', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.className = ''
+      ;(mockStore as unknown as Record<string, unknown>).getElement = null
+      ;(mockStore as unknown as Record<string, unknown>).getToggleGlobalHtmlMode = true
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleBorderStyle('pbx-border-dashed')
+      fresh.handleBorderWidth('pbx-border-2')
+      fresh.handleBorderColor('pbx-border-black')
+
+      expect(pagebuilder.classList.contains('pbx-border-dashed')).toBe(true)
+      expect(pagebuilder.classList.contains('pbx-border-2')).toBe(true)
+      expect(pagebuilder.classList.contains('pbx-border-black')).toBe(true)
     })
   })
 

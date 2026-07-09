@@ -237,7 +237,7 @@ watch(
           <ListboxOption
             as="template"
             v-for="color in tailwindBackgroundColors"
-            @click="pageBuilderService.handleBackgroundColor(backgroundColor ?? undefined)"
+            @click="pageBuilderService.handleBackgroundColor(color)"
             :key="color"
             :value="color"
             v-slot="{ active }"

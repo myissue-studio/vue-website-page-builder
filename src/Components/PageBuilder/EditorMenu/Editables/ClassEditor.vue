@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
 import ClassTagsList from './ClassTagsList.vue'
@@ -12,16 +12,7 @@ const pageBuilderService = getPageBuilder()
 
 const pageBuilderStateStore = sharedPageBuilderStore
 
-const currentClasses = ref<string[] | null>(null)
-const getCurrentClasses = computed(() => pageBuilderStateStore.getCurrentClasses)
-
-watch(
-  getCurrentClasses,
-  (newValue) => {
-    currentClasses.value = newValue
-  },
-  { immediate: true },
-)
+const currentClasses = computed(() => pageBuilderStateStore.getCurrentClasses)
 
 const inputClass = ref('')
 const errorMessage = ref('') // <-- error message reactive ref

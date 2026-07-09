@@ -110,6 +110,8 @@ const closeHTMLSettings = async function () {
     showToast(translate('Page saved successfully'), 'success')
   } catch {
     showToast(translate('Could not save page'), 'error')
+  } finally {
+    pageBuilderStateStore.setToggleGlobalHtmlMode(false)
   }
 
   pageBuilderService.stopGlobalStylesSync()

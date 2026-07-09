@@ -127,7 +127,7 @@ watch(
                 <ListboxOption
                   as="template"
                   v-for="color in tailwindBorderStyleWidthPlusColor.borderColor"
-                  @click="pageBuilderService.handleBorderColor(borderColor ?? undefined)"
+                  @click="pageBuilderService.handleBorderColor(color ?? undefined)"
                   :key="color"
                   :value="color"
                   v-slot="{ active }"

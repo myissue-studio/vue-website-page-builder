@@ -227,7 +227,7 @@ watch(
           <ListboxOption
             as="template"
             v-for="color in tailwindTextColors"
-            @click="pageBuilderService.handleTextColor(textColor ?? undefined)"
+            @click="pageBuilderService.handleTextColor(color)"
             :key="color"
             :value="color"
             v-slot="{ active }"

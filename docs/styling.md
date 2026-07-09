@@ -117,6 +117,18 @@ Typography in Page Design is now progressively disclosed: core controls (font fa
 
 At the bottom of Page Design, a danger action is available to clear global page wrapper classes and inline styles (`#pagebuilder` only) without removing sections/components. This action now uses a confirmation modal before applying the reset.
 
+Classes and inline styles added from Advanced controls now update immediately in the inspector list for both Page Design (`#pagebuilder`) and selected elements, without closing/reopening modals or reselecting elements.
+
+When Page Design is open, class and style controls target the page wrapper directly in global mode, including Borders and Advanced class/style edits.
+
+When Page Design is closed, global mode is reset so Advanced class/style controls immediately target the currently selected element again.
+
+In global Page Design color pickers, built-in colors now apply the clicked color option directly (no stale previous-value fallback), so Text Color and Background Color stay aligned between visual output and page wrapper classes/styles.
+
+Theme Color Presets apply their hex value as inline style (same behavior as custom colors) for both global Page Design and selected elements.
+
+In the right properties panel, style accordions now stay mounted while switching between editable elements, so expanded sections remain open instead of collapsing on each selection change.
+
 ## Button Style Controls In Modals
 
 The builder now uses a wider **Product section settings** modal so product layout and link controls have more room.
