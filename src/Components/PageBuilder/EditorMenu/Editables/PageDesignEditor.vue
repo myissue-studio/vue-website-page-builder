@@ -202,16 +202,23 @@ const openClearPageDesignModal = () => {
         </div>
       </section>
 
-      <section class="pbx-pageDesignSection pbx-pageDesignLayoutAction">
-        <HtmlActionButton
-          icon="delete_forever"
-          :label="translate('Clear page classes & styles')"
-          :hint="translate('Remove global page classes and inline styles from the wrapper')"
-          variant="danger"
-          :is-loading="isClearingPageDesignStyles"
-          @click="openClearPageDesignModal"
-        />
-      </section>
+      <div
+        class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4 pbx-mt-24 pbx-border-0 pbx-border-t pbx-border-gray-200 pbx-pt-8"
+      >
+        <div class="pbx-p-4 pbx-border pbx-border-gray-200 pbx-rounded-2xl"></div>
+        <div class="pbx-p-4 pbx-border pbx-border-gray-200 pbx-rounded-2xl">
+          <section class="pbx-pageDesignSection pbx-pageDesignLayoutAction">
+            <HtmlActionButton
+              icon="delete_forever"
+              :label="translate('Clear page classes & styles')"
+              :hint="translate('Remove global page classes and inline styles from the wrapper')"
+              variant="danger"
+              :is-loading="isClearingPageDesignStyles"
+              @click="openClearPageDesignModal"
+            />
+          </section>
+        </div>
+      </div>
     </div>
   </div>
 

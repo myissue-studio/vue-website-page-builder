@@ -1211,7 +1211,7 @@
   }
 
   .pbx-pageDesignLayoutAction {
-    @apply pbx-mt-4 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-pt-4;
+    @apply pbx-mt-4;
   }
 
   .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion,
