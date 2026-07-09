@@ -43,10 +43,13 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
 </script>
 
 <template>
-  <div class="pbx-pageDesignEditor pbx-min-h-[60rem]">
+  <div
+    class="pbx-pageDesignEditor"
+    :class="[isLoading ? 'pbx-min-h-screen ' : 'pbx-min-h-[60rem]']"
+  >
     <div
       v-if="isLoading"
-      class="pbx-pageDesignLoading pbx-flex pbx-items-start pbx-justify-center pbx-pt-12 pbx-min-h-[20rem]"
+      class="pbx-pageDesignLoading pbx-flex pbx-items-center pbx-justify-center pbx-min-h-screen"
     >
       <div
         class="pbx-inline-block pbx-h-8 pbx-w-8 pbx-animate-spin pbx-rounded-full pbx-border-4 pbx-border-solid pbx-border-current pbx-border-r-transparent"
@@ -83,7 +86,11 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
 
       <section class="pbx-pageDesignSection">
         <div class="pbx-pageDesignCard pbx-pageDesignCardWide">
-          <TypographyControl />
+          <TypographyControl
+            :default-open="true"
+            :pretty-header="true"
+            :split-basic-advanced="true"
+          />
         </div>
       </section>
 

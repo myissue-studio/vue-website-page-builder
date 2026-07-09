@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { ref, useId } from 'vue'
 
-const expanded = ref(false)
+const props = withDefaults(
+  defineProps<{
+    defaultExpanded?: boolean
+  }>(),
+  {
+    defaultExpanded: false,
+  },
+)
+
+const expanded = ref(props.defaultExpanded)
 const contentId = useId()
 
 function toggleExpanded() {

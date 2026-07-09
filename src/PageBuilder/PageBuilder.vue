@@ -221,6 +221,24 @@ const getPageBuilderConfig = computed(() => {
   return pageBuilderStateStore.getPageBuilderConfig
 })
 
+const NON_FAMILY_FONT_CLASSES = new Set([
+  'pbx-font-thin',
+  'pbx-font-extralight',
+  'pbx-font-light',
+  'pbx-font-normal',
+  'pbx-font-medium',
+  'pbx-font-bold',
+  'pbx-font-extrabold',
+  'pbx-font-black',
+])
+
+const isExplicitFontFamilyClass = (token: string, availableFontClasses: string[]): boolean => {
+  if (token.startsWith('pbx-font-custom-')) return true
+  if (availableFontClasses.includes(token)) return true
+  if (token.startsWith('pbx-font-') && !NON_FAMILY_FONT_CLASSES.has(token)) return true
+  return false
+}
+
 const configDefaultFontClass = computed(() =>
   resolveConfigDefaultFontClass(getPageBuilderConfig.value?.userSettings),
 )
@@ -282,8 +300,8 @@ const canvasElementFontStyle = computed((): Record<string, string> => {
     const availableFontClasses = getEditorFontFamilyClasses(
       getPageBuilderConfig.value?.userSettings,
     )
-    const hasExplicitPageFont = tokens.some(
-      (token) => token.startsWith('pbx-font-custom-') || availableFontClasses.includes(token),
+    const hasExplicitPageFont = tokens.some((token) =>
+      isExplicitFontFamilyClass(token, availableFontClasses),
     )
     if (hasExplicitPageFont) return {}
   }
@@ -321,9 +339,7 @@ const canvasHasExplicitFontClass = computed(() => {
   const tokens = cls.split(/\s+/).filter(Boolean)
   const availableFontClasses = getEditorFontFamilyClasses(getPageBuilderConfig.value?.userSettings)
 
-  return tokens.some(
-    (token) => token.startsWith('pbx-font-custom-') || availableFontClasses.includes(token),
-  )
+  return tokens.some((token) => isExplicitFontFamilyClass(token, availableFontClasses))
 })
 
 const canvasAppliedFontClass = computed(() => {
@@ -723,6 +739,17 @@ let panelPositionObserver: MutationObserver | null = null
 let builderScrollTop = 0
 let scrollDownSincePopoverOpen = 0
 
+function syncInsertControlCanvasOffsets() {
+  const wrapper = pbxBuilderWrapper.value
+  const canvas = pageBuilderCanvas.value
+  if (!wrapper || !canvas) return
+
+  const styles = window.getComputedStyle(canvas)
+  wrapper.style.setProperty('--pbx-canvas-pad-left', styles.paddingLeft || '0px')
+  wrapper.style.setProperty('--pbx-canvas-pad-right', styles.paddingRight || '0px')
+  wrapper.style.setProperty('--pbx-canvas-margin-right', styles.marginRight || '0px')
+}
+
 function handleBuilderContainerScroll() {
   const container = pbxBuilderWrapper.value
   if (container) {
@@ -916,6 +943,15 @@ watch(getElement, () => {
 
 watch(getComponents, () => {
   nextTick(settleToolbarPosition)
+  nextTick(syncInsertControlCanvasOffsets)
+})
+
+watch(canvasPageClass, () => {
+  nextTick(syncInsertControlCanvasOffsets)
+})
+
+watch(canvasPageStyle, () => {
+  nextTick(syncInsertControlCanvasOffsets)
 })
 
 watch(
@@ -933,6 +969,12 @@ watch(
 
 const handlePageBuilderLayoutChange = function () {
   settleToolbarPosition()
+  syncInsertControlCanvasOffsets()
+}
+
+const handleWindowResize = function () {
+  updatePanelPosition()
+  syncInsertControlCanvasOffsets()
 }
 
 const userSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')
@@ -981,6 +1023,7 @@ onMounted(async () => {
   recomputeShowGlobalLoader()
 
   updatePanelPosition()
+  nextTick(syncInsertControlCanvasOffsets)
 
   // Set up MutationObserver and event listeners
   const container = pbxBuilderWrapper.value
@@ -998,7 +1041,7 @@ onMounted(async () => {
 
   container.addEventListener('scroll', handleBuilderContainerScroll, { passive: true })
   window.addEventListener('scroll', updatePanelPositionOnScroll, { passive: true })
-  window.addEventListener('resize', updatePanelPosition)
+  window.addEventListener('resize', handleWindowResize)
   window.addEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.addEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
 
@@ -1027,7 +1070,7 @@ onBeforeUnmount(() => {
   panelPositionObserver = null
   pbxBuilderWrapper.value?.removeEventListener('scroll', handleBuilderContainerScroll)
   window.removeEventListener('scroll', updatePanelPositionOnScroll)
-  window.removeEventListener('resize', updatePanelPosition)
+  window.removeEventListener('resize', handleWindowResize)
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
   clearPageBuilderBrandColor()
@@ -1784,12 +1827,29 @@ onBeforeUnmount(() => {
   align-items: center;
   position: relative;
   z-index: 2;
+  width: calc(100% + var(--pbx-canvas-pad-left, 0px) + var(--pbx-canvas-pad-right, 0px));
+  margin-left: calc(-1 * var(--pbx-canvas-pad-left, 0px));
+  margin-right: calc(-1 * var(--pbx-canvas-pad-right, 0px));
+  transform: translateX(var(--pbx-canvas-margin-right, 0px));
 }
 #pagebuilder [data-pbx-insert-btn]:hover .pbx-addsection-btn {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+/* Keep builder insert controls visually stable when users apply global page
+   typography styles (e.g. letter-spacing, text-transform, font-style). */
+#pagebuilder [data-pbx-insert-btn] .pbx-addsection-btn,
+#pagebuilder [data-pbx-insert-btn] .pbx-addsection-btn * {
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  text-transform: none !important;
+  text-indent: 0 !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+}
+
 #pagebuilder .pbx-addsection-btn {
   height: 1.875rem;
   padding-inline: 0.375rem;

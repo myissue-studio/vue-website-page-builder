@@ -108,15 +108,26 @@ describe('font-family config', () => {
     expect(findFontFamilyClassOnElement(element)).toBe('pbx-font-custom-fantasy')
   })
 
+  it('maps raw imported pbx-font-* classes to configured picker class values', () => {
+    const element = document.createElement('div')
+    element.classList.add('pbx-font-bitcount-grid-double', 'pbx-text-black')
+
+    expect(
+      findFontFamilyClassOnElement(element, {
+        fontFamily: 'Bitcount Grid Double, jost, fantasy',
+      }),
+    ).toBe('pbx-font-custom-bitcount-grid-double')
+  })
+
   it('detects stale saved config fallback fonts on the canvas', () => {
     const userSettings = {
       fontFamily: 'Bitcount Grid Double, jost, raleway, arial, fantasy',
     }
 
     expect(isStaleSavedConfigFallbackFont('pbx-font-jost', userSettings)).toBe(true)
-    expect(isStaleSavedConfigFallbackFont('pbx-font-custom-bitcount-grid-double', userSettings)).toBe(
-      false,
-    )
+    expect(
+      isStaleSavedConfigFallbackFont('pbx-font-custom-bitcount-grid-double', userSettings),
+    ).toBe(false)
     expect(isStaleSavedConfigFallbackFont('pbx-font-custom-fantasy', userSettings)).toBe(false)
   })
 })

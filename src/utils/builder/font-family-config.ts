@@ -77,6 +77,8 @@ const BUILTIN_FONT_CLASS_SET = new Set(
   tailwindFontStyles.fontFamily.filter((cls) => cls !== 'none'),
 )
 
+const FONT_WEIGHT_CLASS_SET = new Set(tailwindFontStyles.fontWeight.filter((cls) => cls !== 'none'))
+
 /** Splits a fontFamily / elementFonts config string into individual font entries. */
 export function parseFontFamilyList(fontConfig: string): string[] {
   return fontConfig
@@ -216,7 +218,11 @@ export function hasUserPageCanvasFontOverride(
     selectedFontClass?: string | null
   },
 ): boolean {
-  if (options?.globalPageDesignMode && options.selectedFontClass && options.selectedFontClass !== 'none') {
+  if (
+    options?.globalPageDesignMode &&
+    options.selectedFontClass &&
+    options.selectedFontClass !== 'none'
+  ) {
     return true
   }
 
@@ -247,6 +253,21 @@ export function findFontFamilyClassOnElement(
     if (className.startsWith('pbx-font-custom-')) return className
   }
 
+  // Support raw family classes from imported HTML (e.g. pbx-font-bitcount-grid-double)
+  // even when picker options are represented as pbx-font-custom-* values.
+  for (const className of element.classList) {
+    if (!className.startsWith('pbx-font-')) continue
+    if (FONT_WEIGHT_CLASS_SET.has(className)) continue
+
+    const key = className.slice('pbx-font-'.length)
+    const matchingToken = collectFontTokensFromUserSettings(userSettings).find(
+      (token) => fontKeyToSlug(token) === key,
+    )
+
+    if (matchingToken) return resolveFontFamilyClassForToken(matchingToken)
+    return className
+  }
+
   return undefined
 }
 
@@ -272,9 +293,7 @@ export function getFontFamilyPickerOptions(
   const seen = new Set<string>(['none'])
   const options: FontFamilyPickerOption[] = [noneOption]
 
-  const configTokens = userSettings?.fontFamily
-    ? parseFontFamilyList(userSettings.fontFamily)
-    : []
+  const configTokens = userSettings?.fontFamily ? parseFontFamilyList(userSettings.fontFamily) : []
 
   for (const token of configTokens) {
     const value = resolveFontFamilyClassForToken(token)
@@ -328,7 +347,10 @@ export function resolveFontFamilyFromToken(token: string): string | undefined {
 
   const name = token.trim()
   if (!name) return undefined
-  if ((name.startsWith("'") && name.endsWith("'")) || (name.startsWith('"') && name.endsWith('"'))) {
+  if (
+    (name.startsWith("'") && name.endsWith("'")) ||
+    (name.startsWith('"') && name.endsWith('"'))
+  ) {
     return name
   }
   const escaped = name.replace(/'/g, "\\'")

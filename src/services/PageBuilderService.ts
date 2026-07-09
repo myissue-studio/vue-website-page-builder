@@ -35,7 +35,10 @@ import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tipta
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { ensureFontClassExists, loadFontFromClass } from '../utils/builder/dynamic-font-loader'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
-import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
+import {
+  findFontFamilyClassOnElement,
+  getEditorFontFamilyClasses,
+} from '../utils/builder/font-family-map'
 import { isValidHyperlinkInput } from '../utils/builder/url-validation'
 import {
   applyProductSectionOptionsToElement,
@@ -1038,16 +1041,7 @@ export class PageBuilderService {
   ): string | undefined {
     const currentHTMLElement = this.getElement.value
 
-    console.log('🔧 applyElementClassChanges START', {
-      mutationName,
-      cssUserSelection,
-      currentElement: currentHTMLElement?.tagName,
-      currentElementId: currentHTMLElement?.id,
-      currentClasses: currentHTMLElement?.className,
-    })
-
     if (!currentHTMLElement) {
-      console.error('❌ No element selected - cannot apply class changes')
       return
     }
 
@@ -1104,6 +1098,16 @@ export class PageBuilderService {
 
     // set to 'none' if undefined
     let elementClass = currentCSS || 'none'
+
+    if (mutationName === 'setFontFamily') {
+      const normalizedFontClass = findFontFamilyClassOnElement(
+        classTarget,
+        this.pageBuilderStateStore.getPageBuilderConfig?.userSettings,
+      )
+      if (normalizedFontClass) {
+        elementClass = normalizedFontClass
+      }
+    }
 
     // If cssUserSelection is undefined, only sync the store and return.
     // This path is used while controls initialize and must not mutate DOM classes.
@@ -2373,8 +2377,6 @@ export class PageBuilderService {
     const fontClasses = getEditorFontFamilyClasses(
       this.pageBuilderStateStore.getPageBuilderConfig?.userSettings,
     )
-
-    const currentElement = this.getElement.value
 
     // Load the font dynamically if it's a Google Font
     if (userSelectedFontFamily && userSelectedFontFamily !== 'none') {
@@ -5122,6 +5124,8 @@ export class PageBuilderService {
     try {
       const parser = new DOMParser()
       const doc = parser.parseFromString(htmlString, 'text/html')
+      const importedSectionElements = doc.querySelectorAll('section')
+      const importedHasSections = importedSectionElements.length > 0
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
 
@@ -5167,10 +5171,14 @@ export class PageBuilderService {
           this.isPageBuilderMissingOnStart ||
           !this.builderWasMountedBeforeClose)
       ) {
-        configPageSettings = {
-          classes: importedPageBuilder.className || '',
-          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-          meta: readPageMetaFromElement(importedPageBuilder),
+        if (!importedHasSections && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
+          configPageSettings = currentDomPageSettings
+        } else {
+          configPageSettings = {
+            classes: importedPageBuilder.className || '',
+            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+            meta: readPageMetaFromElement(importedPageBuilder),
+          }
         }
         this.debugLog('warn', '📦 mountComponentsToDOM: using importedPageBuilder pageSettings', {
           source: preferImportedPageSettings
@@ -5202,10 +5210,17 @@ export class PageBuilderService {
       // importedPageBuilder as a secondary fallback for the present-at-start case
       // (handles edge where the live DOM has only default classes despite being present).
       if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
-        configPageSettings = {
-          classes: importedPageBuilder.className || '',
-          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-          meta: readPageMetaFromElement(importedPageBuilder),
+        // If imported HTML has no sections (e.g. empty-array bootstrap wrapper),
+        // prefer the existing live DOM settings so we don't overwrite a meaningful
+        // wrapper snapshot with fallback defaults like pbx-text-black/pbx-font-sans.
+        if (!importedHasSections && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
+          configPageSettings = currentDomPageSettings
+        } else {
+          configPageSettings = {
+            classes: importedPageBuilder.className || '',
+            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+            meta: readPageMetaFromElement(importedPageBuilder),
+          }
         }
       }
 
@@ -5230,11 +5245,8 @@ export class PageBuilderService {
         this._pendingPageSettings = pageSettingsFromHistory
       }
 
-      // Select all <section> elements
-      const sectionElements = doc.querySelectorAll('section')
-
       const extractedSections: ComponentObject[] = []
-      sectionElements.forEach((section) => {
+      importedSectionElements.forEach((section) => {
         // Prefix all classes inside section
         section.querySelectorAll('[class]').forEach((el) => {
           el.setAttribute(

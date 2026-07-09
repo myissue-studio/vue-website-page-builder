@@ -12,10 +12,10 @@ While this resume-choice modal is visible, autosave is paused so the existing dr
 
 When users choose **Continue Where I Left Off**, page-level settings from the draft wrapper (`#pagebuilder` classes/style such as background, spacing, and global typography) are restored from the draft HTML as the source of truth.
 
-- **`formType` (required):**
-  Determines which draft to load from local storage. Set this to either `create` or `update` in the `updateOrCreate` config, depending on your use case.
-- **`formName` (required):**
-  Specifies the resource type (e.g., `article`, `jobPost`, `store`, etc.) in the `updateOrCreate` config. This is especially important if your platform supports multiple resource types. By providing a unique name, the Page Builder can correctly manage layouts and drafts for each resource, allowing users to pick up where they left off.
+Determines which draft to load from local storage. Set this to either `create` or `update` in the `updateOrCreate` config, depending on your use case.
+Specifies the resource type (e.g., `article`, `jobPost`, `store`, etc.) in the `updateOrCreate` config. This is especially important if your platform supports multiple resource types. By providing a unique name, the Page Builder can correctly manage layouts and drafts for each resource, allowing users to pick up where they left off.
+
+- When an empty incoming payload is mounted (wrapper-only, no sections), existing meaningful live wrapper page settings are preserved instead of being replaced by fallback default wrapper classes.
 
 ```vue
 <script setup>
