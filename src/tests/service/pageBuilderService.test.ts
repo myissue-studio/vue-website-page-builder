@@ -453,7 +453,7 @@ describe('PageBuilderService', () => {
       // does not cover the canvas and block all click interactions.
       expect(mockStore.setIsLoadingGlobal).toHaveBeenCalledWith(false)
     })
-    it('REGRESSION (editability, v-show reopen): canvas is selectable when modal reopens with existing sections', async () => {
+    it('REGRESSION (editability, reopen remount): canvas is selectable after reopen remount', async () => {
       vi.spyOn(service, 'handleAutoSave').mockResolvedValue()
       vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
 
@@ -464,8 +464,7 @@ describe('PageBuilderService', () => {
       expect(pagebuilder).not.toBeNull()
       if (!pagebuilder) return
 
-      // Simulate v-show/modal reopen: Vue has re-rendered sections from the store
-      // into new DOM elements but startBuilder() was not called again.
+      // Simulate stale DOM state before reopen.
       pagebuilder.innerHTML = `
         <section data-componentid="vshow-section" data-component-title="Hero">
           <div id="vshow-editable" class="pbx-break-words pbx-text-xl">Content</div>
@@ -474,11 +473,17 @@ describe('PageBuilderService', () => {
       ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = false
       ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = false
 
-      // Reopen call: hasCompletedBuilderMount stays true + sections exist → no full remount.
-      // The safety net / refreshListeners path must still attach listeners.
+      // Reopen call now forces a fresh remount from draft/passed content.
       await service.startBuilder(updateConfig, componentsArray)
 
-      const editable = pagebuilder.querySelector<HTMLElement>('#vshow-editable')
+      pagebuilder.innerHTML = `
+        <section data-componentid="vshow-remount" data-component-title="Hero">
+          <div id="vshow-editable-remount" class="pbx-break-words pbx-text-xl">Content</div>
+        </section>
+      `
+      await service.refreshListeners()
+
+      const editable = pagebuilder.querySelector<HTMLElement>('#vshow-editable-remount')
       expect(editable).not.toBeNull()
       if (!editable) return
 
@@ -486,6 +491,46 @@ describe('PageBuilderService', () => {
       await Promise.resolve()
 
       expect(mockStore.setElement).toHaveBeenCalledWith(editable)
+    })
+
+    it('REGRESSION (page settings): keeps live class-based background instead of stale persisted inline style', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      // Stale persisted settings from an older session (inline red background).
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [
+            {
+              html_code:
+                '<section data-component-title="Text"><div><p>Persisted</p></div></section>',
+              title: 'Text',
+            },
+          ],
+          pageSettings: {
+            classes: 'pbx-font-sans',
+            style: 'background-color: rgb(214, 0, 0);',
+          },
+        }),
+      )
+
+      // Live page design uses class-based background with no inline style.
+      pagebuilder.setAttribute('class', 'pbx-font-sans pbx-bg-rose-400')
+      pagebuilder.removeAttribute('style')
+      pagebuilder.innerHTML =
+        '<section data-componentid="live-1" data-component-title="Text"><div><p>Live</p></div></section>'
+
+      service.flushPendingEditsToLocalStorage()
+
+      const raw = localStorage.getItem('test-key')
+      expect(raw).not.toBeNull()
+      if (!raw) return
+
+      const parsed = JSON.parse(raw)
+      expect(parsed.pageSettings.classes).toContain('pbx-bg-rose-400')
+      expect(parsed.pageSettings.style || '').toBe('')
     })
 
     it('REGRESSION (modal v-if reopen): shows passed update content first and offers local draft resume', async () => {

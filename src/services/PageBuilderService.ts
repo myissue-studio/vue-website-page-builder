@@ -243,6 +243,20 @@ export class PageBuilderService {
   }
 
   /**
+   * Returns the active builder canvas element.
+   * Prefer the editor canvas marker to avoid collisions with host-rendered
+   * published HTML that may also contain #pagebuilder.
+   */
+  private getBuilderCanvasElement(): HTMLElement | null {
+    const builderCanvas = document.querySelector(
+      '#pagebuilder[data-builder-canvas]',
+    ) as HTMLElement | null
+    if (builderCanvas) return builderCanvas
+
+    return document.querySelector('#pagebuilder') as HTMLElement | null
+  }
+
+  /**
    * Returns an array of available languages.
    * @returns {AvailableLanguage[]} An array of available language codes.
    */
@@ -571,7 +585,7 @@ export class PageBuilderService {
     // case would clear the canvas and, worse, trigger the "resume from draft" modal
     // every single reopen.  We only do a full lifecycle reset when the DOM wrapper
     // is absent or empty (v-if pattern — the component was destroyed on close).
-    const pagebuilderBeforeReset = document.querySelector('#pagebuilder')
+    const pagebuilderBeforeReset = this.getBuilderCanvasElement()
     const hasLiveMountedContent = Boolean(
       pagebuilderBeforeReset?.querySelector('section[data-componentid]'),
     )
@@ -582,7 +596,9 @@ export class PageBuilderService {
       hasCompletedBuilderMount: this.hasCompletedBuilderMount,
     })
 
-    if (!hasLiveMountedContent) {
+    const shouldForceFreshMount = this.builderWasMountedBeforeClose && sessionToken > 1
+
+    if (!hasLiveMountedContent || shouldForceFreshMount) {
       // DOM is missing or the canvas has no sections — needs a fresh mount cycle.
       this.hasCompletedBuilderMount = false
       this.builderMountPromise = null
@@ -618,7 +634,7 @@ export class PageBuilderService {
     // Reactive flag signals to the UI that the builder has been successfully initialized
     // Prevents builder actions to prevent errors caused by missing DOM .
     this.pageBuilderStateStore.setBuilderStarted(true)
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     this.debugLog('warn', 'startBuilder(): #pagebuilder present?', Boolean(pagebuilder))
 
     // Snapshot page-level settings whenever a live wrapper exists so they can be
@@ -781,7 +797,7 @@ export class PageBuilderService {
       // canvas (not the first matching document element) — covers the case of a PageBuilder
       // inside a v-if modal that just opened: its canvas is empty even though another instance
       // on the page already has content loaded.
-      const canvas = ownCanvas ?? (document.querySelector('#pagebuilder') as HTMLElement | null)
+      const canvas = ownCanvas ?? this.getBuilderCanvasElement()
       const hasSections = Boolean(canvas?.querySelector('section[data-componentid]'))
       if (canvas && !hasSections) {
         // Fresh empty canvas — reset lifecycle so the deferred init will run.
@@ -898,6 +914,15 @@ export class PageBuilderService {
           }
 
           if (passedComponentsArray && localStorageData) {
+            if (this.builderWasMountedBeforeClose) {
+              this.debugLog(
+                'warn',
+                'completeBuilderInitialization(): reopening session -> mounting from local draft directly',
+                { key: this.getLocalStorageItemName.value },
+              )
+              await this.completeMountProcess(localStorageData, undefined, sessionToken, true)
+              return
+            }
             this.debugLog(
               'warn',
               'completeBuilderInitialization(): both passed + draft exist → mounting passed content + showing resume modal',
@@ -1221,6 +1246,10 @@ export class PageBuilderService {
       } else {
         this.pageBuilderStateStore.setCurrentStyles({})
       }
+
+      if (currentHTMLElement === this.getBuilderCanvasElement()) {
+        this.syncGlobalPageSettingsIntoRuntimeConfig()
+      }
     }
 
     return currentCSS
@@ -1235,11 +1264,38 @@ export class PageBuilderService {
   }
 
   /**
+   * During Page Design editing, keep runtime config pageSettings aligned with the
+   * live #pagebuilder wrapper so Vue re-renders do not restore stale styles.
+   */
+  private syncGlobalPageSettingsIntoRuntimeConfig(): void {
+    if (!this.pageBuilderStateStore.getToggleGlobalHtmlMode) return
+
+    const pagebuilder = this.getBuilderCanvasElement()
+    if (!pagebuilder) return
+
+    const pageSettings: PageSettings = {
+      classes: pagebuilder.className || '',
+      style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
+      meta: readPageMetaFromElement(pagebuilder),
+    }
+
+    this._lastKnownPageSettings = pageSettings
+
+    const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
+    if (currentConfig && typeof currentConfig === 'object') {
+      this.pageBuilderStateStore.setPageBuilderConfig({
+        ...(currentConfig as Record<string, unknown>),
+        pageSettings,
+      } as never)
+    }
+  }
+
+  /**
    * Removes all CSS classes from the main page builder container.
    * @returns {Promise<void>}
    */
   public async clearClassesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     pagebuilder?.removeAttribute('class')
 
     this.initializeElementStyles()
@@ -1250,7 +1306,7 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async clearInlineStylesFromPage() {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     pagebuilder?.removeAttribute('style')
 
     this.initializeElementStyles()
@@ -1262,7 +1318,7 @@ export class PageBuilderService {
    * @returns {Promise<void>}
    */
   public async globalPageStyles() {
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     // Deselect any selected or hovered elements in the builder UI
@@ -1485,7 +1541,7 @@ export class PageBuilderService {
     await nextTick()
 
     if (element) {
-      const pagebuilder = document.querySelector('#pagebuilder')
+      const pagebuilder = this.getBuilderCanvasElement()
       pagebuilder?.querySelectorAll('[hovered]').forEach((el) => el.removeAttribute('hovered'))
       pagebuilder?.querySelectorAll('[selected]').forEach((el) => {
         if (el !== element) el.removeAttribute('selected')
@@ -1539,7 +1595,7 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
 
     if (!pagebuilder) return
 
@@ -1564,7 +1620,7 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     const hoveredElement = pagebuilder.querySelector('[hovered]')
@@ -1658,7 +1714,7 @@ export class PageBuilderService {
    * Returns true when the global page wrapper has the full-width class applied.
    */
   public isGlobalFullWidth(): boolean {
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     return pagebuilder?.classList.contains(FULL_WIDTH_COMPONENT_CLASS) ?? false
   }
 
@@ -1667,7 +1723,7 @@ export class PageBuilderService {
    * colours stretch across the entire browser viewport.
    */
   public async setGlobalFullWidth(enabled: boolean): Promise<void> {
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     pagebuilder?.classList.toggle(FULL_WIDTH_COMPONENT_CLASS, enabled)
     this.saveDomComponentsToLocalStorage()
     await this.handleAutoSave()
@@ -1764,7 +1820,7 @@ export class PageBuilderService {
    * @private
    */
   private addListenersToEditableElements = async () => {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     // Wait for the next DOM update cycle to ensure all elements are rendered.
@@ -1843,7 +1899,7 @@ export class PageBuilderService {
   public findEditableElementFromEventTarget(target: EventTarget | null): HTMLElement | null {
     if (!(target instanceof Element)) return null
 
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     let current: Element | null = target
 
     while (current && current !== pagebuilder) {
@@ -2061,7 +2117,7 @@ export class PageBuilderService {
     element: HTMLElement,
     shouldAutoSave: boolean = true,
   ): Promise<void> {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
 
     if (!pagebuilder) {
       this.debugLog('warn', 'selectEditableElement(): #pagebuilder missing; cannot select/save', {
@@ -2261,7 +2317,7 @@ export class PageBuilderService {
    * @private
    */
   private async removeHoveredAndSelected() {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     const hoveredElement = pagebuilder.querySelector('[hovered]')
@@ -2306,7 +2362,7 @@ export class PageBuilderService {
    */
   private getActiveStyleTarget(): HTMLElement | null {
     if (this.pageBuilderStateStore.getToggleGlobalHtmlMode) {
-      const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+      const pagebuilder = this.getBuilderCanvasElement()
       if (pagebuilder) {
         if (this.getElement.value !== pagebuilder) {
           this.pageBuilderStateStore.setElement(pagebuilder)
@@ -2686,6 +2742,10 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setCurrentStyles(
       this.parseStyleString(element.getAttribute('style') || ''),
     )
+
+    if (element === this.getBuilderCanvasElement()) {
+      this.syncGlobalPageSettingsIntoRuntimeConfig()
+    }
   }
 
   /**
@@ -2833,7 +2893,7 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setComponents([])
 
     // Also clear the DOM
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (pagebuilder) {
       // Remove all section elements (assuming each component is a <section>)
       pagebuilder
@@ -3353,7 +3413,7 @@ export class PageBuilderService {
   public previewCurrentDesign() {
     this.pageBuilderStateStore.setElement(null)
 
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     if (pagebuilder) {
@@ -3407,17 +3467,42 @@ export class PageBuilderService {
   }
 
   /**
+   * Returns section elements to persist from #pagebuilder.
+   * Prefer sections with data-componentid, but fall back to top-level sections
+   * so close/reopen cannot wipe content when ids are temporarily missing.
+   */
+  private getPersistableSections(pagebuilder: Element): HTMLElement[] {
+    const withIds = Array.from(
+      pagebuilder.querySelectorAll('section[data-componentid]'),
+    ) as HTMLElement[]
+    if (withIds.length > 0) return withIds
+
+    const allSections = Array.from(pagebuilder.querySelectorAll('section')) as HTMLElement[]
+    return allSections.filter(
+      (section) =>
+        !section.parentElement || section.parentElement.tagName.toLowerCase() !== 'section',
+    )
+  }
+
+  /**
    * Syncs the current DOM state of components to the in-memory store.
    * @private
    */
   public async syncDomToStoreOnly(): Promise<void> {
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
-    pagebuilder.querySelectorAll('section[data-componentid]').forEach((section) => {
+    const persistableSections = this.getPersistableSections(pagebuilder)
+    persistableSections.forEach((section) => {
       const sanitizedSection = this.cloneAndRemoveSelectionAttributes(section as HTMLElement)
+      if (!sanitizedSection.getAttribute('data-componentid')) {
+        sanitizedSection.setAttribute('data-componentid', uuidv4())
+      }
+      if (!sanitizedSection.getAttribute('data-component-title')) {
+        sanitizedSection.setAttribute('data-component-title', 'Untitled Component')
+      }
       componentsToSave.push({
         html_code: sanitizedSection.outerHTML,
         id: sanitizedSection.getAttribute('data-componentid'),
@@ -3521,7 +3606,7 @@ export class PageBuilderService {
         config: this.pageBuilderStateStore.getPageBuilderConfig ?? null,
       })
     }
-    const pagebuilder = document.querySelector('#pagebuilder')
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) {
       this.debugLog('warn', 'saveDomComponentsToLocalStorage(): no #pagebuilder in DOM', {
         key: resolvedKey,
@@ -3536,11 +3621,15 @@ export class PageBuilderService {
 
     const componentsToSave: { html_code: string; title: string }[] = []
 
-    pagebuilder.querySelectorAll('section[data-componentid]').forEach((section) => {
+    const persistableSections = this.getPersistableSections(pagebuilder)
+    persistableSections.forEach((section) => {
       const sanitizedSection = this.cloneAndRemoveSelectionAttributes(section as HTMLElement)
 
       // Remove the data-componentid attribute
       sanitizedSection.removeAttribute('data-componentid')
+      if (!sanitizedSection.getAttribute('data-component-title')) {
+        sanitizedSection.setAttribute('data-component-title', 'Untitled Component')
+      }
 
       componentsToSave.push({
         html_code: sanitizedSection.outerHTML,
@@ -3728,14 +3817,63 @@ export class PageBuilderService {
    * Prioritises the live #pagebuilder element (always current) and falls back to localStorage.
    */
   private readCurrentPageSettings(): PageSettings | null {
+    const persistedPageSettings = this.readPersistedPageSettingsFromLocalStorage()
+
     // The live DOM is always the most up-to-date source — read it first.
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (pagebuilder) {
-      return {
+      const domSettings: PageSettings = {
         classes: pagebuilder.className || '',
         style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
         meta: readPageMetaFromElement(pagebuilder),
       }
+
+      const domStyle =
+        typeof domSettings.style === 'string'
+          ? domSettings.style.trim()
+          : this.convertStyleObjectToString(domSettings.style).trim()
+
+      const persistedStyle =
+        persistedPageSettings && typeof persistedPageSettings.style === 'string'
+          ? persistedPageSettings.style.trim()
+          : this.convertStyleObjectToString(persistedPageSettings?.style).trim()
+
+      const normalizeClasses = (value: string | undefined): string[] =>
+        (value || '')
+          .split(/\s+/)
+          .map((token) => token.trim())
+          .filter(Boolean)
+
+      const domClassTokens = normalizeClasses(domSettings.classes)
+      const persistedClassTokens = normalizeClasses(persistedPageSettings?.classes)
+      const domClassString = domClassTokens.join(' ')
+      const persistedClassString = persistedClassTokens.join(' ')
+      const domHasBackgroundClass = domClassTokens.some((token) => token.startsWith('pbx-bg-'))
+      const classesChanged = domClassString !== persistedClassString
+      const domLooksLikeIntentionalClassEdit =
+        classesChanged &&
+        (domHasBackgroundClass || domClassTokens.length >= persistedClassTokens.length)
+
+      // On v-if modal reopen, Vue can render a fresh wrapper with default class and no
+      // style before mountComponentsToDOM runs. In that case prefer persisted settings
+      // so global page styles (background, etc.) are not dropped between open/close.
+      if (!domStyle && persistedStyle) {
+        if (domLooksLikeIntentionalClassEdit) {
+          return {
+            classes: domSettings.classes,
+            style: '',
+            meta: domSettings.meta || persistedPageSettings?.meta,
+          }
+        }
+
+        return {
+          classes: domSettings.classes || persistedPageSettings?.classes || '',
+          style: persistedPageSettings?.style || '',
+          meta: domSettings.meta || persistedPageSettings?.meta,
+        }
+      }
+
+      return domSettings
     }
 
     // Backward-compatible fallback for callers/tests that only mount content wrappers.
@@ -3748,28 +3886,31 @@ export class PageBuilderService {
     }
 
     // No live page element exists — fall back to the last persisted localStorage value.
+    return persistedPageSettings
+  }
+
+  private readPersistedPageSettingsFromLocalStorage(): PageSettings | null {
     this.updateLocalStorageItemName()
     const key = this.getLocalStorageItemName.value
-    if (key) {
-      try {
-        const raw = localStorage.getItem(key)
-        if (raw) {
-          const parsed = JSON.parse(raw)
-          if (parsed?.pageSettings) {
-            return parsed.pageSettings
-          }
-        }
-      } catch {
-        // Ignore parse errors.
-      }
-    }
+    if (!key) return null
 
-    return null
+    try {
+      const raw = localStorage.getItem(key)
+      if (!raw) return null
+
+      const parsed = JSON.parse(raw)
+      if (!parsed?.pageSettings) return null
+
+      return parsed.pageSettings as PageSettings
+    } catch {
+      // Ignore parse errors.
+      return null
+    }
   }
 
   /** Applies captured global page classes/styles to the page wrapper once. */
   private applyPageSettingsToPage(pageSettings: PageSettings): void {
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (pagebuilder) {
       if (pageSettings.classes) pagebuilder.setAttribute('class', pageSettings.classes)
       else pagebuilder.removeAttribute('class')
@@ -3798,7 +3939,7 @@ export class PageBuilderService {
   private reconnectGlobalStylesObserver(): void {
     if (!this.globalStylesObserver) return
 
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
     this.globalStylesObserver.disconnect()
@@ -3941,7 +4082,7 @@ export class PageBuilderService {
    * the guard `!domStyle` means user-edited styles are never overwritten.
    */
   private reapplyConfigPageSettingsIfMissing(): void {
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
     const configSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings ?? null
     if (!this.hasMeaningfulPageSettings(configSettings)) return
@@ -4323,7 +4464,7 @@ export class PageBuilderService {
     const current = this.getPageMeta()
     const next: PageMeta = { ...current, ...partial }
 
-    const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+    const pagebuilder = this.getBuilderCanvasElement()
     if (pagebuilder) {
       applyPageMetaToElement(pagebuilder, next)
     }
@@ -5100,7 +5241,7 @@ export class PageBuilderService {
       if (this._pendingPageSettings) {
         const settings = this._pendingPageSettings
         this._pendingPageSettings = null
-        const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+        const pagebuilder = this.getBuilderCanvasElement()
         const pageSettings: PageSettings = {
           classes: settings.classes || '',
           style: this.convertStyleObjectToString(settings.style) || '',

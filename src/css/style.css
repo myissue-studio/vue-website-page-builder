@@ -516,7 +516,7 @@
   }
 
   .pbx-inspectorCodeBlock {
-    @apply pbx-m-0 pbx-max-h-56 pbx-overflow-x-auto pbx-overflow-y-auto pbx-rounded-lg pbx-bg-gray-900 pbx-p-3 pbx-text-[11px] pbx-font-sans pbx-leading-relaxed pbx-text-gray-100 pbx-whitespace-pre-wrap;
+    @apply pbx-m-0 pbx-max-h-72 pbx-overflow-x-auto pbx-overflow-y-auto pbx-rounded-lg pbx-bg-gray-900 pbx-p-3 pbx-text-[11px] pbx-font-sans pbx-leading-relaxed pbx-text-gray-100 pbx-whitespace-pre-wrap;
   }
 
   .pbx-inspectorCodeBlock .html-tag-symbol {
@@ -1118,7 +1118,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-toolbarMoreMenu {
-    @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-56 pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
+    @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-72 pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
     will-change: top, left;
   }
 
