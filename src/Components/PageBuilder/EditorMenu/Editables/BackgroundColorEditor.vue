@@ -152,7 +152,7 @@ watch(
         leave-to-class="pbx-opacity-0"
       >
         <ListboxOptions
-          class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-56 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
+          class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
         >
           <ListboxOption
             as="template"
@@ -295,7 +295,7 @@ watch(
         data-pbx-edit-toolbar-popover
         data-pbx-background-color-menu-popover
         :style="backgroundColorMenuPopoverStyle"
-        class="pbx-fixed pbx-z-50 pbx-max-h-56 pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+        class="pbx-fixed pbx-z-50 pbx-max-h-72 pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
         @mousedown.stop
         @pointerdown.stop
         @click.stop

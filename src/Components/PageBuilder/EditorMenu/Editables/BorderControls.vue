@@ -122,7 +122,7 @@ watch(
               leave-to-class="pbx-opacity-0"
             >
               <ListboxOptions
-                class="pbx-headless-dropdown pbx-absolute pbx-z-50 pbx-mt-1 pbx-max-h-56 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0"
+                class="pbx-headless-dropdown pbx-absolute pbx-z-50 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0"
               >
                 <ListboxOption
                   as="template"
