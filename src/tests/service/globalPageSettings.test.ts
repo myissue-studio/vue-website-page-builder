@@ -313,6 +313,42 @@ describe('Global Page Settings', () => {
     expect(String(svc._lastKnownPageSettings?.style || '')).toContain('letter-spacing')
   })
 
+  it('REGRESSION: startBuilder hydrates runtime config.pageSettings from live wrapper when incoming config omits pageSettings', async () => {
+    pagebuilderEl.setAttribute('class', 'pbx-font-jost pbx-text-black pbx-bg-zinc-100')
+    pagebuilderEl.setAttribute('style', 'letter-spacing: 0.5px; color: rgb(10, 20, 30);')
+    pagebuilderEl.setAttribute('data-meta-title', 'Live Wrapper Title')
+    pagebuilderEl.setAttribute('data-meta-description', 'Live Wrapper Description')
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+
+    await service.startBuilder(
+      {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      [],
+    )
+
+    expect(mockStore.setPageBuilderConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pageSettings: expect.objectContaining({
+          classes: expect.stringContaining('pbx-bg-zinc-100'),
+          style: expect.stringContaining('letter-spacing: 0.5px'),
+          meta: expect.objectContaining({
+            title: 'Live Wrapper Title',
+            description: 'Live Wrapper Description',
+          }),
+        }),
+      }),
+    )
+  })
+
   it('REGRESSION: startBuilder with empty incoming array still restores pageSettings from localStorage', async () => {
     localStorage.setItem(
       'test-key',
