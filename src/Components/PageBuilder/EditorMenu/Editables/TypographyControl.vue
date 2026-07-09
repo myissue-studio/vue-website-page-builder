@@ -150,10 +150,7 @@ watch(
 </script>
 
 <template>
-  <EditorAccordion
-    :default-expanded="props.defaultOpen"
-    :class="props.prettyHeader ? 'pbx-pageDesignTypographyAccordion' : ''"
-  >
+  <EditorAccordion :default-expanded="props.defaultOpen" :class="props.prettyHeader ? '' : ''">
     <template #title>{{ translate('Typographies') }}</template>
     <template #content>
       <p class="pbx-myPrimaryParagraph pbx-font-medium pbx-pt-6">
