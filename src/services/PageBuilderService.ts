@@ -868,7 +868,7 @@ export class PageBuilderService {
               'warn',
               'completeBuilderInitialization(): mounting from local draft (missing-on-start)',
             )
-            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            await this.completeMountProcess(localStorageData, undefined, sessionToken, true)
             return
           }
           if (passedComponentsArray && !localStorageData) {
@@ -900,7 +900,7 @@ export class PageBuilderService {
               'warn',
               'completeBuilderInitialization(): mounting from local draft (default path)',
             )
-            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            await this.completeMountProcess(localStorageData, undefined, sessionToken, true)
             return
           }
 
@@ -991,6 +991,7 @@ export class PageBuilderService {
     html: string,
     useConfigPageSettings?: boolean,
     sessionToken: number = this.activeBuilderSessionToken,
+    preferImportedPageSettings: boolean = false,
   ) {
     if (sessionToken !== this.activeBuilderSessionToken) {
       // A new startBuilder() call has already taken over — ensure loading is cleared
@@ -998,7 +999,12 @@ export class PageBuilderService {
       this.pageBuilderStateStore.setIsLoadingGlobal(false)
       return
     }
-    await this.mountComponentsToDOM(html, useConfigPageSettings)
+    await this.mountComponentsToDOM(
+      html,
+      useConfigPageSettings,
+      undefined,
+      preferImportedPageSettings,
+    )
     if (sessionToken !== this.activeBuilderSessionToken) {
       // A new startBuilder() call arrived while mountComponentsToDOM was running.
       // Ensure the loading overlay is not left blocking the canvas.
@@ -3943,7 +3949,7 @@ export class PageBuilderService {
     if (localStorageData) {
       this.pageBuilderStateStore.setIsLoadingResumeEditing(true)
       await sleep(400)
-      await this.mountComponentsToDOM(localStorageData)
+      await this.mountComponentsToDOM(localStorageData, false, undefined, true)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(false)
     }
 
@@ -4938,6 +4944,7 @@ export class PageBuilderService {
     htmlString: string,
     usePassedPageSettings?: boolean,
     pageSettingsFromHistory?: PageSettings,
+    preferImportedPageSettings: boolean = false,
   ): Promise<void> {
     // Trim HTML string
     const trimmedData = htmlString.trim()
@@ -4951,6 +4958,13 @@ export class PageBuilderService {
       const doc = parser.parseFromString(htmlString, 'text/html')
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
+      const importedPageSettings: PageSettings | null = importedPageBuilder
+        ? {
+            classes: importedPageBuilder.className || '',
+            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+            meta: readPageMetaFromElement(importedPageBuilder),
+          }
+        : null
 
       // Initialize configPageSettings to null
       let configPageSettings: PageSettings | null = null
@@ -4977,23 +4991,18 @@ export class PageBuilderService {
               : null
       }
 
-      // When the builder was MISSING at start (v-if reopen pattern), the live #pagebuilder
-      // DOM has just been freshly rendered with only Vue's default :class binding. The HTML
-      // being mounted (from getSavedPageHtml) is the authoritative source: its class/style
-      // was rebuilt from the persisted localStorage pageSettings which includes the user's
-      // custom classes. Use it BEFORE the live DOM to avoid wiping the saved custom styling.
+      // For imported HTML that contains #pagebuilder (e.g. resume draft), prefer the
+      // wrapper settings embedded in that HTML over current live DOM defaults.
+      // This prevents stale current DOM pageSettings (often only config font/spacing)
+      // from overriding saved draft classes like background, radius, and color.
       if (
+        (preferImportedPageSettings || this.isPageBuilderMissingOnStart) &&
         !usePassedPageSettings &&
         !pageSettingsFromHistory &&
         !configPageSettings &&
-        importedPageBuilder &&
-        this.isPageBuilderMissingOnStart
+        this.hasMeaningfulPageSettings(importedPageSettings)
       ) {
-        configPageSettings = {
-          classes: importedPageBuilder.className || '',
-          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-          meta: readPageMetaFromElement(importedPageBuilder),
-        }
+        configPageSettings = importedPageSettings
       }
 
       // When the builder WAS PRESENT at start (in-session remount), the live DOM still
@@ -5004,12 +5013,12 @@ export class PageBuilderService {
 
       // importedPageBuilder as a secondary fallback for the present-at-start case
       // (handles edge where the live DOM has only default classes despite being present).
-      if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
-        configPageSettings = {
-          classes: importedPageBuilder.className || '',
-          style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-          meta: readPageMetaFromElement(importedPageBuilder),
-        }
+      if (
+        !pageSettingsFromHistory &&
+        !configPageSettings &&
+        this.hasMeaningfulPageSettings(importedPageSettings)
+      ) {
+        configPageSettings = importedPageSettings
       }
 
       // Final fallback: config or memory

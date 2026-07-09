@@ -105,6 +105,8 @@ When an explicit page font class exists in `pageSettings.classes`, per-element `
 
 When draft page settings are restored, the same values are synced back into the reactive `config.pageSettings` state. This prevents stale config classes (such as an older background color) from being re-applied by Vue bindings after resume.
 
+When resuming from a saved draft HTML snapshot, page wrapper settings embedded in the draft (`#pagebuilder` classes/styles/meta) are now prioritized over transient live DOM defaults during remount.
+
 Global page background color changes in Page Design now trigger an immediate autosave for `#pagebuilder` in addition to observer-based persistence, reducing the chance of losing the latest color if the page is refreshed quickly.
 
 Builder insert controls (Add/Products section buttons inside the canvas) are now offset against page-level `#pagebuilder` padding/margin classes, so they stay anchored in the right-side control area even when global page spacing utilities like `pbx-px-*`, `pbx-py-*`, or `pbx-mx-*` are applied.
