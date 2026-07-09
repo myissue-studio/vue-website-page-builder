@@ -81,6 +81,20 @@ await pageBuilderService.startBuilder(configPageBuilder, components)
 
 The key is to save the complete builder HTML, including the outer `<div id="pagebuilder">`. That wrapper is where the Page Builder stores global classes and styles.
 
+### Runtime Font Class Support
+
+When `pageSettings.classes` contains a font utility (for example `pbx-font-raleway`), the builder ensures a matching CSS rule exists at runtime and then loads the web font if needed.
+
+This means your saved page can restore font classes reliably even when a specific font utility was not pre-generated in your Tailwind output.
+
+When a persisted page class already includes a font-family utility, the canvas no longer injects the config default font class (for example `pbx-font-jost`). This prevents first-render class conflicts during draft resume.
+
+When an explicit page font class exists in `pageSettings.classes`, per-element `elementFonts` CSS variables are not injected for the canvas wrapper. This ensures headings/paragraphs inherit the restored page font instead of falling back to config defaults.
+
+When draft page settings are restored, the same values are synced back into the reactive `config.pageSettings` state. This prevents stale config classes (such as an older background color) from being re-applied by Vue bindings after resume.
+
+Global page background color changes in Page Design now trigger an immediate autosave for `#pagebuilder` in addition to observer-based persistence, reducing the chance of losing the latest color if the page is refreshed quickly.
+
 ## Button Style Controls In Modals
 
 The builder now uses a wider **Product section settings** modal so product layout and link controls have more room.

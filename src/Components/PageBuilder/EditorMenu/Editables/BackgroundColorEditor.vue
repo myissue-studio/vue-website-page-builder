@@ -107,9 +107,8 @@ function closeCustomHexModal(): void {
 
 watch(
   getBackgroundColor,
-  async (newValue) => {
+  (newValue) => {
     backgroundColor.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
@@ -251,12 +250,18 @@ watch(
                 'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
               ]"
             >
-              <div class="pbx-flex pbx-items-center">
+              <div class="pbx-flex pbx-items-center pbx-gap-3">
                 <div
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
                   :class="`pbx-bg-${color.replace('pbx-bg-', '')}`"
                 ></div>
-                <span class="pbx-ml-3">{{ color }}</span>
+                <span class="pbx-flex-1">{{ color }}</span>
+                <span
+                  v-if="backgroundColor === color"
+                  class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+                  :class="color"
+                  aria-hidden="true"
+                ></span>
               </div>
             </li>
           </ListboxOption>

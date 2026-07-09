@@ -31,25 +31,22 @@ const getBorderColor = computed(() => {
 
 watch(
   getBorderStyle,
-  async (newValue) => {
+  (newValue) => {
     borderStyle.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getBorderWidth,
-  async (newValue) => {
+  (newValue) => {
     borderWidth.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getBorderColor,
-  async (newValue) => {
+  (newValue) => {
     borderColor.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
@@ -74,10 +71,7 @@ watch(
           @change="pageBuilderService.handleBorderStyle(borderStyle ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="style in tailwindBorderStyleWidthPlusColor.borderStyle"
-            :key="style"
-          >
+          <option v-for="style in tailwindBorderStyleWidthPlusColor.borderStyle" :key="style">
             {{ style }}
           </option>
         </select>
@@ -94,10 +88,7 @@ watch(
           @change="pageBuilderService.handleBorderWidth(borderWidth ?? undefined)"
         >
           <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="width in tailwindBorderStyleWidthPlusColor.borderWidth"
-            :key="width"
-          >
+          <option v-for="width in tailwindBorderStyleWidthPlusColor.borderWidth" :key="width">
             {{ width }}
           </option>
         </select>
@@ -108,10 +99,7 @@ watch(
           translate('Border Color')
         }}</label>
         <Listbox as="div" v-model="borderColor" v-slot="{ open }">
-          <div
-            class="pbx-relative pbx-mt-2"
-            :class="open ? 'pbx-z-50' : 'pbx-z-0'"
-          >
+          <div class="pbx-relative pbx-mt-2" :class="open ? 'pbx-z-50' : 'pbx-z-0'">
             <ListboxButton class="pbx-myPrimarySelect" id="border-color">
               <span class="pbx-flex pbx-items-center pbx-gap-2">
                 <div v-if="getBorderColor === 'none'">

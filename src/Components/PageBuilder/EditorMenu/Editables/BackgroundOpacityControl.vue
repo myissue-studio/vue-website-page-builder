@@ -17,9 +17,8 @@ const getBackgroundOpacity = computed(() => {
 
 watch(
   getBackgroundOpacity,
-  async (newValue) => {
+  (newValue) => {
     opacityVueModel.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )

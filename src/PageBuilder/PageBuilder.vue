@@ -28,6 +28,7 @@ import { useBuilderKeyboardShortcuts } from '../composables/useBuilderKeyboardSh
 import {
   buildCustomFontStylesCss,
   findFontFamilyClassOnElement,
+  getEditorFontFamilyClasses,
   hasUserPageCanvasFontOverride,
   resolveConfigDefaultFontClass,
   resolveFontFamily,
@@ -275,6 +276,18 @@ const customFontStylesCss = computed(() =>
  * The style.css rules inside #pagebuilder pick up the variables via CSS cascade.
  */
 const canvasElementFontStyle = computed((): Record<string, string> => {
+  const pageClass = canvasPageSettings.value?.classes
+  if (typeof pageClass === 'string' && pageClass.trim().length > 0) {
+    const tokens = pageClass.split(/\s+/).filter(Boolean)
+    const availableFontClasses = getEditorFontFamilyClasses(
+      getPageBuilderConfig.value?.userSettings,
+    )
+    const hasExplicitPageFont = tokens.some(
+      (token) => token.startsWith('pbx-font-custom-') || availableFontClasses.includes(token),
+    )
+    if (hasExplicitPageFont) return {}
+  }
+
   if (hasPageDesignFontOverride.value) return {}
 
   const elementFonts = getPageBuilderConfig.value?.userSettings?.elementFonts
@@ -299,6 +312,25 @@ const canvasPageClass = computed(() => {
   const cls = canvasPageSettings.value?.classes
   if (!cls || typeof cls !== 'string') return ''
   return cls
+})
+
+const canvasHasExplicitFontClass = computed(() => {
+  const cls = canvasPageClass.value
+  if (!cls) return false
+
+  const tokens = cls.split(/\s+/).filter(Boolean)
+  const availableFontClasses = getEditorFontFamilyClasses(getPageBuilderConfig.value?.userSettings)
+
+  return tokens.some(
+    (token) => token.startsWith('pbx-font-custom-') || availableFontClasses.includes(token),
+  )
+})
+
+const canvasAppliedFontClass = computed(() => {
+  // If persisted page settings already define a font-family class, do not
+  // inject config default font class (e.g. pbx-font-jost) to avoid conflicts.
+  if (canvasHasExplicitFontClass.value) return ''
+  return canvasFontClass.value
 })
 
 const canvasPageStyle = computed(() => {
@@ -464,18 +496,24 @@ const getElementAttributes = computed(() => {
 const debounce = useDebounce()
 
 watch(getElementAttributes, async (newAttributes, oldAttributes) => {
-  // Only run if attributes actually changed
+  // Only run if an element is selected and attributes actually changed
   if (
-    newAttributes?.src !== oldAttributes?.src ||
-    newAttributes?.href !== oldAttributes?.href ||
-    newAttributes?.style !== oldAttributes?.style ||
-    newAttributes?.class !== oldAttributes?.class ||
-    newAttributes?.dataImage !== oldAttributes?.dataImage
+    !pageBuilderStateStore.getElement ||
+    (newAttributes?.src === oldAttributes?.src &&
+      newAttributes?.href === oldAttributes?.href &&
+      newAttributes?.style === oldAttributes?.style &&
+      newAttributes?.class === oldAttributes?.class &&
+      newAttributes?.dataImage === oldAttributes?.dataImage)
   ) {
-    debounce(async () => {
-      await pageBuilderService.initializeElementStyles()
-    }, 200)
+    return
   }
+
+  debounce(async () => {
+    // Double-check element is still selected before initializing
+    if (pageBuilderStateStore.getElement) {
+      await pageBuilderService.initializeElementStyles()
+    }
+  }, 200)
 })
 
 const handleSelectComponent = function (
@@ -1503,7 +1541,7 @@ onBeforeUnmount(() => {
           id="pagebuilder"
           ref="pageBuilderCanvas"
           data-builder-canvas
-          :class="[canvasFontClass, 'pbx-text-black', canvasPageClass]"
+          :class="[canvasAppliedFontClass, canvasPageClass]"
           :style="canvasPageStyle ? canvasPageStyle : undefined"
           @dblclick.capture="handleCanvasDoubleClick"
         >

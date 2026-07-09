@@ -8,6 +8,10 @@ description: Automatic local draft recovery in the Vue page builder. Unsaved wor
 The Page Builder automatically checks for unsaved drafts in local storage for the current resource.
 If a draft is found, users are prompted to either continue where they left off or use the version loaded from your backend.
 
+While this resume-choice modal is visible, autosave is paused so the existing draft is not overwritten by the backend version before the user chooses an option.
+
+When users choose **Continue Where I Left Off**, page-level settings from the draft wrapper (`#pagebuilder` classes/style such as background, spacing, and global typography) are restored from the draft HTML as the source of truth.
+
 - **`formType` (required):**
   Determines which draft to load from local storage. Set this to either `create` or `update` in the `updateOrCreate` config, depending on your use case.
 - **`formName` (required):**

@@ -59,8 +59,8 @@ const hasExplicitFontFamily = computed(() => {
   return Boolean(fontFamily.value && fontFamily.value !== 'none')
 })
 
-const handleFontFamilyChange = function () {
-  pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
+const handleFontFamilyChange = async function () {
+  await pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
 }
 
 const updateInheritedFontFamily = async () => {

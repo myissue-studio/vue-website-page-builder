@@ -14,6 +14,8 @@ export default {
     'pbx-materialIconBase',
     'pbx-materialIconLg',
     'pbx-materialIconXl',
+    'pbx-font-jost',
+    'pbx-font-raleway',
     'pbx-font-inter',
     'pbx-font-roboto',
     'pbx-font-open-sans',

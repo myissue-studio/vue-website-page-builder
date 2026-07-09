@@ -17,9 +17,8 @@ const getOpacity = computed(() => {
 
 watch(
   getOpacity,
-  async (newValue) => {
+  (newValue) => {
     opacityVueModel.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )

@@ -60,8 +60,8 @@ const hasExplicitFontFamily = computed(() => {
   return Boolean(fontFamily.value && fontFamily.value !== 'none')
 })
 
-const handleFontFamilyChange = function () {
-  pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
+const handleFontFamilyChange = async function () {
+  await pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
 }
 
 const updateInheritedFontFamily = async () => {
@@ -84,41 +84,36 @@ const updateInheritedFontFamily = async () => {
 
 watch(
   getFontBase,
-  async (newValue) => {
+  (newValue) => {
     fontBase.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontDesktop,
-  async (newValue) => {
+  (newValue) => {
     fontDesktop.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontTablet,
-  async (newValue) => {
+  (newValue) => {
     fontTablet.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontMobile,
-  async (newValue) => {
+  (newValue) => {
     fontMobile.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getFontWeight,
-  async (newValue) => {
+  (newValue) => {
     fontWeight.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
@@ -127,16 +122,14 @@ watch(
   async (newValue) => {
     fontFamily.value = !newValue || newValue === 'none' ? null : newValue
     await updateInheritedFontFamily()
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(getElement, updateInheritedFontFamily, { immediate: true, flush: 'post' })
 watch(
   getFontStyle,
-  async (newValue) => {
+  (newValue) => {
     fontStyle.value = newValue
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
