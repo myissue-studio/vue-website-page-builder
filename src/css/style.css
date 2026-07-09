@@ -1,8 +1,7 @@
-/* Google Fonts - Auto-loaded for vue-website-page-builder */
+/* Google Fonts - Loaded dynamically on-demand to keep package size small */
+/* Only Jost (default font) and Material Symbols are pre-loaded */
 @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400;1,500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap');
 
 @tailwind components;
 @tailwind utilities;
@@ -68,62 +67,62 @@
   /*
    * Element-level font classes chosen in the editor should override configured
    * page defaults and elementFonts. Components usually apply pbx-font-* to the
-   * selected wrapper around h1/h2/p, so descendants must inherit that wrapper.
-   * Only match font-family utilities — not font-weight classes like pbx-font-medium.
+   * selected wrapper, so descendants must inherit that wrapper.
+   * Match any pbx-font-* family utility, but exclude font-weight classes.
    */
   #pagebuilder
     :is(
-      .pbx-font-sans,
-      .pbx-font-serif,
-      .pbx-font-mono,
-      .pbx-font-arial,
-      .pbx-font-helvetica,
-      .pbx-font-georgia,
-      .pbx-font-times,
-      .pbx-font-times-new-roman,
-      .pbx-font-courier,
-      .pbx-font-courier-new,
-      .pbx-font-verdana,
-      .pbx-font-tahoma,
-      .pbx-font-trebuchet,
-      .pbx-font-garamond,
-      .pbx-font-palantino,
-      .pbx-font-bookman,
-      .pbx-font-comic-sans,
-      .pbx-font-impact,
-      .pbx-font-lucida,
-      .pbx-font-lucida-console,
-      .pbx-font-lucida-sans,
-      .pbx-font-candara,
-      .pbx-font-optima,
-      .pbx-font-avenir,
-      .pbx-font-futura,
-      .pbx-font-calibri,
-      .pbx-font-cambria,
-      .pbx-font-didot,
-      .pbx-font-franklin-gothic,
-      .pbx-font-rockwell,
-      .pbx-font-baskerville,
-      .pbx-font-jost,
-      .pbx-font-raleway,
-      .pbx-font-inter,
-      .pbx-font-roboto,
-      .pbx-font-open-sans,
-      .pbx-font-lato,
-      .pbx-font-montserrat,
-      .pbx-font-poppins,
-      .pbx-font-nunito,
-      .pbx-font-merriweather,
-      .pbx-font-playfair-display,
-      .pbx-font-source-sans-3,
-      .pbx-font-noto-sans,
-      .pbx-font-work-sans,
-      .pbx-font-quicksand,
-      .pbx-font-pt-serif,
-      .pbx-font-crimson-text,
+      [class*='pbx-font-']:not(.pbx-font-thin):not(.pbx-font-extralight):not(.pbx-font-light):not(
+          .pbx-font-normal
+        ):not(.pbx-font-medium):not(.pbx-font-bold):not(.pbx-font-extrabold):not(.pbx-font-black),
       [class*='pbx-font-custom-']
     )
-    :is(h1, h2, h3, h4, h5, h6, p) {
+    :is(
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      a,
+      li,
+      blockquote,
+      figcaption,
+      button,
+      input,
+      textarea,
+      select,
+      label
+    ) {
+    font-family: inherit;
+  }
+
+  /*
+   * Universal fallback: if the page wrapper itself has any pbx-font-* class,
+   * force common text and form controls to inherit that family. This supports
+   * passed HTML using classes not prelisted in Tailwind safelist
+   * (e.g. pbx-font-fantasy).
+   */
+  #pagebuilder[class*='pbx-font-']
+    :is(
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      a,
+      li,
+      blockquote,
+      figcaption,
+      button,
+      input,
+      textarea,
+      select,
+      label
+    ) {
     font-family: inherit;
   }
 
@@ -776,7 +775,7 @@
   }
 
   .pbx-toast {
-    @apply pbx-pointer-events-auto pbx-flex pbx-min-w-[15rem] pbx-max-w-sm pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-2xl pbx-px-5 pbx-py-3.5 pbx-shadow-lg;
+    @apply pbx-pointer-events-auto pbx-flex pbx-min-w-[15rem] pbx-max-w-sm pbx-items-center pbx-justify-between pbx-gap-4 pbx-rounded-full pbx-px-5 pbx-py-3.5 pbx-shadow-lg;
   }
 
   .pbx-toastMessage {
@@ -1221,6 +1220,18 @@
     @apply pbx-px-0 pbx-py-3;
   }
 
+  .pbx-pageDesignEditor .pbx-pageDesignTypographyAccordion > button {
+    @apply pbx-rounded-xl pbx-border pbx-border-solid pbx-border-indigo-100 pbx-bg-gradient-to-r pbx-from-indigo-50 pbx-to-white pbx-px-3 pbx-py-3;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignTypographyAccordion > button .pbx-myPrimaryParagraph {
+    @apply pbx-font-semibold pbx-text-indigo-900;
+  }
+
+  .pbx-pageDesignEditor .pbx-pageDesignTypographyAccordion > button .material-symbols-outlined {
+    @apply pbx-rounded-full pbx-bg-white pbx-p-0.5 pbx-text-indigo-500;
+  }
+
   .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordionContent,
   .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordionContent {
     @apply pbx-border-0 pbx-px-0 pbx-pt-4 pbx-pb-4;
@@ -1466,6 +1477,11 @@
   z-index: 60;
 }
 
+/* Toolbar popovers must sit above BaseModal (z-index: 9999) when PageBuilder is in a modal */
+[data-pbx-edit-toolbar-popover] {
+  z-index: 10000 !important;
+}
+
 #pbxEditToolbar {
   opacity: 0;
   pointer-events: none;
@@ -1572,10 +1588,6 @@
   cursor: pointer;
   display: block;
   padding: 18px 14px;
-}
-
-#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
-  color: #fff;
 }
 
 #pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
@@ -1779,7 +1791,7 @@
 }
 
 #pagebuilder button {
-  font-family: 'Jost', Helvetica, Arial, sans-serif;
+  font-family: inherit;
 }
 
 #pbx-modal button {

@@ -16,11 +16,7 @@ export function useToast() {
     toasts.value = toasts.value.filter((toast) => toast.id !== id)
   }
 
-  function showToast(
-    message: string,
-    type: ToastType = 'success',
-    durationMs = 4000,
-  ): void {
+  function showToast(message: string, type: ToastType = 'success', durationMs = 1200): void {
     const id = nextToastId++
     toasts.value.push({ id, message, type })
 

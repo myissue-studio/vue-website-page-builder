@@ -1,14 +1,12 @@
 import type { PageBuilderConfig } from '../../types'
-import tailwindFontStyles from './tailwind-font-styles'
 import fontFamilyMap, {
+  findFontFamilyClassOnElement,
   findFontTokenByCustomClass,
   hasUserPageCanvasFontOverride,
   isPassThroughFontStackClass,
   resolveFontFamily,
   resolveFontFamilyFromToken,
 } from './font-family-map'
-
-const FONT_FAMILY_CLASSES = tailwindFontStyles.fontFamily.filter((cls) => cls !== 'none')
 const TEXT_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'])
 
 export function formatFontFamily(value: string): string {
@@ -25,13 +23,7 @@ export function getFontTargetElement(element: HTMLElement): HTMLElement {
 }
 
 function findFontFamilyClass(element: HTMLElement): string | undefined {
-  const builtin = FONT_FAMILY_CLASSES.find((cls) => element.classList.contains(cls))
-  if (builtin) return builtin
-
-  for (const cls of element.classList) {
-    if (cls.startsWith('pbx-font-custom-')) return cls
-  }
-  return undefined
+  return findFontFamilyClassOnElement(element)
 }
 
 function findExplicitFontFamilyClass(element: HTMLElement): string | undefined {

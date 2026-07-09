@@ -62,49 +62,43 @@ const getLeft = computed(() =>
 
 watch(
   getVertical,
-  async (v) => {
+  (v) => {
     vertical.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getHorizontal,
-  async (v) => {
+  (v) => {
     horizontal.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getTop,
-  async (v) => {
+  (v) => {
     top.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getRight,
-  async (v) => {
+  (v) => {
     right.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getBottom,
-  async (v) => {
+  (v) => {
     bottom.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )
 watch(
   getLeft,
-  async (v) => {
+  (v) => {
     left.value = v
-    await pageBuilderService.initializeElementStyles()
   },
   { immediate: true },
 )

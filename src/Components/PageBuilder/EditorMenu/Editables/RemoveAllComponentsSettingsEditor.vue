@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
+import HtmlActionButton from './HtmlActionButton.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
@@ -65,24 +66,13 @@ const handleDeleteComponentsFromDOM = function () {
         {{ translate('Remove all components description') }}
       </p>
 
-      <button
-        type="button"
-        class="pbx-pageDesignOpenButton pbx-pageDesignOpenButton--danger"
+      <HtmlActionButton
+        icon="delete_forever"
+        :label="translate('Remove all Components')"
+        :hint="translate('Clear every section from the page')"
+        variant="danger"
         @click="handleDeleteComponentsFromDOM"
-      >
-        <span class="material-symbols-outlined">delete_forever</span>
-        <span class="pbx-pageDesignOpenButtonText">
-          <span class="pbx-pageDesignOpenButtonLabel">{{
-            translate('Remove all Components')
-          }}</span>
-          <span class="pbx-pageDesignOpenButtonHint">
-            {{ translate('Clear every section from the page') }}
-          </span>
-        </span>
-        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
-          arrow_forward
-        </span>
-      </button>
+      />
     </template>
   </EditorAccordion>
 

@@ -81,6 +81,40 @@ await pageBuilderService.startBuilder(configPageBuilder, components)
 
 The key is to save the complete builder HTML, including the outer `<div id="pagebuilder">`. That wrapper is where the Page Builder stores global classes and styles.
 
+### Runtime Font Class Support
+
+When `pageSettings.classes` contains a font utility (for example `pbx-font-raleway`), the builder ensures a matching CSS rule exists at runtime and then loads the web font if needed.
+
+This means your saved page can restore font classes reliably even when a specific font utility was not pre-generated in your Tailwind output.
+
+Arbitrary page-level font classes such as `pbx-font-fantasy` are also supported at runtime. They do not need to be explicitly listed in the Tailwind safelist to render on the canvas.
+
+Classes generated as `pbx-font-custom-*` are normalized at runtime as well, so values like `pbx-font-custom-fantasy` map to the CSS generic family `fantasy` instead of being treated as a literal custom font name.
+
+When imported HTML uses a raw family class like `pbx-font-bitcount-grid-double`, the Page Design font picker now recognizes it as an explicit font family and resolves it to the matching configured option label/value.
+
+This normalization also runs during style-panel initialization, so the Font Family dropdown stays selected (instead of showing only an Inherited label) when `#pagebuilder` already contains a raw imported `pbx-font-*` family class.
+
+For nested wrapper use-cases, the canvas CSS now matches generic `pbx-font-*` classes (while excluding weight-only classes like `pbx-font-medium`), so family classes from passed HTML can cascade to common text and form controls.
+
+This fallback applies to common text and form controls inside the canvas (including headings, paragraphs, links, list items, buttons, and inputs), so passed page-level font classes affect more than just headings/paragraphs.
+
+When a persisted page class already includes a font-family utility, the canvas no longer injects the config default font class (for example `pbx-font-jost`). This prevents first-render class conflicts during draft resume.
+
+When an explicit page font class exists in `pageSettings.classes`, per-element `elementFonts` CSS variables are not injected for the canvas wrapper. This ensures headings/paragraphs inherit the restored page font instead of falling back to config defaults.
+
+When draft page settings are restored, the same values are synced back into the reactive `config.pageSettings` state. This prevents stale config classes (such as an older background color) from being re-applied by Vue bindings after resume.
+
+Global page background color changes in Page Design now trigger an immediate autosave for `#pagebuilder` in addition to observer-based persistence, reducing the chance of losing the latest color if the page is refreshed quickly.
+
+Builder insert controls (Add/Products section buttons inside the canvas) are now offset against page-level `#pagebuilder` padding/margin classes, so they stay anchored in the right-side control area even when global page spacing utilities like `pbx-px-*`, `pbx-py-*`, or `pbx-mx-*` are applied.
+
+Insert controls are also isolated from inherited page typography styles. Global canvas text styles such as `letter-spacing`, `word-spacing`, `text-transform`, and `font-style` no longer alter the Add/Products insert buttons.
+
+In Page Design, the Typography panel now opens by default and uses a clearer highlighted header style for faster access.
+
+Typography in Page Design is now progressively disclosed: core controls (font family, size, weight) stay visible by default, while less-used controls are grouped under a `More options` toggle.
+
 ## Button Style Controls In Modals
 
 The builder now uses a wider **Product section settings** modal so product layout and link controls have more room.
