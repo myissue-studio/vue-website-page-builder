@@ -563,6 +563,89 @@ describe('Global Page Settings', () => {
     expect(resultEl?.getAttribute('class')).toContain('pbx-bg-sky-600')
   })
 
+  it('REGRESSION (resume draft): continue where left off restores global wrapper classes and styles', async () => {
+    // Simulate fresh wrapper defaults rendered before user clicks "Continue where I left off".
+    pagebuilderEl.setAttribute('class', 'pbx-font-pt-serif')
+    pagebuilderEl.setAttribute('style', 'letter-spacing: 0.5px;')
+
+    localStorage.setItem(
+      'test-key',
+      JSON.stringify({
+        components: [
+          {
+            html_code: SECTION_HTML,
+            title: 'Test',
+          },
+        ],
+        pageBuilderContentSavedAt: new Date().toISOString(),
+        pageSettings: {
+          classes: 'pbx-font-pt-serif pbx-bg-orange-600 pbx-py-96 pbx-rounded-full',
+          style: {
+            letterSpacing: '0.5px',
+            color: 'rgb(229, 211, 82)',
+          },
+        },
+      }),
+    )
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    await service.resumeEditingFromDraft()
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    const classAttr = resultEl?.getAttribute('class') || ''
+    const styleAttr = resultEl?.getAttribute('style') || ''
+
+    expect(classAttr).toContain('pbx-bg-orange-600')
+    expect(classAttr).toContain('pbx-py-96')
+    expect(classAttr).toContain('pbx-rounded-full')
+    expect(styleAttr).toContain('letter-spacing')
+    expect(styleAttr).toContain('color')
+  })
+
+  it('REGRESSION (resume draft): imported wrapper classes override fresh DOM defaults', async () => {
+    // Fresh DOM defaults should not override saved draft wrapper classes.
+    pagebuilderEl.setAttribute('class', 'pbx-text-black pbx-font-sans')
+
+    localStorage.setItem(
+      'test-key',
+      JSON.stringify({
+        components: [
+          {
+            html_code: SECTION_HTML,
+            title: 'Test',
+          },
+        ],
+        pageBuilderContentSavedAt: new Date().toISOString(),
+        pageSettings: {
+          classes: 'pbx-text-black pbx-bg-red-500',
+          style: '',
+        },
+      }),
+    )
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    await service.resumeEditingFromDraft()
+    await nextTick()
+
+    const resultEl = document.querySelector('#pagebuilder')
+    expect(resultEl?.getAttribute('class')).toContain('pbx-bg-red-500')
+  })
+
   // -------------------------------------------------------------------------
   // clearInlineStylesFromPage
   // -------------------------------------------------------------------------
