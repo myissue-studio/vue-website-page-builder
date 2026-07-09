@@ -132,7 +132,7 @@ const closeHTMLSettings = async function () {
         type="button"
         @click="$emit('closeEditor')"
         :aria-label="translate('Close properties panel')"
-        class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+        class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black"
       >
         <span class="material-symbols-outlined" aria-hidden="true"> close </span>
       </button>
@@ -204,7 +204,7 @@ const closeHTMLSettings = async function () {
       class="pbx-pl-3 pbx-pr-3 pbx-mb-4 pbx-flex-1 pbx-overflow-y-scroll"
     >
       <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
-        <div v-if="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
+        <div v-show="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
           <ImageEditor v-if="showImageEditor" />
           <OpacityEditor />
           <PaddingControl />
@@ -217,7 +217,7 @@ const closeHTMLSettings = async function () {
         </div>
 
         <div
-          v-else
+          v-show="!hasEditableSelection"
           class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-4 pbx-py-8 pbx-text-center"
         >
           <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-text-gray-500 pbx-my-0">
