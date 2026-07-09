@@ -632,7 +632,22 @@ export class PageBuilderService {
     try {
       this.originalComponents = passedComponentsArray
       this.originalPageSettings = config.pageSettings ?? null
-      this.pageBuilderStateStore.setPageBuilderConfig(config)
+
+      // On reopen flows, component edits can survive in the singleton store while
+      // incoming config may omit pageSettings. Mirror live wrapper settings into
+      // runtime config so #pagebuilder classes/styles remain reactive and stable.
+      let runtimeConfig = config
+      if (
+        this.hasMeaningfulPageSettings(currentStartSettings) &&
+        !this.hasMeaningfulPageSettings(config.pageSettings)
+      ) {
+        runtimeConfig = {
+          ...config,
+          pageSettings: currentStartSettings,
+        }
+      }
+
+      this.pageBuilderStateStore.setPageBuilderConfig(runtimeConfig)
 
       // Apply language default from config if localStorage has no saved preference
       const savedSettings = JSON.parse(localStorage.getItem('userSettingsPageBuilder') ?? 'null')

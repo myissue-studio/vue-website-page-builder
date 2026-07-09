@@ -129,6 +129,8 @@ When Page Design is open, class and style controls target the page wrapper direc
 
 When Page Design is closed, global mode is reset so Advanced class/style controls immediately target the currently selected element again.
 
+On reopen flows, if incoming config does not provide `pageSettings`, the builder now syncs the live `#pagebuilder` wrapper settings into runtime config to keep global classes/styles from being dropped while section content persists.
+
 In global Page Design color pickers, built-in colors now apply the clicked color option directly (no stale previous-value fallback), so Text Color and Background Color stay aligned between visual output and page wrapper classes/styles.
 
 Theme Color Presets apply their hex value as inline style (same behavior as custom colors) for both global Page Design and selected elements.
