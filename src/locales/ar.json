@@ -569,5 +569,10 @@
   "Could not apply theme": "تعذر تطبيق السمة",
   "Page layout": "تخطيط الصفحة",
   "Remove all components description": "أزل كل الأقسام من الصفحة. سيُطلب منك التأكيد قبل الحذف.",
-  "Clear every section from the page": "مسح كل الأقسام من الصفحة"
+  "Clear every section from the page": "مسح كل الأقسام من الصفحة",
+  "Clear page classes & styles": "مسح أصناف الصفحة والأنماط",
+  "Remove global page classes and inline styles from the wrapper": "إزالة أصناف الصفحة العامة والأنماط المضمنة من الحاوية",
+  "Are you sure you want to remove global page classes and inline styles?": "هل أنت متأكد أنك تريد إزالة أصناف الصفحة العامة والأنماط المضمنة؟",
+  "Page design styles cleared": "تم مسح أنماط تصميم الصفحة",
+  "Could not clear page design styles": "تعذر مسح أنماط تصميم الصفحة"
 }

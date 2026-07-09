@@ -640,7 +640,7 @@ onBeforeUnmount(() => {
       data-pbx-edit-toolbar-popover
       data-pbx-typography-menu-popover
       :style="typographyPopoverStyle"
-      class="pbx-fixed pbx-z-50 pbx-max-h-[70vh] pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+      class="pbx-fixed pbx-z-50 pbx-max-h-56 pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-pt-2 pbx-pb-12 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
       @mousedown.stop
       @pointerdown.stop
       @click.stop

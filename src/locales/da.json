@@ -575,5 +575,10 @@
   "Use rounded corners for CTA buttons": "Brug afrundede hjørner til CTA-knapper",
   "Button links": "Knaplinks",
   "Link behavior on helper button components": "Linkadfærd for hjælper-knapkomponenter",
-  "No additional settings for this category": "Ingen yderligere indstillinger for denne kategori"
+  "No additional settings for this category": "Ingen yderligere indstillinger for denne kategori",
+  "Clear page classes & styles": "Ryd sideklasser og stilarter",
+  "Remove global page classes and inline styles from the wrapper": "Fjern globale sideklasser og inline-stilarter fra wrapperen",
+  "Are you sure you want to remove global page classes and inline styles?": "Er du sikker på, at du vil fjerne globale sideklasser og inline-stilarter?",
+  "Page design styles cleared": "Sidedesignets stilarter er ryddet",
+  "Could not clear page design styles": "Kunne ikke rydde sidedesignets stilarter"
 }

@@ -33,12 +33,9 @@ import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
-import { ensureFontClassExists, loadFontFromClass } from '../utils/builder/dynamic-font-loader'
+import { loadFontFromClass } from '../utils/builder/dynamic-font-loader'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
-import {
-  findFontFamilyClassOnElement,
-  getEditorFontFamilyClasses,
-} from '../utils/builder/font-family-map'
+import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
 import { isValidHyperlinkInput } from '../utils/builder/url-validation'
 import {
   applyProductSectionOptionsToElement,
@@ -145,10 +142,8 @@ export class PageBuilderService {
   private savedMountComponents: BuilderResourceData | null = null
   private pendingMountComponents: BuilderResourceData | null = null
   private globalStylesObserver: MutationObserver | null = null
-  private globalStylesObserverDebounceTimer: ReturnType<typeof setTimeout> | null = null
   private _pendingPageSettings: PageSettings | null = null
   private _lastKnownPageSettings: PageSettings | null = null
-  private pendingResumeDraftHtml: string | null = null
   private isPageBuilderMissingOnStart: boolean = false
   private hasCompletedBuilderMount: boolean = false
   private builderWasMountedBeforeClose: boolean = false
@@ -561,7 +556,6 @@ export class PageBuilderService {
     passedComponentsArray?: BuilderResourceData,
   ): Promise<StartBuilderResult> {
     const sessionToken = ++this.activeBuilderSessionToken
-    this.pendingResumeDraftHtml = null
     this.debugLog('warn', 'startBuilder(): begin', {
       sessionToken,
       hasPassedComponentsArray: Array.isArray(passedComponentsArray),
@@ -874,7 +868,7 @@ export class PageBuilderService {
               'warn',
               'completeBuilderInitialization(): mounting from local draft (missing-on-start)',
             )
-            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            await this.completeMountProcess(localStorageData, undefined, sessionToken, true)
             return
           }
           if (passedComponentsArray && !localStorageData) {
@@ -894,10 +888,10 @@ export class PageBuilderService {
               'completeBuilderInitialization(): both passed + draft exist → mounting passed content + showing resume modal',
               { key: this.getLocalStorageItemName.value },
             )
-            this.pendingResumeDraftHtml = localStorageData
-            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
             const htmlString = this.renderComponentsToHtml(passedComponentsArray)
             await this.completeMountProcess(htmlString, true, sessionToken)
+            await sleep(500)
+            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
             return
           }
 
@@ -906,7 +900,7 @@ export class PageBuilderService {
               'warn',
               'completeBuilderInitialization(): mounting from local draft (default path)',
             )
-            await this.completeMountProcess(localStorageData, undefined, sessionToken)
+            await this.completeMountProcess(localStorageData, undefined, sessionToken, true)
             return
           }
 
@@ -930,10 +924,10 @@ export class PageBuilderService {
               'warn',
               'completeBuilderInitialization(): pending mount + draft → mounting passed content + showing resume modal',
             )
-            this.pendingResumeDraftHtml = localStorageData
-            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
             const htmlString = this.renderComponentsToHtml(this.pendingMountComponents)
             await this.completeMountProcess(htmlString, true, sessionToken)
+            await sleep(500)
+            this.pageBuilderStateStore.setHasLocalDraftForUpdate(true)
             this.pendingMountComponents = null
             return
           }
@@ -997,6 +991,7 @@ export class PageBuilderService {
     html: string,
     useConfigPageSettings?: boolean,
     sessionToken: number = this.activeBuilderSessionToken,
+    preferImportedPageSettings: boolean = false,
   ) {
     if (sessionToken !== this.activeBuilderSessionToken) {
       // A new startBuilder() call has already taken over — ensure loading is cleared
@@ -1004,7 +999,12 @@ export class PageBuilderService {
       this.pageBuilderStateStore.setIsLoadingGlobal(false)
       return
     }
-    await this.mountComponentsToDOM(html, useConfigPageSettings)
+    await this.mountComponentsToDOM(
+      html,
+      useConfigPageSettings,
+      undefined,
+      preferImportedPageSettings,
+    )
     if (sessionToken !== this.activeBuilderSessionToken) {
       // A new startBuilder() call arrived while mountComponentsToDOM was running.
       // Ensure the loading overlay is not left blocking the canvas.
@@ -1039,11 +1039,9 @@ export class PageBuilderService {
     CSSArray: string[],
     mutationName: string,
   ): string | undefined {
-    const currentHTMLElement = this.getElement.value
+    const currentHTMLElement = this.getActiveStyleTarget()
 
-    if (!currentHTMLElement) {
-      return
-    }
+    if (!currentHTMLElement) return
 
     const isBorderRadiusControl =
       CSSArray === tailwindBorderRadius.roundedGlobal ||
@@ -1099,18 +1097,7 @@ export class PageBuilderService {
     // set to 'none' if undefined
     let elementClass = currentCSS || 'none'
 
-    if (mutationName === 'setFontFamily') {
-      const normalizedFontClass = findFontFamilyClassOnElement(
-        classTarget,
-        this.pageBuilderStateStore.getPageBuilderConfig?.userSettings,
-      )
-      if (normalizedFontClass) {
-        elementClass = normalizedFontClass
-      }
-    }
-
-    // If cssUserSelection is undefined, only sync the store and return.
-    // This path is used while controls initialize and must not mutate DOM classes.
+    // If cssUserSelection is undefined, just set the current state and return
     if (cssUserSelection === undefined) {
       if (typeof mutationName === 'string' && mutationName.length > 2) {
         // Use a type-safe approach to handle mutationName
@@ -1131,21 +1118,15 @@ export class PageBuilderService {
 
     // cssUserSelection examples: bg-zinc-200, px-10, rounded-full etc.
     if (typeof cssUserSelection === 'string' && cssUserSelection !== 'none') {
-      // CRITICAL FIX: Remove ALL classes from CSSArray, not just the detected one
-      // This prevents duplicate font classes like: pbx-font-jost pbx-font-jost pbx-font-raleway pbx-font-jost
-      CSSArray.forEach((cls) => {
-        if (cls !== 'none' && cls !== cssUserSelection) {
-          if (classTarget.classList.contains(cls)) {
-            classTarget.classList.remove(cls)
-          }
-          if (
-            helperButtonAnchor instanceof HTMLElement &&
-            currentHTMLElement.classList.contains(cls)
-          ) {
-            currentHTMLElement.classList.remove(cls)
-          }
+      if (elementClass) {
+        if (classTarget.classList.contains(elementClass)) classTarget.classList.remove(elementClass)
+        if (
+          helperButtonAnchor instanceof HTMLElement &&
+          currentHTMLElement.classList.contains(elementClass)
+        ) {
+          currentHTMLElement.classList.remove(elementClass)
         }
-      })
+      }
 
       // Remove any legacy lg:- and md:-prefixed variants that may have been saved before the
       // padding/margin system was updated to apply at all screen sizes.
@@ -1216,6 +1197,17 @@ export class PageBuilderService {
       }
     }
 
+    if (cssUserSelection !== undefined) {
+      this.pageBuilderStateStore.setCurrentClasses(Array.from(currentHTMLElement.classList))
+
+      const style = currentHTMLElement.getAttribute('style')
+      if (style) {
+        this.pageBuilderStateStore.setCurrentStyles(this.parseStyleString(style))
+      } else {
+        this.pageBuilderStateStore.setCurrentStyles({})
+      }
+    }
+
     return currentCSS
   }
 
@@ -1270,18 +1262,10 @@ export class PageBuilderService {
     // Keep the latest page-level classes/styles available after Vue remounts.
     if (this.globalStylesObserver) this.globalStylesObserver.disconnect()
     this.globalStylesObserver = new MutationObserver(() => {
-      // Debounce to prevent multiple saves during rapid class changes
-      if (this.globalStylesObserverDebounceTimer) {
-        clearTimeout(this.globalStylesObserverDebounceTimer)
+      const current = this.readCurrentPageSettings()
+      if (current) {
+        this._lastKnownPageSettings = current
       }
-
-      this.globalStylesObserverDebounceTimer = setTimeout(() => {
-        const current = this.readCurrentPageSettings()
-        if (current) {
-          this._lastKnownPageSettings = current
-          void this.handleAutoSave()
-        }
-      }, 300) // 300ms debounce - wait for rapid changes to settle
     })
     this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
@@ -1296,20 +1280,6 @@ export class PageBuilderService {
    * Call when closing the global styles editor panel.
    */
   public stopGlobalStylesSync() {
-    // Flush any pending debounced save before disconnecting
-    if (this.globalStylesObserverDebounceTimer) {
-      clearTimeout(this.globalStylesObserverDebounceTimer)
-      this.globalStylesObserverDebounceTimer = null
-
-      // Immediately save pending changes
-      const current = this.readCurrentPageSettings()
-      if (current) {
-        this._lastKnownPageSettings = current
-        // Note: handleManualSave is called by RightSidebarEditor after this,
-        // so this update to _lastKnownPageSettings ensures the latest classes are saved
-      }
-    }
-
     if (this.globalStylesObserver) {
       this.globalStylesObserver.disconnect()
       this.globalStylesObserver = null
@@ -2137,9 +2107,6 @@ export class PageBuilderService {
    * Triggers an auto-save of the current page builder content to local storage if enabled.
    */
   public handleAutoSave = async () => {
-    // When a draft-resume decision modal is open, do not overwrite the existing draft.
-    if (this.pageBuilderStateStore.getHasLocalDraftForUpdate) return
-
     this.startEditing()
 
     if (this.pageBuilderStateStore.getInlineTipTapEditor) return
@@ -2299,11 +2266,8 @@ export class PageBuilderService {
    * @private
    */
   private async syncCurrentClasses() {
-    // convert classList to array
-    const classListArray = Array.from(this.getElement.value?.classList || [])
-
-    // commit array to store
-    this.pageBuilderStateStore.setCurrentClasses(classListArray)
+    const targetElement = this.getActiveStyleTarget()
+    this.pageBuilderStateStore.setCurrentClasses(Array.from(targetElement?.classList ?? []))
   }
 
   /**
@@ -2311,7 +2275,8 @@ export class PageBuilderService {
    * @private
    */
   private async syncCurrentStyles() {
-    const style = this.getElement.value?.getAttribute('style')
+    const targetElement = this.getActiveStyleTarget()
+    const style = targetElement?.getAttribute('style')
     if (style) {
       const stylesObject = this.parseStyleString(style)
       this.pageBuilderStateStore.setCurrentStyles(stylesObject)
@@ -2321,26 +2286,48 @@ export class PageBuilderService {
   }
 
   /**
+   * Returns the element style/class controls should mutate.
+   * In global page-design mode, always use #pagebuilder.
+   */
+  private getActiveStyleTarget(): HTMLElement | null {
+    if (this.pageBuilderStateStore.getToggleGlobalHtmlMode) {
+      const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
+      if (pagebuilder) {
+        if (this.getElement.value !== pagebuilder) {
+          this.pageBuilderStateStore.setElement(pagebuilder)
+        }
+        return pagebuilder
+      }
+    }
+
+    return this.getElement.value
+  }
+
+  /**
    * Adds a CSS class to the currently selected element.
    * @param {string} userSelectedClass - The class to add.
    */
   public handleAddClasses(userSelectedClass: string): void {
+    const element = this.getActiveStyleTarget()
+
     if (
+      element &&
       typeof userSelectedClass === 'string' &&
       userSelectedClass.trim() !== '' &&
       !userSelectedClass.includes(' ') &&
       // Check if class (with prefix) already exists
-      !this.getElement.value?.classList.contains('pbx-' + userSelectedClass.trim())
+      !element.classList.contains('pbx-' + userSelectedClass.trim())
     ) {
       const cleanedClass = userSelectedClass.trim()
 
       // Add prefix if missing
       const prefixedClass = cleanedClass.startsWith('pbx-') ? cleanedClass : 'pbx-' + cleanedClass
 
-      this.getElement.value?.classList.add(prefixedClass)
+      element.classList.add(prefixedClass)
 
-      this.pageBuilderStateStore.setElement(this.getElement.value)
+      this.pageBuilderStateStore.setElement(element)
       this.pageBuilderStateStore.setClass(prefixedClass)
+      this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
     }
   }
 
@@ -2350,11 +2337,14 @@ export class PageBuilderService {
    * @param {string} value - The value of the CSS property.
    */
   public handleAddStyle(property: string, value: string): void {
-    const element = this.getElement.value
+    const element = this.getActiveStyleTarget()
     if (!element || !property || !value) return
 
     element.style.setProperty(property, value)
     this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setCurrentStyles(
+      this.parseStyleString(element.getAttribute('style') || ''),
+    )
   }
 
   /**
@@ -2362,11 +2352,18 @@ export class PageBuilderService {
    * @param {string} property - The CSS property to remove.
    */
   public handleRemoveStyle(property: string): void {
-    const element = this.getElement.value
+    const element = this.getActiveStyleTarget()
     if (!element || !property) return
 
     element.style.removeProperty(property)
     this.pageBuilderStateStore.setElement(element)
+
+    const style = element.getAttribute('style')
+    if (style) {
+      this.pageBuilderStateStore.setCurrentStyles(this.parseStyleString(style))
+    } else {
+      this.pageBuilderStateStore.setCurrentStyles({})
+    }
   }
 
   /**
@@ -2381,14 +2378,12 @@ export class PageBuilderService {
     // Load the font dynamically if it's a Google Font
     if (userSelectedFontFamily && userSelectedFontFamily !== 'none') {
       try {
-        ensureFontClassExists(userSelectedFontFamily)
         await loadFontFromClass(userSelectedFontFamily)
       } catch (error) {
         console.error('Failed to load font:', userSelectedFontFamily, error)
         // Continue anyway - font might be available from another source
       }
     }
-
     this.applyElementClassChanges(userSelectedFontFamily, fontClasses, 'setFontFamily')
   }
   /**
@@ -2642,8 +2637,11 @@ export class PageBuilderService {
    * @param {string} [color] - The selected background color class.
    */
   public handleBackgroundColor(color?: string): void {
+    const element = this.getActiveStyleTarget()
+    if (!element) return
+
     if (color === undefined) {
-      const customColor = this.getElement.value?.style.getPropertyValue('background-color')
+      const customColor = element.style.getPropertyValue('background-color')
       if (customColor) {
         this.pageBuilderStateStore.setBackgroundColor(
           `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
@@ -2651,7 +2649,7 @@ export class PageBuilderService {
         return
       }
     } else {
-      this.getElement.value?.style.removeProperty('background-color')
+      element.style.removeProperty('background-color')
     }
 
     this.applyElementClassChanges(
@@ -2659,27 +2657,20 @@ export class PageBuilderService {
       tailwindColors.backgroundColorVariables,
       'setBackgroundColor',
     )
-
-    // Persist page-level background changes immediately so refresh/continue picks
-    // up the latest canvas color even if observer/debounce timing is interrupted.
-    if (this.getElement.value?.id === 'pagebuilder') {
-      void this.handleAutoSave()
-    }
   }
 
   public handleCustomBackgroundColor(color: string): void {
-    const element = this.getElement.value
+    const element = this.getActiveStyleTarget()
     if (!element || !color) return
 
     this.removeElementClassesFromArray(element, tailwindColors.backgroundColorVariables)
     element.style.setProperty('background-color', color)
     this.pageBuilderStateStore.setBackgroundColor(`custom:${color}`)
     this.pageBuilderStateStore.setElement(element)
-
-    // Persist page-level custom background color immediately.
-    if (element.id === 'pagebuilder') {
-      void this.handleAutoSave()
-    }
+    this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+    this.pageBuilderStateStore.setCurrentStyles(
+      this.parseStyleString(element.getAttribute('style') || ''),
+    )
   }
 
   /**
@@ -2687,8 +2678,11 @@ export class PageBuilderService {
    * @param {string} [color] - The selected text color class.
    */
   public handleTextColor(color?: string): void {
+    const element = this.getActiveStyleTarget()
+    if (!element) return
+
     if (color === undefined) {
-      const customColor = this.getElement.value?.style.getPropertyValue('color')
+      const customColor = element.style.getPropertyValue('color')
       if (customColor) {
         this.pageBuilderStateStore.setTextColor(
           `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
@@ -2696,20 +2690,24 @@ export class PageBuilderService {
         return
       }
     } else {
-      this.getElement.value?.style.removeProperty('color')
+      element.style.removeProperty('color')
     }
 
     this.applyElementClassChanges(color, tailwindColors.textColorVariables, 'setTextColor')
   }
 
   public handleCustomTextColor(color: string): void {
-    const element = this.getElement.value
+    const element = this.getActiveStyleTarget()
     if (!element || !color) return
 
     this.removeElementClassesFromArray(element, tailwindColors.textColorVariables)
     element.style.setProperty('color', color)
     this.pageBuilderStateStore.setTextColor(`custom:${color}`)
     this.pageBuilderStateStore.setElement(element)
+    this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+    this.pageBuilderStateStore.setCurrentStyles(
+      this.parseStyleString(element.getAttribute('style') || ''),
+    )
   }
 
   /**
@@ -3112,12 +3110,15 @@ export class PageBuilderService {
    * @param {string} userSelectedClass - The class to remove.
    */
   public handleRemoveClasses(userSelectedClass: string): void {
-    // remove selected class from element
-    if (this.getElement.value?.classList.contains(userSelectedClass)) {
-      this.getElement.value?.classList.remove(userSelectedClass)
+    const element = this.getActiveStyleTarget()
 
-      this.pageBuilderStateStore.setElement(this.getElement.value)
+    // remove selected class from element
+    if (element?.classList.contains(userSelectedClass)) {
+      element.classList.remove(userSelectedClass)
+
+      this.pageBuilderStateStore.setElement(element)
       this.pageBuilderStateStore.removeClass(userSelectedClass)
+      this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
     }
   }
 
@@ -3538,27 +3539,11 @@ export class PageBuilderService {
       hasInlineTipTap: Boolean(pagebuilder.querySelector('[data-pbx-inline-tiptap]')),
     })
 
-    // 💾 SAVE DEBUG: Log raw DOM state before reading pageSettings
-    this.debugLog('warn', '💾 SAVE: Raw DOM #pagebuilder state', {
-      classes: pagebuilder.className,
-      style: pagebuilder.getAttribute('style') || '',
-      storeState: {
-        fontFamily: this.pageBuilderStateStore.getFontFamily,
-        textColor: this.pageBuilderStateStore.getTextColor,
-        backgroundColor: this.pageBuilderStateStore.getBackgroundColor,
-      },
-    })
-
     const pageSettings = this.readCurrentPageSettings() ??
       this._lastKnownPageSettings ?? {
         classes: '',
         style: '',
       }
-
-    this.debugLog('warn', '💾 SAVE: readCurrentPageSettings() returned', {
-      classes: pageSettings?.classes ?? '',
-      hasStyle: Boolean(pageSettings?.style),
-    })
 
     // Persist page settings into the in-memory config so Vue bindings can use it.
     // Without this, PageBuilder.vue's :class binding on #pagebuilder will overwrite
@@ -3602,20 +3587,6 @@ export class PageBuilderService {
       // prevents redundant undo states.
       try {
         localStorage.setItem(baseKey, JSON.stringify(dataToSave))
-
-        // 💾 SAVE VERIFICATION: Read back what was written to verify
-        const verifyWrite = localStorage.getItem(baseKey)
-        if (verifyWrite) {
-          const parsed = JSON.parse(verifyWrite)
-          this.debugLog('warn', '💾 SAVE VERIFIED: localStorage now contains', {
-            baseKey,
-            pageSettings: {
-              classes: parsed.pageSettings?.classes || '',
-              hasStyle: Boolean(parsed.pageSettings?.style),
-            },
-            componentsCount: parsed.components?.length || 0,
-          })
-        }
       } catch (err) {
         this.debugLog('error', 'saveDomComponentsToLocalStorage(): localStorage.setItem failed', {
           baseKey,
@@ -3742,75 +3713,11 @@ export class PageBuilderService {
    * Prioritises the live #pagebuilder element (always current) and falls back to localStorage.
    */
   private readCurrentPageSettings(): PageSettings | null {
-    // Helper function to deduplicate and clean conflicting class names
-    const deduplicateClasses = (className: string): string => {
-      if (!className) return ''
-      const classes = className.trim().split(/\s+/)
-
-      // Get current store state to prefer user's actual selection
-      const storeFontFamily = this.pageBuilderStateStore.getFontFamily
-      const storeTextColor = this.pageBuilderStateStore.getTextColor
-      const storeBackgroundColor = this.pageBuilderStateStore.getBackgroundColor
-
-      // Remove exact duplicates first
-      const uniqueClasses = Array.from(new Set(classes))
-
-      // Category patterns and their store values
-      const categories = [
-        { name: 'font', pattern: /^pbx-font-/, storeValue: storeFontFamily },
-        { name: 'textColor', pattern: /^pbx-text-/, storeValue: storeTextColor },
-        { name: 'bgColor', pattern: /^pbx-bg-/, storeValue: storeBackgroundColor },
-      ]
-
-      // Track which categories already have a store match
-      const categoryHasMatch = new Map<string, boolean>()
-
-      // For each category, keep only the class that matches store OR the last one
-      const final = uniqueClasses.filter((cls) => {
-        for (const { name, pattern, storeValue } of categories) {
-          if (pattern.test(cls)) {
-            // If store has a value and it matches this class, keep it
-            if (storeValue && storeValue !== 'none' && cls === storeValue) {
-              categoryHasMatch.set(name, true)
-              return true
-            }
-
-            // If this category already has a store match, skip all other classes
-            if (categoryHasMatch.get(name)) {
-              return false
-            }
-
-            // If store has a custom color like 'custom:#hex', skip this class
-            if (storeValue?.startsWith('custom:')) {
-              return false // Custom colors are in inline styles, not classes
-            }
-
-            // Otherwise, check if this is the LAST class of this category
-            const categoryClasses = uniqueClasses.filter((c) => pattern.test(c))
-            const isLast = categoryClasses[categoryClasses.length - 1] === cls
-            return isLast
-          }
-        }
-        return true // Keep non-category classes
-      })
-
-      return final.join(' ')
-    }
-
     // The live DOM is always the most up-to-date source — read it first.
     const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
     if (pagebuilder) {
-      const rawClasses = pagebuilder.className
-
-      const cleanClasses = deduplicateClasses(rawClasses)
-
-      // IMPORTANT: Apply the clean classes back to the DOM to remove duplicates
-      if (cleanClasses !== pagebuilder.className) {
-        pagebuilder.className = cleanClasses
-      }
-
       return {
-        classes: cleanClasses,
+        classes: pagebuilder.className || '',
         style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
         meta: readPageMetaFromElement(pagebuilder),
       }
@@ -3819,14 +3726,8 @@ export class PageBuilderService {
     // Backward-compatible fallback for callers/tests that only mount content wrappers.
     const contentEl = document.querySelector('[data-pagebuilder-content]') as HTMLElement | null
     if (contentEl) {
-      const cleanClasses = deduplicateClasses(contentEl.className)
-
-      // Apply clean classes to DOM
-      if (cleanClasses !== contentEl.className) {
-        contentEl.className = cleanClasses
-      }
       return {
-        classes: cleanClasses,
+        classes: contentEl.className || '',
         style: contentEl.getAttribute('style') || contentEl.style.cssText || '',
       }
     }
@@ -3855,25 +3756,8 @@ export class PageBuilderService {
   private applyPageSettingsToPage(pageSettings: PageSettings): void {
     const pagebuilder = document.querySelector('#pagebuilder') as HTMLElement | null
     if (pagebuilder) {
-      if (pageSettings.classes) {
-        pagebuilder.setAttribute('class', pageSettings.classes)
-
-        // Ensure the selected font utility exists even if Tailwind did not emit it.
-        const fontMatch = pageSettings.classes.match(/pbx-font-(\S+)/)
-        if (fontMatch) {
-          const fontClass = fontMatch[0] // e.g., 'pbx-font-raleway'
-
-          ensureFontClassExists(fontClass)
-
-          // Load the font asynchronously (don't await to avoid blocking)
-          loadFontFromClass(fontClass).catch((err) => {
-            console.error('Failed to load font from pageSettings:', err)
-          })
-        }
-      } else {
-        pagebuilder.removeAttribute('class')
-      }
-
+      if (pageSettings.classes) pagebuilder.setAttribute('class', pageSettings.classes)
+      else pagebuilder.removeAttribute('class')
       const styleValue =
         typeof pageSettings.style === 'string'
           ? pageSettings.style
@@ -3890,17 +3774,6 @@ export class PageBuilderService {
       el.removeAttribute('style')
     })
 
-    // Keep reactive config pageSettings in sync with the currently applied
-    // canvas settings so Vue class/style bindings do not reintroduce stale
-    // defaults (for example, old background classes) after draft resume.
-    const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
-    if (currentConfig && typeof currentConfig === 'object') {
-      this.pageBuilderStateStore.setPageBuilderConfig({
-        ...(currentConfig as Record<string, unknown>),
-        pageSettings,
-      } as never)
-    }
-
     if (pageSettings.classes || pageSettings.style || pageSettings.meta) {
       this._lastKnownPageSettings = pageSettings
     }
@@ -3914,31 +3787,11 @@ export class PageBuilderService {
     if (!pagebuilder) return
 
     this.globalStylesObserver.disconnect()
-    if (this.globalStylesObserverDebounceTimer) {
-      clearTimeout(this.globalStylesObserverDebounceTimer)
-    }
-
     this.globalStylesObserver = new MutationObserver(() => {
-      // Debounce to prevent multiple saves during rapid class changes
-      if (this.globalStylesObserverDebounceTimer) {
-        clearTimeout(this.globalStylesObserverDebounceTimer)
+      const current = this.readCurrentPageSettings()
+      if (current) {
+        this._lastKnownPageSettings = current
       }
-
-      this.globalStylesObserverDebounceTimer = setTimeout(() => {
-        const current = this.readCurrentPageSettings()
-        if (current) {
-          this._lastKnownPageSettings = current
-
-          // 💾 AUTO-SAVE: Trigger save when page styles change
-          console.log(
-            '🔄 globalStylesObserver detected change (reconnected), triggering auto-save',
-            {
-              classes: current.classes,
-            },
-          )
-          void this.handleAutoSave()
-        }
-      }, 300) // 300ms debounce
     })
     this.globalStylesObserver.observe(pagebuilder, {
       attributes: true,
@@ -4091,13 +3944,12 @@ export class PageBuilderService {
   public async resumeEditingFromDraft() {
     this.updateLocalStorageItemName()
 
-    const localStorageData = this.pendingResumeDraftHtml || this.getSavedPageHtml()
+    const localStorageData = this.getSavedPageHtml()
 
     if (localStorageData) {
       this.pageBuilderStateStore.setIsLoadingResumeEditing(true)
       await sleep(400)
-      await this.mountComponentsToDOM(localStorageData, undefined, undefined, true)
-      this.pendingResumeDraftHtml = null
+      await this.mountComponentsToDOM(localStorageData, false, undefined, true)
       this.pageBuilderStateStore.setIsLoadingResumeEditing(false)
     }
 
@@ -4169,17 +4021,6 @@ export class PageBuilderService {
 
     const parsed = JSON.parse(raw)
 
-    // 📖 LOAD DEBUG: Log what was read from localStorage
-    this.debugLog('warn', '📖 LOAD: Read from localStorage', {
-      key,
-      hasComponents: Boolean(parsed && Array.isArray(parsed.components)),
-      componentsCount: parsed?.components?.length || 0,
-      pageSettings: {
-        classes: parsed?.pageSettings?.classes || '',
-        hasStyle: Boolean(parsed?.pageSettings?.style),
-      },
-    })
-
     // Object with components and pageSettings
     if (parsed && Array.isArray(parsed.components)) {
       const classes = (parsed.pageSettings && parsed.pageSettings.classes) || ''
@@ -4202,16 +4043,7 @@ export class PageBuilderService {
         })
         .join('\n')
 
-      const finalHtml = `<div id="pagebuilder" class="${classes}" style="${style}">\n${sectionsHtml}\n</div>`
-
-      // 📖 LOAD: Log the final HTML being returned
-      this.debugLog('warn', '📖 LOAD: Returning HTML with pageSettings', {
-        classes,
-        style,
-        htmlLength: finalHtml.length,
-      })
-
-      return finalHtml
+      return `<div id="pagebuilder" class="${classes}" style="${style}">\n${sectionsHtml}\n</div>`
     }
 
     return false
@@ -5124,10 +4956,15 @@ export class PageBuilderService {
     try {
       const parser = new DOMParser()
       const doc = parser.parseFromString(htmlString, 'text/html')
-      const importedSectionElements = doc.querySelectorAll('section')
-      const importedHasSections = importedSectionElements.length > 0
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
+      const importedPageSettings: PageSettings | null = importedPageBuilder
+        ? {
+            classes: importedPageBuilder.className || '',
+            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
+            meta: readPageMetaFromElement(importedPageBuilder),
+          }
+        : null
 
       // Initialize configPageSettings to null
       let configPageSettings: PageSettings | null = null
@@ -5154,74 +4991,34 @@ export class PageBuilderService {
               : null
       }
 
-      // When the builder was MISSING at start (v-if reopen pattern), the live #pagebuilder
-      // DOM has just been freshly rendered with only Vue's default :class binding. The HTML
-      // being mounted (from getSavedPageHtml) is the authoritative source: its class/style
-      // was rebuilt from the persisted localStorage pageSettings which includes the user's
-      // custom classes. Use it BEFORE the live DOM to avoid wiping the saved custom styling.
-      //
-      // Also apply this logic on PAGE REFRESH (builderWasMountedBeforeClose = false) because
-      // the fresh DOM only has default Vue template bindings, not the saved localStorage classes.
+      // For imported HTML that contains #pagebuilder (e.g. resume draft), prefer the
+      // wrapper settings embedded in that HTML over current live DOM defaults.
+      // This prevents stale current DOM pageSettings (often only config font/spacing)
+      // from overriding saved draft classes like background, radius, and color.
       if (
+        (preferImportedPageSettings || this.isPageBuilderMissingOnStart) &&
         !usePassedPageSettings &&
         !pageSettingsFromHistory &&
         !configPageSettings &&
-        importedPageBuilder &&
-        (preferImportedPageSettings ||
-          this.isPageBuilderMissingOnStart ||
-          !this.builderWasMountedBeforeClose)
+        this.hasMeaningfulPageSettings(importedPageSettings)
       ) {
-        if (!importedHasSections && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
-          configPageSettings = currentDomPageSettings
-        } else {
-          configPageSettings = {
-            classes: importedPageBuilder.className || '',
-            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-            meta: readPageMetaFromElement(importedPageBuilder),
-          }
-        }
-        this.debugLog('warn', '📦 mountComponentsToDOM: using importedPageBuilder pageSettings', {
-          source: preferImportedPageSettings
-            ? 'resume-draft'
-            : this.isPageBuilderMissingOnStart
-              ? 'missing-at-start'
-              : 'page-refresh',
-          builderWasMountedBeforeClose: this.builderWasMountedBeforeClose,
-          classes: configPageSettings.classes,
-        })
+        configPageSettings = importedPageSettings
       }
 
-      // When the builder WAS PRESENT at start AND was mounted before close (in-session remount
-      // without page refresh), the live DOM still holds the current session's settings — preserve them.
-      if (
-        !configPageSettings &&
-        !preferImportedPageSettings &&
-        this.builderWasMountedBeforeClose &&
-        this.hasMeaningfulPageSettings(currentDomPageSettings)
-      ) {
+      // When the builder WAS PRESENT at start (in-session remount), the live DOM still
+      // holds the current session's settings — preserve them.
+      if (!configPageSettings && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
         configPageSettings = currentDomPageSettings
-        this.debugLog('warn', '📦 mountComponentsToDOM: using currentDomPageSettings', {
-          source: 'in-session-remount',
-          builderWasMountedBeforeClose: this.builderWasMountedBeforeClose,
-          classes: configPageSettings.classes,
-        })
       }
 
       // importedPageBuilder as a secondary fallback for the present-at-start case
       // (handles edge where the live DOM has only default classes despite being present).
-      if (!pageSettingsFromHistory && !configPageSettings && importedPageBuilder) {
-        // If imported HTML has no sections (e.g. empty-array bootstrap wrapper),
-        // prefer the existing live DOM settings so we don't overwrite a meaningful
-        // wrapper snapshot with fallback defaults like pbx-text-black/pbx-font-sans.
-        if (!importedHasSections && this.hasMeaningfulPageSettings(currentDomPageSettings)) {
-          configPageSettings = currentDomPageSettings
-        } else {
-          configPageSettings = {
-            classes: importedPageBuilder.className || '',
-            style: this.parseStyleString(importedPageBuilder.getAttribute('style') || ''),
-            meta: readPageMetaFromElement(importedPageBuilder),
-          }
-        }
+      if (
+        !pageSettingsFromHistory &&
+        !configPageSettings &&
+        this.hasMeaningfulPageSettings(importedPageSettings)
+      ) {
+        configPageSettings = importedPageSettings
       }
 
       // Final fallback: config or memory
@@ -5245,8 +5042,11 @@ export class PageBuilderService {
         this._pendingPageSettings = pageSettingsFromHistory
       }
 
+      // Select all <section> elements
+      const sectionElements = doc.querySelectorAll('section')
+
       const extractedSections: ComponentObject[] = []
-      importedSectionElements.forEach((section) => {
+      sectionElements.forEach((section) => {
         // Prefix all classes inside section
         section.querySelectorAll('[class]').forEach((el) => {
           el.setAttribute(

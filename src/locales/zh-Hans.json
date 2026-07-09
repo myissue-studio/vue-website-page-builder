@@ -569,5 +569,10 @@
   "Could not apply theme": "无法应用主题",
   "Page layout": "页面布局",
   "Remove all components description": "从页面移除所有区块。删除前会要求确认。",
-  "Clear every section from the page": "清除页面上的所有区块"
+  "Clear every section from the page": "清除页面上的所有区块",
+  "Clear page classes & styles": "清除页面类和样式",
+  "Remove global page classes and inline styles from the wrapper": "从包装器中移除全局页面类和内联样式",
+  "Are you sure you want to remove global page classes and inline styles?": "确定要移除全局页面类和内联样式吗？",
+  "Page design styles cleared": "页面设计样式已清除",
+  "Could not clear page design styles": "无法清除页面设计样式"
 }

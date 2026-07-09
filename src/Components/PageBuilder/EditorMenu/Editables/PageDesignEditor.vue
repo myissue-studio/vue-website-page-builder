@@ -12,6 +12,9 @@ import BorderRadiusControl from './BorderRadiusControl.vue'
 import BackgroundColorEditor from './BackgroundColorEditor.vue'
 import TextColorEditor from './TextColorEditor.vue'
 import BorderControls from './BorderControls.vue'
+import HtmlActionButton from './HtmlActionButton.vue'
+import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
+import { useToast } from '../../../../composables/useToast'
 
 defineOptions({
   name: 'PageDesignEditor',
@@ -26,6 +29,7 @@ defineProps({
 })
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const pageBuilderService = getPageBuilder()
 
@@ -39,6 +43,60 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
   const promise = pageBuilderService.setGlobalFullWidth(enabled)
   globalFullWidthTick.value++
   await promise
+}
+
+const isClearingPageDesignStyles = ref(false)
+const showClearPageDesignModal = ref(false)
+
+const typeModal = ref('')
+const gridColumnModal = ref(Number(1))
+const titleModal = ref('')
+const descriptionModal = ref('')
+const firstButtonModal = ref('')
+const secondButtonModal = ref<string | null>(null)
+const thirdButtonModal = ref<string | null>(null)
+
+const firstModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const secondModalButtonFunctionDynamicModalBuilder = ref<(() => void) | null>(null)
+const thirdModalButtonFunctionDynamicModalBuilder = ref<(() => Promise<void>) | null>(null)
+
+const clearPageClassesAndStyles = async () => {
+  isClearingPageDesignStyles.value = true
+  try {
+    await pageBuilderService.clearHtmlSelection()
+    await pageBuilderService.globalPageStyles()
+    await pageBuilderService.clearClassesFromPage()
+    await pageBuilderService.clearInlineStylesFromPage()
+    await pageBuilderService.stopGlobalStylesSync()
+    await pageBuilderService.globalPageStyles()
+    showToast(translate('Page design styles cleared'), 'success')
+  } catch {
+    showToast(translate('Could not clear page design styles'), 'error')
+  } finally {
+    isClearingPageDesignStyles.value = false
+    showClearPageDesignModal.value = false
+  }
+}
+
+const openClearPageDesignModal = () => {
+  showClearPageDesignModal.value = true
+  typeModal.value = 'delete'
+  gridColumnModal.value = 2
+  titleModal.value = translate('Clear page classes & styles')
+  descriptionModal.value = translate(
+    'Are you sure you want to remove global page classes and inline styles?',
+  )
+  firstButtonModal.value = translate('Close')
+  secondButtonModal.value = null
+  thirdButtonModal.value = translate('Delete')
+
+  firstModalButtonFunctionDynamicModalBuilder.value = () => {
+    showClearPageDesignModal.value = false
+  }
+  secondModalButtonFunctionDynamicModalBuilder.value = () => {}
+  thirdModalButtonFunctionDynamicModalBuilder.value = async () => {
+    await clearPageClassesAndStyles()
+  }
 }
 </script>
 
@@ -143,6 +201,48 @@ const updateGlobalFullWidth = async (enabled: boolean) => {
           </div>
         </div>
       </section>
+
+      <div
+        class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4 pbx-mt-24 pbx-border-0 pbx-border-t pbx-border-gray-200 pbx-pt-8"
+      >
+        <div class="pbx-p-4 pbx-border pbx-border-gray-200 pbx-rounded-2xl"></div>
+        <div class="pbx-p-4 pbx-border pbx-border-gray-200 pbx-rounded-2xl">
+          <section class="pbx-pageDesignSection pbx-pageDesignLayoutAction">
+            <HtmlActionButton
+              icon="delete_forever"
+              :label="translate('Clear page classes & styles')"
+              :hint="translate('Remove global page classes and inline styles from the wrapper')"
+              variant="danger"
+              :is-loading="isClearingPageDesignStyles"
+              @click="openClearPageDesignModal"
+            />
+          </section>
+        </div>
+      </div>
     </div>
   </div>
+
+  <ConfirmActionModal
+    :showDynamicModalBuilder="showClearPageDesignModal"
+    :type="typeModal"
+    :gridColumnAmount="gridColumnModal"
+    :title="titleModal"
+    :description="descriptionModal"
+    :isLoading="isClearingPageDesignStyles"
+    :firstButtonText="firstButtonModal"
+    :secondButtonText="secondButtonModal ?? undefined"
+    :thirdButtonText="thirdButtonModal ?? undefined"
+    @firstModalButtonFunctionDynamicModalBuilder="
+      () => firstModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @secondModalButtonFunctionDynamicModalBuilder="
+      () => secondModalButtonFunctionDynamicModalBuilder?.()
+    "
+    @thirdModalButtonFunctionDynamicModalBuilder="
+      () => thirdModalButtonFunctionDynamicModalBuilder?.()
+    "
+  >
+    <header></header>
+    <main></main>
+  </ConfirmActionModal>
 </template>

@@ -569,5 +569,10 @@
   "Could not apply theme": "Impossibile applicare il tema",
   "Page layout": "Layout pagina",
   "Remove all components description": "Rimuovi tutte le sezioni dalla pagina. Ti verrà chiesta conferma prima di eliminare.",
-  "Clear every section from the page": "Rimuovi tutte le sezioni dalla pagina"
+  "Clear every section from the page": "Rimuovi tutte le sezioni dalla pagina",
+  "Clear page classes & styles": "Cancella classi e stili della pagina",
+  "Remove global page classes and inline styles from the wrapper": "Rimuovi classi globali della pagina e stili inline dal wrapper",
+  "Are you sure you want to remove global page classes and inline styles?": "Sei sicuro di voler rimuovere le classi globali della pagina e gli stili inline?",
+  "Page design styles cleared": "Gli stili del design pagina sono stati cancellati",
+  "Could not clear page design styles": "Impossibile cancellare gli stili del design pagina"
 }

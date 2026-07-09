@@ -38,6 +38,10 @@
   "Stretch across browser width": "Stretch across browser width",
   "Full-width page": "Full-width page",
   "Stretch all sections across browser width": "Stretch all sections across browser width",
+  "Clear page classes & styles": "Clear page classes & styles",
+  "Remove global page classes and inline styles from the wrapper": "Remove global page classes and inline styles from the wrapper",
+  "Page design styles cleared": "Page design styles cleared",
+  "Could not clear page design styles": "Could not clear page design styles",
   "Theme Color Presets": "Theme Color Presets",
   "Built-in colors": "Built-in colors",
   "Enable theme color presets": "Enable theme color presets",
@@ -575,5 +579,6 @@
   "Use rounded corners for CTA buttons": "Use rounded corners for CTA buttons",
   "Button links": "Button links",
   "Link behavior on helper button components": "Link behavior on helper button components",
-  "No additional settings for this category": "No additional settings for this category"
+  "No additional settings for this category": "No additional settings for this category",
+  "Are you sure you want to remove global page classes and inline styles?": "Are you sure you want to remove global page classes and inline styles?"
 }

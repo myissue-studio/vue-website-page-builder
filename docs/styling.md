@@ -105,6 +105,8 @@ When an explicit page font class exists in `pageSettings.classes`, per-element `
 
 When draft page settings are restored, the same values are synced back into the reactive `config.pageSettings` state. This prevents stale config classes (such as an older background color) from being re-applied by Vue bindings after resume.
 
+When resuming from a saved draft HTML snapshot, page wrapper settings embedded in the draft (`#pagebuilder` classes/styles/meta) are now prioritized over transient live DOM defaults during remount.
+
 Global page background color changes in Page Design now trigger an immediate autosave for `#pagebuilder` in addition to observer-based persistence, reducing the chance of losing the latest color if the page is refreshed quickly.
 
 Builder insert controls (Add/Products section buttons inside the canvas) are now offset against page-level `#pagebuilder` padding/margin classes, so they stay anchored in the right-side control area even when global page spacing utilities like `pbx-px-*`, `pbx-py-*`, or `pbx-mx-*` are applied.
@@ -113,7 +115,25 @@ Insert controls are also isolated from inherited page typography styles. Global 
 
 In Page Design, the Typography panel now opens by default and uses a clearer highlighted header style for faster access.
 
-Typography in Page Design is now progressively disclosed: core controls (font family, size, weight) stay visible by default, while less-used controls are grouped under a `More options` toggle.
+Typography in Page Design now keeps the main controls visible in one compact card: font family, size, weight, and font style are all directly available without opening a `More options` toggle.
+
+In that compact card, controls are grouped as pairs for faster scanning: Font Family + Font Size together, and Font Weight + Font Style together.
+
+The Page Design Typography card is now denser: controls are grouped into a compact visual panel and key fields are arranged in a responsive two-column layout on wider screens to reduce vertical space.
+
+At the bottom of Page Design, a danger action is available to clear global page wrapper classes and inline styles (`#pagebuilder` only) without removing sections/components. This action now uses a confirmation modal before applying the reset.
+
+Classes and inline styles added from Advanced controls now update immediately in the inspector list for both Page Design (`#pagebuilder`) and selected elements, without closing/reopening modals or reselecting elements.
+
+When Page Design is open, class and style controls target the page wrapper directly in global mode, including Borders and Advanced class/style edits.
+
+When Page Design is closed, global mode is reset so Advanced class/style controls immediately target the currently selected element again.
+
+In global Page Design color pickers, built-in colors now apply the clicked color option directly (no stale previous-value fallback), so Text Color and Background Color stay aligned between visual output and page wrapper classes/styles.
+
+Theme Color Presets apply their hex value as inline style (same behavior as custom colors) for both global Page Design and selected elements.
+
+In the right properties panel, style accordions now stay mounted while switching between editable elements, so expanded sections remain open instead of collapsing on each selection change.
 
 ## Button Style Controls In Modals
 

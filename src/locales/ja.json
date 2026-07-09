@@ -569,5 +569,10 @@
   "Could not apply theme": "テーマを適用できませんでした",
   "Page layout": "ページレイアウト",
   "Remove all components description": "ページからすべてのセクションを削除します。削除前に確認が求められます。",
-  "Clear every section from the page": "ページからすべてのセクションを削除"
+  "Clear every section from the page": "ページからすべてのセクションを削除",
+  "Clear page classes & styles": "ページのクラスとスタイルをクリア",
+  "Remove global page classes and inline styles from the wrapper": "ラッパーからグローバルページのクラスとインラインスタイルを削除します",
+  "Are you sure you want to remove global page classes and inline styles?": "グローバルページのクラスとインラインスタイルを削除してもよろしいですか？",
+  "Page design styles cleared": "ページデザインのスタイルをクリアしました",
+  "Could not clear page design styles": "ページデザインのスタイルをクリアできませんでした"
 }
