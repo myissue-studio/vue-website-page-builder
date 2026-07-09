@@ -49,17 +49,13 @@ const pendingFontLoads = new Map<string, Promise<void>>()
 export async function loadGoogleFont(fontKey: string): Promise<void> {
   const normalizedKey = fontKey.toLowerCase().trim()
 
-  console.log('📥 loadGoogleFont called', { fontKey, normalizedKey })
-
   // Already loaded
   if (loadedFonts.has(normalizedKey)) {
-    console.log('✅ Font already loaded (cached):', normalizedKey)
     return Promise.resolve()
   }
 
   // Already loading
   if (pendingFontLoads.has(normalizedKey)) {
-    console.log('⏳ Font already loading (waiting):', normalizedKey)
     return pendingFontLoads.get(normalizedKey)!
   }
 
@@ -67,19 +63,15 @@ export async function loadGoogleFont(fontKey: string): Promise<void> {
   const googleFontQuery = GOOGLE_FONTS_MAP[normalizedKey]
   if (!googleFontQuery) {
     // Not a Google Font (system font or custom font loaded by user)
-    console.log('ℹ️ Not a Google Font (system/custom):', normalizedKey)
     loadedFonts.add(normalizedKey)
     return Promise.resolve()
   }
-
-  console.log('🌐 Loading Google Font:', normalizedKey, googleFontQuery)
 
   // Create load promise
   const loadPromise = new Promise<void>((resolve, reject) => {
     // Check if link already exists (might be pre-loaded in CSS)
     const existingLink = document.querySelector(`link[href*="${googleFontQuery.split(':')[0]}"]`)
     if (existingLink) {
-      console.log('✅ Font link already in DOM:', normalizedKey)
       loadedFonts.add(normalizedKey)
       resolve()
       return
@@ -90,23 +82,19 @@ export async function loadGoogleFont(fontKey: string): Promise<void> {
     link.rel = 'stylesheet'
     link.href = `https://fonts.googleapis.com/css2?family=${googleFontQuery}&display=swap`
 
-    console.log('📡 Creating font link:', link.href)
-
     link.onload = () => {
-      console.log('✅ Font loaded successfully:', normalizedKey)
       loadedFonts.add(normalizedKey)
       pendingFontLoads.delete(normalizedKey)
       resolve()
     }
 
     link.onerror = () => {
-      console.error('❌ Font load error:', normalizedKey, link.href)
+      console.error('Font load error:', normalizedKey, link.href)
       pendingFontLoads.delete(normalizedKey)
       reject(new Error(`Failed to load font: ${fontKey}`))
     }
 
     document.head.appendChild(link)
-    console.log('📄 Font link added to document head')
   })
 
   pendingFontLoads.set(normalizedKey, loadPromise)
@@ -132,20 +120,12 @@ export function extractFontKeyFromClass(className: string): string | null {
  * @param className - The Tailwind font class (e.g., 'pbx-font-raleway')
  */
 export async function loadFontFromClass(className: string): Promise<void> {
-  console.log('🔍 loadFontFromClass called:', className)
-
   const fontKey = extractFontKeyFromClass(className)
-  if (!fontKey) {
-    console.log('⚠️ No font key extracted from class:', className)
-    return
-  }
-
-  console.log('🔑 Extracted font key:', fontKey)
+  if (!fontKey) return
 
   // Skip generic font families
   const genericFamilies = ['sans', 'serif', 'mono']
   if (genericFamilies.includes(fontKey)) {
-    console.log('ℹ️ Generic font family, skipping load:', fontKey)
     return
   }
 

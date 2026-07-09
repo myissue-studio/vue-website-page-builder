@@ -1129,11 +1129,9 @@ export class PageBuilderService {
     if (typeof cssUserSelection === 'string' && cssUserSelection !== 'none') {
       // CRITICAL FIX: Remove ALL classes from CSSArray, not just the detected one
       // This prevents duplicate font classes like: pbx-font-jost pbx-font-jost pbx-font-raleway pbx-font-jost
-      console.log('🧹 Removing ALL existing classes from CSSArray before adding new one')
       CSSArray.forEach((cls) => {
         if (cls !== 'none' && cls !== cssUserSelection) {
           if (classTarget.classList.contains(cls)) {
-            console.log('  ❌ Removing:', cls)
             classTarget.classList.remove(cls)
           }
           if (
@@ -1164,17 +1162,8 @@ export class PageBuilderService {
         }
       })
 
-      console.log('➕ Adding class to element:', {
-        targetElement: classTarget.tagName,
-        targetId: classTarget.id,
-        classToAdd: cssUserSelection,
-        classesBefore: classTarget.className,
-      })
-
       classTarget.classList.add(cssUserSelection)
       elementClass = cssUserSelection
-
-      console.log('✅ Class added. New classes:', classTarget.className)
     } else if (
       typeof cssUserSelection === 'string' &&
       cssUserSelection === 'none' &&
@@ -1222,13 +1211,6 @@ export class PageBuilderService {
         }
       }
     }
-
-    console.log('🏁 applyElementClassChanges END', {
-      mutationName,
-      elementClass,
-      currentCSS,
-      finalClasses: classTarget.className,
-    })
 
     return currentCSS
   }
@@ -1293,11 +1275,6 @@ export class PageBuilderService {
         const current = this.readCurrentPageSettings()
         if (current) {
           this._lastKnownPageSettings = current
-
-          // 💾 AUTO-SAVE: Trigger save when page styles change
-          console.log('🔄 globalStylesObserver detected change, triggering auto-save', {
-            classes: current.classes,
-          })
           void this.handleAutoSave()
         }
       }, 300) // 300ms debounce - wait for rapid changes to settle
@@ -1324,9 +1301,6 @@ export class PageBuilderService {
       const current = this.readCurrentPageSettings()
       if (current) {
         this._lastKnownPageSettings = current
-        console.log('🔄 stopGlobalStylesSync: Flushing pending save', {
-          classes: current.classes,
-        })
         // Note: handleManualSave is called by RightSidebarEditor after this,
         // so this update to _lastKnownPageSettings ensures the latest classes are saved
       }
@@ -2401,37 +2375,19 @@ export class PageBuilderService {
     )
 
     const currentElement = this.getElement.value
-    const isGlobalMode = this.pageBuilderStateStore.getToggleGlobalHtmlMode
-
-    console.log('🔤 handleFontFamily START', {
-      selectedFont: userSelectedFontFamily,
-      currentElement: currentElement?.tagName,
-      currentElementId: currentElement?.id,
-      isGlobalMode,
-      availableFontClasses: fontClasses,
-    })
 
     // Load the font dynamically if it's a Google Font
     if (userSelectedFontFamily && userSelectedFontFamily !== 'none') {
       try {
         ensureFontClassExists(userSelectedFontFamily)
-        console.log('⏳ Loading font:', userSelectedFontFamily)
         await loadFontFromClass(userSelectedFontFamily)
-        console.log('✅ Font loaded successfully:', userSelectedFontFamily)
       } catch (error) {
-        console.error('❌ Failed to load font:', userSelectedFontFamily, error)
+        console.error('Failed to load font:', userSelectedFontFamily, error)
         // Continue anyway - font might be available from another source
       }
     }
 
-    console.log('🎨 Applying font class to element...')
     this.applyElementClassChanges(userSelectedFontFamily, fontClasses, 'setFontFamily')
-
-    // Log the result
-    if (currentElement) {
-      console.log('✅ Font applied. Element classes:', currentElement.className)
-      console.log('✅ Computed font-family:', window.getComputedStyle(currentElement).fontFamily)
-    }
   }
   /**
    * Handles changes to the font style of the selected element.
@@ -3844,22 +3800,7 @@ export class PageBuilderService {
     if (pagebuilder) {
       const rawClasses = pagebuilder.className
 
-      // 🔍 DEBUG: Log state before deduplication
-      console.log('🔍 readCurrentPageSettings: BEFORE deduplication', {
-        rawDomClasses: rawClasses,
-        store: {
-          fontFamily: this.pageBuilderStateStore.getFontFamily,
-          textColor: this.pageBuilderStateStore.getTextColor,
-          backgroundColor: this.pageBuilderStateStore.getBackgroundColor,
-        },
-      })
-
       const cleanClasses = deduplicateClasses(rawClasses)
-
-      console.log('🔍 readCurrentPageSettings: AFTER deduplication', {
-        cleanClasses,
-        changed: cleanClasses !== rawClasses,
-      })
 
       // IMPORTANT: Apply the clean classes back to the DOM to remove duplicates
       if (cleanClasses !== pagebuilder.className) {
@@ -3919,10 +3860,6 @@ export class PageBuilderService {
         const fontMatch = pageSettings.classes.match(/pbx-font-(\S+)/)
         if (fontMatch) {
           const fontClass = fontMatch[0] // e.g., 'pbx-font-raleway'
-          console.log('📦 applyPageSettingsToPage: Ensuring class + loading font', {
-            fontClass,
-            pageSettingsClasses: pageSettings.classes,
-          })
 
           ensureFontClassExists(fontClass)
 
