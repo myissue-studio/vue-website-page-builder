@@ -115,7 +115,9 @@ Insert controls are also isolated from inherited page typography styles. Global 
 
 In Page Design, the Typography panel now opens by default and uses a clearer highlighted header style for faster access.
 
-Typography in Page Design is now progressively disclosed: core controls (font family, size, weight) stay visible by default, while less-used controls are grouped under a `More options` toggle.
+Typography in Page Design now keeps the main controls visible in one compact card: font family, size, weight, and font style are all directly available without opening a `More options` toggle.
+
+In that compact card, controls are grouped as pairs for faster scanning: Font Family + Font Size together, and Font Weight + Font Style together.
 
 The Page Design Typography card is now denser: controls are grouped into a compact visual panel and key fields are arranged in a responsive two-column layout on wider screens to reduce vertical space.
 

@@ -37,7 +37,6 @@ const fontWeight = ref<string | null>(null)
 const fontFamily = ref<string | null>(null)
 const inheritedFontFamily = ref('')
 const fontStyle = ref<string | null>(null)
-const showAdvancedTypography = ref(false)
 const getElement = computed(() => {
   return pageBuilderStateStore.getElement
 })
@@ -163,36 +162,36 @@ watch(
             class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-p-3"
           >
             <div class="pbx-space-y-3">
-              <div>
-                <label for="font-family" class="pbx-myPrimaryInputLabel">
-                  {{ translate('Font family') }}
-                </label>
-                <select
-                  id="font-family"
-                  v-model="fontFamily"
-                  class="pbx-myPrimarySelect"
-                  @change="handleFontFamilyChange"
-                >
-                  <option :value="null">{{ translate('No font family') }}</option>
-                  <option
-                    v-for="option in availableFontFamilyOptions.filter(
-                      (entry) => entry.value !== 'none',
-                    )"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </option>
-                </select>
-                <p
-                  v-if="!hasExplicitFontFamily && inheritedFontFamily"
-                  class="pbx-mt-1 pbx-mb-0 pbx-text-xs pbx-text-gray-500"
-                >
-                  {{ translate('Inherited') }}: {{ inheritedFontFamily }}
-                </p>
-              </div>
-
               <div class="pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2 pbx-gap-3">
+                <div>
+                  <label for="font-family" class="pbx-myPrimaryInputLabel">
+                    {{ translate('Font family') }}
+                  </label>
+                  <select
+                    id="font-family"
+                    v-model="fontFamily"
+                    class="pbx-myPrimarySelect"
+                    @change="handleFontFamilyChange"
+                  >
+                    <option :value="null">{{ translate('No font family') }}</option>
+                    <option
+                      v-for="option in availableFontFamilyOptions.filter(
+                        (entry) => entry.value !== 'none',
+                      )"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ option.label }}
+                    </option>
+                  </select>
+                  <p
+                    v-if="!hasExplicitFontFamily && inheritedFontFamily"
+                    class="pbx-mt-1 pbx-mb-0 pbx-text-xs pbx-text-gray-500"
+                  >
+                    {{ translate('Inherited') }}: {{ inheritedFontFamily }}
+                  </p>
+                </div>
+
                 <div>
                   <label for="font-desktop" class="pbx-myPrimaryInputLabel">
                     {{ translate('Font size') }}
@@ -209,7 +208,9 @@ watch(
                     </option>
                   </select>
                 </div>
+              </div>
 
+              <div class="pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2 pbx-gap-3">
                 <div>
                   <label for="font-weight" class="pbx-myPrimaryInputLabel">
                     {{ translate('Font weight') }}
@@ -226,42 +227,25 @@ watch(
                     </option>
                   </select>
                 </div>
+
+                <div>
+                  <label for="font-style" class="pbx-myPrimaryInputLabel">
+                    {{ translate('Font Style') }}
+                  </label>
+                  <select
+                    id="font-style"
+                    v-model="fontStyle"
+                    class="pbx-myPrimarySelect"
+                    @change="pageBuilderService.handleFontStyle(fontStyle ?? undefined)"
+                  >
+                    <option disabled value="">{{ translate('Select') }}</option>
+                    <option v-for="fontStyle in tailwindFontStyles.fontStyle" :key="fontStyle">
+                      {{ fontStyle }}
+                    </option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
-
-          <button
-            type="button"
-            class="pbx-flex pbx-w-full pbx-items-center pbx-justify-between pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2 pbx-font-sans pbx-text-sm pbx-font-medium pbx-text-gray-700 hover:pbx-bg-gray-100"
-            @click="showAdvancedTypography = !showAdvancedTypography"
-          >
-            <span>{{ translate('More options') }}</span>
-            <span
-              class="material-symbols-outlined pbx-text-base pbx-leading-none"
-              aria-hidden="true"
-            >
-              {{ showAdvancedTypography ? 'expand_less' : 'expand_more' }}
-            </span>
-          </button>
-
-          <div
-            v-if="showAdvancedTypography"
-            class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3"
-          >
-            <label for="font-style" class="pbx-myPrimaryInputLabel">
-              {{ translate('Font Style') }}
-            </label>
-            <select
-              id="font-style"
-              v-model="fontStyle"
-              class="pbx-myPrimarySelect"
-              @change="pageBuilderService.handleFontStyle(fontStyle ?? undefined)"
-            >
-              <option disabled value="">{{ translate('Select') }}</option>
-              <option v-for="fontStyle in tailwindFontStyles.fontStyle" :key="fontStyle">
-                {{ fontStyle }}
-              </option>
-            </select>
           </div>
         </div>
       </template>
