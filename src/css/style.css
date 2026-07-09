@@ -1118,7 +1118,7 @@
     |--------------------------------------------------------------------------
     */
   .pbx-toolbarMoreMenu {
-    @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-[min(24rem,calc(100vh-2rem))] pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
+    @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-56 pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
     will-change: top, left;
   }
 

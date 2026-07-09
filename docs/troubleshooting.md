@@ -114,3 +114,9 @@ Then re-run:
 ```bash
 npx vitest run src/tests/service/pageBuilderService.test.ts --reporter=dot
 ```
+
+For page-wrapper/global-style regressions (classes/styles/meta persistence, reopen and resume-draft flows), run both focused suites together:
+
+```bash
+npm run -s test -- --run src/tests/service/pageBuilderService.test.ts src/tests/service/globalPageSettings.test.ts
+```

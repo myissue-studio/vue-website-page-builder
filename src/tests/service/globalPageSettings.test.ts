@@ -646,6 +646,45 @@ describe('Global Page Settings', () => {
     expect(resultEl?.getAttribute('class')).toContain('pbx-bg-red-500')
   })
 
+  it('REGRESSION (resume draft): imported wrapper styles override fresh DOM defaults', async () => {
+    pagebuilderEl.setAttribute('style', 'letter-spacing: 0.5px;')
+
+    localStorage.setItem(
+      'test-key',
+      JSON.stringify({
+        components: [
+          {
+            html_code: SECTION_HTML,
+            title: 'Test',
+          },
+        ],
+        pageBuilderContentSavedAt: new Date().toISOString(),
+        pageSettings: {
+          classes: 'pbx-font-pt-serif',
+          style: {
+            letterSpacing: '0.5px',
+            color: 'rgb(229, 211, 82)',
+          },
+        },
+      }),
+    )
+
+    const mockStore = createMockStore({
+      getPageBuilderConfig: {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+      },
+      setComponents: vi.fn(),
+    })
+
+    const service = new PageBuilderService(mockStore)
+    await service.resumeEditingFromDraft()
+    await nextTick()
+
+    const styleAttr = document.querySelector('#pagebuilder')?.getAttribute('style') || ''
+    expect(styleAttr).toContain('letter-spacing')
+    expect(styleAttr).toContain('color')
+  })
+
   // -------------------------------------------------------------------------
   // clearInlineStylesFromPage
   // -------------------------------------------------------------------------
