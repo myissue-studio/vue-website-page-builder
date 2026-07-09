@@ -569,5 +569,10 @@
   "Could not apply theme": "थीम लागू नहीं हो सकी",
   "Page layout": "पेज लेआउट",
   "Remove all components description": "पेज से हर सेक्शन हटाएँ। हटाने से पहले पुष्टि माँगी जाएगी।",
-  "Clear every section from the page": "पेज से हर सेक्शन साफ़ करें"
+  "Clear every section from the page": "पेज से हर सेक्शन साफ़ करें",
+  "Clear page classes & styles": "पेज क्लासेस और स्टाइल्स साफ करें",
+  "Remove global page classes and inline styles from the wrapper": "रैपर से ग्लोबल पेज क्लासेस और इनलाइन स्टाइल्स हटाएं",
+  "Are you sure you want to remove global page classes and inline styles?": "क्या आप वाकई ग्लोबल पेज क्लासेस और इनलाइन स्टाइल्स हटाना चाहते हैं?",
+  "Page design styles cleared": "पेज डिज़ाइन स्टाइल्स साफ कर दिए गए",
+  "Could not clear page design styles": "पेज डिज़ाइन स्टाइल्स साफ नहीं किए जा सके"
 }

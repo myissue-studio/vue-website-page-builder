@@ -569,5 +569,10 @@
   "Could not apply theme": "Не удалось применить тему",
   "Page layout": "Макет страницы",
   "Remove all components description": "Удалите все секции со страницы. Перед удалением потребуется подтверждение.",
-  "Clear every section from the page": "Удалить все секции со страницы"
+  "Clear every section from the page": "Удалить все секции со страницы",
+  "Clear page classes & styles": "Очистить классы и стили страницы",
+  "Remove global page classes and inline styles from the wrapper": "Удалить глобальные классы страницы и встроенные стили из обертки",
+  "Are you sure you want to remove global page classes and inline styles?": "Вы уверены, что хотите удалить глобальные классы страницы и встроенные стили?",
+  "Page design styles cleared": "Стили дизайна страницы очищены",
+  "Could not clear page design styles": "Не удалось очистить стили дизайна страницы"
 }

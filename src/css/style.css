@@ -1210,6 +1210,10 @@
     @apply pbx-m-0 pbx-text-xs pbx-text-gray-500;
   }
 
+  .pbx-pageDesignLayoutAction {
+    @apply pbx-mt-4 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-pt-4;
+  }
+
   .pbx-pageDesignEditor .pbx-pageDesignCard .pbx-editorAccordion,
   .pbx-pageDesignEditor .pbx-pageDesignCardWide .pbx-editorAccordion {
     @apply pbx-overflow-visible pbx-rounded-none pbx-border-0;
