@@ -886,7 +886,6 @@ export class PageBuilderService {
         hasPendingMountComponents: Boolean(this.pendingMountComponents),
         hasPassedComponents: Boolean(passedComponentsArray),
       })
-
       // Deselect any selected or hovered elements in the builder UI
       await this.clearHtmlSelection()
       if (sessionToken !== this.activeBuilderSessionToken) return
@@ -1299,6 +1298,7 @@ export class PageBuilderService {
     pagebuilder?.removeAttribute('class')
 
     this.initializeElementStyles()
+    this.syncGlobalPageSettingsIntoRuntimeConfig()
     await nextTick()
   }
   /**
@@ -1310,6 +1310,7 @@ export class PageBuilderService {
     pagebuilder?.removeAttribute('style')
 
     this.initializeElementStyles()
+    this.syncGlobalPageSettingsIntoRuntimeConfig()
     await nextTick()
   }
 
@@ -3643,7 +3644,16 @@ export class PageBuilderService {
       hasInlineTipTap: Boolean(pagebuilder.querySelector('[data-pbx-inline-tiptap]')),
     })
 
-    const pageSettings = this.readCurrentPageSettings() ??
+    const livePageSettings: PageSettings | null = pagebuilder
+      ? {
+          classes: pagebuilder.className || '',
+          style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
+          meta: readPageMetaFromElement(pagebuilder as HTMLElement),
+        }
+      : null
+
+    const pageSettings = livePageSettings ??
+      this.readCurrentPageSettings() ??
       this._lastKnownPageSettings ?? {
         classes: '',
         style: '',
@@ -3777,28 +3787,52 @@ export class PageBuilderService {
 
   /**
    * Handles the form submission process, clearing local storage and the DOM.
-   * Global page settings (classes / inline styles on the page wrapper) are
-   * intentionally preserved so they survive a "remove all components" action.
+   * By default, global page settings (classes / inline styles on the wrapper)
+   * are preserved so they survive a "remove all components" action.
+   *
+   * Pass `{ preservePageSettings: false }` when starting a brand-new resource
+   * after submit, so wrapper classes/styles are reset.
    * @returns {Promise<void>}
    */
-  public async handleFormSubmission() {
+  public async handleFormSubmission(options?: { preservePageSettings?: boolean }) {
+    const preservePageSettings = options?.preservePageSettings ?? true
+
     // Capture global page settings BEFORE clearing storage so they are not lost.
     const savedPageSettings = this.readCurrentPageSettings()
 
     // Keep an in-memory copy so the current session can restore them when the
     // first new component is added after a delete-all (at that point the DOM may
     // have no #pagebuilder element left to read from).
-    if (savedPageSettings) {
+    if (savedPageSettings && preservePageSettings) {
       this._lastKnownPageSettings = savedPageSettings
+    } else if (!preservePageSettings) {
+      this._lastKnownPageSettings = null
     }
 
     await this.removeCurrentComponentsFromLocalStorage()
     this.deleteAllComponentsFromDOM()
     this.pageBuilderStateStore.setComponents([])
 
+    if (!preservePageSettings) {
+      const pagebuilder = this.getBuilderCanvasElement()
+      pagebuilder?.removeAttribute('class')
+      pagebuilder?.removeAttribute('style')
+      if (pagebuilder) {
+        applyPageMetaToElement(pagebuilder, { title: '', description: '' })
+      }
+
+      const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
+      if (currentConfig && typeof currentConfig === 'object') {
+        this.pageBuilderStateStore.setPageBuilderConfig({
+          ...(currentConfig as Record<string, unknown>),
+          pageSettings: { classes: '', style: '', meta: { title: '', description: '' } },
+        } as never)
+      }
+    }
+
     // Re-persist the page settings with an empty component list so that global
     // styles (font, background, etc.) survive the next startBuilder call.
-    if (savedPageSettings) {
+    if (savedPageSettings && preservePageSettings) {
       this.updateLocalStorageItemName()
       const key = this.getLocalStorageItemName.value
       if (key) {
@@ -3853,11 +3887,40 @@ export class PageBuilderService {
       const domLooksLikeIntentionalClassEdit =
         classesChanged &&
         (domHasBackgroundClass || domClassTokens.length >= persistedClassTokens.length)
+      const domClassesAreSubsetOfPersisted =
+        domClassTokens.length > 0 &&
+        domClassTokens.every((token) => persistedClassTokens.includes(token))
+      const persistedHasAdditionalClasses = persistedClassTokens.length > domClassTokens.length
+      const persistedHasClassChanges = classesChanged && persistedClassTokens.length > 0
+      const shouldUsePersistedClassFallback =
+        !domStyle &&
+        persistedHasClassChanges &&
+        domClassesAreSubsetOfPersisted &&
+        persistedHasAdditionalClasses
+      const isGlobalDesignMode = this.pageBuilderStateStore.getToggleGlobalHtmlMode
+      const configPageSettings = this.pageBuilderStateStore.getPageBuilderConfig?.pageSettings
+      const configStyle =
+        typeof configPageSettings?.style === 'string'
+          ? configPageSettings.style.trim()
+          : this.convertStyleObjectToString(configPageSettings?.style).trim()
+      const configClassString = normalizeClasses(configPageSettings?.classes).join(' ')
+      const domMatchesConfigClasses = domClassString === configClassString
+      const configWantsNoInlineStyle = !configStyle
 
       // On v-if modal reopen, Vue can render a fresh wrapper with default class and no
       // style before mountComponentsToDOM runs. In that case prefer persisted settings
       // so global page styles (background, etc.) are not dropped between open/close.
-      if (!domStyle && persistedStyle) {
+      if (!domStyle && (persistedStyle || shouldUsePersistedClassFallback)) {
+        // In active Page Design mode, class/style clearing is intentional and should
+        // not be overwritten by stale persisted inline styles.
+        if (isGlobalDesignMode && configWantsNoInlineStyle && domMatchesConfigClasses) {
+          return {
+            classes: domSettings.classes,
+            style: '',
+            meta: domSettings.meta || persistedPageSettings?.meta,
+          }
+        }
+
         if (domLooksLikeIntentionalClassEdit) {
           return {
             classes: domSettings.classes,
@@ -3867,7 +3930,7 @@ export class PageBuilderService {
         }
 
         return {
-          classes: domSettings.classes || persistedPageSettings?.classes || '',
+          classes: persistedPageSettings?.classes || domSettings.classes || '',
           style: persistedPageSettings?.style || '',
           meta: domSettings.meta || persistedPageSettings?.meta,
         }
@@ -5186,6 +5249,19 @@ export class PageBuilderService {
           : this.hasMeaningfulPageSettings(fromMemory)
             ? fromMemory
             : null
+      }
+
+      // Keep runtime config aligned with the settings source selected for this mount.
+      // This prevents Vue bindings from repainting stale page settings right after remount.
+      const selectedPageSettings = pageSettingsFromHistory ?? configPageSettings
+      if (selectedPageSettings) {
+        const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
+        if (currentConfig && typeof currentConfig === 'object') {
+          this.pageBuilderStateStore.setPageBuilderConfig({
+            ...(currentConfig as Record<string, unknown>),
+            pageSettings: selectedPageSettings,
+          } as never)
+        }
       }
 
       // Apply the page settings to the live page builder
