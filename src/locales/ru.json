@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "Удалить глобальные классы страницы и встроенные стили из обертки",
   "Are you sure you want to remove global page classes and inline styles?": "Вы уверены, что хотите удалить глобальные классы страницы и встроенные стили?",
   "Page design styles cleared": "Стили дизайна страницы очищены",
-  "Could not clear page design styles": "Не удалось очистить стили дизайна страницы"
+  "Could not clear page design styles": "Не удалось очистить стили дизайна страницы",
+  "Product details": "Детали товара",
+  "Title is required": "Название обязательно",
+  "New price": "Новая цена",
+  "New price is required": "Новая цена обязательна",
+  "Old price": "Старая цена",
+  "Tag": "Тег",
+  "Button text": "Текст кнопки",
+  "Button text is required": "Текст кнопки обязателен",
+  "Select at least one product to insert.": "Выберите хотя бы один товар для вставки.",
+  "Please complete required fields for all selected products.": "Заполните обязательные поля для всех выбранных товаров."
 }

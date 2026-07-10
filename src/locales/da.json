@@ -580,5 +580,15 @@
   "Remove global page classes and inline styles from the wrapper": "Fjern globale sideklasser og inline-stilarter fra wrapperen",
   "Are you sure you want to remove global page classes and inline styles?": "Er du sikker på, at du vil fjerne globale sideklasser og inline-stilarter?",
   "Page design styles cleared": "Sidedesignets stilarter er ryddet",
-  "Could not clear page design styles": "Kunne ikke rydde sidedesignets stilarter"
+  "Could not clear page design styles": "Kunne ikke rydde sidedesignets stilarter",
+  "Product details": "Produktdetaljer",
+  "Title is required": "Titel er påkrævet",
+  "New price": "Ny pris",
+  "New price is required": "Ny pris er påkrævet",
+  "Old price": "Gammel pris",
+  "Tag": "Tag",
+  "Button text": "Knaptekst",
+  "Button text is required": "Knaptekst er påkrævet",
+  "Select at least one product to insert.": "Vælg mindst ét produkt at indsætte.",
+  "Please complete required fields for all selected products.": "Udfyld venligst de påkrævede felter for alle valgte produkter."
 }

@@ -1015,7 +1015,7 @@
   }
 
   .pbx-modalSidebarSelectedItem {
-    @apply pbx-flex pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
+    @apply pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
   }
 
   /*

@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "从包装器中移除全局页面类和内联样式",
   "Are you sure you want to remove global page classes and inline styles?": "确定要移除全局页面类和内联样式吗？",
   "Page design styles cleared": "页面设计样式已清除",
-  "Could not clear page design styles": "无法清除页面设计样式"
+  "Could not clear page design styles": "无法清除页面设计样式",
+  "Product details": "产品详情",
+  "Title is required": "标题为必填项",
+  "New price": "新价格",
+  "New price is required": "新价格为必填项",
+  "Old price": "原价",
+  "Tag": "标签",
+  "Button text": "按钮文字",
+  "Button text is required": "按钮文字为必填项",
+  "Select at least one product to insert.": "请至少选择一个要插入的产品。",
+  "Please complete required fields for all selected products.": "请填写所有已选产品的必填字段。"
 }

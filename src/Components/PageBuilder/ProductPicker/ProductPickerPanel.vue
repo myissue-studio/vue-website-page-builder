@@ -32,10 +32,13 @@ const { closeProductLibraryModal } = usePageBuilderModal()
 const { translate } = useTranslations()
 const { showToast } = useToast()
 
+type SelectionKey = string | number | PageBuilderProduct
+type SelectedProductDraft = PageBuilderProduct & { __pbxSelectionKey?: SelectionKey }
+
 const isLoading = ref(false)
 const searchQuery = ref('')
-const selectedMap = ref<Map<string | number | PageBuilderProduct, PageBuilderProduct>>(new Map())
-const selectedOrder = ref<PageBuilderProduct[]>([])
+const selectedMap = ref<Map<SelectionKey, SelectedProductDraft>>(new Map())
+const selectedOrder = ref<SelectedProductDraft[]>([])
 const layout = ref<ProductGridLayout>('grid-4')
 const mobileColumns = ref<ProductMobileColumns>(2)
 const cardStyle = ref<ProductCardStyle>('minimal')
@@ -46,7 +49,7 @@ const roundedButtons = ref(true)
 const hidePrice = ref(false)
 const hideImage = ref(false)
 const hideButton = ref(false)
-const movedProductKey = ref<string | number | PageBuilderProduct | null>(null)
+const movedProductKey = ref<SelectionKey | null>(null)
 let movedKeyTimer: ReturnType<typeof setTimeout> | null = null
 
 const catalogHasPrices = computed(() => productsHavePrices(props.products))
@@ -57,7 +60,10 @@ const catalogHasLinks = computed(() => productsHaveLinks(props.products))
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
 
-function productKey(product: PageBuilderProduct): string | number | PageBuilderProduct {
+function productKey(product: PageBuilderProduct): SelectionKey {
+  if ((product as SelectedProductDraft).__pbxSelectionKey != null) {
+    return (product as SelectedProductDraft).__pbxSelectionKey as SelectionKey
+  }
   if (product.id != null) return product.id
   if (product.title != null) return product.title
   return product
@@ -93,6 +99,35 @@ const activeCardStyle = computed(
   () => cardStyleOptions.find((option) => option.value === cardStyle.value) ?? cardStyleOptions[0],
 )
 
+function hasTextValue(value: unknown): boolean {
+  return String(value ?? '').trim().length > 0
+}
+
+function isTitleMissing(product: PageBuilderProduct): boolean {
+  return !hasTextValue(product.title)
+}
+
+function isPriceMissing(product: PageBuilderProduct): boolean {
+  if (hidePrice.value) return false
+  return !hasTextValue(product.price)
+}
+
+function isButtonTextMissing(product: PageBuilderProduct): boolean {
+  if (hideButton.value) return false
+  return !hasTextValue(product.buttonText)
+}
+
+const canInsertSelectedProducts = computed(() => {
+  if (!selectedProducts.value.length) return false
+
+  return selectedProducts.value.every((product) => {
+    if (isTitleMissing(product)) return false
+    if (isPriceMissing(product)) return false
+    if (isButtonTextMissing(product)) return false
+    return true
+  })
+})
+
 function toggleProduct(product: PageBuilderProduct) {
   const key = productKey(product)
   const next = new Map(selectedMap.value)
@@ -100,8 +135,10 @@ function toggleProduct(product: PageBuilderProduct) {
     next.delete(key)
     selectedOrder.value = selectedOrder.value.filter((p) => productKey(p) !== key)
   } else {
-    next.set(key, product)
-    selectedOrder.value = [...selectedOrder.value, product]
+    const clonedProduct = { ...product }
+    clonedProduct.__pbxSelectionKey = key
+    next.set(key, clonedProduct)
+    selectedOrder.value = [...selectedOrder.value, clonedProduct]
   }
   selectedMap.value = next
 }
@@ -151,6 +188,46 @@ function isMovedProduct(product: PageBuilderProduct): boolean {
   return movedProductKey.value === productKey(product)
 }
 
+function getInputValue(event: Event): string {
+  return (event.target as HTMLInputElement).value
+}
+
+function updateProductField(
+  key: SelectionKey,
+  field: 'title' | 'price' | 'compareAtPrice' | 'badge' | 'buttonText',
+  value: string,
+): void {
+  const index = selectedOrder.value.findIndex((product) => productKey(product) === key)
+  if (index === -1) return
+
+  const nextOrder = [...selectedOrder.value]
+  const nextProduct: SelectedProductDraft = { ...nextOrder[index] }
+
+  if (field === 'title') {
+    nextProduct.title = value
+  } else {
+    const trimmed = value.trim()
+    if (!trimmed.length) {
+      delete (nextProduct as Record<string, unknown>)[field]
+    } else {
+      ;(nextProduct as Record<string, unknown>)[field] = value
+    }
+  }
+
+  nextOrder[index] = nextProduct
+  selectedOrder.value = nextOrder
+
+  const nextMap = new Map(selectedMap.value)
+  nextMap.set(key, nextProduct)
+  selectedMap.value = nextMap
+}
+
+function sanitizeProductForInsert(product: SelectedProductDraft): PageBuilderProduct {
+  const cleanProduct: SelectedProductDraft = { ...product }
+  delete cleanProduct.__pbxSelectionKey
+  return cleanProduct
+}
+
 onBeforeUnmount(() => {
   if (movedKeyTimer) {
     clearTimeout(movedKeyTimer)
@@ -169,6 +246,7 @@ const STANDARD_PRODUCT_FIELDS = new Set([
   'url',
   'buttonText',
   'sku',
+  '__pbxSelectionKey',
 ])
 
 function customFieldEntries(product: PageBuilderProduct): [string, unknown][] {
@@ -179,15 +257,24 @@ function customFieldEntries(product: PageBuilderProduct): [string, unknown][] {
 
 async function insertSelectedProducts() {
   isLoading.value = true
+  await delay(100)
   if (!selectedProducts.value.length) {
-    await delay(300)
-    showToast(translate('Select at least one product to insert.'), 'warning')
+    showToast(translate('Select at least one product to insert.'), 'error')
+    isLoading.value = false
+    return
+  }
+
+  if (!canInsertSelectedProducts.value) {
+    await delay(200)
+    showToast(translate('Please complete required fields for all selected products.'), 'error')
     isLoading.value = false
     return
   }
 
   try {
-    await pageBuilderService.insertProducts(selectedProducts.value, {
+    const productsToInsert = selectedProducts.value.map(sanitizeProductForInsert)
+
+    await pageBuilderService.insertProducts(productsToInsert, {
       layout: layout.value,
       mobileColumns: mobileColumns.value,
       cardStyle: cardStyle.value,
@@ -443,64 +530,177 @@ async function insertSelectedProducts() {
                   <TransitionGroup
                     name="pbx-selected-products"
                     tag="div"
-                    class="pbx-flex pbx-flex-col pbx-gap-2"
+                    class="pbx-flex pbx-flex-col pbx-gap-8"
                   >
                     <div
                       v-for="(product, index) in selectedProducts"
                       :key="String(productKey(product))"
-                      class="pbx-modalSidebarSelectedItem"
-                      :class="{ 'pbx-modalSidebarSelectedItem--moved': isMovedProduct(product) }"
                     >
-                      <img
-                        v-if="product.image"
-                        :src="product.image"
-                        :alt="product.imageAlt ?? product.title ?? 'Product'"
-                        class="pbx-h-12 pbx-w-12 pbx-shrink-0 pbx-rounded-lg pbx-object-cover"
-                      />
-                      <div class="pbx-min-w-0 pbx-flex-1">
-                        <p class="pbx-myPrimaryParagraph pbx-text-sm pbx-font-medium">
-                          {{ product.title }}
-                        </p>
-                        <p
-                          v-if="product.price != null"
-                          class="pbx-myPrimaryParagraph pbx-text-xs pbx-text-gray-500"
+                      <div class="pbx-modalSidebarSelectedItem">
+                        <div
+                          v-if="product.image"
+                          class="pbx-w-full pbx-overflow-hidden pbx-rounded-lg pbx-border pbx-border-gray-100"
                         >
-                          {{ product.price }}
-                        </p>
-                      </div>
-                      <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-                        <button
-                          type="button"
-                          class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                          :disabled="index === 0"
-                          :aria-label="translate('Move up')"
-                          @click.stop="moveUp(index)"
-                        >
-                          <span class="material-symbols-outlined" style="font-size: 14px"
-                            >arrow_upward</span
+                          <img
+                            :src="product.image"
+                            :alt="product.imageAlt ?? product.title ?? 'Product'"
+                            class="pbx-object-cover pbx-w-full pbx-h-full pbx-transition-transform pbx-duration-200 group-hover:pbx-scale-[1.02]"
+                          />
+                        </div>
+                        <!-- Move logic -->
+                        <div class="pbx-flex pbx-items-center pbx-justify-between pbx-pt-2">
+                          <div class="pbx-flex pbx-gap-1">
+                            <button
+                              type="button"
+                              class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                              :disabled="index === 0"
+                              :aria-label="translate('Move up')"
+                              @click.stop="moveUp(index)"
+                            >
+                              <span class="material-symbols-outlined" style="font-size: 14px"
+                                >arrow_upward</span
+                              >
+                            </button>
+                            <button
+                              type="button"
+                              class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                              :disabled="index === selectedProducts.length - 1"
+                              :aria-label="translate('Move down')"
+                              @click.stop="moveDown(index)"
+                            >
+                              <span class="material-symbols-outlined" style="font-size: 14px"
+                                >arrow_downward</span
+                              >
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            class="pbx-select-none pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+                            :aria-label="translate('Remove')"
+                            :title="translate('Remove')"
+                            @click.stop="removeProduct(product)"
                           >
-                        </button>
-                        <button
-                          type="button"
-                          class="pbx-select-none pbx-h-5 pbx-w-5 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                          :disabled="index === selectedProducts.length - 1"
-                          :aria-label="translate('Move down')"
-                          @click.stop="moveDown(index)"
+                            <span class="material-symbols-outlined pbx-materialIconLg">close</span>
+                          </button>
+                        </div>
+                        <!-- Move logi end -->
+                        <div
+                          :class="{
+                            'pbx-modalSidebarSelectedItem--moved': isMovedProduct(product),
+                          }"
                         >
-                          <span class="material-symbols-outlined" style="font-size: 14px"
-                            >arrow_downward</span
-                          >
-                        </button>
+                          <div class="pbx-min-w-0 pbx-flex-1 pbx-pt-2">
+                            <p
+                              class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-1"
+                            >
+                              {{ translate('Product details') }}
+                            </p>
+
+                            <div class="pbx-grid pbx-grid-cols-1 pbx-gap-1.5">
+                              <input
+                                class="pbx-myPrimaryInput pbx-text-xs"
+                                type="text"
+                                :value="product.title || ''"
+                                :placeholder="translate('Title')"
+                                @input="
+                                  updateProductField(
+                                    productKey(product),
+                                    'title',
+                                    getInputValue($event),
+                                  )
+                                "
+                              />
+                              <div class="pbx-min-h-8 pbx-flex pbx-items-center">
+                                <p
+                                  v-if="isTitleMissing(product)"
+                                  class="pbx-myPrimaryInputError pbx-mt-0"
+                                >
+                                  {{ translate('Title is required') }}
+                                </p>
+                              </div>
+
+                              <input
+                                v-if="!hidePrice"
+                                class="pbx-myPrimaryInput pbx-text-xs"
+                                type="text"
+                                :value="product.price != null ? String(product.price) : ''"
+                                :placeholder="translate('New price')"
+                                @input="
+                                  updateProductField(
+                                    productKey(product),
+                                    'price',
+                                    getInputValue($event),
+                                  )
+                                "
+                              />
+                              <div class="pbx-min-h-8 pbx-flex pbx-items-center">
+                                <p
+                                  v-if="!hidePrice && isPriceMissing(product)"
+                                  class="pbx-myPrimaryInputError pbx-mt-0"
+                                >
+                                  {{ translate('New price is required') }}
+                                </p>
+                              </div>
+
+                              <input
+                                class="pbx-myPrimaryInput pbx-text-xs"
+                                type="text"
+                                :value="
+                                  product.compareAtPrice != null
+                                    ? String(product.compareAtPrice)
+                                    : ''
+                                "
+                                :placeholder="translate('Old price')"
+                                @input="
+                                  updateProductField(
+                                    productKey(product),
+                                    'compareAtPrice',
+                                    getInputValue($event),
+                                  )
+                                "
+                              />
+
+                              <input
+                                class="pbx-myPrimaryInput pbx-text-xs"
+                                type="text"
+                                :value="product.badge || ''"
+                                :placeholder="translate('Tag')"
+                                @input="
+                                  updateProductField(
+                                    productKey(product),
+                                    'badge',
+                                    getInputValue($event),
+                                  )
+                                "
+                              />
+
+                              <input
+                                v-if="!hideButton"
+                                class="pbx-myPrimaryInput pbx-text-xs"
+                                type="text"
+                                :value="product.buttonText || ''"
+                                :placeholder="translate('Button text')"
+                                @input="
+                                  updateProductField(
+                                    productKey(product),
+                                    'buttonText',
+                                    getInputValue($event),
+                                  )
+                                "
+                              />
+                              <div class="pbx-min-h-8 pbx-flex pbx-items-center">
+                                <p
+                                  v-if="!hideButton && isButtonTextMissing(product)"
+                                  class="pbx-myPrimaryInputError pbx-mt-0"
+                                >
+                                  {{ translate('Button text is required') }}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        class="pbx-select-none pbx-h-9 pbx-w-9 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-                        :aria-label="translate('Remove')"
-                        :title="translate('Remove')"
-                        @click.stop="removeProduct(product)"
-                      >
-                        <span class="material-symbols-outlined pbx-materialIconLg">close</span>
-                      </button>
                     </div>
                   </TransitionGroup>
                 </div>
@@ -510,7 +710,6 @@ async function insertSelectedProducts() {
                 <button
                   type="button"
                   class="pbx-myPrimaryButton pbx-w-full"
-                  :class="{ 'pbx-opacity-80': !selectedProducts.length }"
                   @click="insertSelectedProducts"
                 >
                   <span>
@@ -549,8 +748,6 @@ async function insertSelectedProducts() {
             <button
               type="button"
               class="pbx-myPrimaryButton pbx-w-full"
-              :class="{ 'pbx-opacity-80': !selectedProducts.length }"
-              :aria-disabled="!selectedProducts.length"
               @click="insertSelectedProducts"
             >
               <span>

@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "Eliminar clases globales de la página y estilos inline del contenedor",
   "Are you sure you want to remove global page classes and inline styles?": "¿Seguro que deseas eliminar las clases globales de la página y los estilos inline?",
   "Page design styles cleared": "Se borraron los estilos del diseño de página",
-  "Could not clear page design styles": "No se pudieron borrar los estilos del diseño de página"
+  "Could not clear page design styles": "No se pudieron borrar los estilos del diseño de página",
+  "Product details": "Detalles del producto",
+  "Title is required": "El título es obligatorio",
+  "New price": "Precio nuevo",
+  "New price is required": "El precio nuevo es obligatorio",
+  "Old price": "Precio anterior",
+  "Tag": "Etiqueta",
+  "Button text": "Texto del botón",
+  "Button text is required": "El texto del botón es obligatorio",
+  "Select at least one product to insert.": "Selecciona al menos un producto para insertar.",
+  "Please complete required fields for all selected products.": "Completa los campos obligatorios de todos los productos seleccionados."
 }

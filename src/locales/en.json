@@ -580,5 +580,15 @@
   "Button links": "Button links",
   "Link behavior on helper button components": "Link behavior on helper button components",
   "No additional settings for this category": "No additional settings for this category",
-  "Are you sure you want to remove global page classes and inline styles?": "Are you sure you want to remove global page classes and inline styles?"
+  "Are you sure you want to remove global page classes and inline styles?": "Are you sure you want to remove global page classes and inline styles?",
+  "Product details": "Product details",
+  "Title is required": "Title is required",
+  "New price": "New price",
+  "New price is required": "New price is required",
+  "Old price": "Old price",
+  "Tag": "Tag",
+  "Button text": "Button text",
+  "Button text is required": "Button text is required",
+  "Select at least one product to insert.": "Select at least one product to insert.",
+  "Please complete required fields for all selected products.": "Please complete required fields for all selected products."
 }

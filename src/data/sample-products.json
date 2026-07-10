@@ -2,154 +2,61 @@
   {
     "id": "sample-product-01",
     "title": "Sample Product 01",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1566048652471-5869737a4c92?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$49",
-    "compareAtPrice": "$59",
-    "badge": "Sale",
-    "url": "/products/sample-product-01",
-    "buttonText": "View details",
-    "sku": "DEMO-001"
+    "image": "https://images.unsplash.com/photo-1566048652471-5869737a4c92?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-02",
     "title": "Sample Product 02",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1609766809300-9d0dcdd0b3c3?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$59",
-    "url": "/products/sample-product-02",
-    "buttonText": "View product",
-    "sku": "DEMO-002"
+    "image": "https://images.unsplash.com/photo-1609766809300-9d0dcdd0b3c3?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-03",
     "title": "Sample Product 03",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1637248970116-838902fe389a?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$69",
-    "url": "/products/sample-product-03",
-    "buttonText": "View details",
-    "sku": "DEMO-003"
+    "image": "https://images.unsplash.com/photo-1637248970116-838902fe389a?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-04",
     "title": "Sample Product 04",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1615072836557-f3f6cd9e2f40?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$79",
-    "url": "/products/sample-product-04",
-    "buttonText": "View product",
-    "sku": "DEMO-004"
+    "image": "https://images.unsplash.com/photo-1615072836557-f3f6cd9e2f40?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-05",
     "title": "Sample Product 05",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1659232102305-85b3fdf527f2?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$89",
-    "badge": "New",
-    "url": "/products/sample-product-05",
-    "buttonText": "View details",
-    "sku": "DEMO-005"
+    "image": "https://images.unsplash.com/photo-1659232102305-85b3fdf527f2?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-06",
     "title": "Sample Product 06",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1646342608080-d41dcc1a4ae9?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$99",
-    "compareAtPrice": "$119",
-    "url": "/products/sample-product-06",
-    "buttonText": "View product",
-    "sku": "DEMO-006"
+    "image": "https://images.unsplash.com/photo-1646342608080-d41dcc1a4ae9?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-07",
     "title": "Sample Product 07",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1657916292090-17c802850533?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$109",
-    "badge": "New",
-    "url": "/products/sample-product-07",
-    "buttonText": "View details",
-    "sku": "DEMO-007"
+    "image": "https://images.unsplash.com/photo-1657916292090-17c802850533?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-08",
     "title": "Sample Product 08",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1656393153404-81452727bb55?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$119",
-    "url": "/products/sample-product-08",
-    "buttonText": "View product",
-    "sku": "DEMO-008"
+    "image": "https://images.unsplash.com/photo-1656393153404-81452727bb55?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-09",
     "title": "Sample Product 09",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1544037119-50b88b582067?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$129",
-    "compareAtPrice": "$149",
-    "badge": "Sale",
-    "url": "/products/sample-product-09",
-    "buttonText": "View details",
-    "sku": "DEMO-009"
+    "image": "https://images.unsplash.com/photo-1544037119-50b88b582067?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-10",
     "title": "Sample Product 10",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1578059457717-721408f0758e?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$139",
-    "url": "/products/sample-product-10",
-    "buttonText": "View product",
-    "sku": "DEMO-010"
+    "image": "https://images.unsplash.com/photo-1578059457717-721408f0758e?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-11",
     "title": "Sample Product 11",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1596952896222-0f5ad38e5af0?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$149",
-    "badge": "New",
-    "url": "/products/sample-product-11",
-    "buttonText": "View details",
-    "sku": "DEMO-011"
+    "image": "https://images.unsplash.com/photo-1596952896222-0f5ad38e5af0?w=600&h=600&fit=crop"
   },
   {
     "id": "sample-product-12",
     "title": "Sample Product 12",
-    "description": "Placeholder text for previewing product cards, grids, and pricing in the page builder.",
-    "category": "Catalog",
-    "image": "https://images.unsplash.com/photo-1615917063963-ea6376145a96?w=600&h=600&fit=crop",
-    "imageAlt": "Abstract art placeholder image",
-    "price": "$159",
-    "compareAtPrice": "$189",
-    "url": "/products/sample-product-12",
-    "buttonText": "View product",
-    "sku": "DEMO-012"
+    "image": "https://images.unsplash.com/photo-1615917063963-ea6376145a96?w=600&h=600&fit=crop"
   }
 ]

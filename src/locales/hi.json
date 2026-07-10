@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "रैपर से ग्लोबल पेज क्लासेस और इनलाइन स्टाइल्स हटाएं",
   "Are you sure you want to remove global page classes and inline styles?": "क्या आप वाकई ग्लोबल पेज क्लासेस और इनलाइन स्टाइल्स हटाना चाहते हैं?",
   "Page design styles cleared": "पेज डिज़ाइन स्टाइल्स साफ कर दिए गए",
-  "Could not clear page design styles": "पेज डिज़ाइन स्टाइल्स साफ नहीं किए जा सके"
+  "Could not clear page design styles": "पेज डिज़ाइन स्टाइल्स साफ नहीं किए जा सके",
+  "Product details": "उत्पाद विवरण",
+  "Title is required": "शीर्षक आवश्यक है",
+  "New price": "नई कीमत",
+  "New price is required": "नई कीमत आवश्यक है",
+  "Old price": "पुरानी कीमत",
+  "Tag": "टैग",
+  "Button text": "बटन टेक्स्ट",
+  "Button text is required": "बटन टेक्स्ट आवश्यक है",
+  "Select at least one product to insert.": "डालने के लिए कम से कम एक उत्पाद चुनें।",
+  "Please complete required fields for all selected products.": "कृपया सभी चुने गए उत्पादों के लिए आवश्यक फ़ील्ड पूरी करें।"
 }
