@@ -680,6 +680,108 @@ describe('PageBuilderService', () => {
     })
   })
 
+  // --- handleFormSubmission ---
+  describe('handleFormSubmission', () => {
+    it('preserves page wrapper classes/styles by default and persists empty components', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.className = 'pbx-font-sans pbx-bg-rose-400'
+      pagebuilder.setAttribute('style', 'background-color: rgb(244, 63, 94);')
+      pagebuilder.innerHTML =
+        '<section data-componentid="keep-1" data-component-title="Hero"><div>Content</div></section>'
+
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [
+            {
+              title: 'Hero',
+              html_code:
+                '<section data-componentid="keep-1" data-component-title="Hero"><div>Content</div></section>',
+            },
+          ],
+          pageBuilderContentSavedAt: new Date().toISOString(),
+          pageSettings: { classes: 'old', style: 'color: red;' },
+        }),
+      )
+
+      await service.handleFormSubmission()
+
+      expect(mockStore.setComponents).toHaveBeenCalledWith([])
+      expect(pagebuilder.querySelectorAll('section').length).toBe(0)
+      expect(pagebuilder.className).toContain('pbx-bg-rose-400')
+      expect(pagebuilder.getAttribute('style') || '').toContain('background-color')
+
+      const raw = localStorage.getItem('test-key')
+      expect(raw).not.toBeNull()
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      expect(parsed.components).toEqual([])
+      expect(parsed.pageSettings.classes).toContain('pbx-bg-rose-400')
+      expect(parsed.pageSettings.style || '').toContain('background-color')
+    })
+
+    it('clears wrapper classes/styles and does not re-persist page settings when preservePageSettings is false', async () => {
+      const createDraftKey = 'page-builder-create-resource-article'
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      mockStore.setPageBuilderConfig({
+        updateOrCreate: { formType: 'create', formName: 'article' },
+        pageSettings: {
+          classes: 'pbx-font-sans pbx-bg-blue-200',
+          style: 'background-color: rgb(191, 219, 254);',
+          meta: { title: 'Old title', description: 'Old description' },
+        },
+      })
+
+      pagebuilder.className = 'pbx-font-sans pbx-bg-blue-200'
+      pagebuilder.setAttribute('style', 'background-color: rgb(191, 219, 254);')
+      pagebuilder.innerHTML =
+        '<section data-componentid="clear-1" data-component-title="Hero"><div>Content</div></section>'
+
+      localStorage.setItem(
+        createDraftKey,
+        JSON.stringify({
+          components: [
+            {
+              title: 'Hero',
+              html_code:
+                '<section data-componentid="clear-1" data-component-title="Hero"><div>Content</div></section>',
+            },
+          ],
+          pageBuilderContentSavedAt: new Date().toISOString(),
+          pageSettings: {
+            classes: 'pbx-font-sans pbx-bg-blue-200',
+            style: 'background-color: rgb(191, 219, 254);',
+            meta: { title: 'Old title', description: 'Old description' },
+          },
+        }),
+      )
+
+      await service.handleFormSubmission({ preservePageSettings: false })
+
+      expect(mockStore.setComponents).toHaveBeenCalledWith([])
+      expect(pagebuilder.querySelectorAll('section').length).toBe(0)
+      expect(pagebuilder.getAttribute('class')).toBeNull()
+      expect(pagebuilder.getAttribute('style')).toBeNull()
+      expect(localStorage.getItem(createDraftKey)).toBeNull()
+
+      expect(mockStore.setPageBuilderConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pageSettings: {
+            classes: '',
+            style: '',
+            meta: { title: '', description: '' },
+          },
+        }),
+      )
+    })
+  })
+
   // --- availableLanguage ---
   describe('availableLanguage', () => {
     it('returns an array', () => {
