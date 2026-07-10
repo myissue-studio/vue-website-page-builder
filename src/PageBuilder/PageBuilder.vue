@@ -733,7 +733,7 @@ const ensureBuilderInitialized = function () {
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 const pageBuilderCanvas = ref<HTMLElement | null>(null)
-const editToolbarPinned = ref(false)
+const editToolbarPinned = ref(true)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
 let builderScrollTop = 0
@@ -1188,7 +1188,7 @@ onBeforeUnmount(() => {
 
     <div
       id="pagebuilder-navbar"
-      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-2 pbx-font-sans pbx-min-h-20"
+      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-1 pbx-font-sans"
     >
       <template
         v-if="
@@ -1204,9 +1204,9 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-justify-start pbx-py-2 lg:pbx-ml-4 pbx-ml-2"
+          class="pbx-flex pbx-justify-start pbx-py-1 lg:pbx-ml-4 pbx-ml-2"
         >
-          <img class="pbx-h-6" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
+          <img class="pbx-h-4" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
         </div>
       </template>
       <!-- Logo # end -->
@@ -1219,12 +1219,12 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full"
+        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
         <div class="pbx-flex pbx-items-center pbx-justify-center">
           <!-- Save Start -->
           <button
-            class="pbx-mySecondaryButton pbx-h-6 pbx-flex pbx-gap-2 pbx-mr-2"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-gap-1.5 pbx-mr-2"
             @click.stop="
               async () => {
                 await pageBuilderService.clearHtmlSelection()
@@ -1238,13 +1238,13 @@ onBeforeUnmount(() => {
           >
             <div
               v-if="!getIsSaving"
-              class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined" aria-hidden="true">save</span>
+              <span class="material-symbols-outlined pbx-text-lg" aria-hidden="true">save</span>
             </div>
             <div
               v-if="getIsSaving"
-              class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <span class="pbx-relative pbx-flex pbx-size-3">
                 <span
@@ -1268,7 +1268,7 @@ onBeforeUnmount(() => {
             "
           >
             <button
-              class="pbx-mySecondaryButton pbx-h-6 pbx-flex pbx-gap-2 lg:pbx-mr-2 pbx-mr-2"
+              class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-gap-1.5 lg:pbx-mr-2 pbx-mr-2"
               @click.stop="
                 async () => {
                   await pageBuilderService.clearHtmlSelection()
@@ -1281,13 +1281,13 @@ onBeforeUnmount(() => {
             >
               <div
                 v-if="!getIsRestoring"
-                class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
               >
-                <span class="material-symbols-outlined"> settings_backup_restore </span>
+                <span class="material-symbols-outlined pbx-text-lg"> settings_backup_restore </span>
               </div>
               <div
                 v-if="getIsRestoring"
-                class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
               >
                 <span class="pbx-relative pbx-flex pbx-size-3">
                   <span
@@ -1316,7 +1316,7 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full"
+        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
         <div
           @click.self="
@@ -1328,7 +1328,7 @@ onBeforeUnmount(() => {
         >
           <button
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-mr-2 pbx-font-sans"
             :aria-label="translate('Add components')"
             :title="translate('Add components')"
             @click="
@@ -1339,28 +1339,28 @@ onBeforeUnmount(() => {
             "
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <LayersIcon />
             </span>
-            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+            <span class="lg:pbx-block pbx-hidden">
               {{ translate('Add') }}
             </span>
           </button>
           <button
             v-if="showProductsFeature"
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-mr-2 pbx-font-sans"
             :aria-label="translate('Add products')"
             :title="translate('Add products')"
             @click="toggleProductLibraryModal"
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <span class="material-symbols-outlined"> shopping_bag </span>
             </span>
-            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+            <span class="lg:pbx-block pbx-hidden">
               {{ translate('Products') }}
             </span>
           </button>
@@ -1379,7 +1379,7 @@ onBeforeUnmount(() => {
             "
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
               <span>
                 <svg
@@ -1415,7 +1415,7 @@ onBeforeUnmount(() => {
             "
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
               <svg
                 fill="currentColor"
@@ -1444,7 +1444,7 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-items-center pbx-py-2 pbx-w-full"
+          class="pbx-flex pbx-items-center pbx-py-1 pbx-w-full"
           :class="[showCloseButton ? 'pbx-justify-between' : 'pbx-justify-end']"
         >
           <ToolbarOption></ToolbarOption>
@@ -1536,7 +1536,7 @@ onBeforeUnmount(() => {
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
               type="button"
-              class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
+              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
               :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
