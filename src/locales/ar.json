@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "إزالة أصناف الصفحة العامة والأنماط المضمنة من الحاوية",
   "Are you sure you want to remove global page classes and inline styles?": "هل أنت متأكد أنك تريد إزالة أصناف الصفحة العامة والأنماط المضمنة؟",
   "Page design styles cleared": "تم مسح أنماط تصميم الصفحة",
-  "Could not clear page design styles": "تعذر مسح أنماط تصميم الصفحة"
+  "Could not clear page design styles": "تعذر مسح أنماط تصميم الصفحة",
+  "Product details": "تفاصيل المنتج",
+  "Title is required": "العنوان مطلوب",
+  "New price": "السعر الجديد",
+  "New price is required": "السعر الجديد مطلوب",
+  "Old price": "السعر القديم",
+  "Tag": "الوسم",
+  "Button text": "نص الزر",
+  "Button text is required": "نص الزر مطلوب",
+  "Select at least one product to insert.": "اختر منتجًا واحدًا على الأقل للإدراج.",
+  "Please complete required fields for all selected products.": "يرجى إكمال الحقول المطلوبة لجميع المنتجات المحددة."
 }

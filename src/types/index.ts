@@ -86,6 +86,8 @@ export interface ProductSectionOptions {
   hideImage?: boolean
   /** Hides the CTA button when product data includes url and buttonText */
   hideButton?: boolean
+  /** Removes clickable links from product cards (title/image/CTA). */
+  hideLinks?: boolean
 }
 
 export interface InsertProductsOptions {
@@ -106,6 +108,8 @@ export interface InsertProductsOptions {
   hideImage?: boolean
   /** Hides the CTA button when product data includes url and buttonText */
   hideButton?: boolean
+  /** Removes clickable links from product cards (title/image/CTA). */
+  hideLinks?: boolean
   sectionTitle?: string
   /** unshift | push | insert (uses current add index) */
   method?: 'unshift' | 'push' | 'insert' | (string & {})

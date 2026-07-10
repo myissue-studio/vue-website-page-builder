@@ -28,6 +28,7 @@ export interface BuildProductSectionStyleOptions {
   hidePrice?: boolean
   hideImage?: boolean
   hideButton?: boolean
+  hideLinks?: boolean
   mobileColumns?: 1 | 2
 }
 
@@ -64,6 +65,7 @@ function renderProductCard(
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
   const hideButton = styleOptions.hideButton ?? false
+  const hideLinks = styleOptions.hideLinks ?? false
   const linkAttrs = productLinkAttrs(openInNewTab)
   const productCardClass = PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
   const imageWrapClass = [
@@ -82,13 +84,15 @@ function renderProductCard(
   const imageSrc = product.image ? escapeHtml(product.image) : ''
   const imageAlt = product.imageAlt ? escapeHtml(product.imageAlt) : title || 'Product'
   const url = product.url ? escapeHtml(product.url) : ''
+  const linkHref = url && !hideLinks ? ` href="${url}"` : ''
+  const linkDataHref = url ? ` data-pbx-href="${url}"` : ''
   const buttonText = product.buttonText ? escapeHtml(product.buttonText) : ''
 
   let imageHtml = ''
   if (imageSrc) {
     const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
     imageHtml = url
-      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a href="${url}"${linkAttrs}>${imgTag}</a></div>`
+      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a${linkHref}${linkDataHref}${linkAttrs}>${imgTag}</a></div>`
       : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
   }
 
@@ -99,7 +103,7 @@ function renderProductCard(
       : ''
 
   const titleHtml = title
-    ? `<div class="product-card-title text-lg font-semibold text-gray-900 pt-2 min-h-16">${url ? `<p><a href="${url}"${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
+    ? `<div class="product-card-title text-lg font-semibold text-gray-900 pt-2 min-h-16">${url ? `<p><a${linkHref}${linkDataHref}${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
     : ''
 
   const descriptionHtml = description
@@ -147,7 +151,7 @@ function renderProductCard(
     const ctaAnchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}" href="${url}"${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}"${linkHref}${linkDataHref}${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -172,7 +176,7 @@ function renderProductCard(
 
 export function buildProductSectionHtml(
   products: ReadonlyArray<PageBuilderProductInput>,
-  layout: ProductGridLayout = 'grid-3',
+  layout: ProductGridLayout = 'grid-4',
   sectionTitle = 'Products',
   styleOptions: BuildProductSectionStyleOptions = {},
 ): string {
@@ -192,6 +196,7 @@ export function buildProductSectionHtml(
   const hidePrice = styleOptions.hidePrice ?? false
   const hideImage = styleOptions.hideImage ?? false
   const hideButton = styleOptions.hideButton ?? false
+  const hideLinks = styleOptions.hideLinks ?? false
 
   const sectionHasBadge = products.some((p) => Boolean(p.badge))
   const cards = products
@@ -199,7 +204,7 @@ export function buildProductSectionHtml(
     .join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-button-style="${escapeHtml(buttonStyle)}" data-pbx-product-rounded-buttons="${roundedButtons ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-button-style="${escapeHtml(buttonStyle)}" data-pbx-product-rounded-buttons="${roundedButtons ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}" data-pbx-product-hide-links="${hideLinks ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

@@ -149,13 +149,17 @@
     @apply pbx-text-gray-900;
   }
 
+  #pagebuilder .pbx-product-card-price {
+    @apply pbx-mb-3;
+  }
+
   #pagebuilder .pbx-product-card-cta {
     @apply pbx-text-myPrimaryLinkColor;
   }
 
   #pagebuilder .pbx-product-card-title a,
   #pagebuilder .pbx-product-card-cta a {
-    @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-80;
+    @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-90;
   }
 
   /*
@@ -1011,7 +1015,7 @@
   }
 
   .pbx-modalSidebarSelectedItem {
-    @apply pbx-flex pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
+    @apply pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-2 pbx-transition-colors pbx-duration-150 hover:pbx-border-myPrimaryLinkColor/40 hover:pbx-shadow-sm;
   }
 
   /*

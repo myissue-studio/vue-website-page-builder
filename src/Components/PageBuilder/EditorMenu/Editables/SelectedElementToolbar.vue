@@ -135,6 +135,7 @@ const productRoundedButtons = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedButtons
 const productHidePrice = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hidePrice ?? false)
 const productHideImage = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideImage ?? false)
 const productHideButton = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideButton ?? false)
+const productHideLinks = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.hideLinks ?? false)
 const productSectionHasPrices = ref(false)
 const productSectionHasImages = ref(false)
 const productSectionHasButtons = ref(false)
@@ -153,6 +154,7 @@ let productSettingsBaseline: {
   hidePrice: boolean
   hideImage: boolean
   hideButton: boolean
+  hideLinks: boolean
 } | null = null
 
 const productSettingsMatchBaseline = (): boolean => {
@@ -167,7 +169,8 @@ const productSettingsMatchBaseline = (): boolean => {
     productRoundedButtons.value === productSettingsBaseline.roundedButtons &&
     productHidePrice.value === productSettingsBaseline.hidePrice &&
     productHideImage.value === productSettingsBaseline.hideImage &&
-    productHideButton.value === productSettingsBaseline.hideButton
+    productHideButton.value === productSettingsBaseline.hideButton &&
+    productHideLinks.value === productSettingsBaseline.hideLinks
   )
 }
 
@@ -207,6 +210,7 @@ const openProductSectionSettings = () => {
   const hidePrice = options.hidePrice ?? false
   const hideImage = options.hideImage ?? false
   const hideButton = options.hideButton ?? false
+  const hideLinks = options.hideLinks ?? false
   const availability = pageBuilderService.getSelectedProductSectionContentAvailability()
 
   productSettingsBaseline = {
@@ -220,6 +224,7 @@ const openProductSectionSettings = () => {
     hidePrice,
     hideImage,
     hideButton,
+    hideLinks,
   }
 
   productLayout.value = options.layout
@@ -232,6 +237,7 @@ const openProductSectionSettings = () => {
   productHidePrice.value = hidePrice
   productHideImage.value = hideImage
   productHideButton.value = hideButton
+  productHideLinks.value = hideLinks
   productSectionHasPrices.value = availability.hasPrices
   productSectionHasImages.value = availability.hasImages
   productSectionHasButtons.value = availability.hasButtons
@@ -261,6 +267,7 @@ const applySelectedProductSectionSettings = async () => {
       hidePrice: productHidePrice.value,
       hideImage: productHideImage.value,
       hideButton: productHideButton.value,
+      hideLinks: productHideLinks.value,
     })
     productSectionSettingsTick.value++
     if (!productSettingsMatchBaseline()) {
@@ -290,6 +297,7 @@ watch(
     productHidePrice,
     productHideImage,
     productHideButton,
+    productHideLinks,
   ],
   () => {
     void applySelectedProductSectionSettings()
@@ -1292,6 +1300,8 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
               v-model:hide-price="productHidePrice"
               v-model:hide-image="productHideImage"
               v-model:hide-button="productHideButton"
+              v-model:hide-links="productHideLinks"
+              :show-hide-links-toggle="true"
               :has-product-prices="productSectionHasPrices"
               :has-product-images="productSectionHasImages"
               :has-product-buttons="productSectionHasButtons"

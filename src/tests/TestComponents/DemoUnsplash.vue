@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 const unsplashKey = import.meta.env.VITE_UNSPLASH_KEY
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
 import { sleep } from '../../utils/sleep'
@@ -11,6 +11,7 @@ const { translate } = useTranslations()
 const pageBuilderService = getPageBuilder()
 
 const { closeMediaLibraryModal } = usePageBuilderModal()
+const onMediaSelected = inject<((image: { src: string }) => void) | null>('onMediaSelected', null)
 
 const getIsLoading = ref(false)
 const getIsLoadingImage = ref(false)
@@ -115,6 +116,12 @@ const nextPage = async function () {
 const isLoading = ref(false)
 
 const applySelectedImage = async function (imageURL: string) {
+  if (onMediaSelected) {
+    onMediaSelected({ src: imageURL })
+    closeMediaLibraryModal()
+    return
+  }
+
   isLoading.value = true
   await pageBuilderService.applySelectedImage({
     src: `${imageURL}`,

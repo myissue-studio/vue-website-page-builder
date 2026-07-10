@@ -25,10 +25,12 @@ const roundedButtons = defineModel<boolean>('roundedButtons', { required: true }
 const hidePrice = defineModel<boolean>('hidePrice', { required: true })
 const hideImage = defineModel<boolean>('hideImage', { required: true })
 const hideButton = defineModel<boolean>('hideButton', { required: true })
+const hideLinks = defineModel<boolean>('hideLinks', { default: false })
 
 defineProps<{
   translate: (key: string) => string
   compact?: boolean
+  showHideLinksToggle?: boolean
   hasProductPrices?: boolean
   hasProductImages?: boolean
   hasProductButtons?: boolean
@@ -108,7 +110,10 @@ watch(layout, (value) => {
       class="pbx-productSettingsToggleGrid"
       :class="compact ? '' : 'pbx-productSettingsToggleGrid--twoCol'"
     >
-      <section v-if="hasProductPrices || hasProductButtons" class="pbx-productSettingsSection">
+      <section
+        v-if="hasProductPrices || hasProductButtons || showHideLinksToggle"
+        class="pbx-productSettingsSection"
+      >
         <div class="pbx-productSettingsSectionHeader">
           <p class="pbx-productSettingsSectionTitle">{{ translate('Card content') }}</p>
           <p class="pbx-productSettingsSectionDesc">
@@ -138,11 +143,22 @@ watch(layout, (value) => {
             </div>
             <ToggleInput v-model="hideButton" />
           </div>
+          <div v-if="showHideLinksToggle" class="pbx-productSettingsToggleRow">
+            <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
+              <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
+                {{ translate('Hide product links') }}
+              </p>
+              <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
+                {{ translate('Do not add links to product cards') }}
+              </p>
+            </div>
+            <ToggleInput v-model="hideLinks" />
+          </div>
         </div>
       </section>
 
       <LinkStyleSettingsPanel
-        v-if="hasProductLinks"
+        v-if="!hideLinks && (hasProductLinks || showHideLinksToggle)"
         v-model:button-style="buttonStyle"
         v-model:open-in-new-tab="openInNewTab"
         v-model:rounded-buttons="roundedButtons"

@@ -574,5 +574,15 @@
   "Remove global page classes and inline styles from the wrapper": "ラッパーからグローバルページのクラスとインラインスタイルを削除します",
   "Are you sure you want to remove global page classes and inline styles?": "グローバルページのクラスとインラインスタイルを削除してもよろしいですか？",
   "Page design styles cleared": "ページデザインのスタイルをクリアしました",
-  "Could not clear page design styles": "ページデザインのスタイルをクリアできませんでした"
+  "Could not clear page design styles": "ページデザインのスタイルをクリアできませんでした",
+  "Product details": "商品詳細",
+  "Title is required": "タイトルは必須です",
+  "New price": "新価格",
+  "New price is required": "新価格は必須です",
+  "Old price": "旧価格",
+  "Tag": "タグ",
+  "Button text": "ボタンテキスト",
+  "Button text is required": "ボタンテキストは必須です",
+  "Select at least one product to insert.": "挿入する商品を少なくとも1つ選択してください。",
+  "Please complete required fields for all selected products.": "選択したすべての商品で必須項目を入力してください。"
 }

@@ -117,7 +117,18 @@ describe('buildProductSectionHtml', () => {
       hideButton: true,
     })
     expect(html).toContain('data-pbx-product-hide-button="true"')
-    expect(html).toContain('product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3 hidden')
+    expect(html).toContain(
+      'product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3 hidden',
+    )
     expect(html).toContain('Buy')
+  })
+
+  it('disables product links when hideLinks is true while preserving original URL data', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hideLinks: true,
+    })
+    expect(html).toContain('data-pbx-product-hide-links="true"')
+    expect(html).toContain('data-pbx-href="/p1"')
+    expect(/\shref="\/p1"/.test(html)).toBe(false)
   })
 })
