@@ -244,6 +244,33 @@ export function applyProductLinkTargetsInSection(
   })
 }
 
+export function applyProductLinksVisibilityInSection(
+  section: HTMLElement,
+  hideLinks: boolean,
+): void {
+  findProductCardsInSection(section).forEach((card) => {
+    card.querySelectorAll('a').forEach((node) => {
+      if (!(node instanceof HTMLAnchorElement)) return
+
+      if (hideLinks) {
+        const href = node.getAttribute('href')
+        if (href && !node.getAttribute('data-pbx-href')) {
+          node.setAttribute('data-pbx-href', href)
+        }
+        node.removeAttribute('href')
+        node.removeAttribute('target')
+        node.removeAttribute('rel')
+        return
+      }
+
+      const savedHref = node.getAttribute('data-pbx-href')
+      if (savedHref && !node.getAttribute('href')) {
+        node.setAttribute('href', savedHref)
+      }
+    })
+  })
+}
+
 function normalizeLayout(value: string | null): ProductGridLayout {
   if (
     value === 'grid-1' ||
@@ -281,6 +308,7 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const hidePrice = section.getAttribute('data-pbx-product-hide-price') === 'true'
   const hideImage = section.getAttribute('data-pbx-product-hide-image') === 'true'
   const hideButton = section.getAttribute('data-pbx-product-hide-button') === 'true'
+  const hideLinks = section.getAttribute('data-pbx-product-hide-links') === 'true'
 
   return {
     layout,
@@ -293,6 +321,7 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
     hidePrice,
     hideImage,
     hideButton,
+    hideLinks,
   }
 }
 
@@ -334,6 +363,7 @@ export function applyProductSectionOptionsToElement(
   const hidePrice = Boolean(options.hidePrice)
   const hideImage = Boolean(options.hideImage)
   const hideButton = Boolean(options.hideButton)
+  const hideLinks = Boolean(options.hideLinks)
 
   section.setAttribute('data-pbx-product-layout', layout)
   section.setAttribute('data-pbx-product-mobile-cols', String(mobileColumns))
@@ -345,6 +375,7 @@ export function applyProductSectionOptionsToElement(
   section.setAttribute('data-pbx-product-hide-price', hidePrice ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-image', hideImage ? 'true' : 'false')
   section.setAttribute('data-pbx-product-hide-button', hideButton ? 'true' : 'false')
+  section.setAttribute('data-pbx-product-hide-links', hideLinks ? 'true' : 'false')
 
   const grid = findProductGridInSection(section)
   if (grid) {
@@ -364,6 +395,7 @@ export function applyProductSectionOptionsToElement(
     }
   })
 
+  applyProductLinksVisibilityInSection(section, hideLinks)
   applyProductLinkTargetsInSection(section, openInNewTab)
   applyProductButtonStyleInSection(section, buttonStyle, roundedButtons)
   applyProductContentVisibilityInSection(section, hidePrice, hideImage, hideButton)
@@ -380,4 +412,5 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   hidePrice: false,
   hideImage: false,
   hideButton: false,
+  hideLinks: false,
 }

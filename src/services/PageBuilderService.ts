@@ -4838,6 +4838,7 @@ export class PageBuilderService {
       hidePrice: options.hidePrice,
       hideImage: options.hideImage,
       hideButton: options.hideButton,
+      hideLinks: options.hideLinks,
       mobileColumns: options.mobileColumns,
     })
     await this.insertProductHtml(html, sectionTitle)
