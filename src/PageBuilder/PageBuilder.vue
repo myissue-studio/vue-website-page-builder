@@ -1557,6 +1557,11 @@ onBeforeUnmount(() => {
     <div
       id="pagebuilder-main"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-relative pbx-h-full pbx-flex pbx-pb-2 pbx-gap-2"
+      style="
+        background-color: #fafafa;
+        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+        background-size: 20px 20px;
+      "
     >
       <main
         ref="pbxBuilderWrapper"
