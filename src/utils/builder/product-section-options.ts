@@ -254,7 +254,7 @@ function normalizeLayout(value: string | null): ProductGridLayout {
   ) {
     return value
   }
-  return 'grid-3'
+  return 'grid-4'
 }
 
 function normalizeCardStyle(value: string | null): ProductCardStyle {
@@ -370,7 +370,7 @@ export function applyProductSectionOptionsToElement(
 }
 
 export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
-  layout: 'grid-3',
+  layout: 'grid-4',
   mobileColumns: 1,
   cardStyle: 'minimal',
   roundedImages: false,

@@ -172,7 +172,7 @@ function renderProductCard(
 
 export function buildProductSectionHtml(
   products: ReadonlyArray<PageBuilderProductInput>,
-  layout: ProductGridLayout = 'grid-3',
+  layout: ProductGridLayout = 'grid-4',
   sectionTitle = 'Products',
   styleOptions: BuildProductSectionStyleOptions = {},
 ): string {

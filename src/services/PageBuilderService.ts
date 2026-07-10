@@ -4829,7 +4829,7 @@ export class PageBuilderService {
     }
 
     const sectionTitle = options.sectionTitle ?? 'Products'
-    const html = buildProductSectionHtml(products, options.layout ?? 'grid-3', sectionTitle, {
+    const html = buildProductSectionHtml(products, options.layout ?? 'grid-4', sectionTitle, {
       cardStyle: options.cardStyle,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
