@@ -27,13 +27,12 @@ const typeClass: Record<ToastType, string> = {
         <span class="pbx-font-sans pbx-toastMessage">{{ toast.message }}</span>
         <button
           type="button"
-          class="pbx-toastClose"
+          class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
           :aria-label="'Close'"
           @click="hideToast(toast.id)"
         >
-          <span class="material-symbols-outlined pbx-materialIcon18" aria-hidden="true">
-            close_small
-          </span>
+          <div class="pbx-materialIcon18"></div>
+          <span class="material-symbols-outlined" aria-hidden="true"> close_small </span>
         </button>
       </div>
     </TransitionGroup>
