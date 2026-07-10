@@ -48,7 +48,7 @@ const handleDeleteComponentsFromDOM = function () {
   thirdModalButtonFunctionDynamicModalBuilder.value = async function () {
     isDeletingLayout.value = true
     await pageBuilderService.clearHtmlSelection()
-    await pageBuilderService.handleFormSubmission()
+    await pageBuilderService.handleFormSubmission({ preservePageSettings: true })
     await sleep(500)
 
     showModalDeleteAllComponents.value = false

@@ -3788,14 +3788,14 @@ export class PageBuilderService {
   /**
    * Handles the form submission process, clearing local storage and the DOM.
    * By default, global page settings (classes / inline styles on the wrapper)
-   * are preserved so they survive a "remove all components" action.
+   * are reset so a brand-new resource starts clean after submit.
    *
-   * Pass `{ preservePageSettings: false }` when starting a brand-new resource
-   * after submit, so wrapper classes/styles are reset.
+   * Pass `{ preservePageSettings: true }` when you want "remove all components"
+   * behavior that keeps wrapper classes/styles.
    * @returns {Promise<void>}
    */
   public async handleFormSubmission(options?: { preservePageSettings?: boolean }) {
-    const preservePageSettings = options?.preservePageSettings ?? true
+    const preservePageSettings = options?.preservePageSettings ?? false
 
     // Capture global page settings BEFORE clearing storage so they are not lost.
     const savedPageSettings = this.readCurrentPageSettings()

@@ -682,7 +682,7 @@ describe('PageBuilderService', () => {
 
   // --- handleFormSubmission ---
   describe('handleFormSubmission', () => {
-    it('preserves page wrapper classes/styles by default and persists empty components', async () => {
+    it('preserves page wrapper classes/styles when preservePageSettings is true and persists empty components', async () => {
       const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
       expect(pagebuilder).not.toBeNull()
       if (!pagebuilder) return
@@ -707,7 +707,7 @@ describe('PageBuilderService', () => {
         }),
       )
 
-      await service.handleFormSubmission()
+      await service.handleFormSubmission({ preservePageSettings: true })
 
       expect(mockStore.setComponents).toHaveBeenCalledWith([])
       expect(pagebuilder.querySelectorAll('section').length).toBe(0)
@@ -723,7 +723,7 @@ describe('PageBuilderService', () => {
       expect(parsed.pageSettings.style || '').toContain('background-color')
     })
 
-    it('clears wrapper classes/styles and does not re-persist page settings when preservePageSettings is false', async () => {
+    it('clears wrapper classes/styles and does not re-persist page settings by default', async () => {
       const createDraftKey = 'page-builder-create-resource-article'
       const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
       expect(pagebuilder).not.toBeNull()
@@ -762,7 +762,7 @@ describe('PageBuilderService', () => {
         }),
       )
 
-      await service.handleFormSubmission({ preservePageSettings: false })
+      await service.handleFormSubmission()
 
       expect(mockStore.setComponents).toHaveBeenCalledWith([])
       expect(pagebuilder.querySelectorAll('section').length).toBe(0)
