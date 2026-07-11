@@ -1446,7 +1446,7 @@
   }
 
   .pbx-myPrimaryInputLabel {
-    @apply pbx-my-0 pbx-block pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor pbx-text-left pbx-mb-2;
+    @apply pbx-my-0 pbx-block pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor pbx-text-left pbx-mb-2 pbx-font-sans;
   }
 
   .pbx-myPrimaryInput {
