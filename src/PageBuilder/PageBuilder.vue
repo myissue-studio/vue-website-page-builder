@@ -411,6 +411,74 @@ const handlePageBuilderPreviewMobile = function () {
   openPageBuilderPreviewMobile.value = true
 }
 
+const previewMenuOpen = ref(false)
+const previewMenuTriggerRef = ref<HTMLElement | null>(null)
+const previewMenuPopoverRef = ref<HTMLElement | null>(null)
+const PREVIEW_MENU_WIDTH_PX = 220
+
+const previewMenuPopoverStyle = ref({
+  top: '0px',
+  left: '0px',
+  width: `${PREVIEW_MENU_WIDTH_PX}px`,
+})
+
+const updatePreviewMenuPosition = () => {
+  const trigger = previewMenuTriggerRef.value
+  if (!trigger) return
+
+  const rect = trigger.getBoundingClientRect()
+  const margin = 8
+  const desiredLeft = rect.left + rect.width / 2 - PREVIEW_MENU_WIDTH_PX / 2
+  const left = Math.max(
+    margin,
+    Math.min(desiredLeft, window.innerWidth - PREVIEW_MENU_WIDTH_PX - margin),
+  )
+
+  previewMenuPopoverStyle.value = {
+    top: `${Math.round(rect.bottom + 8)}px`,
+    left: `${Math.round(left)}px`,
+    width: `${PREVIEW_MENU_WIDTH_PX}px`,
+  }
+}
+
+const closePreviewMenuOnOutsideClick = (event: Event) => {
+  if (!previewMenuOpen.value) return
+  if (!(event.target instanceof Node)) return
+  if (previewMenuTriggerRef.value?.contains(event.target)) return
+  if (previewMenuPopoverRef.value?.contains(event.target)) return
+  previewMenuOpen.value = false
+}
+
+const openDesktopPreviewFromMenu = async () => {
+  previewMenuOpen.value = false
+  pageBuilderStateStore.setMenuRight(false)
+  pageBuilderStateStore.setElement(null)
+  await pageBuilderService.clearHtmlSelection()
+  handlePageBuilderPreview()
+}
+
+const openMobilePreviewFromMenu = async () => {
+  previewMenuOpen.value = false
+  pageBuilderStateStore.setMenuRight(false)
+  pageBuilderStateStore.setElement(null)
+  await pageBuilderService.clearHtmlSelection()
+  handlePageBuilderPreviewMobile()
+}
+
+watch(previewMenuOpen, (isOpen) => {
+  if (isOpen) {
+    void nextTick(() => updatePreviewMenuPosition())
+    document.addEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+    window.addEventListener('resize', updatePreviewMenuPosition)
+    window.addEventListener('scroll', updatePreviewMenuPosition, true)
+    return
+  }
+
+  document.removeEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+  window.removeEventListener('resize', updatePreviewMenuPosition)
+  window.removeEventListener('scroll', updatePreviewMenuPosition, true)
+})
+
 const openAppNotStartedModal = ref(false)
 
 const handlAppNotStartedModal = function () {
@@ -1063,6 +1131,10 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  previewMenuOpen.value = false
+  document.removeEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+  window.removeEventListener('resize', updatePreviewMenuPosition)
+  window.removeEventListener('scroll', updatePreviewMenuPosition, true)
   pageBuilderService.flushPendingEditsToLocalStorage()
   pageBuilderService.markCanvasUnmountedForNextMount()
   cancelAnimationFrame(panelPositionRaf)
@@ -1365,76 +1437,64 @@ onBeforeUnmount(() => {
             </span>
           </button>
           <button
+            ref="previewMenuTriggerRef"
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
-            :aria-label="translate('Desktop preview')"
-            :title="translate('Desktop preview')"
-            @click="
-              async () => {
-                pageBuilderStateStore.setMenuRight(false)
-                pageBuilderStateStore.setElement(null)
-                await pageBuilderService.clearHtmlSelection()
-                handlePageBuilderPreview()
-              }
-            "
+            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
+            :aria-label="translate('Preview')"
+            :title="translate('Preview')"
+            :aria-expanded="previewMenuOpen"
+            @click="previewMenuOpen = !previewMenuOpen"
           >
             <span
               class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <span>
-                <svg
-                  fill="currentColor"
-                  height="22"
-                  viewBox="0 0 22 22"
-                  width="22"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="display: block"
-                  aria-hidden="true"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
-                    fill-rule="evenodd"
-                  ></path>
-                </svg>
-              </span>
+              <span class="material-symbols-outlined"> computer </span>
             </span>
-          </button>
-          <button
-            type="button"
-            class="lg:pbx-flex pbx-hidden pbx-items-center pbx-justify-center pbx-mr-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
-            :aria-label="translate('Mobile preview')"
-            :title="translate('Mobile preview')"
-            @click="
-              async () => {
-                pageBuilderStateStore.setMenuRight(false)
-                pageBuilderStateStore.setElement(null)
-                await pageBuilderService.clearHtmlSelection()
-                handlePageBuilderPreviewMobile()
-              }
-            "
-          >
             <span
-              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="material-symbols-outlined pbx-text-base pbx-leading-none pbx-text-gray-500"
             >
-              <svg
-                fill="currentColor"
-                height="22"
-                viewBox="0 0 22 22"
-                width="22"
-                xmlns="http://www.w3.org/2000/svg"
-                style="display: block"
-                aria-hidden="true"
-              >
-                <path d="M14 16H8v2h6v-2z"></path>
-                <path
-                  d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
-                ></path>
-              </svg>
+              {{ previewMenuOpen ? 'expand_less' : 'expand_more' }}
             </span>
           </button>
         </div>
       </div>
+
+      <Teleport to="body">
+        <transition name="popup-fade">
+          <div
+            v-if="previewMenuOpen"
+            ref="previewMenuPopoverRef"
+            role="menu"
+            :style="previewMenuPopoverStyle"
+            class="pbx-toolbarMoreMenu"
+            @mousedown.stop
+            @pointerdown.stop
+            @click.stop
+          >
+            <div class="pbx-toolbarMoreMenuSection">
+              <p class="pbx-toolbarMoreMenuSectionLabel">{{ translate('Preview') }}</p>
+              <button
+                type="button"
+                class="pbx-toolbarMoreMenuItem"
+                role="menuitem"
+                @click="openDesktopPreviewFromMenu"
+              >
+                <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined">computer</span>
+                <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
+              </button>
+              <button
+                type="button"
+                class="pbx-toolbarMoreMenuItem"
+                role="menuitem"
+                @click="openMobilePreviewFromMenu"
+              >
+                <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined">mobile</span>
+                <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Mobile preview') }}</span>
+              </button>
+            </div>
+          </div>
+        </transition>
+      </Teleport>
 
       <div class="pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end">
         <!-- Options # Start -->
