@@ -139,6 +139,8 @@ The top builder toolbar now uses a preview-size dropdown (Desktop and Mobile) in
 
 The preview trigger in the top toolbar now uses a local SVG icon component (`PreviewDesktopIcon`) instead of a material-symbol glyph for more consistent icon rendering.
 
+The top navbar has a subtle browser-inspired visual polish (soft gradient shell, rounded frame, refined icon chips, and gentler hover/focus feedback) for a more modern, professional look without changing toolbar behavior.
+
 Global editor dropdowns (Text Color, Background Color, Border Color, Opacity, and Background Opacity) are now standardized on an internal reusable `CustomDropdown` component instead of `@headlessui/vue`, which keeps dropdown behavior consistent across the builder and removes that external dependency.
 
 Typography selectors (font family, size, weight, style) in the right sidebar and inline typography popover intentionally use native browser `<select>` controls to avoid nested dropdown stacking/scroll friction inside constrained editor containers.
