@@ -18,7 +18,7 @@ const props = withDefaults(
   }>(),
   {
     id: undefined,
-    buttonClass: 'pbx-myPrimarySelect',
+    buttonClass: 'pbx-myPrimarySelect pbx-w-full pbx-text-left',
     menuClass:
       'pbx-headless-dropdown pbx-absolute pbx-z-50 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0',
     menuItemClass:

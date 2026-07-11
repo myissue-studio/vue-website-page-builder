@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import EditorAccordion from '../EditorAccordion.vue'
+import CustomDropdown from '../../../Inputs/CustomDropdown.vue'
 import tailwindBorderRadius from '../../../../utils/builder/tailwind-border-radius'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -16,6 +17,12 @@ const borderRadiusTopLeft = ref<string | null>(null)
 const borderRadiusTopRight = ref<string | null>(null)
 const borderRadiusBottomleft = ref<string | null>(null)
 const borderRadiusBottomRight = ref<string | null>(null)
+
+const withSelectOption = (values: string[]) => [
+  { value: '', label: translate('Select'), disabled: true },
+  ...values.map((value) => ({ value, label: value })),
+]
+
 const getBorderRadiusGlobal = computed(() => {
   return pageBuilderStateStore.getBorderRadiusGlobal
 })
@@ -35,35 +42,35 @@ const getBorderRadiusBottomRight = computed(() => {
 watch(
   getBorderRadiusGlobal,
   (newValue) => {
-    borderRadiusGlobal.value = newValue
+    borderRadiusGlobal.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderRadiusTopLeft,
   (newValue) => {
-    borderRadiusTopLeft.value = newValue
+    borderRadiusTopLeft.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderRadiusTopRight,
   (newValue) => {
-    borderRadiusTopRight.value = newValue
+    borderRadiusTopRight.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderRadiusBottomleft,
   (newValue) => {
-    borderRadiusBottomleft.value = newValue
+    borderRadiusBottomleft.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderRadiusBottomRight,
   (newValue) => {
-    borderRadiusBottomRight.value = newValue
+    borderRadiusBottomRight.value = newValue ?? ''
   },
   { immediate: true },
 )
@@ -80,20 +87,18 @@ watch(
         <label for="global-border-radius" class="pbx-myPrimaryInputLabel">{{
           translate('Border Radius')
         }}</label>
-        <select
+        <CustomDropdown
           id="global-border-radius"
           v-model="borderRadiusGlobal"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusGlobal(borderRadiusGlobal ?? undefined)"
+          :options="withSelectOption(tailwindBorderRadius.roundedGlobal)"
+          @select="(value) => pageBuilderService.handleBorderRadiusGlobal(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="borderRadiusGlobal in tailwindBorderRadius.roundedGlobal"
-            :key="borderRadiusGlobal"
-          >
-            {{ borderRadiusGlobal }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{
+              borderRadiusGlobal || translate('Select')
+            }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <p class="pbx-editorSectionTitle">
@@ -103,84 +108,72 @@ watch(
         <label for="border-radius-top-left" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius top left') }}
         </label>
-        <select
+        <CustomDropdown
           id="border-radius-top-left"
           v-model="borderRadiusTopLeft"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusTopLeft(borderRadiusTopLeft ?? undefined)"
+          :options="withSelectOption(tailwindBorderRadius.roundedTopLeft)"
+          @select="(value) => pageBuilderService.handleBorderRadiusTopLeft(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="borderRadiusTopLeft in tailwindBorderRadius.roundedTopLeft"
-            :key="borderRadiusTopLeft"
-          >
-            {{ borderRadiusTopLeft }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{
+              borderRadiusTopLeft || translate('Select')
+            }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-radius-top-right" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius top right') }}
         </label>
-        <select
+        <CustomDropdown
           id="border-radius-top-right"
           v-model="borderRadiusTopRight"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderRadiusTopRight(borderRadiusTopRight ?? undefined)"
+          :options="withSelectOption(tailwindBorderRadius.roundedTopRight)"
+          @select="(value) => pageBuilderService.handleBorderRadiusTopRight(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="borderRadiusTopRight in tailwindBorderRadius.roundedTopRight"
-            :key="borderRadiusTopRight"
-          >
-            {{ borderRadiusTopRight }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{
+              borderRadiusTopRight || translate('Select')
+            }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-radius-bottom-left" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius bottom left') }}
         </label>
-        <select
+        <CustomDropdown
           id="border-radius-bottom-left"
           v-model="borderRadiusBottomleft"
-          class="pbx-myPrimarySelect"
-          @change="
-            pageBuilderService.handleBorderRadiusBottomleft(borderRadiusBottomleft ?? undefined)
-          "
+          :options="withSelectOption(tailwindBorderRadius.roundedBottomLeft)"
+          @select="(value) => pageBuilderService.handleBorderRadiusBottomleft(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="borderRadiusBottomleft in tailwindBorderRadius.roundedBottomLeft"
-            :key="borderRadiusBottomleft"
-          >
-            {{ borderRadiusBottomleft }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{
+              borderRadiusBottomleft || translate('Select')
+            }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-radius-bottom-right" class="pbx-myPrimaryInputLabel">
           {{ translate('Border Radius bottom right') }}
         </label>
-        <select
+        <CustomDropdown
           id="border-radius-bottom-right"
           v-model="borderRadiusBottomRight"
-          class="pbx-myPrimarySelect"
-          @change="
-            pageBuilderService.handleBorderRadiusBottomRight(borderRadiusBottomRight ?? undefined)
-          "
+          :options="withSelectOption(tailwindBorderRadius.roundedBottomRight)"
+          @select="(value) => pageBuilderService.handleBorderRadiusBottomRight(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option
-            v-for="borderRadiusBottomRight in tailwindBorderRadius.roundedBottomRight"
-            :key="borderRadiusBottomRight"
-          >
-            {{ borderRadiusBottomRight }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{
+              borderRadiusBottomRight || translate('Select')
+            }}</span>
+          </template>
+        </CustomDropdown>
       </div>
     </template>
   </EditorAccordion>

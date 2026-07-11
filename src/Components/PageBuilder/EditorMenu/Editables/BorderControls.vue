@@ -19,6 +19,17 @@ const pageBuilderStateStore = sharedPageBuilderStore
 const borderStyle = ref<string | null>(null)
 const borderWidth = ref<string | null>(null)
 const borderColor = ref<string | null>(null)
+
+const borderStyleOptions = computed(() => [
+  { value: '', label: translate('Select'), disabled: true },
+  ...tailwindBorderStyleWidthPlusColor.borderStyle.map((value) => ({ value, label: value })),
+])
+
+const borderWidthOptions = computed(() => [
+  { value: '', label: translate('Select'), disabled: true },
+  ...tailwindBorderStyleWidthPlusColor.borderWidth.map((value) => ({ value, label: value })),
+])
+
 const getBorderStyle = computed(() => {
   return pageBuilderStateStore.getBorderStyle
 })
@@ -32,14 +43,14 @@ const getBorderColor = computed(() => {
 watch(
   getBorderStyle,
   (newValue) => {
-    borderStyle.value = newValue
+    borderStyle.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderWidth,
   (newValue) => {
-    borderWidth.value = newValue
+    borderWidth.value = newValue ?? ''
   },
   { immediate: true },
 )
@@ -64,34 +75,32 @@ watch(
         <label for="border-style" class="pbx-myPrimaryInputLabel">{{
           translate('Border Style')
         }}</label>
-        <select
+        <CustomDropdown
           id="border-style"
           v-model="borderStyle"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderStyle(borderStyle ?? undefined)"
+          :options="borderStyleOptions"
+          @select="(value) => pageBuilderService.handleBorderStyle(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="style in tailwindBorderStyleWidthPlusColor.borderStyle" :key="style">
-            {{ style }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{ borderStyle || translate('Select') }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-width" class="pbx-myPrimaryInputLabel">{{
           translate('Border Width')
         }}</label>
-        <select
+        <CustomDropdown
           id="border-width"
           v-model="borderWidth"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderWidth(borderWidth ?? undefined)"
+          :options="borderWidthOptions"
+          @select="(value) => pageBuilderService.handleBorderWidth(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="width in tailwindBorderStyleWidthPlusColor.borderWidth" :key="width">
-            {{ width }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{ borderWidth || translate('Select') }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
