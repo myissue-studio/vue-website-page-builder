@@ -381,6 +381,7 @@ const getMenuRight = computed(() => {
 const openPageBuilderPreviewModal = ref(false)
 const titleBuilderDesktop = ref('')
 const titleBuilderMobile = ref('')
+const titleBuilderTablet = ref('')
 
 const savePreviewFontSettings = function () {
   localStorage.setItem('preview-font-class', canvasFontClass.value)
@@ -401,6 +402,7 @@ const handlePageBuilderPreview = function () {
 }
 
 const openPageBuilderPreviewMobile = ref(false)
+const openPageBuilderPreviewTablet = ref(false)
 
 const previewCurrentDesignMobile = function () {
   pageBuilderService.previewCurrentDesign()
@@ -410,6 +412,12 @@ const handlePageBuilderPreviewMobile = function () {
   titleBuilderMobile.value = translate('Mobile')
   previewCurrentDesignMobile()
   openPageBuilderPreviewMobile.value = true
+}
+
+const handlePageBuilderPreviewTablet = function () {
+  titleBuilderTablet.value = translate('Tablet preview')
+  previewCurrentDesignMobile()
+  openPageBuilderPreviewTablet.value = true
 }
 
 const previewMenuOpen = ref(false)
@@ -466,6 +474,14 @@ const openMobilePreviewFromMenu = async () => {
   handlePageBuilderPreviewMobile()
 }
 
+const openTabletPreviewFromMenu = async () => {
+  previewMenuOpen.value = false
+  pageBuilderStateStore.setMenuRight(false)
+  pageBuilderStateStore.setElement(null)
+  await pageBuilderService.clearHtmlSelection()
+  handlePageBuilderPreviewTablet()
+}
+
 watch(previewMenuOpen, (isOpen) => {
   if (isOpen) {
     void nextTick(() => updatePreviewMenuPosition())
@@ -491,6 +507,9 @@ const firstPageBuilderPreviewModalButton = function () {
 }
 const firstPageBuilderPreviewModalButtonMobile = function () {
   openPageBuilderPreviewMobile.value = false
+}
+const firstPageBuilderPreviewModalButtonTablet = function () {
+  openPageBuilderPreviewTablet.value = false
 }
 
 const showModalAddComponent = ref(false)
@@ -776,6 +795,7 @@ useBuilderKeyboardShortcuts({
     htmlViewerShow.value ||
     openPageBuilderPreviewModal.value ||
     openPageBuilderPreviewMobile.value ||
+    openPageBuilderPreviewTablet.value ||
     showImageSettingsModal.value,
   onUndo: async () => {
     await undoRedoRef.value?.handleUndo()
@@ -1222,6 +1242,15 @@ onBeforeUnmount(() => {
       <PageBuilderPreview :mobile="true" />
     </BaseModal>
 
+    <BaseModal
+      :title="titleBuilderTablet"
+      :showModalBuilder="openPageBuilderPreviewTablet"
+      @closeMainModalBuilder="firstPageBuilderPreviewModalButtonTablet"
+      maxWidth="4xl"
+    >
+      <PageBuilderPreview :tablet="true" />
+    </BaseModal>
+
     <ConfirmActionModal
       :showDynamicModalBuilder="showModalResumeEditing"
       :isLoading="getIsLoadingResumeEditing"
@@ -1440,16 +1469,19 @@ onBeforeUnmount(() => {
           <button
             ref="previewMenuTriggerRef"
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-mr-2 pbx-font-sans"
             :aria-label="translate('Preview')"
             :title="translate('Preview')"
             :aria-expanded="previewMenuOpen"
             @click="previewMenuOpen = !previewMenuOpen"
           >
             <span
-              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <PreviewDesktopIcon />
+            </span>
+            <span class="lg:pbx-block pbx-hidden">
+              {{ translate('Preview') }}
             </span>
           </button>
         </div>
@@ -1476,6 +1508,14 @@ onBeforeUnmount(() => {
                 @click="openDesktopPreviewFromMenu"
               >
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
+              </button>
+              <button
+                type="button"
+                class="pbx-toolbarMoreMenuItem"
+                role="menuitem"
+                @click="openTabletPreviewFromMenu"
+              >
+                <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Tablet preview') }}</span>
               </button>
               <button
                 type="button"

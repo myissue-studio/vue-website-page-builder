@@ -55,7 +55,7 @@ describe('ProductPickerPanel regressions', () => {
     mounted.unmount()
   })
 
-  it('renders mobile selected-product editable fields after selecting a product', async () => {
+  it('renders selected-product editable fields after selecting a product', async () => {
     const products: PageBuilderProduct[] = [
       {
         id: 'p2',
@@ -72,22 +72,14 @@ describe('ProductPickerPanel regressions', () => {
     await nextTick()
     await nextTick()
 
-    expect(mounted.container.querySelector('#pbx-mobile-selected-product-0-title')).not.toBeNull()
-    expect(
-      mounted.container.querySelector('#pbx-mobile-selected-product-0-description'),
-    ).not.toBeNull()
-    expect(
-      mounted.container.querySelector('#pbx-mobile-selected-product-0-old-price'),
-    ).not.toBeNull()
-    expect(mounted.container.querySelector('#pbx-mobile-selected-product-0-tag')).not.toBeNull()
+    expect(mounted.container.querySelector('#pbx-selected-product-0-title')).not.toBeNull()
+    expect(mounted.container.querySelector('#pbx-selected-product-0-description')).not.toBeNull()
+    expect(mounted.container.querySelector('#pbx-selected-product-0-old-price')).not.toBeNull()
+    expect(mounted.container.querySelector('#pbx-selected-product-0-tag')).not.toBeNull()
 
     // These are conditional in the UI and should be present by default.
-    const newPriceField = mounted.container.querySelector(
-      '#pbx-mobile-selected-product-0-new-price',
-    )
-    const buttonTextField = mounted.container.querySelector(
-      '#pbx-mobile-selected-product-0-button-text',
-    )
+    const newPriceField = mounted.container.querySelector('#pbx-selected-product-0-new-price')
+    const buttonTextField = mounted.container.querySelector('#pbx-selected-product-0-button-text')
     expect(newPriceField || buttonTextField).not.toBeNull()
 
     mounted.unmount()

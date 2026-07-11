@@ -91,13 +91,14 @@ onBeforeUnmount(() => {
         <li
           v-for="option in options"
           :key="option.value"
-          class="pbx-w-full"
+          class="pbx-font-sans pbx-w-full"
           role="option"
           :aria-selected="modelValue === option.value"
         >
           <button
             type="button"
             :disabled="option.disabled"
+            class="pbx-font-sans"
             :class="[
               menuItemClass,
               modelValue === option.value

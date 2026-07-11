@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { version } from '../../../package.json'
+import { useTranslations } from '../../composables/useTranslations'
+
+const { translate } = useTranslations()
 </script>
 
 <template>
@@ -13,7 +16,7 @@ import { version } from '../../../package.json'
         rel="noopener noreferrer"
         class="pbx-myPrimaryLink pbx-inline-flex pbx-items-center pbx-rounded-full pbx-border pbx-border-gray-300 pbx-bg-white pbx-px-3 pbx-py-1.5 lg:pbx-text-sm pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-100 hover:pbx-border-gray-400"
       >
-        Install via npm
+        {{ translate('Install via npm') }}
       </a>
     </p>
 
@@ -24,7 +27,7 @@ import { version } from '../../../package.json'
         rel="noopener noreferrer"
         class="pbx-myPrimaryLink pbx-inline-flex pbx-items-center pbx-rounded-full pbx-border pbx-border-gray-300 pbx-bg-white pbx-px-3 pbx-py-1.5 lg:pbx-text-sm pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-100 hover:pbx-border-gray-400"
       >
-        View on GitHub
+        {{ translate('View on GitHub') }}
       </a>
     </p>
 
@@ -35,7 +38,7 @@ import { version } from '../../../package.json'
         rel="noopener noreferrer"
         class="pbx-myPrimaryLink pbx-inline-flex pbx-items-center pbx-rounded-full pbx-border pbx-border-gray-300 pbx-bg-white pbx-px-3 pbx-py-1.5 lg:pbx-text-sm pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-100 hover:pbx-border-gray-400"
       >
-        Guide
+        {{ translate('Guide') }}
       </a>
     </p>
 
@@ -46,7 +49,7 @@ import { version } from '../../../package.json'
         rel="noopener noreferrer"
         class="pbx-myPrimaryLink pbx-inline-flex pbx-items-center pbx-rounded-full pbx-border pbx-border-gray-300 pbx-bg-white pbx-px-3 pbx-py-1.5 lg:pbx-text-sm pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-100 hover:pbx-border-gray-400"
       >
-        Contact us
+        {{ translate('Contact us') }}
       </a>
     </p>
 

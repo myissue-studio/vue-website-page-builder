@@ -958,7 +958,7 @@
   }
 
   .pbx-modalLibraryCardLabel {
-    @apply pbx-truncate pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+    @apply pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
   .pbx-modalLibraryCardHint {
@@ -1007,7 +1007,7 @@
   }
 
   .pbx-modalSidebarSelectedList {
-    @apply pbx-mt-4 pbx-space-y-2;
+    @apply pbx-mt-3 pbx-space-y-2 pbx-max-h-[58vh] pbx-overflow-y-auto pbx-pr-1;
   }
 
   .pbx-modalSidebarSelectedTitle {
@@ -1446,7 +1446,7 @@
   }
 
   .pbx-myPrimaryInputLabel {
-    @apply pbx-my-0 pbx-block pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor pbx-text-left pbx-mb-2;
+    @apply pbx-my-0 pbx-block pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor pbx-text-left pbx-mb-2 pbx-font-sans;
   }
 
   .pbx-myPrimaryInput {
@@ -1458,7 +1458,7 @@
   }
 
   .pbx-myPrimaryTextArea {
-    @apply pbx-block pbx-w-full sm:pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor placeholder:pbx-font-normal placeholder:pbx-accent-gray-400 pbx-bg-gray-50 focus:pbx-bg-white pbx-rounded-md pbx-py-3 pbx-px-3 pbx-border pbx-border-gray-300 pbx-shadow-sm focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryLinkColor focus:pbx-border-transparent;
+    @apply pbx-block pbx-w-full sm:pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor placeholder:pbx-font-normal placeholder:pbx-accent-gray-400 pbx-bg-gray-50 focus:pbx-bg-white pbx-rounded-md pbx-py-3 pbx-px-3 pbx-border pbx-border-gray-300 pbx-shadow-sm focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-border-transparent;
   }
 
   .pbx-myPrimaryCheckbox {
@@ -1529,16 +1529,7 @@
 #pagebuilder-navbar .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
   background-color: #ffffff !important;
   color: #111827 !important;
-  border: 1px solid #dfe3ea;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 1px 2px rgba(15, 23, 42, 0.06);
-  transition:
-    background-color 120ms ease,
-    color 120ms ease,
-    border-color 120ms ease,
-    transform 120ms ease,
-    box-shadow 120ms ease;
+  border: 1px solid #dcdcdc;
 }
 
 #pagebuilder-navbar button.pbx-h-10.pbx-w-10:hover:not(:disabled),
@@ -1548,11 +1539,6 @@
 #pagebuilder-navbar button:hover:not(:disabled) .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
   background-color: #eef2f7 !important;
   color: #0f172a !important;
-  border-color: #c6d0dc;
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 4px 12px rgba(71, 85, 105, 0.2);
 }
 
 #pagebuilder-navbar button.pbx-h-10.pbx-w-10:focus-visible,
@@ -1735,7 +1721,8 @@
 }
 
 .pbx-myPrimaryInput:focus,
-.pbx-myPrimarySelect:focus {
+.pbx-myPrimarySelect:focus,
+.pbx-myPrimaryTextArea:focus {
   --tw-ring-inset: inset;
   --tw-ring-opacity: 1;
   --tw-ring-color: rgba(22, 163, 74, var(--tw-ring-opacity, 1));

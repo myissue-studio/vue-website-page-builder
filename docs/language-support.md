@@ -73,3 +73,9 @@ const configPageBuilder = {
 ```
 
 This flexibility allows you to tailor the language experience to your audience’s needs.
+
+## Component Label Translations
+
+All helper and layout component titles shown in the component picker are localized using the locale files in `src/locales`.
+
+When adding new component titles (for example helper blocks like `Quote` and `Simple List`), add the same key to every locale file so users do not see fallback English labels in non-English interfaces.
