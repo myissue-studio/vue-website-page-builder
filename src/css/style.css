@@ -1458,7 +1458,7 @@
   }
 
   .pbx-myPrimaryTextArea {
-    @apply pbx-block pbx-w-full sm:pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor placeholder:pbx-font-normal placeholder:pbx-accent-gray-400 pbx-bg-gray-50 focus:pbx-bg-white pbx-rounded-md pbx-py-3 pbx-px-3 pbx-border pbx-border-gray-300 pbx-shadow-sm focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryLinkColor focus:pbx-border-transparent;
+    @apply pbx-block pbx-w-full sm:pbx-text-sm pbx-font-normal pbx-text-myPrimaryDarkGrayColor placeholder:pbx-font-normal placeholder:pbx-accent-gray-400 pbx-bg-gray-50 focus:pbx-bg-white pbx-rounded-md pbx-py-3 pbx-px-3 pbx-border pbx-border-gray-300 pbx-shadow-sm focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-border-transparent;
   }
 
   .pbx-myPrimaryCheckbox {
@@ -1721,7 +1721,8 @@
 }
 
 .pbx-myPrimaryInput:focus,
-.pbx-myPrimarySelect:focus {
+.pbx-myPrimarySelect:focus,
+.pbx-myPrimaryTextArea:focus {
   --tw-ring-inset: inset;
   --tw-ring-opacity: 1;
   --tw-ring-color: rgba(22, 163, 74, var(--tw-ring-opacity, 1));
