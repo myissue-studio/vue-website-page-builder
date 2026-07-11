@@ -1135,7 +1135,7 @@
   }
 
   .pbx-toolbarMoreMenuSectionLabel {
-    @apply pbx-m-0 pbx-px-2.5 pbx-py-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400;
+    @apply pbx-m-0 pbx-px-2.5 pbx-pt-6 pbx-pb-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400;
   }
 
   .pbx-toolbarMoreMenuItem {
@@ -1483,6 +1483,86 @@
 #pagebuilder-navbar {
   position: relative;
   z-index: 60;
+  max-height: 4rem;
+  background: linear-gradient(180deg, #fdfefe 0%, #f5f7fa 100%);
+  border: 1px solid #e5e7eb;
+  border-bottom-color: #d7dde5;
+  border-radius: 0.9rem;
+  padding: 0.1rem 0.25rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 6px 18px rgba(15, 23, 42, 0.06);
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+}
+
+#pagebuilder-navbar .pbx-mySecondaryButton,
+#pagebuilder-navbar .pbx-myPrimaryButton {
+  min-height: 2rem !important;
+  padding-top: 0.2rem !important;
+  padding-bottom: 0.2rem !important;
+}
+
+#pagebuilder-navbar .pbx-navbarUtilityButton {
+  padding-top: 1.2rem !important;
+  padding-bottom: 1.2rem !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+  gap: 0.375rem !important;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+#pagebuilder-navbar .pbx-mySecondaryButton .material-symbols-outlined,
+#pagebuilder-navbar .pbx-h-8 .material-symbols-outlined,
+#pagebuilder-navbar .pbx-w-8 .material-symbols-outlined {
+  font-size: 1rem;
+  line-height: 1rem;
+}
+
+/* Unified icon chip styling for navbar controls (publish button excluded) */
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10,
+#pagebuilder-navbar button.pbx-h-8.pbx-w-8,
+#pagebuilder-navbar .pbx-mySecondaryButton .pbx-h-8.pbx-w-8,
+#pagebuilder-navbar .pbx-bg-gray-50.pbx-h-8.pbx-w-8,
+#pagebuilder-navbar .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #dfe3ea;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 23, 42, 0.06);
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10:hover:not(:disabled),
+#pagebuilder-navbar button.pbx-h-8.pbx-w-8:hover:not(:disabled),
+#pagebuilder-navbar .pbx-mySecondaryButton:hover:not(:disabled) .pbx-h-8.pbx-w-8,
+#pagebuilder-navbar button:hover:not(:disabled) .pbx-bg-gray-50.pbx-h-8.pbx-w-8,
+#pagebuilder-navbar button:hover:not(:disabled) .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
+  background-color: #eef2f7 !important;
+  color: #0f172a !important;
+  border-color: #c6d0dc;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 4px 12px rgba(71, 85, 105, 0.2);
+}
+
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10:focus-visible,
+#pagebuilder-navbar button.pbx-h-8.pbx-w-8:focus-visible,
+#pagebuilder-navbar .pbx-mySecondaryButton:focus-visible,
+#pagebuilder-navbar .pbx-myPrimaryButton:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgb(var(--pbx-brand-color-rgb, 22 163 74) / 0.2),
+    0 2px 8px rgba(15, 23, 42, 0.15);
 }
 
 /* Toolbar popovers must sit above BaseModal (z-index: 9999) when PageBuilder is in a modal */

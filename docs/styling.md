@@ -135,6 +135,24 @@ In global Page Design color pickers, built-in colors now apply the clicked color
 
 Theme Color Presets apply their hex value as inline style (same behavior as custom colors) for both global Page Design and selected elements.
 
+The top builder toolbar now uses a preview-size dropdown (Desktop and Mobile) instead of separate preview buttons, using a teleported popover for stable positioning above overlays.
+
+The preview trigger in the top toolbar now uses a local SVG icon component (`PreviewDesktopIcon`) instead of a material-symbol glyph for more consistent icon rendering.
+
+The top navbar has a subtle browser-inspired visual polish (soft gradient shell, rounded frame, refined icon chips, and gentler hover/focus feedback) for a more modern, professional look without changing toolbar behavior.
+
+Global editor dropdowns (Text Color, Background Color, Border Color, Opacity, and Background Opacity) are now standardized on an internal reusable `CustomDropdown` component instead of `@headlessui/vue`, which keeps dropdown behavior consistent across the builder and removes that external dependency.
+
+Typography selectors (font family, size, weight, style) in the right sidebar and inline typography popover intentionally use native browser `<select>` controls to avoid nested dropdown stacking/scroll friction inside constrained editor containers.
+
+Border Style, Border Width, and Border Radius selectors now use `CustomDropdown` as well, so editor selects share one dropdown system across the styling panels.
+
+In Page Design, those dropdown option rows now render as full-width items, so each list row spans the entire menu width and keeps hover/selection targets consistent.
+
+Page Design Text Color and Background Color menus show a trailing selected swatch indicator for the currently active color option.
+
+Active (selected) rows in Page Design dropdown menus now use a neutral high-contrast highlight style, so labels remain readable even when brand link colors are very light.
+
 In the right properties panel, style accordions now stay mounted while switching between editable elements, so expanded sections remain open instead of collapsing on each selection change.
 
 ## Button Style Controls In Modals

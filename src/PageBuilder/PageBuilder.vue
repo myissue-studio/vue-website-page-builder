@@ -18,6 +18,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
+import PreviewDesktopIcon from '../Components/Iconsand/PreviewDesktopIcon.vue'
 import HtmlCodeViewerModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlCodeViewerModal.vue'
 import HtmlEditorModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
 import ToastContainer from '../Components/Toast/ToastContainer.vue'
@@ -411,6 +412,74 @@ const handlePageBuilderPreviewMobile = function () {
   openPageBuilderPreviewMobile.value = true
 }
 
+const previewMenuOpen = ref(false)
+const previewMenuTriggerRef = ref<HTMLElement | null>(null)
+const previewMenuPopoverRef = ref<HTMLElement | null>(null)
+const PREVIEW_MENU_WIDTH_PX = 220
+
+const previewMenuPopoverStyle = ref({
+  top: '0px',
+  left: '0px',
+  width: `${PREVIEW_MENU_WIDTH_PX}px`,
+})
+
+const updatePreviewMenuPosition = () => {
+  const trigger = previewMenuTriggerRef.value
+  if (!trigger) return
+
+  const rect = trigger.getBoundingClientRect()
+  const margin = 8
+  const desiredLeft = rect.left + rect.width / 2 - PREVIEW_MENU_WIDTH_PX / 2
+  const left = Math.max(
+    margin,
+    Math.min(desiredLeft, window.innerWidth - PREVIEW_MENU_WIDTH_PX - margin),
+  )
+
+  previewMenuPopoverStyle.value = {
+    top: `${Math.round(rect.bottom + 8)}px`,
+    left: `${Math.round(left)}px`,
+    width: `${PREVIEW_MENU_WIDTH_PX}px`,
+  }
+}
+
+const closePreviewMenuOnOutsideClick = (event: Event) => {
+  if (!previewMenuOpen.value) return
+  if (!(event.target instanceof Node)) return
+  if (previewMenuTriggerRef.value?.contains(event.target)) return
+  if (previewMenuPopoverRef.value?.contains(event.target)) return
+  previewMenuOpen.value = false
+}
+
+const openDesktopPreviewFromMenu = async () => {
+  previewMenuOpen.value = false
+  pageBuilderStateStore.setMenuRight(false)
+  pageBuilderStateStore.setElement(null)
+  await pageBuilderService.clearHtmlSelection()
+  handlePageBuilderPreview()
+}
+
+const openMobilePreviewFromMenu = async () => {
+  previewMenuOpen.value = false
+  pageBuilderStateStore.setMenuRight(false)
+  pageBuilderStateStore.setElement(null)
+  await pageBuilderService.clearHtmlSelection()
+  handlePageBuilderPreviewMobile()
+}
+
+watch(previewMenuOpen, (isOpen) => {
+  if (isOpen) {
+    void nextTick(() => updatePreviewMenuPosition())
+    document.addEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+    window.addEventListener('resize', updatePreviewMenuPosition)
+    window.addEventListener('scroll', updatePreviewMenuPosition, true)
+    return
+  }
+
+  document.removeEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+  window.removeEventListener('resize', updatePreviewMenuPosition)
+  window.removeEventListener('scroll', updatePreviewMenuPosition, true)
+})
+
 const openAppNotStartedModal = ref(false)
 
 const handlAppNotStartedModal = function () {
@@ -733,7 +802,7 @@ const ensureBuilderInitialized = function () {
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 const pageBuilderCanvas = ref<HTMLElement | null>(null)
-const editToolbarPinned = ref(false)
+const editToolbarPinned = ref(true)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
 let builderScrollTop = 0
@@ -1063,6 +1132,10 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  previewMenuOpen.value = false
+  document.removeEventListener('pointerdown', closePreviewMenuOnOutsideClick)
+  window.removeEventListener('resize', updatePreviewMenuPosition)
+  window.removeEventListener('scroll', updatePreviewMenuPosition, true)
   pageBuilderService.flushPendingEditsToLocalStorage()
   pageBuilderService.markCanvasUnmountedForNextMount()
   cancelAnimationFrame(panelPositionRaf)
@@ -1188,7 +1261,7 @@ onBeforeUnmount(() => {
 
     <div
       id="pagebuilder-navbar"
-      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-2 pbx-font-sans pbx-min-h-20"
+      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-1 pbx-font-sans"
     >
       <template
         v-if="
@@ -1204,9 +1277,9 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-justify-start pbx-py-2 lg:pbx-ml-4 pbx-ml-2"
+          class="pbx-flex pbx-justify-start pbx-py-1 lg:pbx-ml-4 pbx-ml-2"
         >
-          <img class="pbx-h-6" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
+          <img class="pbx-h-4" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
         </div>
       </template>
       <!-- Logo # end -->
@@ -1219,12 +1292,12 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full"
+        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
         <div class="pbx-flex pbx-items-center pbx-justify-center">
           <!-- Save Start -->
           <button
-            class="pbx-mySecondaryButton pbx-h-6 pbx-flex pbx-gap-2 pbx-mr-2"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-gap-1.5 pbx-mr-2"
             @click.stop="
               async () => {
                 await pageBuilderService.clearHtmlSelection()
@@ -1238,13 +1311,13 @@ onBeforeUnmount(() => {
           >
             <div
               v-if="!getIsSaving"
-              class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined" aria-hidden="true">save</span>
+              <span class="material-symbols-outlined pbx-text-lg" aria-hidden="true">save</span>
             </div>
             <div
               v-if="getIsSaving"
-              class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <span class="pbx-relative pbx-flex pbx-size-3">
                 <span
@@ -1268,7 +1341,7 @@ onBeforeUnmount(() => {
             "
           >
             <button
-              class="pbx-mySecondaryButton pbx-h-6 pbx-flex pbx-gap-2 lg:pbx-mr-2 pbx-mr-2"
+              class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-gap-1.5 lg:pbx-mr-2 pbx-mr-2"
               @click.stop="
                 async () => {
                   await pageBuilderService.clearHtmlSelection()
@@ -1281,13 +1354,13 @@ onBeforeUnmount(() => {
             >
               <div
                 v-if="!getIsRestoring"
-                class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
               >
-                <span class="material-symbols-outlined"> settings_backup_restore </span>
+                <span class="material-symbols-outlined pbx-text-lg"> settings_backup_restore </span>
               </div>
               <div
                 v-if="getIsRestoring"
-                class="pbx-h-10 pbx-w-4 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+                class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
               >
                 <span class="pbx-relative pbx-flex pbx-size-3">
                   <span
@@ -1316,7 +1389,7 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full"
+        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
         <div
           @click.self="
@@ -1328,7 +1401,7 @@ onBeforeUnmount(() => {
         >
           <button
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-mr-2 pbx-font-sans"
             :aria-label="translate('Add components')"
             :title="translate('Add components')"
             @click="
@@ -1339,102 +1412,83 @@ onBeforeUnmount(() => {
             "
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <LayersIcon />
             </span>
-            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+            <span class="lg:pbx-block pbx-hidden">
               {{ translate('Add') }}
             </span>
           </button>
           <button
             v-if="showProductsFeature"
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer pbx-font-sans"
+            class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-mr-2 pbx-font-sans"
             :aria-label="translate('Add products')"
             :title="translate('Add products')"
             @click="toggleProductLibraryModal"
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
               <span class="material-symbols-outlined"> shopping_bag </span>
             </span>
-            <span class="lg:pbx-block lg:pbx-pr-4 pbx-hidden">
+            <span class="lg:pbx-block pbx-hidden">
               {{ translate('Products') }}
             </span>
           </button>
           <button
+            ref="previewMenuTriggerRef"
             type="button"
-            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
-            :aria-label="translate('Desktop preview')"
-            :title="translate('Desktop preview')"
-            @click="
-              async () => {
-                pageBuilderStateStore.setMenuRight(false)
-                pageBuilderStateStore.setElement(null)
-                await pageBuilderService.clearHtmlSelection()
-                handlePageBuilderPreview()
-              }
-            "
+            class="pbx-mr-2 pbx-flex pbx-items-center pbx-justify-center pbx-gap-1.5 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
+            :aria-label="translate('Preview')"
+            :title="translate('Preview')"
+            :aria-expanded="previewMenuOpen"
+            @click="previewMenuOpen = !previewMenuOpen"
           >
             <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <span>
-                <svg
-                  fill="currentColor"
-                  height="22"
-                  viewBox="0 0 22 22"
-                  width="22"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="display: block"
-                  aria-hidden="true"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    d="M2 3h18v13h-8v2h3v2H7v-2h3v-2H2V3zm2 2v9h14V5H4z"
-                    fill-rule="evenodd"
-                  ></path>
-                </svg>
-              </span>
-            </span>
-          </button>
-          <button
-            type="button"
-            class="lg:pbx-flex pbx-hidden pbx-items-center pbx-justify-center pbx-mr-2 pbx-border-0 pbx-bg-transparent pbx-cursor-pointer"
-            :aria-label="translate('Mobile preview')"
-            :title="translate('Mobile preview')"
-            @click="
-              async () => {
-                pageBuilderStateStore.setMenuRight(false)
-                pageBuilderStateStore.setElement(null)
-                await pageBuilderService.clearHtmlSelection()
-                handlePageBuilderPreviewMobile()
-              }
-            "
-          >
-            <span
-              class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
-            >
-              <svg
-                fill="currentColor"
-                height="22"
-                viewBox="0 0 22 22"
-                width="22"
-                xmlns="http://www.w3.org/2000/svg"
-                style="display: block"
-                aria-hidden="true"
-              >
-                <path d="M14 16H8v2h6v-2z"></path>
-                <path
-                  d="M14 1H8a3 3 0 00-3 3v14a3 3 0 003 3h6a3 3 0 003-3V4a3 3 0 00-3-3zM7 4a1 1 0 011-1h6a1 1 0 011 1v14a1 1 0 01-1 1H8a1 1 0 01-1-1V4z"
-                ></path>
-              </svg>
+              <PreviewDesktopIcon />
             </span>
           </button>
         </div>
       </div>
+
+      <Teleport to="body">
+        <transition name="popup-fade">
+          <div
+            v-if="previewMenuOpen"
+            ref="previewMenuPopoverRef"
+            role="menu"
+            :style="previewMenuPopoverStyle"
+            class="pbx-toolbarMoreMenu"
+            @mousedown.stop
+            @pointerdown.stop
+            @click.stop
+          >
+            <div class="pbx-toolbarMoreMenuSection">
+              <p class="pbx-toolbarMoreMenuSectionLabel">{{ translate('Preview') }}</p>
+              <button
+                type="button"
+                class="pbx-toolbarMoreMenuItem"
+                role="menuitem"
+                @click="openDesktopPreviewFromMenu"
+              >
+                <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
+              </button>
+              <button
+                type="button"
+                class="pbx-toolbarMoreMenuItem"
+                role="menuitem"
+                @click="openMobilePreviewFromMenu"
+              >
+                <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Mobile preview') }}</span>
+              </button>
+            </div>
+          </div>
+        </transition>
+      </Teleport>
 
       <div class="pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end">
         <!-- Options # Start -->
@@ -1444,7 +1498,7 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-items-center pbx-py-2 pbx-w-full"
+          class="pbx-flex pbx-items-center pbx-py-1 pbx-w-full"
           :class="[showCloseButton ? 'pbx-justify-between' : 'pbx-justify-end']"
         >
           <ToolbarOption></ToolbarOption>
@@ -1536,7 +1590,7 @@ onBeforeUnmount(() => {
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
               type="button"
-              class="pbx-h-10 pbx-w-10 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
+              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
               :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
@@ -1557,6 +1611,11 @@ onBeforeUnmount(() => {
     <div
       id="pagebuilder-main"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-relative pbx-h-full pbx-flex pbx-pb-2 pbx-gap-2"
+      style="
+        background-color: #fafafa;
+        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+        background-size: 20px 20px;
+      "
     >
       <main
         ref="pbxBuilderWrapper"

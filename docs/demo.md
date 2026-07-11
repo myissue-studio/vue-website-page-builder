@@ -11,5 +11,7 @@ Try the live demo to explore real-time visual updates and smooth content managem
 <br>
 [Play around with the Page Builder](https://mybuilder.dev)
 
+The demo top links bar includes compact quick links (npm, GitHub, guide, contact, and current version) with improved responsive spacing for easier scanning.
+
 Create and enhance digital experiences with Vue on any backend.
 Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.

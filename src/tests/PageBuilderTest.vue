@@ -103,7 +103,7 @@ watch(
       },
 
       settings: {
-        brandColor: fashionPreset.brandColor,
+        brandColor: '#000000',
         themeColorPresets: fashionPreset.themeColorPresets,
       },
       pageSettings,

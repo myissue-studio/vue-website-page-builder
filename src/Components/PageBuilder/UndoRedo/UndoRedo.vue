@@ -50,7 +50,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo })
       :aria-label="translate('Undo')"
       :title="translate('Undo')"
       @click="handleUndo"
-      class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
       :class="[
         canUndo
           ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'
@@ -61,7 +61,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo })
     </button>
 
     <div
-      class="pbx-text-xs pbx-text-gray-600 pbx-mx-2 pbx-py-3 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-rounded-full"
+      class="pbx-text-[8px] pbx-text-gray-600 pbx-mx-2 pbx-py-3 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-rounded-full"
       aria-live="polite"
       :aria-label="`${historyIndex + 1} ${translate('of')} ${historyLength}`"
     >
@@ -74,7 +74,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo })
       :aria-label="translate('Redo')"
       :title="translate('Redo')"
       @click="handleRedo"
-      class="pbx-h-10 pbx-w-10 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
       :class="[
         canRedo
           ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'

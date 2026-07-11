@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
 import tailwindBorderStyleWidthPlusColor from '../../../../utils/builder/tailwind-border-style-width-color'
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
+import CustomDropdown from '../../../Inputs/CustomDropdown.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
@@ -19,6 +19,17 @@ const pageBuilderStateStore = sharedPageBuilderStore
 const borderStyle = ref<string | null>(null)
 const borderWidth = ref<string | null>(null)
 const borderColor = ref<string | null>(null)
+
+const borderStyleOptions = computed(() => [
+  { value: '', label: translate('Select'), disabled: true },
+  ...tailwindBorderStyleWidthPlusColor.borderStyle.map((value) => ({ value, label: value })),
+])
+
+const borderWidthOptions = computed(() => [
+  { value: '', label: translate('Select'), disabled: true },
+  ...tailwindBorderStyleWidthPlusColor.borderWidth.map((value) => ({ value, label: value })),
+])
+
 const getBorderStyle = computed(() => {
   return pageBuilderStateStore.getBorderStyle
 })
@@ -32,14 +43,14 @@ const getBorderColor = computed(() => {
 watch(
   getBorderStyle,
   (newValue) => {
-    borderStyle.value = newValue
+    borderStyle.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getBorderWidth,
   (newValue) => {
-    borderWidth.value = newValue
+    borderWidth.value = newValue ?? ''
   },
   { immediate: true },
 )
@@ -64,105 +75,80 @@ watch(
         <label for="border-style" class="pbx-myPrimaryInputLabel">{{
           translate('Border Style')
         }}</label>
-        <select
+        <CustomDropdown
           id="border-style"
           v-model="borderStyle"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderStyle(borderStyle ?? undefined)"
+          :options="borderStyleOptions"
+          @select="(value) => pageBuilderService.handleBorderStyle(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="style in tailwindBorderStyleWidthPlusColor.borderStyle" :key="style">
-            {{ style }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{ borderStyle || translate('Select') }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-width" class="pbx-myPrimaryInputLabel">{{
           translate('Border Width')
         }}</label>
-        <select
+        <CustomDropdown
           id="border-width"
           v-model="borderWidth"
-          class="pbx-myPrimarySelect"
-          @change="pageBuilderService.handleBorderWidth(borderWidth ?? undefined)"
+          :options="borderWidthOptions"
+          @select="(value) => pageBuilderService.handleBorderWidth(value || undefined)"
         >
-          <option disabled value="">{{ translate('Select') }}</option>
-          <option v-for="width in tailwindBorderStyleWidthPlusColor.borderWidth" :key="width">
-            {{ width }}
-          </option>
-        </select>
+          <template #button>
+            <span class="pbx-block pbx-truncate">{{ borderWidth || translate('Select') }}</span>
+          </template>
+        </CustomDropdown>
       </div>
       <hr />
       <div class="pbx-editorFieldGroup">
         <label for="border-color" class="pbx-myPrimaryInputLabel">{{
           translate('Border Color')
         }}</label>
-        <Listbox as="div" v-model="borderColor" v-slot="{ open }">
-          <div class="pbx-relative pbx-mt-2" :class="open ? 'pbx-z-50' : 'pbx-z-0'">
-            <ListboxButton class="pbx-myPrimarySelect" id="border-color">
-              <span class="pbx-flex pbx-items-center pbx-gap-2">
-                <div v-if="getBorderColor === 'none'">
-                  <div class="pbx-myPrimaryColorPreview pbx-border-none">
-                    <span class="material-symbols-outlined"> ev_shadow </span>
-                  </div>
+        <CustomDropdown
+          v-model="borderColor"
+          id="border-color"
+          class="pbx-mt-2"
+          :options="tailwindBorderStyleWidthPlusColor.borderColor.map((value) => ({ value }))"
+          @select="(value) => pageBuilderService.handleBorderColor(value ?? undefined)"
+        >
+          <template #button>
+            <span class="pbx-flex pbx-items-center pbx-gap-2">
+              <div v-if="getBorderColor === 'none'">
+                <div class="pbx-myPrimaryColorPreview pbx-border-none">
+                  <span class="material-symbols-outlined"> ev_shadow </span>
                 </div>
-                <div
-                  v-if="borderColor !== 'none'"
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
-                  :class="`pbx-bg-${borderColor?.replace('pbx-border-', '')}`"
-                ></div>
-                <span class="pbx-block pbx-truncate">{{ borderColor }}</span>
-              </span>
-            </ListboxButton>
+              </div>
+              <div
+                v-if="borderColor !== 'none'"
+                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                :class="`pbx-bg-${borderColor?.replace('pbx-border-', '')}`"
+              ></div>
+              <span class="pbx-block pbx-truncate">{{ borderColor }}</span>
+            </span>
+          </template>
+          <template #option="{ option, selected }">
+            <div class="pbx-flex pbx-w-full pbx-items-center">
+              <div v-if="option.value === 'none'">
+                <div class="pbx-myPrimaryColorPreview pbx-border-none">
+                  <span class="material-symbols-outlined"> ev_shadow </span>
+                </div>
+              </div>
 
-            <transition
-              leave-active-class="pbx-transition pbx-ease-in pbx-duration-100"
-              leave-from-class="pbx-opacity-100"
-              leave-to-class="pbx-opacity-0"
-            >
-              <ListboxOptions
-                class="pbx-headless-dropdown pbx-absolute pbx-z-50 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-white pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm pbx-list-none pbx-p-0 pbx-m-0"
-              >
-                <ListboxOption
-                  as="template"
-                  v-for="color in tailwindBorderStyleWidthPlusColor.borderColor"
-                  @click="pageBuilderService.handleBorderColor(color ?? undefined)"
-                  :key="color"
-                  :value="color"
-                  v-slot="{ active }"
-                >
-                  <li
-                    :class="[
-                      active
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                        : 'pbx-text-myPrimaryDarkGrayColor',
-                      'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
-                    ]"
-                  >
-                    <div class="pbx-flex pbx-items-center">
-                      <div v-if="color === 'none'">
-                        <div class="pbx-myPrimaryColorPreview pbx-border-none">
-                          <span class="material-symbols-outlined"> ev_shadow </span>
-                        </div>
-                      </div>
-
-                      <div
-                        v-if="color !== 'none'"
-                        class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-bg-gray-950"
-                        :class="`pbx-bg-${color.replace('pbx-border-', '')}`"
-                      ></div>
-                      <span v-if="color === 'none'" class="pbx-ml-3">{{
-                        translate('Transparent')
-                      }}</span>
-                      <span v-if="color !== 'none'" class="pbx-ml-3">{{ color }}</span>
-                    </div>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </div>
-        </Listbox>
+              <div
+                v-if="option.value !== 'none'"
+                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-bg-gray-950"
+                :class="`pbx-bg-${option.value.replace('pbx-border-', '')}`"
+              ></div>
+              <span v-if="option.value === 'none'" class="pbx-ml-3">{{
+                translate('Transparent')
+              }}</span>
+              <span v-if="option.value !== 'none'" class="pbx-ml-3">{{ option.value }}</span>
+            </div>
+          </template>
+        </CustomDropdown>
       </div>
     </template>
   </EditorAccordion>

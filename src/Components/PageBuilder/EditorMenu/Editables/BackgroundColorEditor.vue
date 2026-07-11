@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue'
+import CustomDropdown from '../../../Inputs/CustomDropdown.vue'
 import tailwindColors from '../../../../utils/builder/tailwind-colors'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
@@ -79,6 +79,18 @@ const tailwindBackgroundColors = computed(() => {
   return tailwindColors.backgroundColorVariables.filter((color) => color !== 'none')
 })
 
+const backgroundColorOptions = computed(() => {
+  return [
+    { value: 'none', label: translate('Transparent') },
+    ...enabledThemeColorPresets.value.map((preset) => ({
+      value: `custom:${preset.color}`,
+      label: translate(preset.label),
+    })),
+    ...tailwindBackgroundColors.value.map((color) => ({ value: color, label: color })),
+    { value: '__custom__', label: translate('Custom color') },
+  ]
+})
+
 function applyThemeBackgroundColor(color: string): void {
   backgroundColor.value = `custom:${color}`
   pageBuilderService.handleCustomBackgroundColor(color)
@@ -94,6 +106,21 @@ function selectTailwindBackgroundColor(color: string): void {
 function applyCustomHexColor(color: string): void {
   backgroundColor.value = `custom:${color}`
   pageBuilderService.handleCustomBackgroundColor(color)
+}
+
+function handleBackgroundColorSelect(value: string): void {
+  if (value === '__custom__') {
+    openCustomHexModal()
+    return
+  }
+
+  if (value.startsWith('custom:')) {
+    const color = value.replace('custom:', '')
+    applyThemeBackgroundColor(color)
+    return
+  }
+
+  selectTailwindBackgroundColor(value)
 }
 
 function openCustomHexModal(): void {
@@ -115,160 +142,80 @@ watch(
 </script>
 
 <template>
-  <Listbox v-if="globalPageLayout" as="div" v-model="backgroundColor">
-    <div class="pbx-relative">
-      <div class="pbx-flex pbx-flex-col pbx-border-solid pbx-border pbx-border-gray-400">
-        <ListboxButton
-          class="pbx-flex pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor pbx-bg-white hover:pbx-text-black pbx-text-black pbx-font-sans pbx-font-medium pbx-border-0"
-        >
-          <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
-            <div
-              class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
-              :class="
-                selectedCustomBackgroundColor
-                  ? ''
-                  : isBackgroundTransparent
-                    ? ''
-                    : backgroundColorSwatchClass
-              "
-              :style="
-                selectedCustomBackgroundColor
-                  ? { backgroundColor: selectedCustomBackgroundColor }
-                  : isBackgroundTransparent
-                    ? transparentSwatchStyle
-                    : backgroundColorSwatchStyle
-              "
-            ></div>
-            <div>{{ translate('Background Color') }}</div>
-          </div>
-
-          <span class="material-symbols-outlined"> chevron_right </span>
-        </ListboxButton>
+  <CustomDropdown
+    v-if="globalPageLayout"
+    v-model="backgroundColor"
+    :options="backgroundColorOptions"
+    button-class="pbx-flex pbx-w-full pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor pbx-bg-white hover:pbx-text-black pbx-text-black pbx-font-sans pbx-font-medium pbx-border pbx-border-solid pbx-border-gray-400"
+    menu-class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
+    @select="handleBackgroundColorSelect"
+  >
+    <template #button>
+      <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
+        <div
+          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
+          :class="
+            selectedCustomBackgroundColor
+              ? ''
+              : isBackgroundTransparent
+                ? ''
+                : backgroundColorSwatchClass
+          "
+          :style="
+            selectedCustomBackgroundColor
+              ? { backgroundColor: selectedCustomBackgroundColor }
+              : isBackgroundTransparent
+                ? transparentSwatchStyle
+                : backgroundColorSwatchStyle
+          "
+        ></div>
+        <div>{{ translate('Background Color') }}</div>
       </div>
 
-      <transition
-        leave-active-class="pbx-transition pbx-ease-in pbx-duration-100"
-        leave-from-class="pbx-opacity-100"
-        leave-to-class="pbx-opacity-0"
-      >
-        <ListboxOptions
-          class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
-        >
-          <ListboxOption
-            as="template"
-            value="none"
-            @click="pageBuilderService.handleBackgroundColor('none')"
-            v-slot="{ active }"
-          >
-            <li
-              :class="[
-                active
-                  ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                  : 'pbx-text-myPrimaryDarkGrayColor',
-                'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
-              ]"
-            >
-              <div class="pbx-flex pbx-items-center">
-                <div
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0"
-                  :style="transparentSwatchStyle"
-                ></div>
-                <span class="pbx-ml-3 hover:pbx-text-white">{{ translate('Transparent') }}</span>
-              </div>
-            </li>
-          </ListboxOption>
-          <div
-            class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
-          ></div>
-          <ColorMenuCustomSection
-            :model-value="selectedCustomBackgroundColor"
-            @open="openCustomHexModal"
-          />
-          <div
-            v-if="enabledThemeColorPresets.length > 0 || tailwindBackgroundColors.length > 0"
-            class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
-          ></div>
-          <template v-if="enabledThemeColorPresets.length > 0">
-            <div class="pbx-px-3 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500">
-              {{ translate('Theme Color Presets') }}
-            </div>
-            <ListboxOption
-              as="template"
-              v-for="preset in enabledThemeColorPresets"
-              :key="preset.id"
-              :value="`custom:${preset.color}`"
-              @click="applyThemeBackgroundColor(preset.color)"
-              v-slot="{ active }"
-            >
-              <li
-                :class="[
-                  active
-                    ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                    : 'pbx-text-myPrimaryDarkGrayColor',
-                  'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
-                ]"
-              >
-                <div class="pbx-flex pbx-items-center pbx-gap-3">
-                  <div
-                    class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
-                    :style="{ backgroundColor: preset.color }"
-                  ></div>
-                  <span class="pbx-flex-1">{{ translate(preset.label) }}</span>
-                  <span
-                    v-if="backgroundColor === `custom:${preset.color}`"
-                    class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
-                    :style="{ backgroundColor: preset.color }"
-                    aria-hidden="true"
-                  ></span>
-                </div>
-              </li>
-            </ListboxOption>
-            <div
-              v-if="tailwindBackgroundColors.length > 0"
-              class="pbx-my-1 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-200"
-            ></div>
-          </template>
-          <div
-            v-if="tailwindBackgroundColors.length > 0"
-            class="pbx-px-3 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500"
-          >
-            {{ translate('Built-in colors') }}
-          </div>
-          <ListboxOption
-            as="template"
-            v-for="color in tailwindBackgroundColors"
-            @click="pageBuilderService.handleBackgroundColor(color)"
-            :key="color"
-            :value="color"
-            v-slot="{ active }"
-          >
-            <li
-              :class="[
-                active
-                  ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                  : 'pbx-text-myPrimaryDarkGrayColor',
-                'pbx-relative pbx-cursor-default pbx-select-none pbx-py-2 pbx-pl-3 pbx-pr-9',
-              ]"
-            >
-              <div class="pbx-flex pbx-items-center pbx-gap-3">
-                <div
-                  class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
-                  :class="`pbx-bg-${color.replace('pbx-bg-', '')}`"
-                ></div>
-                <span class="pbx-flex-1">{{ color }}</span>
-                <span
-                  v-if="backgroundColor === color"
-                  class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
-                  :class="color"
-                  aria-hidden="true"
-                ></span>
-              </div>
-            </li>
-          </ListboxOption>
-        </ListboxOptions>
-      </transition>
-    </div>
-  </Listbox>
+      <span class="material-symbols-outlined"> chevron_right </span>
+    </template>
+    <template #option="{ option, selected }">
+      <div class="pbx-flex pbx-w-full pbx-items-center pbx-gap-3">
+        <div
+          v-if="option.value === 'none'"
+          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0"
+          :style="transparentSwatchStyle"
+        ></div>
+        <div
+          v-else-if="option.value === '__custom__'"
+          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-gradient-to-br pbx-from-white pbx-to-gray-200"
+        ></div>
+        <div
+          v-else
+          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
+          :class="
+            option.value.startsWith('pbx-bg-')
+              ? `pbx-bg-${option.value.replace('pbx-bg-', '')}`
+              : ''
+          "
+          :style="
+            option.value.startsWith('custom:')
+              ? { backgroundColor: option.value.replace('custom:', '') }
+              : undefined
+          "
+        ></div>
+        <span class="pbx-flex-1">{{ option.label || option.value }}</span>
+        <span
+          v-if="selected && option.value !== '__custom__'"
+          class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+          :class="option.value.startsWith('pbx-bg-') ? option.value : ''"
+          :style="
+            option.value === 'none'
+              ? transparentSwatchStyle
+              : option.value.startsWith('custom:')
+                ? { backgroundColor: option.value.replace('custom:', '') }
+                : undefined
+          "
+          aria-hidden="true"
+        ></span>
+      </div>
+    </template>
+  </CustomDropdown>
 
   <div v-else class="pbx-shrink-0">
     <div
