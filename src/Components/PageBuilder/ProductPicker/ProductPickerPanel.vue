@@ -372,7 +372,7 @@ async function insertSelectedProducts() {
         role="status"
       >
         <span class="pbx-productSampleCatalogBannerIcon">
-          <span class="material-symbols-outlined" aria-hidden="true"> local_mall </span>
+          <span class="material-symbols-outlined" aria-hidden="true"> shopping_bag </span>
         </span>
         <div class="pbx-productSampleCatalogBannerCopy">
           <p class="pbx-productSampleCatalogBannerTitle">{{ translate('Sample catalog') }}</p>
