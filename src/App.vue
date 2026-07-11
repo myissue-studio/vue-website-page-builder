@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import PageBuilderTest from './tests/PageBuilderTest.vue'
-import Footer from './Components/Homepage/Footer.vue'
+import DemoTopLinksBar from './Components/Homepage/DemoTopLinksBar.vue'
 import { useTranslations } from './composables/useTranslations'
 import { sharedPageBuilderStore } from './stores/shared-store'
 
@@ -21,7 +21,7 @@ onMounted(async () => {
 
 <template>
   <div class="myissue-pagebuilder">
-    <Footer></Footer>
+    <DemoTopLinksBar></DemoTopLinksBar>
     <PageBuilderTest></PageBuilderTest>
   </div>
 </template>
