@@ -21,5 +21,9 @@ After using this helper, the modal now shows a success toast to confirm that mis
 
 Selected product editing in desktop now uses this order: Title, Description, then Link. New price and Old price stay together on the same row for faster pricing edits.
 
+The built-in Full page themes library now also includes four additional presets: SaaS Launch, Portfolio Story, Event Registration, and Docs Overview.
+
+The default component helper library now includes additional simple blocks (for example Quote, Simple List, Note Box, Spacer variants, text columns, and link/FAQ blocks) for faster page assembly.
+
 Create and enhance digital experiences with Vue on any backend.
 Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.

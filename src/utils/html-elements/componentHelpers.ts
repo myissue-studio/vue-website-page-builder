@@ -190,6 +190,105 @@ const componentHelpers: ComponentHelper[] = [
         </span>
         `,
   },
+  {
+    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><blockquote class="pbx-border-l-4 pbx-border-gray-300 pbx-pl-4"><p>Start customizing by editing this default quote directly in the editor.</p></blockquote></div></div></section>`,
+    id: null,
+    title: 'Quote',
+    category: 'Text',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_quote
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ul><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ul></div></div></section>`,
+    id: null,
+    title: 'Simple List',
+    category: 'Text',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_list_bulleted
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-p-4 pbx-bg-gray-100"><p>This is a simple note box for important information.</p></div></div></div></section>`,
+    id: null,
+    title: 'Note Box',
+    category: 'Text',
+    icon: `
+    <span class="material-symbols-outlined">
+    sticky_note_2
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-py-10"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-h-px pbx-bg-transparent"></div></div></div></section>`,
+    id: null,
+    title: 'Spacer Medium',
+    category: 'Layout',
+    icon: `
+    <span class="material-symbols-outlined">
+    height
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-py-16"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-h-px pbx-bg-transparent"></div></div></div></section>`,
+    id: null,
+    title: 'Spacer Large',
+    category: 'Layout',
+    icon: `
+    <span class="material-symbols-outlined">
+    unfold_more
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-6"><div><p>Left column text. Start customizing by editing this default text directly in the editor.</p></div><div><p>Right column text. Start customizing by editing this default text directly in the editor.</p></div></div></div></div></section>`,
+    id: null,
+    title: '2 Column Text',
+    category: 'Layout',
+    icon: `
+    <span class="material-symbols-outlined">
+    view_column_2
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-3 pbx-gap-6"><div><p>Column one text.</p></div><div><p>Column two text.</p></div><div><p>Column three text.</p></div></div></div></div></section>`,
+    id: null,
+    title: '3 Column Text',
+    category: 'Layout',
+    icon: `
+    <span class="material-symbols-outlined">
+    view_column_3
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-center"><div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-myPrimaryLinkColor"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Simple text link</a></p></div></div></div></div></section>`,
+    id: null,
+    title: 'Centered Text Link',
+    category: 'Buttons',
+    icon: `
+    <span class="material-symbols-outlined">
+    link
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-p-4 pbx-border pbx-border-gray-200"><p><strong>Q:</strong> What is this section for?</p><p><strong>A:</strong> Use it as a simple FAQ item and edit text inline.</p></div></div></div></section>`,
+    id: null,
+    title: 'FAQ Item',
+    category: 'Text',
+    icon: `
+    <span class="material-symbols-outlined">
+    help
+    </span>
+    `,
+  },
 ]
 
 export default componentHelpers
