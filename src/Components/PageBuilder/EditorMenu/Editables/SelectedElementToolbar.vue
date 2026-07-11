@@ -1219,7 +1219,7 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
             "
             :title="translate('Product section settings')"
           >
-            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="material-symbols-outlined">local_mall</span>
           </div>
         </template>
 

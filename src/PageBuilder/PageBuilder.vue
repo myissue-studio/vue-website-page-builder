@@ -1431,7 +1431,7 @@ onBeforeUnmount(() => {
             <span
               class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined"> shopping_bag </span>
+              <span class="material-symbols-outlined"> local_mall </span>
             </span>
             <span class="lg:pbx-block pbx-hidden">
               {{ translate('Products') }}
@@ -1674,7 +1674,7 @@ onBeforeUnmount(() => {
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
-                  <span class="material-symbols-outlined">shopping_bag</span>
+                  <span class="material-symbols-outlined">local_mall</span>
                   <span
                     class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
                   >
@@ -1710,7 +1710,7 @@ onBeforeUnmount(() => {
                   class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
                   <div class="pbx-flex pbx-items-center">
-                    <span class="material-symbols-outlined"> shopping_bag </span>
+                    <span class="material-symbols-outlined"> local_mall </span>
                     <span v-if="false" class="lg:pbx-block pbx-hidden">
                       {{ translate('Products') }}</span
                     >
@@ -1755,7 +1755,7 @@ onBeforeUnmount(() => {
                     class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
                     <div class="pbx-flex pbx-items-center">
-                      <span class="material-symbols-outlined"> shopping_bag </span>
+                      <span class="material-symbols-outlined"> local_mall </span>
                       <span v-if="false" class="lg:pbx-block pbx-hidden">
                         {{ translate('Products') }}</span
                       >
