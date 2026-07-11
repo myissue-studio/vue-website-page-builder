@@ -1089,29 +1089,15 @@ export class PageBuilderService {
       CSSArray === tailwindBorderRadius.roundedBottomLeft ||
       CSSArray === tailwindBorderRadius.roundedBottomRight
 
-    const helperButtonAnchor = (() => {
-      if (!isBorderRadiusControl || currentHTMLElement.tagName === 'A') return null
+    const isColorControl =
+      CSSArray === tailwindColors.backgroundColorVariables ||
+      CSSArray === tailwindColors.textColorVariables
 
-      const anchors = Array.from(currentHTMLElement.querySelectorAll('a')).filter(
-        (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement,
-      )
-
-      // Prefer anchors that already carry one of the border-radius classes.
-      const withRadiusClass = anchors.find((anchor) =>
-        CSSArray.some((cls) => cls !== 'none' && anchor.classList.contains(cls)),
-      )
-      if (withRadiusClass) return withRadiusClass
-
-      // Known wrappers where visual rounding is on the nested link element.
-      if (
-        currentHTMLElement.id === 'linktree' ||
-        currentHTMLElement.classList.contains('pbx-product-card-cta')
-      ) {
-        return anchors[0] ?? null
-      }
-
-      return null
-    })()
+    const helperButtonAnchor = this.resolveNestedButtonAnchorTarget(currentHTMLElement, {
+      forBorderRadius: isBorderRadiusControl,
+      forColor: isColorControl,
+      classArray: CSSArray,
+    })
 
     const productImageWrapper =
       isBorderRadiusControl && currentHTMLElement.tagName === 'IMG'
@@ -1252,6 +1238,51 @@ export class PageBuilderService {
     }
 
     return currentCSS
+  }
+
+  private resolveNestedButtonAnchorTarget(
+    currentHTMLElement: HTMLElement,
+    options: {
+      forBorderRadius: boolean
+      forColor: boolean
+      classArray: string[]
+    },
+  ): HTMLAnchorElement | null {
+    if (currentHTMLElement.tagName === 'A') return null
+    if (!options.forBorderRadius && !options.forColor) return null
+
+    const anchors = Array.from(currentHTMLElement.querySelectorAll('a')).filter(
+      (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement,
+    )
+    if (!anchors.length) return null
+
+    if (options.forBorderRadius) {
+      const withRadiusClass = anchors.find((anchor) =>
+        options.classArray.some((cls) => cls !== 'none' && anchor.classList.contains(cls)),
+      )
+      if (withRadiusClass) return withRadiusClass
+    }
+
+    // Known wrappers where visual button styles are owned by the nested anchor.
+    if (
+      currentHTMLElement.id === 'linktree' ||
+      currentHTMLElement.classList.contains('pbx-product-card-cta')
+    ) {
+      return anchors[0] ?? null
+    }
+
+    // Generic fallback for button-like wrappers around a single CTA anchor.
+    if (options.forColor && anchors.length === 1) {
+      const anchor = anchors[0]
+      const className = anchor.className
+      const looksLikeButton =
+        className.includes('pbx-inline-flex') ||
+        className.includes('pbx-bg-') ||
+        className.includes('pbx-rounded')
+      if (looksLikeButton) return anchor
+    }
+
+    return null
   }
 
   private removeElementClassesFromArray(element: HTMLElement, classes: string[]): void {
@@ -2712,8 +2743,15 @@ export class PageBuilderService {
     const element = this.getActiveStyleTarget()
     if (!element) return
 
+    const buttonAnchorTarget = this.resolveNestedButtonAnchorTarget(element, {
+      forBorderRadius: false,
+      forColor: true,
+      classArray: tailwindColors.backgroundColorVariables,
+    })
+    const colorTarget = buttonAnchorTarget ?? element
+
     if (color === undefined) {
-      const customColor = element.style.getPropertyValue('background-color')
+      const customColor = colorTarget.style.getPropertyValue('background-color')
       if (customColor) {
         this.pageBuilderStateStore.setBackgroundColor(
           `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
@@ -2721,7 +2759,7 @@ export class PageBuilderService {
         return
       }
     } else {
-      element.style.removeProperty('background-color')
+      colorTarget.style.removeProperty('background-color')
     }
 
     this.applyElementClassChanges(
@@ -2735,13 +2773,20 @@ export class PageBuilderService {
     const element = this.getActiveStyleTarget()
     if (!element || !color) return
 
-    this.removeElementClassesFromArray(element, tailwindColors.backgroundColorVariables)
-    element.style.setProperty('background-color', color)
+    const buttonAnchorTarget = this.resolveNestedButtonAnchorTarget(element, {
+      forBorderRadius: false,
+      forColor: true,
+      classArray: tailwindColors.backgroundColorVariables,
+    })
+    const colorTarget = buttonAnchorTarget ?? element
+
+    this.removeElementClassesFromArray(colorTarget, tailwindColors.backgroundColorVariables)
+    colorTarget.style.setProperty('background-color', color)
     this.pageBuilderStateStore.setBackgroundColor(`custom:${color}`)
     this.pageBuilderStateStore.setElement(element)
-    this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+    this.pageBuilderStateStore.setCurrentClasses(Array.from(colorTarget.classList))
     this.pageBuilderStateStore.setCurrentStyles(
-      this.parseStyleString(element.getAttribute('style') || ''),
+      this.parseStyleString(colorTarget.getAttribute('style') || ''),
     )
 
     if (element === this.getBuilderCanvasElement()) {
@@ -2757,8 +2802,15 @@ export class PageBuilderService {
     const element = this.getActiveStyleTarget()
     if (!element) return
 
+    const buttonAnchorTarget = this.resolveNestedButtonAnchorTarget(element, {
+      forBorderRadius: false,
+      forColor: true,
+      classArray: tailwindColors.textColorVariables,
+    })
+    const colorTarget = buttonAnchorTarget ?? element
+
     if (color === undefined) {
-      const customColor = element.style.getPropertyValue('color')
+      const customColor = colorTarget.style.getPropertyValue('color')
       if (customColor) {
         this.pageBuilderStateStore.setTextColor(
           `custom:${normalizeCssColorToHex(customColor) ?? customColor}`,
@@ -2766,7 +2818,7 @@ export class PageBuilderService {
         return
       }
     } else {
-      element.style.removeProperty('color')
+      colorTarget.style.removeProperty('color')
     }
 
     this.applyElementClassChanges(color, tailwindColors.textColorVariables, 'setTextColor')
@@ -2776,13 +2828,20 @@ export class PageBuilderService {
     const element = this.getActiveStyleTarget()
     if (!element || !color) return
 
-    this.removeElementClassesFromArray(element, tailwindColors.textColorVariables)
-    element.style.setProperty('color', color)
+    const buttonAnchorTarget = this.resolveNestedButtonAnchorTarget(element, {
+      forBorderRadius: false,
+      forColor: true,
+      classArray: tailwindColors.textColorVariables,
+    })
+    const colorTarget = buttonAnchorTarget ?? element
+
+    this.removeElementClassesFromArray(colorTarget, tailwindColors.textColorVariables)
+    colorTarget.style.setProperty('color', color)
     this.pageBuilderStateStore.setTextColor(`custom:${color}`)
     this.pageBuilderStateStore.setElement(element)
-    this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+    this.pageBuilderStateStore.setCurrentClasses(Array.from(colorTarget.classList))
     this.pageBuilderStateStore.setCurrentStyles(
-      this.parseStyleString(element.getAttribute('style') || ''),
+      this.parseStyleString(colorTarget.getAttribute('style') || ''),
     )
   }
 

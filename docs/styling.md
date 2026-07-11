@@ -189,3 +189,5 @@ When editing inserted product cards, border-radius controls now map to the visua
 - Product image selections (`img`) target the surrounding `.pbx-product-card-image` wrapper when it owns rounded classes.
 
 This keeps right-sidebar border radius values in sync with what is rendered on the canvas.
+
+For button-wrapper selections (for example product CTA wrappers and Linktree-style wrappers), Text Color and Background Color controls now target the nested anchor button element so color changes apply to the visible button itself.
