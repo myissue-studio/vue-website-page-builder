@@ -8,6 +8,7 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
 import { transparentSwatchStyle } from '../../../../utils/builder/transparent-swatch-style'
+import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ColorMenuCustomSection from './ColorMenuCustomSection.vue'
 import CustomHexColorModal from './CustomHexColorModal.vue'
 
@@ -80,15 +81,35 @@ const tailwindBackgroundColors = computed(() => {
 })
 
 const backgroundColorOptions = computed(() => {
-  return [
+  const options: Array<{ value: string; label: string; disabled?: boolean }> = [
     { value: 'none', label: translate('Transparent') },
-    ...enabledThemeColorPresets.value.map((preset) => ({
-      value: `custom:${preset.color}`,
-      label: translate(preset.label),
-    })),
-    ...tailwindBackgroundColors.value.map((color) => ({ value: color, label: color })),
     { value: '__custom__', label: translate('Custom color') },
   ]
+
+  if (enabledThemeColorPresets.value.length > 0) {
+    options.push({
+      value: '__section_theme_presets__',
+      label: translate('Theme Color Presets'),
+      disabled: true,
+    })
+    options.push(
+      ...enabledThemeColorPresets.value.map((preset) => ({
+        value: `custom:${preset.color}`,
+        label: translate(preset.label),
+      })),
+    )
+  }
+
+  if (tailwindBackgroundColors.value.length > 0) {
+    options.push({
+      value: '__section_builtin_colors__',
+      label: translate('Built-in colors'),
+      disabled: true,
+    })
+    options.push(...tailwindBackgroundColors.value.map((color) => ({ value: color, label: color })))
+  }
+
+  return options
 })
 
 function applyThemeBackgroundColor(color: string): void {
@@ -109,6 +130,8 @@ function applyCustomHexColor(color: string): void {
 }
 
 function handleBackgroundColorSelect(value: string): void {
+  if (value.startsWith('__section_')) return
+
   if (value === '__custom__') {
     openCustomHexModal()
     return
@@ -175,7 +198,13 @@ watch(
       <span class="material-symbols-outlined"> chevron_right </span>
     </template>
     <template #option="{ option, selected }">
-      <div class="pbx-flex pbx-w-full pbx-items-center pbx-gap-3">
+      <div
+        v-if="option.value.startsWith('__section_')"
+        class="pbx-px-2 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500"
+      >
+        {{ option.label || option.value }}
+      </div>
+      <div v-else class="pbx-flex pbx-w-full pbx-items-center pbx-gap-3">
         <div
           v-if="option.value === 'none'"
           class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0"
@@ -183,8 +212,10 @@ watch(
         ></div>
         <div
           v-else-if="option.value === '__custom__'"
-          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-gradient-to-br pbx-from-white pbx-to-gray-200"
-        ></div>
+          class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-shrink-0"
+        >
+          <SliderIcon />
+        </div>
         <div
           v-else
           class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
@@ -211,6 +242,12 @@ watch(
                 ? { backgroundColor: option.value.replace('custom:', '') }
                 : undefined
           "
+          aria-hidden="true"
+        ></span>
+        <span
+          v-else-if="option.value === '__custom__' && selectedCustomBackgroundColor"
+          class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+          :style="{ backgroundColor: selectedCustomBackgroundColor }"
           aria-hidden="true"
         ></span>
       </div>

@@ -151,6 +151,10 @@ In Page Design, those dropdown option rows now render as full-width items, so ea
 
 Page Design Text Color and Background Color menus show a trailing selected swatch indicator for the currently active color option.
 
+In Page Design, Text Color and Background Color dropdown menus are grouped with explicit section labels (`Theme Color Presets` and `Built-in colors`) so color sources are easier to scan.
+
+In those same dropdowns, `Custom color` is shown as a dedicated slider-icon row near the top of the menu for faster access.
+
 Active (selected) rows in Page Design dropdown menus now use a neutral high-contrast highlight style, so labels remain readable even when brand link colors are very light.
 
 Default heading/content helper wrappers that previously used `pbx-py-4 pbx-px-4` now use `pbx-pt-4 pbx-pb-8 pbx-px-4`, giving header-style blocks more bottom breathing room in generated component/theme markup.
