@@ -61,7 +61,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo })
     </button>
 
     <div
-      class="pbx-text-xs pbx-text-gray-600 pbx-mx-2 pbx-py-3 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-rounded-full"
+      class="pbx-text-[8px] pbx-text-gray-600 pbx-mx-2 pbx-py-3 pbx-px-2 pbx-border-solid pbx-border pbx-border-gray-200 pbx-rounded-full"
       aria-live="polite"
       :aria-label="`${historyIndex + 1} ${translate('of')} ${historyLength}`"
     >
