@@ -1292,7 +1292,7 @@ describe('PageBuilderService', () => {
 
       pagebuilder.innerHTML = `
         <section data-component-title="Header H2">
-          <div class="pbx-py-4 pbx-px-4">
+          <div class="pbx-pt-4 pbx-pb-8 pbx-px-4">
             <div class="pbx-mx-auto pbx-max-w-7xl">
               <div
                 id="editable-text"
