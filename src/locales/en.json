@@ -596,5 +596,20 @@
   "Please complete required fields for all selected products.": "Please complete required fields for all selected products.",
   "Fill missing required fields": "Fill missing required fields",
   "Missing required fields filled": "Missing required fields filled",
-  "Tablet preview": "Tablet preview"
+  "Tablet preview": "Tablet preview",
+  "Quote": "Quote",
+  "Simple List": "Simple List",
+  "Note Box": "Note Box",
+  "Spacer Medium": "Spacer Medium",
+  "Spacer Large": "Spacer Large",
+  "2 Column Text": "2 Column Text",
+  "3 Column Text": "3 Column Text",
+  "Centered Text Link": "Centered Text Link",
+  "FAQ Item": "FAQ Item",
+  "Image Left + Text": "Image Left + Text",
+  "Text Left + Image": "Text Left + Image",
+  "3 Card Grid": "3 Card Grid",
+  "2 Image Columns": "2 Image Columns",
+  "Mosaic Layout": "Mosaic Layout",
+  "Feature Split": "Feature Split"
 }

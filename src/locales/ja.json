@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "選択したすべての商品で必須項目を入力してください。",
   "Fill missing required fields": "不足している必須項目を入力",
   "Missing required fields filled": "不足している必須項目を入力しました",
-  "Tablet preview": "タブレットプレビュー"
+  "Tablet preview": "タブレットプレビュー",
+  "Quote": "引用",
+  "Simple List": "シンプルリスト",
+  "Note Box": "ノートボックス",
+  "Spacer Medium": "中スペーサー",
+  "Spacer Large": "大スペーサー",
+  "2 Column Text": "2カラムテキスト",
+  "3 Column Text": "3カラムテキスト",
+  "Centered Text Link": "中央寄せテキストリンク",
+  "FAQ Item": "FAQ項目",
+  "Image Left + Text": "左画像 + テキスト",
+  "Text Left + Image": "左テキスト + 画像",
+  "3 Card Grid": "3カードグリッド",
+  "2 Image Columns": "2画像カラム",
+  "Mosaic Layout": "モザイクレイアウト",
+  "Feature Split": "分割フィーチャー"
 }

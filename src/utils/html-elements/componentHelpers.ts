@@ -191,17 +191,6 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><blockquote class="pbx-border-l-4 pbx-border-gray-300 pbx-pl-4"><p>Start customizing by editing this default quote directly in the editor.</p></blockquote></div></div></section>`,
-    id: null,
-    title: 'Quote',
-    category: 'Text',
-    icon: `
-    <span class="material-symbols-outlined">
-    format_quote
-    </span>
-    `,
-  },
-  {
     html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ul><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ul></div></div></section>`,
     id: null,
     title: 'Simple List',

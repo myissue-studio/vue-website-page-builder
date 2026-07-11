@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "Preencha os campos obrigatórios para todos os produtos selecionados.",
   "Fill missing required fields": "Preencher campos obrigatorios ausentes",
   "Missing required fields filled": "Campos obrigatorios ausentes preenchidos",
-  "Tablet preview": "Pre-visualizacao em tablet"
+  "Tablet preview": "Pre-visualizacao em tablet",
+  "Quote": "Citação",
+  "Simple List": "Lista simples",
+  "Note Box": "Caixa de nota",
+  "Spacer Medium": "Espaçador médio",
+  "Spacer Large": "Espaçador grande",
+  "2 Column Text": "Texto em 2 colunas",
+  "3 Column Text": "Texto em 3 colunas",
+  "Centered Text Link": "Link de texto centralizado",
+  "FAQ Item": "Item de FAQ",
+  "Image Left + Text": "Imagem à esquerda + texto",
+  "Text Left + Image": "Texto à esquerda + imagem",
+  "3 Card Grid": "Grade de 3 cartões",
+  "2 Image Columns": "2 colunas de imagem",
+  "Mosaic Layout": "Layout mosaico",
+  "Feature Split": "Seção dividida"
 }

@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "कृपया सभी चुने गए उत्पादों के लिए आवश्यक फ़ील्ड पूरी करें।",
   "Fill missing required fields": "गुम आवश्यक फ़ील्ड भरें",
   "Missing required fields filled": "गुम आवश्यक फ़ील्ड भर दिए गए",
-  "Tablet preview": "टैबलेट पूर्वावलोकन"
+  "Tablet preview": "टैबलेट पूर्वावलोकन",
+  "Quote": "उद्धरण",
+  "Simple List": "सरल सूची",
+  "Note Box": "नोट बॉक्स",
+  "Spacer Medium": "मध्यम स्पेसर",
+  "Spacer Large": "बड़ा स्पेसर",
+  "2 Column Text": "2 कॉलम टेक्स्ट",
+  "3 Column Text": "3 कॉलम टेक्स्ट",
+  "Centered Text Link": "केंद्रित टेक्स्ट लिंक",
+  "FAQ Item": "FAQ आइटम",
+  "Image Left + Text": "बाईं ओर छवि + टेक्स्ट",
+  "Text Left + Image": "बाईं ओर टेक्स्ट + छवि",
+  "3 Card Grid": "3 कार्ड ग्रिड",
+  "2 Image Columns": "2 छवि कॉलम",
+  "Mosaic Layout": "मोज़ेक लेआउट",
+  "Feature Split": "स्प्लिट फीचर"
 }

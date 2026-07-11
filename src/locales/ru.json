@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "Заполните обязательные поля для всех выбранных товаров.",
   "Fill missing required fields": "Заполнить отсутствующие обязательные поля",
   "Missing required fields filled": "Отсутствующие обязательные поля заполнены",
-  "Tablet preview": "Предпросмотр на планшете"
+  "Tablet preview": "Предпросмотр на планшете",
+  "Quote": "Цитата",
+  "Simple List": "Простой список",
+  "Note Box": "Блок заметки",
+  "Spacer Medium": "Средний отступ",
+  "Spacer Large": "Большой отступ",
+  "2 Column Text": "Текст в 2 колонки",
+  "3 Column Text": "Текст в 3 колонки",
+  "Centered Text Link": "Текстовая ссылка по центру",
+  "FAQ Item": "Элемент FAQ",
+  "Image Left + Text": "Изображение слева + текст",
+  "Text Left + Image": "Текст слева + изображение",
+  "3 Card Grid": "Сетка из 3 карточек",
+  "2 Image Columns": "2 колонки изображений",
+  "Mosaic Layout": "Мозаичный макет",
+  "Feature Split": "Разделенный блок"
 }

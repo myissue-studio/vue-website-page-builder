@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "يرجى إكمال الحقول المطلوبة لجميع المنتجات المحددة.",
   "Fill missing required fields": "املأ الحقول المطلوبة الناقصة",
   "Missing required fields filled": "تم ملء الحقول المطلوبة الناقصة",
-  "Tablet preview": "معاينة التابلت"
+  "Tablet preview": "معاينة التابلت",
+  "Quote": "اقتباس",
+  "Simple List": "قائمة بسيطة",
+  "Note Box": "مربع ملاحظة",
+  "Spacer Medium": "فاصل متوسط",
+  "Spacer Large": "فاصل كبير",
+  "2 Column Text": "نص بعمودين",
+  "3 Column Text": "نص بثلاثة أعمدة",
+  "Centered Text Link": "رابط نصي في المنتصف",
+  "FAQ Item": "عنصر الأسئلة الشائعة",
+  "Image Left + Text": "صورة يسار + نص",
+  "Text Left + Image": "نص يسار + صورة",
+  "3 Card Grid": "شبكة 3 بطاقات",
+  "2 Image Columns": "عمودا صورتين",
+  "Mosaic Layout": "تخطيط فسيفسائي",
+  "Feature Split": "قسم مميز"
 }

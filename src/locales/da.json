@@ -596,5 +596,20 @@
   "Please complete required fields for all selected products.": "Udfyld venligst de påkrævede felter for alle valgte produkter.",
   "Fill missing required fields": "Udfyld manglende obligatoriske felter",
   "Missing required fields filled": "Manglende obligatoriske felter er udfyldt",
-  "Tablet preview": "Tablet-forhandsvisning"
+  "Tablet preview": "Tablet-forhandsvisning",
+  "Quote": "Citat",
+  "Simple List": "Simpel liste",
+  "Note Box": "Noteboks",
+  "Spacer Medium": "Mellemrum medium",
+  "Spacer Large": "Mellemrum stor",
+  "2 Column Text": "2-kolonne tekst",
+  "3 Column Text": "3-kolonne tekst",
+  "Centered Text Link": "Centreret tekstlink",
+  "FAQ Item": "FAQ-element",
+  "Image Left + Text": "Billede venstre + tekst",
+  "Text Left + Image": "Tekst venstre + billede",
+  "3 Card Grid": "3-kort gitter",
+  "2 Image Columns": "2 billedkolonner",
+  "Mosaic Layout": "Mosaiklayout",
+  "Feature Split": "Feature-opdeling"
 }

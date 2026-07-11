@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "Veuillez renseigner les champs requis pour tous les produits sélectionnés.",
   "Fill missing required fields": "Remplir les champs obligatoires manquants",
   "Missing required fields filled": "Les champs obligatoires manquants ont ete remplis",
-  "Tablet preview": "Apercu tablette"
+  "Tablet preview": "Apercu tablette",
+  "Quote": "Citation",
+  "Simple List": "Liste simple",
+  "Note Box": "Boîte de note",
+  "Spacer Medium": "Espacement moyen",
+  "Spacer Large": "Grand espacement",
+  "2 Column Text": "Texte en 2 colonnes",
+  "3 Column Text": "Texte en 3 colonnes",
+  "Centered Text Link": "Lien texte centré",
+  "FAQ Item": "Élément FAQ",
+  "Image Left + Text": "Image à gauche + texte",
+  "Text Left + Image": "Texte à gauche + image",
+  "3 Card Grid": "Grille de 3 cartes",
+  "2 Image Columns": "2 colonnes d’images",
+  "Mosaic Layout": "Mise en page mosaïque",
+  "Feature Split": "Section divisée"
 }

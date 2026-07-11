@@ -958,7 +958,7 @@
   }
 
   .pbx-modalLibraryCardLabel {
-    @apply pbx-truncate pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
+    @apply pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
   .pbx-modalLibraryCardHint {

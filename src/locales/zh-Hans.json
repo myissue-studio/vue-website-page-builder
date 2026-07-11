@@ -590,5 +590,20 @@
   "Please complete required fields for all selected products.": "请填写所有已选产品的必填字段。",
   "Fill missing required fields": "填写缺失的必填字段",
   "Missing required fields filled": "缺失的必填字段已填写",
-  "Tablet preview": "平板预览"
+  "Tablet preview": "平板预览",
+  "Quote": "引用",
+  "Simple List": "简单列表",
+  "Note Box": "提示框",
+  "Spacer Medium": "中等留白",
+  "Spacer Large": "大留白",
+  "2 Column Text": "双列文本",
+  "3 Column Text": "三列文本",
+  "Centered Text Link": "居中文本链接",
+  "FAQ Item": "常见问题项",
+  "Image Left + Text": "左图右文",
+  "Text Left + Image": "左文右图",
+  "3 Card Grid": "三卡片网格",
+  "2 Image Columns": "双图列布局",
+  "Mosaic Layout": "拼贴布局",
+  "Feature Split": "特色分栏"
 }
