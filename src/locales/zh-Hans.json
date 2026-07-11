@@ -589,5 +589,6 @@
   "Button text is required": "按钮文字为必填项",
   "Please complete required fields for all selected products.": "请填写所有已选产品的必填字段。",
   "Fill missing required fields": "填写缺失的必填字段",
-  "Missing required fields filled": "缺失的必填字段已填写"
+  "Missing required fields filled": "缺失的必填字段已填写",
+  "Tablet preview": "平板预览"
 }

@@ -5,6 +5,9 @@ const props = defineProps({
   mobile: {
     type: Boolean,
   },
+  tablet: {
+    type: Boolean,
+  },
 })
 
 const htmlPage = ref('')
@@ -72,15 +75,27 @@ const iframeContent = computed(() => {
 </html>`
 })
 
+const isFramedPreview = computed(() => props.mobile || props.tablet)
+
+const framedPreviewClass = computed(() => {
+  const base = 'pbx-mx-auto pbx-bg-white pbx-shadow-lg pbx-h-[80vh] pbx-border-0'
+  if (props.tablet) {
+    return `${base} pbx-w-full lg:pbx-max-w-[900px]`
+  }
+  return `${base} pbx-w-full lg:pbx-max-w-[420px]`
+})
+
+const framedPreviewTitle = computed(() => (props.tablet ? 'Tablet preview' : 'Mobile preview'))
+
 watchEffect(() => {
-  if (props.mobile && htmlPage.value) {
+  if (isFramedPreview.value && htmlPage.value) {
     updateStylesheets()
   }
 })
 </script>
 
 <template>
-  <template v-if="!mobile">
+  <template v-if="!isFramedPreview">
     <div>
       <div
         class="pbx-text-black pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
@@ -93,11 +108,11 @@ watchEffect(() => {
       </div>
     </div>
   </template>
-  <template v-if="mobile">
+  <template v-if="isFramedPreview">
     <div>
       <iframe
-        title="Mobile preview"
-        class="pbx-mx-auto pbx-w-full pbx-bg-white pbx-shadow-lg pbx-h-[80vh] pbx-border-0"
+        :title="framedPreviewTitle"
+        :class="framedPreviewClass"
         :srcdoc="iframeContent"
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"

@@ -589,5 +589,6 @@
   "Button text is required": "बटन टेक्स्ट आवश्यक है",
   "Please complete required fields for all selected products.": "कृपया सभी चुने गए उत्पादों के लिए आवश्यक फ़ील्ड पूरी करें।",
   "Fill missing required fields": "गुम आवश्यक फ़ील्ड भरें",
-  "Missing required fields filled": "गुम आवश्यक फ़ील्ड भर दिए गए"
+  "Missing required fields filled": "गुम आवश्यक फ़ील्ड भर दिए गए",
+  "Tablet preview": "टैबलेट पूर्वावलोकन"
 }

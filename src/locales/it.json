@@ -589,5 +589,6 @@
   "Button text is required": "Il testo del pulsante è obbligatorio",
   "Please complete required fields for all selected products.": "Completa i campi obbligatori per tutti i prodotti selezionati.",
   "Fill missing required fields": "Compila i campi obbligatori mancanti",
-  "Missing required fields filled": "I campi obbligatori mancanti sono stati compilati"
+  "Missing required fields filled": "I campi obbligatori mancanti sono stati compilati",
+  "Tablet preview": "Anteprima tablet"
 }

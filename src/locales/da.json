@@ -595,5 +595,6 @@
   "Button text is required": "Knaptekst er påkrævet",
   "Please complete required fields for all selected products.": "Udfyld venligst de påkrævede felter for alle valgte produkter.",
   "Fill missing required fields": "Udfyld manglende obligatoriske felter",
-  "Missing required fields filled": "Manglende obligatoriske felter er udfyldt"
+  "Missing required fields filled": "Manglende obligatoriske felter er udfyldt",
+  "Tablet preview": "Tablet-forhandsvisning"
 }

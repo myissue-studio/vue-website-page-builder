@@ -135,7 +135,7 @@ In global Page Design color pickers, built-in colors now apply the clicked color
 
 Theme Color Presets apply their hex value as inline style (same behavior as custom colors) for both global Page Design and selected elements.
 
-The top builder toolbar now uses a preview-size dropdown (Desktop and Mobile) instead of separate preview buttons, using a teleported popover for stable positioning above overlays.
+The top builder toolbar now uses a preview-size dropdown (Desktop, Mobile, and Tablet) instead of separate preview buttons, using a teleported popover for stable positioning above overlays.
 
 The preview trigger in the top toolbar now uses a local SVG icon component (`PreviewDesktopIcon`) instead of a material-symbol glyph for more consistent icon rendering.
 

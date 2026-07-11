@@ -16,7 +16,6 @@ const getPageBuilderConfig = computed(() => {
       <div class="pbx-mr-2">
         <!-- User No image Start-->
         <div
-          class="pbx-flex pbx-items-center pbx-myPrimaryTag pbx-whitespace-nowrap pbx-py-0 pbx-gap-2"
           v-if="
             getPageBuilderConfig &&
             getPageBuilderConfig.userForPageBuilder &&
@@ -40,7 +39,6 @@ const getPageBuilderConfig = computed(() => {
 
         <!-- User With image Start-->
         <div
-          class="pbx-flex pbx-items-center lg:pbx-myPrimaryTag pbx-whitespace-nowrap pbx-py-0 pbx-gap-4 pbx-w-max pbx-h-12 pbx-ml-2"
           v-if="
             getPageBuilderConfig &&
             getPageBuilderConfig.userForPageBuilder &&

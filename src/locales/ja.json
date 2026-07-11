@@ -589,5 +589,6 @@
   "Button text is required": "ボタンテキストは必須です",
   "Please complete required fields for all selected products.": "選択したすべての商品で必須項目を入力してください。",
   "Fill missing required fields": "不足している必須項目を入力",
-  "Missing required fields filled": "不足している必須項目を入力しました"
+  "Missing required fields filled": "不足している必須項目を入力しました",
+  "Tablet preview": "タブレットプレビュー"
 }

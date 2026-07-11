@@ -589,5 +589,6 @@
   "Button text is required": "نص الزر مطلوب",
   "Please complete required fields for all selected products.": "يرجى إكمال الحقول المطلوبة لجميع المنتجات المحددة.",
   "Fill missing required fields": "املأ الحقول المطلوبة الناقصة",
-  "Missing required fields filled": "تم ملء الحقول المطلوبة الناقصة"
+  "Missing required fields filled": "تم ملء الحقول المطلوبة الناقصة",
+  "Tablet preview": "معاينة التابلت"
 }
