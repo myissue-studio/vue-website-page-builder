@@ -593,6 +593,7 @@
   "Tag": "Tag",
   "Button text": "Knaptekst",
   "Button text is required": "Knaptekst er påkrævet",
-  "Select at least one product to insert.": "Vælg mindst ét produkt at indsætte.",
-  "Please complete required fields for all selected products.": "Udfyld venligst de påkrævede felter for alle valgte produkter."
+  "Please complete required fields for all selected products.": "Udfyld venligst de påkrævede felter for alle valgte produkter.",
+  "Fill missing required fields": "Udfyld manglende obligatoriske felter",
+  "Missing required fields filled": "Manglende obligatoriske felter er udfyldt"
 }

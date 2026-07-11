@@ -587,6 +587,7 @@
   "Tag": "Etiqueta",
   "Button text": "Texto do botão",
   "Button text is required": "O texto do botão é obrigatório",
-  "Select at least one product to insert.": "Selecione pelo menos um produto para inserir.",
-  "Please complete required fields for all selected products.": "Preencha os campos obrigatórios para todos os produtos selecionados."
+  "Please complete required fields for all selected products.": "Preencha os campos obrigatórios para todos os produtos selecionados.",
+  "Fill missing required fields": "Preencher campos obrigatorios ausentes",
+  "Missing required fields filled": "Campos obrigatorios ausentes preenchidos"
 }

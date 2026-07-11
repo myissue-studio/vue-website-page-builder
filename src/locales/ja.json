@@ -587,6 +587,7 @@
   "Tag": "タグ",
   "Button text": "ボタンテキスト",
   "Button text is required": "ボタンテキストは必須です",
-  "Select at least one product to insert.": "挿入する商品を少なくとも1つ選択してください。",
-  "Please complete required fields for all selected products.": "選択したすべての商品で必須項目を入力してください。"
+  "Please complete required fields for all selected products.": "選択したすべての商品で必須項目を入力してください。",
+  "Fill missing required fields": "不足している必須項目を入力",
+  "Missing required fields filled": "不足している必須項目を入力しました"
 }

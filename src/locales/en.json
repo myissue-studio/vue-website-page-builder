@@ -593,6 +593,7 @@
   "Tag": "Tag",
   "Button text": "Button text",
   "Button text is required": "Button text is required",
-  "Select at least one product to insert.": "Select at least one product to insert.",
-  "Please complete required fields for all selected products.": "Please complete required fields for all selected products."
+  "Please complete required fields for all selected products.": "Please complete required fields for all selected products.",
+  "Fill missing required fields": "Fill missing required fields",
+  "Missing required fields filled": "Missing required fields filled"
 }

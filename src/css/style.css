@@ -1007,7 +1007,7 @@
   }
 
   .pbx-modalSidebarSelectedList {
-    @apply pbx-mt-4 pbx-space-y-2;
+    @apply pbx-mt-3 pbx-space-y-2 pbx-max-h-[58vh] pbx-overflow-y-auto pbx-pr-1;
   }
 
   .pbx-modalSidebarSelectedTitle {

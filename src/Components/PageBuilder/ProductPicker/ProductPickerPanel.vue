@@ -137,6 +137,42 @@ const canInsertSelectedProducts = computed(() => {
   })
 })
 
+function prefillMissingRequiredFields(): void {
+  if (!selectedOrder.value.length) return
+
+  const nextOrder = selectedOrder.value.map((product) => {
+    const nextProduct: SelectedProductDraft = { ...product }
+
+    if (isTitleMissing(nextProduct)) {
+      nextProduct.title = 'Sample product title'
+    }
+
+    if (!hideLinks.value && isLinkMissing(nextProduct)) {
+      nextProduct.url = 'https://www.google.com'
+    }
+
+    if (!hidePrice.value && isPriceMissing(nextProduct)) {
+      nextProduct.price = '99.00'
+    }
+
+    if (!hideButton.value && !hideLinks.value && isButtonTextMissing(nextProduct)) {
+      nextProduct.buttonText = 'View product'
+    }
+
+    return nextProduct
+  })
+
+  selectedOrder.value = nextOrder
+
+  const nextMap = new Map(selectedMap.value)
+  nextOrder.forEach((product) => {
+    nextMap.set(productKey(product), product)
+  })
+  selectedMap.value = nextMap
+
+  showToast(translate('Missing required fields filled'), 'success')
+}
+
 function toggleProduct(product: PageBuilderProduct) {
   const key = productKey(product)
   const next = new Map(selectedMap.value)
@@ -430,8 +466,8 @@ async function insertSelectedProducts() {
 
       <div class="pbx-mt-6 pbx-mb-12">
         <div>
-          <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6">
-            <div class="md:pbx-w-7/12 pbx-w-full pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
+          <div class="pbx-min-h-full pbx-max-h-full pbx-flex pbx-gap-6 pbx-productSettingsSection">
+            <div class="md:pbx-w-9/12 pbx-w-full pbx-pr-1 pbx-rounded-lg pbx-overflow-y-auto">
               <div
                 v-if="filteredProducts.length"
                 class="pbx-grid pbx-grid-cols-1 sm:pbx-grid-cols-2 lg:pbx-grid-cols-4 md:pbx-grid-cols-3 pbx-gap-4"
@@ -537,7 +573,7 @@ async function insertSelectedProducts() {
             </div>
 
             <aside
-              class="md:pbx-w-5/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-pt-2 pbx-pb-8 pbx-px-2"
+              class="md:pbx-w-3/12 pbx-hidden md:pbx-block pbx-overflow-y-auto pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-pt-2 pbx-pb-8 pbx-px-2"
             >
               <div class="pbx-min-h-[10rem]">
                 <div class="pbx-modalSidebarPanel">
@@ -595,328 +631,300 @@ async function insertSelectedProducts() {
                     </div>
                   </div>
                 </div>
-
-                <div v-if="selectedProducts.length" class="pbx-modalSidebarSelectedList">
-                  <p class="pbx-modalSidebarSelectedTitle">{{ translate('Selected') }}</p>
-                  <TransitionGroup
-                    name="pbx-selected-products"
-                    tag="div"
-                    class="pbx-flex pbx-flex-col pbx-gap-8"
-                  >
-                    <div
-                      v-for="(product, index) in selectedProducts"
-                      :key="String(productKey(product))"
-                    >
-                      <div class="pbx-modalSidebarSelectedItem">
-                        <div
-                          class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-4 pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-py-2 pbx-px-2"
-                        >
-                          <!-- Image -->
-                          <div v-if="product.image">
-                            <img
-                              :src="getDisplayImage(product)"
-                              :alt="product.imageAlt ?? product.title ?? 'Product'"
-                              class="pbx-object-cover pbx-w-20 pbx-h-20 pbx-rounded-full pbx-cursor-pointer pbx-transition-transform pbx-duration-200 group-hover:pbx-scale-[1.02]"
-                              @click.stop="openProductImagePicker(product)"
-                            />
-                          </div>
-
-                          <!-- Move logic -->
-                          <div class="pbx-flex pbx-items-center pbx-justify-between pbx-pt-2">
-                            <div class="pbx-flex pbx-gap-1">
-                              <button
-                                type="button"
-                                class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                                :disabled="index === 0"
-                                :aria-label="translate('Move up')"
-                                @click.stop="moveUp(index)"
-                              >
-                                <span class="material-symbols-outlined" style="font-size: 14px"
-                                  >arrow_upward</span
-                                >
-                              </button>
-                              <button
-                                type="button"
-                                class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
-                                :disabled="index === selectedProducts.length - 1"
-                                :aria-label="translate('Move down')"
-                                @click.stop="moveDown(index)"
-                              >
-                                <span class="material-symbols-outlined" style="font-size: 14px"
-                                  >arrow_downward</span
-                                >
-                              </button>
-                            </div>
-
-                            <button
-                              type="button"
-                              class="pbx-select-none pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
-                              :aria-label="translate('Remove')"
-                              :title="translate('Remove')"
-                              @click.stop="removeProduct(product)"
-                            >
-                              <span class="material-symbols-outlined pbx-materialIconLg"
-                                >close</span
-                              >
-                            </button>
-                          </div>
-                          <!-- Move logi end -->
-                        </div>
-
-                        <div
-                          :class="{
-                            'pbx-modalSidebarSelectedItem--moved': isMovedProduct(product),
-                          }"
-                        >
-                          <div class="pbx-min-w-0 pbx-flex-1 pbx-pt-2">
-                            <p
-                              class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-1"
-                            >
-                              {{ translate('Product details') }}
-                            </p>
-
-                            <div class="pbx-grid pbx-grid-cols-1 pbx-gap-4">
-                              <div
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-title`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Title') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-title`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="text"
-                                  :value="product.title || ''"
-                                  :placeholder="translate('Title')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'title',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                                <div class="pbx-min-h-6 pbx-flex pbx-items-center">
-                                  <p
-                                    v-if="isTitleMissing(product)"
-                                    class="pbx-myPrimaryInputError pbx-mt-0"
-                                  >
-                                    {{ translate('Title is required') }}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div
-                                v-if="!hideLinks"
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-url`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Link') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-url`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="url"
-                                  :value="product.url || ''"
-                                  :placeholder="translate('Link')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'url',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                                <div class="pbx-min-h-6 pbx-flex pbx-items-center">
-                                  <p
-                                    v-if="isLinkMissing(product)"
-                                    class="pbx-myPrimaryInputError pbx-mt-0"
-                                  >
-                                    {{ translate('Link is required') }}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-description`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Description') }}
-                                </label>
-                                <textarea
-                                  :id="`pbx-selected-product-${index}-description`"
-                                  class="pbx-myPrimaryInput pbx-text-xs pbx-min-h-20 pbx-resize-y"
-                                  :value="product.description || ''"
-                                  :placeholder="translate('Description')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'description',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                              </div>
-
-                              <div
-                                v-if="!hidePrice"
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-new-price`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('New price') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-new-price`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="text"
-                                  :value="product.price != null ? String(product.price) : ''"
-                                  :placeholder="translate('New price')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'price',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                                <div class="pbx-min-h-6 pbx-flex pbx-items-center">
-                                  <p
-                                    v-if="isPriceMissing(product)"
-                                    class="pbx-myPrimaryInputError pbx-mt-0"
-                                  >
-                                    {{ translate('New price is required') }}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-old-price`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Old price') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-old-price`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="text"
-                                  :value="
-                                    product.compareAtPrice != null
-                                      ? String(product.compareAtPrice)
-                                      : ''
-                                  "
-                                  :placeholder="translate('Old price')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'compareAtPrice',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                              </div>
-
-                              <div
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-tag`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Tag') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-tag`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="text"
-                                  :value="product.badge || ''"
-                                  :placeholder="translate('Tag')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'badge',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                              </div>
-
-                              <div
-                                v-if="!hideButton"
-                                class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
-                              >
-                                <label
-                                  :for="`pbx-selected-product-${index}-button-text`"
-                                  class="pbx-myPrimaryInputLabel pbx-text-xs"
-                                >
-                                  {{ translate('Button text') }}
-                                </label>
-                                <input
-                                  :id="`pbx-selected-product-${index}-button-text`"
-                                  class="pbx-myPrimaryInput pbx-text-xs"
-                                  type="text"
-                                  :value="product.buttonText || ''"
-                                  :placeholder="translate('Button text')"
-                                  @input="
-                                    updateProductField(
-                                      productKey(product),
-                                      'buttonText',
-                                      getInputValue($event),
-                                    )
-                                  "
-                                />
-                                <div class="pbx-min-h-6 pbx-flex pbx-items-center">
-                                  <p
-                                    v-if="isButtonTextMissing(product)"
-                                    class="pbx-myPrimaryInputError pbx-mt-0"
-                                  >
-                                    {{ translate('Button text is required') }}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TransitionGroup>
-                </div>
-              </div>
-
-              <div class="pbx-flex pbx-justify-end pbx-mt-4 pbx-w-full">
-                <button
-                  type="button"
-                  class="pbx-myPrimaryButton pbx-w-full"
-                  @click="insertSelectedProducts"
-                >
-                  <span>
-                    {{ translate('Insert products') }}
-                  </span>
-                  <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
-                  <span
-                    v-if="isLoading"
-                    class="material-symbols-outlined pbx-inline-block pbx-animate-spin"
-                  >
-                    refresh
-                  </span>
-                </button>
               </div>
             </aside>
           </div>
+
+          <section
+            v-if="selectedProducts.length"
+            class="pbx-mt-6 pbx-hidden md:pbx-block pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-4"
+          >
+            <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-3 pbx-mb-3">
+              <p class="pbx-modalSidebarSelectedTitle pbx-mb-0">{{ translate('Selected') }}</p>
+              <div class="pbx-flex pbx-items-center pbx-gap-2">
+                <button
+                  type="button"
+                  class="pbx-text-xs pbx-font-medium pbx-rounded-md pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-px-2 pbx-py-1 hover:pbx-bg-gray-100"
+                  @click="prefillMissingRequiredFields"
+                >
+                  {{ translate('Fill missing required fields') }}
+                </button>
+                <p class="pbx-text-xs pbx-text-gray-500">
+                  {{ selectedProducts.length }}
+                </p>
+              </div>
+            </div>
+
+            <TransitionGroup
+              name="pbx-selected-products"
+              tag="div"
+              class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-4"
+            >
+              <div
+                v-for="(product, index) in selectedProducts"
+                :key="String(productKey(product))"
+                class="pbx-modalSidebarSelectedItem"
+              >
+                <div
+                  class="pbx-flex pbx-justify-between pbx-items-center pbx-gap-4 pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-py-2 pbx-px-2"
+                >
+                  <div v-if="product.image">
+                    <img
+                      :src="getDisplayImage(product)"
+                      :alt="product.imageAlt ?? product.title ?? 'Product'"
+                      class="pbx-object-cover pbx-w-14 pbx-h-14 pbx-rounded-2xl pbx-cursor-pointer pbx-transition-transform pbx-duration-200 group-hover:pbx-scale-[1.02]"
+                      @click.stop="openProductImagePicker(product)"
+                    />
+                  </div>
+
+                  <div class="pbx-flex pbx-items-center pbx-justify-between pbx-pt-2">
+                    <div class="pbx-flex pbx-gap-1">
+                      <button
+                        type="button"
+                        class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                        :disabled="index === 0"
+                        :aria-label="translate('Move up')"
+                        @click.stop="moveUp(index)"
+                      >
+                        <span class="material-symbols-outlined" style="font-size: 14px"
+                          >arrow_upward</span
+                        >
+                      </button>
+                      <button
+                        type="button"
+                        class="pbx-select-none pbx-h-6 pbx-w-6 pbx-cursor-pointer pbx-rounded pbx-flex pbx-items-center pbx-justify-center pbx-bg-gray-100 pbx-border-none pbx-text-gray-500 hover:pbx-bg-gray-200 disabled:pbx-opacity-30 disabled:pbx-cursor-not-allowed"
+                        :disabled="index === selectedProducts.length - 1"
+                        :aria-label="translate('Move down')"
+                        @click.stop="moveDown(index)"
+                      >
+                        <span class="material-symbols-outlined" style="font-size: 14px"
+                          >arrow_downward</span
+                        >
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="pbx-select-none pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryErrorColor hover:pbx-text-white pbx-text-myPrimaryErrorColor"
+                      :aria-label="translate('Remove')"
+                      :title="translate('Remove')"
+                      @click.stop="removeProduct(product)"
+                    >
+                      <span class="material-symbols-outlined pbx-materialIconLg">close</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  :class="{
+                    'pbx-modalSidebarSelectedItem--moved': isMovedProduct(product),
+                  }"
+                >
+                  <div class="pbx-min-w-0 pbx-flex-1 pbx-pt-2">
+                    <p
+                      class="pbx-myPrimaryParagraph pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-1"
+                    >
+                      {{ translate('Product details') }}
+                    </p>
+
+                    <div class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-gap-3">
+                      <div
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2 lg:pbx-col-span-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-title`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Title') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-title`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="text"
+                          :value="product.title || ''"
+                          :placeholder="translate('Title')"
+                          @input="
+                            updateProductField(productKey(product), 'title', getInputValue($event))
+                          "
+                        />
+                        <div class="pbx-min-h-6 pbx-flex pbx-items-center">
+                          <p
+                            v-if="isTitleMissing(product)"
+                            class="pbx-myPrimaryInputError pbx-mt-0"
+                          >
+                            {{ translate('Title is required') }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2 lg:pbx-col-span-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-description`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Description') }}
+                        </label>
+                        <textarea
+                          :id="`pbx-selected-product-${index}-description`"
+                          class="pbx-myPrimaryInput pbx-text-xs pbx-min-h-16 pbx-resize-y"
+                          :value="product.description || ''"
+                          :placeholder="translate('Description')"
+                          @input="
+                            updateProductField(
+                              productKey(product),
+                              'description',
+                              getInputValue($event),
+                            )
+                          "
+                        />
+                      </div>
+
+                      <div
+                        v-if="!hideLinks"
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2 lg:pbx-col-span-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-url`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Link') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-url`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="url"
+                          :value="product.url || ''"
+                          :placeholder="translate('Link')"
+                          @input="
+                            updateProductField(productKey(product), 'url', getInputValue($event))
+                          "
+                        />
+                        <div class="pbx-min-h-6 pbx-flex pbx-items-center">
+                          <p v-if="isLinkMissing(product)" class="pbx-myPrimaryInputError pbx-mt-0">
+                            {{ translate('Link is required') }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div
+                        v-if="!hidePrice"
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-new-price`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('New price') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-new-price`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="text"
+                          :value="product.price != null ? String(product.price) : ''"
+                          :placeholder="translate('New price')"
+                          @input="
+                            updateProductField(productKey(product), 'price', getInputValue($event))
+                          "
+                        />
+                        <div class="pbx-min-h-6 pbx-flex pbx-items-center">
+                          <p
+                            v-if="isPriceMissing(product)"
+                            class="pbx-myPrimaryInputError pbx-mt-0"
+                          >
+                            {{ translate('New price is required') }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-old-price`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Old price') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-old-price`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="text"
+                          :value="
+                            product.compareAtPrice != null ? String(product.compareAtPrice) : ''
+                          "
+                          :placeholder="translate('Old price')"
+                          @input="
+                            updateProductField(
+                              productKey(product),
+                              'compareAtPrice',
+                              getInputValue($event),
+                            )
+                          "
+                        />
+                      </div>
+
+                      <div
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-tag`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Tag') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-tag`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="text"
+                          :value="product.badge || ''"
+                          :placeholder="translate('Tag')"
+                          @input="
+                            updateProductField(productKey(product), 'badge', getInputValue($event))
+                          "
+                        />
+                      </div>
+
+                      <div
+                        v-if="!hideButton"
+                        class="pbx-rounded-lg pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-p-2"
+                      >
+                        <label
+                          :for="`pbx-selected-product-${index}-button-text`"
+                          class="pbx-myPrimaryInputLabel pbx-text-xs"
+                        >
+                          {{ translate('Button text') }}
+                        </label>
+                        <input
+                          :id="`pbx-selected-product-${index}-button-text`"
+                          class="pbx-myPrimaryInput pbx-text-xs"
+                          type="text"
+                          :value="product.buttonText || ''"
+                          :placeholder="translate('Button text')"
+                          @input="
+                            updateProductField(
+                              productKey(product),
+                              'buttonText',
+                              getInputValue($event),
+                            )
+                          "
+                        />
+                        <div class="pbx-min-h-6 pbx-flex pbx-items-center">
+                          <p
+                            v-if="isButtonTextMissing(product)"
+                            class="pbx-myPrimaryInputError pbx-mt-0"
+                          >
+                            {{ translate('Button text is required') }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TransitionGroup>
+          </section>
 
           <div
             class="pbx-flex md:pbx-hidden pbx-flex-col pbx-gap-3 pbx-mt-6 pbx-rounded-2xl pbx-border-solid pbx-border pbx-border-gray-200 pbx-bg-white pbx-p-3"
@@ -938,7 +946,16 @@ async function insertSelectedProducts() {
             </div>
 
             <div v-if="selectedProducts.length" class="pbx-flex pbx-flex-col pbx-gap-4">
-              <p class="pbx-modalSidebarSelectedTitle">{{ translate('Selected') }}</p>
+              <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-2">
+                <p class="pbx-modalSidebarSelectedTitle pbx-mb-0">{{ translate('Selected') }}</p>
+                <button
+                  type="button"
+                  class="pbx-text-xs pbx-font-medium pbx-rounded-md pbx-border pbx-border-gray-200 pbx-bg-gray-50 pbx-px-2 pbx-py-1 hover:pbx-bg-gray-100"
+                  @click="prefillMissingRequiredFields"
+                >
+                  {{ translate('Fill missing required fields') }}
+                </button>
+              </div>
 
               <div
                 v-for="(product, index) in selectedProducts"
@@ -1167,29 +1184,33 @@ async function insertSelectedProducts() {
                 </div>
               </div>
             </div>
-
-            <button
-              type="button"
-              class="pbx-myPrimaryButton pbx-w-full"
-              @click="insertSelectedProducts"
-            >
-              <span>
-                {{ translate('Insert products') }}
-              </span>
-              <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
-              <span
-                v-if="isLoading"
-                class="material-symbols-outlined pbx-inline-block pbx-animate-spin"
-              >
-                refresh
-              </span>
-            </button>
           </div>
         </div>
       </div>
 
-      <div>
+      <div
+        class="pbx-shrink-0 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200 pbx-bg-white pbx-px-4 pbx-py-4"
+      >
         <button class="pbx-sr-only">Focusable fallback</button>
+
+        <div class="pbx-flex pbx-justify-end pbx-mt-4 pbx-w-full">
+          <button
+            type="button"
+            class="pbx-myPrimaryButton md:pbx-w-auto pbx-w-full"
+            @click="insertSelectedProducts"
+          >
+            <span>
+              {{ translate('Insert products') }}
+            </span>
+            <span v-if="!isLoading" class="material-symbols-outlined"> check </span>
+            <span
+              v-if="isLoading"
+              class="material-symbols-outlined pbx-inline-block pbx-animate-spin"
+            >
+              refresh
+            </span>
+          </button>
+        </div>
       </div>
 
       <MediaLibraryModal

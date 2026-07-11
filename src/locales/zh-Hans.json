@@ -587,6 +587,7 @@
   "Tag": "标签",
   "Button text": "按钮文字",
   "Button text is required": "按钮文字为必填项",
-  "Select at least one product to insert.": "请至少选择一个要插入的产品。",
-  "Please complete required fields for all selected products.": "请填写所有已选产品的必填字段。"
+  "Please complete required fields for all selected products.": "请填写所有已选产品的必填字段。",
+  "Fill missing required fields": "填写缺失的必填字段",
+  "Missing required fields filled": "缺失的必填字段已填写"
 }

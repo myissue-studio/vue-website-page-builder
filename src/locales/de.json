@@ -587,6 +587,7 @@
   "Tag": "Tag",
   "Button text": "Button-Text",
   "Button text is required": "Button-Text ist erforderlich",
-  "Select at least one product to insert.": "Wählen Sie mindestens ein Produkt zum Einfügen aus.",
-  "Please complete required fields for all selected products.": "Bitte füllen Sie die erforderlichen Felder für alle ausgewählten Produkte aus."
+  "Please complete required fields for all selected products.": "Bitte füllen Sie die erforderlichen Felder für alle ausgewählten Produkte aus.",
+  "Fill missing required fields": "Fehlende Pflichtfelder ausfuellen",
+  "Missing required fields filled": "Fehlende Pflichtfelder wurden ausgefuellt"
 }

@@ -587,6 +587,7 @@
   "Tag": "الوسم",
   "Button text": "نص الزر",
   "Button text is required": "نص الزر مطلوب",
-  "Select at least one product to insert.": "اختر منتجًا واحدًا على الأقل للإدراج.",
-  "Please complete required fields for all selected products.": "يرجى إكمال الحقول المطلوبة لجميع المنتجات المحددة."
+  "Please complete required fields for all selected products.": "يرجى إكمال الحقول المطلوبة لجميع المنتجات المحددة.",
+  "Fill missing required fields": "املأ الحقول المطلوبة الناقصة",
+  "Missing required fields filled": "تم ملء الحقول المطلوبة الناقصة"
 }

@@ -587,6 +587,7 @@
   "Tag": "Тег",
   "Button text": "Текст кнопки",
   "Button text is required": "Текст кнопки обязателен",
-  "Select at least one product to insert.": "Выберите хотя бы один товар для вставки.",
-  "Please complete required fields for all selected products.": "Заполните обязательные поля для всех выбранных товаров."
+  "Please complete required fields for all selected products.": "Заполните обязательные поля для всех выбранных товаров.",
+  "Fill missing required fields": "Заполнить отсутствующие обязательные поля",
+  "Missing required fields filled": "Отсутствующие обязательные поля заполнены"
 }
