@@ -73,8 +73,10 @@ const hasExplicitFontFamily = computed(() => {
   return Boolean(fontFamily.value && fontFamily.value !== 'none')
 })
 
-const handleFontFamilyChange = async function () {
-  await pageBuilderService.handleFontFamily(fontFamily.value == null ? 'none' : fontFamily.value)
+const handleFontFamilyChange = async function (value?: string) {
+  const selected = value ?? fontFamily.value ?? 'none'
+  fontFamily.value = selected
+  await pageBuilderService.handleFontFamily(selected)
 }
 
 const updateInheritedFontFamily = async () => {
@@ -105,7 +107,7 @@ watch(
 watch(
   getFontDesktop,
   (newValue) => {
-    fontDesktop.value = newValue
+    fontDesktop.value = newValue ?? ''
   },
   { immediate: true },
 )
@@ -126,14 +128,14 @@ watch(
 watch(
   getFontWeight,
   (newValue) => {
-    fontWeight.value = newValue
+    fontWeight.value = newValue ?? ''
   },
   { immediate: true },
 )
 watch(
   getFontFamily,
   async (newValue) => {
-    fontFamily.value = !newValue || newValue === 'none' ? null : newValue
+    fontFamily.value = !newValue || newValue === 'none' ? 'none' : newValue
     await updateInheritedFontFamily()
   },
   { immediate: true },
@@ -142,7 +144,7 @@ watch(getElement, updateInheritedFontFamily, { immediate: true, flush: 'post' })
 watch(
   getFontStyle,
   (newValue) => {
-    fontStyle.value = newValue
+    fontStyle.value = newValue ?? ''
   },
   { immediate: true },
 )
@@ -171,9 +173,9 @@ watch(
                     id="font-family"
                     v-model="fontFamily"
                     class="pbx-myPrimarySelect"
-                    @change="handleFontFamilyChange"
+                    @change="() => handleFontFamilyChange()"
                   >
-                    <option :value="null">{{ translate('No font family') }}</option>
+                    <option :value="'none'">{{ translate('No font family') }}</option>
                     <option
                       v-for="option in availableFontFamilyOptions.filter(
                         (entry) => entry.value !== 'none',
@@ -200,7 +202,7 @@ watch(
                     id="font-desktop"
                     v-model="fontDesktop"
                     class="pbx-myPrimarySelect"
-                    @change="pageBuilderService.handleFontSizeDesktop(fontDesktop ?? undefined)"
+                    @change="pageBuilderService.handleFontSizeDesktop(fontDesktop || undefined)"
                   >
                     <option disabled value="">{{ translate('Select') }}</option>
                     <option v-for="fontSize in tailwindFontSizes.fontDesktop" :key="fontSize">
@@ -219,7 +221,7 @@ watch(
                     id="font-weight"
                     v-model="fontWeight"
                     class="pbx-myPrimarySelect"
-                    @change="pageBuilderService.handleFontWeight(fontWeight ?? undefined)"
+                    @change="pageBuilderService.handleFontWeight(fontWeight || undefined)"
                   >
                     <option disabled value="">{{ translate('Select') }}</option>
                     <option v-for="fontWeight in tailwindFontStyles.fontWeight" :key="fontWeight">
@@ -236,7 +238,7 @@ watch(
                     id="font-style"
                     v-model="fontStyle"
                     class="pbx-myPrimarySelect"
-                    @change="pageBuilderService.handleFontStyle(fontStyle ?? undefined)"
+                    @change="pageBuilderService.handleFontStyle(fontStyle || undefined)"
                   >
                     <option disabled value="">{{ translate('Select') }}</option>
                     <option v-for="fontStyle in tailwindFontStyles.fontStyle" :key="fontStyle">
@@ -277,7 +279,7 @@ watch(
             id="font-desktop"
             v-model="fontDesktop"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontSizeDesktop(fontDesktop ?? undefined)"
+            @change="pageBuilderService.handleFontSizeDesktop(fontDesktop || undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontSize in tailwindFontSizes.fontDesktop" :key="fontSize">
@@ -329,7 +331,7 @@ watch(
             id="font-weight"
             v-model="fontWeight"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontWeight(fontWeight ?? undefined)"
+            @change="pageBuilderService.handleFontWeight(fontWeight || undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontWeight in tailwindFontStyles.fontWeight" :key="fontWeight">
@@ -347,9 +349,9 @@ watch(
             id="font-family"
             v-model="fontFamily"
             class="pbx-myPrimarySelect"
-            @change="handleFontFamilyChange"
+            @change="() => handleFontFamilyChange()"
           >
-            <option :value="null">{{ translate('No font family') }}</option>
+            <option :value="'none'">{{ translate('No font family') }}</option>
             <option
               v-for="option in availableFontFamilyOptions.filter((entry) => entry.value !== 'none')"
               :key="option.value"
@@ -375,7 +377,7 @@ watch(
             id="font-style"
             v-model="fontStyle"
             class="pbx-myPrimarySelect"
-            @change="pageBuilderService.handleFontStyle(fontStyle ?? undefined)"
+            @change="pageBuilderService.handleFontStyle(fontStyle || undefined)"
           >
             <option disabled value="">{{ translate('Select') }}</option>
             <option v-for="fontStyle in tailwindFontStyles.fontStyle" :key="fontStyle">

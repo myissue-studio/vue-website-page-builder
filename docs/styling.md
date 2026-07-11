@@ -141,7 +141,7 @@ The preview trigger in the top toolbar now uses a local SVG icon component (`Pre
 
 Global editor dropdowns (Text Color, Background Color, Border Color, Opacity, and Background Opacity) are now standardized on an internal reusable `CustomDropdown` component instead of `@headlessui/vue`, which keeps dropdown behavior consistent across the builder and removes that external dependency.
 
-Typography selectors (font family, size, weight, style) in the right sidebar and inline typography popover now also use the same reusable `CustomDropdown` component for consistent interaction and styling.
+Typography selectors (font family, size, weight, style) in the right sidebar and inline typography popover intentionally use native browser `<select>` controls to avoid nested dropdown stacking/scroll friction inside constrained editor containers.
 
 Border Style, Border Width, and Border Radius selectors now use `CustomDropdown` as well, so editor selects share one dropdown system across the styling panels.
 
