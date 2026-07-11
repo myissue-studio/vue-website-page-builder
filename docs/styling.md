@@ -137,6 +137,16 @@ Theme Color Presets apply their hex value as inline style (same behavior as cust
 
 The top builder toolbar now uses a preview-size dropdown (Desktop and Mobile) instead of separate preview buttons, using a teleported popover for stable positioning above overlays.
 
+The preview trigger in the top toolbar now uses a local SVG icon component (`PreviewDesktopIcon`) instead of a material-symbol glyph for more consistent icon rendering.
+
+Global editor dropdowns (Text Color, Background Color, Border Color, Opacity, and Background Opacity) are now standardized on an internal reusable `CustomDropdown` component instead of `@headlessui/vue`, which keeps dropdown behavior consistent across the builder and removes that external dependency.
+
+In Page Design, those dropdown option rows now render as full-width items, so each list row spans the entire menu width and keeps hover/selection targets consistent.
+
+Page Design Text Color and Background Color menus show a trailing selected swatch indicator for the currently active color option.
+
+Active (selected) rows in Page Design dropdown menus now use a neutral high-contrast highlight style, so labels remain readable even when brand link colors are very light.
+
 In the right properties panel, style accordions now stay mounted while switching between editable elements, so expanded sections remain open instead of collapsing on each selection change.
 
 ## Button Style Controls In Modals

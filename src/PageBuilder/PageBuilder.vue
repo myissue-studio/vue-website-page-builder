@@ -18,6 +18,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
+import PreviewDesktopIcon from '../Components/Iconsand/PreviewDesktopIcon.vue'
 import HtmlCodeViewerModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlCodeViewerModal.vue'
 import HtmlEditorModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
 import ToastContainer from '../Components/Toast/ToastContainer.vue'
@@ -1448,12 +1449,7 @@ onBeforeUnmount(() => {
             <span
               class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
-              <span class="material-symbols-outlined"> computer </span>
-            </span>
-            <span
-              class="material-symbols-outlined pbx-text-base pbx-leading-none pbx-text-gray-500"
-            >
-              {{ previewMenuOpen ? 'expand_less' : 'expand_more' }}
+              <PreviewDesktopIcon />
             </span>
           </button>
         </div>
@@ -1479,7 +1475,6 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openDesktopPreviewFromMenu"
               >
-                <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined">computer</span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
               </button>
               <button
@@ -1488,7 +1483,6 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openMobilePreviewFromMenu"
               >
-                <span class="pbx-toolbarMoreMenuItemIcon material-symbols-outlined">mobile</span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Mobile preview') }}</span>
               </button>
             </div>

@@ -1135,7 +1135,7 @@
   }
 
   .pbx-toolbarMoreMenuSectionLabel {
-    @apply pbx-m-0 pbx-px-2.5 pbx-py-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400;
+    @apply pbx-m-0 pbx-px-2.5 pbx-pt-6 pbx-pb-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400;
   }
 
   .pbx-toolbarMoreMenuItem {

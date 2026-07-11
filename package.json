@@ -83,7 +83,6 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "@headlessui/vue": "^1.7.23",
     "@tiptap/extension-link": "^3.4.2",
     "@tiptap/extension-text-align": "^3.4.2",
     "@tiptap/starter-kit": "^3.4.2",
