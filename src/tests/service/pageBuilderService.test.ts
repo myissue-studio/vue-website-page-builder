@@ -2,7 +2,21 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest'
 import { PageBuilderService, AVAILABLE_LANGUAGES } from '../../services/PageBuilderService'
 import { usePageBuilderStateStore } from '../../stores/page-builder-state'
-import componentsArray from '../componentsArray.test.json'
+
+const componentsArray = [
+  {
+    id: null,
+    title: 'Hero',
+    html_code:
+      '<section data-component-title="Hero"><div class="pbx-break-words pbx-text-xl"><p>Test hero content</p></div></section>',
+  },
+  {
+    id: null,
+    title: 'CTA',
+    html_code:
+      '<section data-component-title="Hero"><div class="pbx-break-words pbx-text-xl"><p>Test CTA content</p></div></section>',
+  },
+]
 
 // ---------------------------------------------------------------------------
 // Shared mock store factory
