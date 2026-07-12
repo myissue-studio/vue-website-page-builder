@@ -242,13 +242,13 @@ const component: Components[] = [
         // ── Design-forward components ─────────────────────────────────────
         {
           title: 'Hero Dark',
-          html_code: `<section class="pbx-bg-black pbx-text-white"> <div class="pbx-py-32 pbx-px-6"> <div class="pbx-mx-auto pbx-max-w-5xl pbx-text-center"> <div class="pbx-break-words pbx-text-5xl lg:pbx-text-8xl pbx-font-bold pbx-tracking-tight pbx-leading-none pbx-mb-8"> <h1>The future is here.</h1> </div> <div class="pbx-text-gray-400 pbx-text-xl lg:pbx-text-2xl pbx-mb-14 pbx-max-w-2xl pbx-mx-auto"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-4 pbx-justify-center"> <div class="pbx-bg-white pbx-text-black pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> <div class="pbx-border pbx-border-white pbx-text-white pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> </div> </div> </section>`,
+          html_code: `<section class="pbx-bg-black pbx-text-white"> <div class="pbx-py-32 pbx-px-6"> <div class="pbx-mx-auto pbx-max-w-5xl pbx-text-center"> <div class="pbx-break-words pbx-text-5xl lg:pbx-text-8xl pbx-font-bold pbx-tracking-tight pbx-leading-none pbx-mb-8"> <h1>The future is here.</h1> </div> <div class="pbx-text-gray-400 pbx-text-xl lg:pbx-text-2xl pbx-mb-14 pbx-max-w-2xl pbx-mx-auto"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-4 pbx-justify-center"> <div class="pbx-bg-white pbx-text-black pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> <div class="pbx-border pbx-border-white pbx-text-white pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> </div> </div> </section>`,
           category: 'Hero',
           cover_image: null,
         },
         {
           title: 'Feature Spotlight',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-text-white pbx-overflow-hidden"> <div class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2"> <div class="pbx-p-12 lg:pbx-p-16 pbx-flex pbx-flex-col pbx-justify-center pbx-rounded-bl-3xl pbx-rounded-tl-3xl pbx-bg-gray-900"> <div class="pbx-text-blue-400 pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-mb-6"> <p>Layouts and visual.</p> </div> <div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-leading-tight pbx-mb-6"> <h2>Extraordinary performance.</h2> </div> <div class="pbx-text-gray-400 pbx-text-lg pbx-mb-10"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-text-blue-400 pbx-font-semibold pbx-py-2"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual. →</a></p> </div> </div> <div> <img class="pbx-object-cover pbx-w-full pbx-h-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="feature" /> </div> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-text-white pbx-overflow-hidden"> <div class="pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2"> <div class="pbx-p-12 lg:pbx-p-16 pbx-flex pbx-flex-col pbx-justify-center pbx-rounded-bl-3xl pbx-rounded-tl-3xl pbx-bg-gray-900"> <div class="pbx-text-blue-400 pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-mb-6"> <p>Layouts and visual.</p> </div> <div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-leading-tight pbx-mb-6"> <h2>Extraordinary performance.</h2> </div> <div class="pbx-text-gray-400 pbx-text-lg pbx-mb-10"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-text-blue-400 pbx-font-semibold pbx-py-2"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> <div> <img class="pbx-object-cover pbx-w-full pbx-h-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="feature" /> </div> </div> </div> </div> </div> </section>`,
           category: 'Features',
           cover_image: null,
         },
@@ -260,7 +260,7 @@ const component: Components[] = [
         },
         {
           title: 'Editorial Banner',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-bg-gray-900 pbx-text-white pbx-rounded-3xl pbx-py-24 pbx-px-8 pbx-px-20 pbx-text-center"> <div class="pbx-text-blue-400 pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-mb-8"> <p>Layouts and visual.</p> </div> <div class="pbx-break-words pbx-text-4xl lg:pbx-text-7xl pbx-font-bold pbx-tracking-tight pbx-leading-tight pbx-mb-8 pbx-max-w-4xl pbx-mx-auto"> <h2>Start customizing by editing this default text directly in the editor.</h2> </div> <div class="pbx-text-gray-400 pbx-text-xl pbx-max-w-2xl pbx-mx-auto pbx-mb-12"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-bg-blue-600 pbx-text-white pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-bg-gray-900 pbx-text-white pbx-rounded-3xl pbx-py-24 pbx-px-8 pbx-px-20 pbx-text-center"> <div class="pbx-text-blue-400 pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-mb-8"> <p>Layouts and visual.</p> </div> <div class="pbx-break-words pbx-text-4xl lg:pbx-text-7xl pbx-font-bold pbx-tracking-tight pbx-leading-tight pbx-mb-8 pbx-max-w-4xl pbx-mx-auto"> <h2>Start customizing by editing this default text directly in the editor.</h2> </div> <div class="pbx-text-gray-400 pbx-text-xl pbx-max-w-2xl pbx-mx-auto pbx-mb-12"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-bg-blue-600 pbx-text-white pbx-font-semibold pbx-px-8 pbx-py-4 pbx-rounded-full pbx-inline-block" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> </div> </div> </section>`,
           category: 'Marketing',
           cover_image: null,
         },
@@ -279,7 +279,7 @@ const component: Components[] = [
 
         {
           title: 'Profile Card',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-3xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-10 lg:pbx-p-14"> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-8 pbx-items-start"> <img class="pbx-object-cover pbx-w-28 pbx-h-28 pbx-min-w-28 pbx-object-center pbx-rounded-2xl" src="${getPlaceholderImageDataUrl()}" alt="profile" /> <div> <div class="pbx-text-2xl pbx-font-bold pbx-mb-1"><p>Full Name</p></div> <div class="pbx-text-gray-500 pbx-mb-6"><p>Job Title · Company Name</p></div> <div class="pbx-text-gray-700 pbx-text-lg pbx-leading-relaxed pbx-mb-6"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-font-semibold pbx-py-2"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual. →</a></p> </div> </div> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-3xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-10 lg:pbx-p-14"> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-8 pbx-items-start"> <img class="pbx-object-cover pbx-w-28 pbx-h-28 pbx-min-w-28 pbx-object-center pbx-rounded-2xl" src="${getPlaceholderImageDataUrl()}" alt="profile" /> <div> <div class="pbx-text-2xl pbx-font-bold pbx-mb-1"><p>Full Name</p></div> <div class="pbx-text-gray-500 pbx-mb-6"><p>Job Title · Company Name</p></div> <div class="pbx-text-gray-700 pbx-text-lg pbx-leading-relaxed pbx-mb-6"> <p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p> </div> <div class="pbx-font-semibold pbx-py-2"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p> </div> </div> </div> </div> </div> </div> </section>`,
           category: 'Team',
           cover_image: null,
         },
@@ -352,7 +352,7 @@ const component: Components[] = [
         },
         {
           title: 'Contact Banner',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-px-8 pbx-py-12 lg:pbx-px-14 lg:pbx-py-16"> <div class="pbx-flex pbx-flex-col lg:pbx-flex-row lg:pbx-items-center lg:pbx-justify-between pbx-gap-8"> <div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-bold pbx-tracking-tight pbx-mb-3"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg"><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-6 sm:pbx-items-center"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Email</p></div> <div class="pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">hello@example.com</a></p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-px-6 pbx-py-3 pbx-rounded-full pbx-text-center"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-px-8 pbx-py-12 lg:pbx-px-14 lg:pbx-py-16"> <div class="pbx-flex pbx-flex-col lg:pbx-flex-row lg:pbx-items-center lg:pbx-justify-between pbx-gap-8"> <div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-bold pbx-tracking-tight pbx-mb-3"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg"><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-6 sm:pbx-items-center"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Email</p></div> <div class="pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">hello@example.com</a></p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-px-6 pbx-py-3 pbx-rounded-full pbx-text-center" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </div> </section>`,
           category: 'Contact',
           cover_image: null,
         },
@@ -365,13 +365,13 @@ const component: Components[] = [
         },
         {
           title: 'Pricing Two Tiers',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-5xl"> <div class="pbx-text-center pbx-mb-12"> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-500 pbx-text-lg"><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2"> <div class="pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-p-8 lg:pbx-p-10"> <div class="pbx-text-sm pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Starter</p></div> <div class="pbx-text-4xl pbx-font-bold pbx-mb-2"><p>$19</p></div> <div class="pbx-text-gray-500 pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-8 pbx-text-gray-600"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-font-semibold pbx-text-center pbx-py-3 pbx-rounded-full pbx-border pbx-border-gray-900"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-rounded-3xl pbx-p-8 lg:pbx-p-10"> <div class="pbx-text-sm pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Pro</p></div> <div class="pbx-text-4xl pbx-font-bold pbx-mb-2"><p>$49</p></div> <div class="pbx-text-gray-400 pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-8 pbx-text-gray-300"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-bg-white pbx-text-gray-900 pbx-font-semibold pbx-text-center pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-5xl"> <div class="pbx-text-center pbx-mb-12"> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-500 pbx-text-lg"><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2"> <div class="pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-p-8 lg:pbx-p-10"> <div class="pbx-text-sm pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Starter</p></div> <div class="pbx-text-4xl pbx-font-bold pbx-mb-2"><p>$19</p></div> <div class="pbx-text-gray-500 pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-8 pbx-text-gray-600"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-font-semibold pbx-text-center pbx-py-3 pbx-rounded-full pbx-border pbx-border-gray-900" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-rounded-3xl pbx-p-8 lg:pbx-p-10"> <div class="pbx-text-sm pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Pro</p></div> <div class="pbx-text-4xl pbx-font-bold pbx-mb-2"><p>$49</p></div> <div class="pbx-text-gray-400 pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-8 pbx-text-gray-300"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-bg-white pbx-text-gray-900 pbx-font-semibold pbx-text-center pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </section>`,
           category: 'Pricing',
           cover_image: null,
         },
         {
           title: 'Event Banner',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Upcoming event</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-6"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-6 pbx-mb-8"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Date</p></div> <div class="pbx-font-medium"><p>12 July 2026</p></div> </div> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Location</p></div> <div class="pbx-font-medium"><p>Layouts and visual.</p></div> </div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="event"> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Upcoming event</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-6"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-gap-6 pbx-mb-8"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Date</p></div> <div class="pbx-font-medium"><p>12 July 2026</p></div> </div> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-1"><p>Location</p></div> <div class="pbx-font-medium"><p>Layouts and visual.</p></div> </div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="event"> </div> </div> </div> </section>`,
           category: 'Marketing',
           cover_image: null,
         },
@@ -413,7 +413,7 @@ const component: Components[] = [
         },
         {
           title: 'Product Highlight',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="product"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>New arrival</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-2xl pbx-font-semibold pbx-mb-6"><p>$129</p></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-leading-relaxed pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="product"> <div> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>New arrival</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-2xl pbx-font-semibold pbx-mb-6"><p>$129</p></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-leading-relaxed pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </div> </section>`,
           category: 'Products',
           cover_image: null,
         },
@@ -456,7 +456,7 @@ const component: Components[] = [
         },
         {
           title: 'Resource CTA',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-5xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-10 lg:pbx-p-14 pbx-text-center"> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Free resource</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-max-w-2xl pbx-mx-auto pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-5xl"> <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-10 lg:pbx-p-14 pbx-text-center"> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Free resource</p></div> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-600 pbx-text-lg pbx-max-w-2xl pbx-mx-auto pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </section>`,
           category: 'Call To Action',
           cover_image: null,
         },
@@ -468,7 +468,7 @@ const component: Components[] = [
         },
         {
           title: 'Split Newsletter',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-overflow-hidden pbx-rounded-3xl pbx-bg-gray-900 pbx-text-white"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <div class="pbx-p-10 lg:pbx-p-14"> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-400 pbx-text-lg pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-white pbx-text-gray-900 pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square lg:pbx-aspect-auto lg:pbx-h-full" src="${getPlaceholderImageDataUrl()}" alt="newsletter"> </div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-overflow-hidden pbx-rounded-3xl pbx-bg-gray-900 pbx-text-white"> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center"> <div class="pbx-p-10 lg:pbx-p-14"> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-400 pbx-text-lg pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-white pbx-text-gray-900 pbx-font-semibold pbx-inline-block pbx-px-6 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square lg:pbx-aspect-auto lg:pbx-h-full" src="${getPlaceholderImageDataUrl()}" alt="newsletter"> </div> </div> </div> </div> </section>`,
           category: 'Call To Action',
           cover_image: null,
         },
@@ -481,7 +481,7 @@ const component: Components[] = [
 
         {
           title: 'Hero Minimal',
-          html_code: `<section> <div class="pbx-py-24 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-3xl pbx-text-center"> <div class="pbx-break-words pbx-text-5xl lg:pbx-text-7xl pbx-font-bold pbx-tracking-tight pbx-mb-6"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-500 pbx-text-lg lg:pbx-text-xl pbx-mb-10"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-24 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-3xl pbx-text-center"> <div class="pbx-break-words pbx-text-5xl lg:pbx-text-7xl pbx-font-bold pbx-tracking-tight pbx-mb-6"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-500 pbx-text-lg lg:pbx-text-xl pbx-mb-10"><p>Start customizing by editing this default text directly in the editor.</p></div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </section>`,
           category: 'Hero',
           cover_image: null,
         },
@@ -511,7 +511,7 @@ const component: Components[] = [
         },
         {
           title: 'Pricing Single',
-          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-xl"> <div class="pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-p-10 lg:pbx-p-12 pbx-text-center"> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Simple pricing</p></div> <div class="pbx-break-words pbx-text-3xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-5xl pbx-font-bold pbx-mb-2"><p>$29</p></div> <div class="pbx-text-gray-500 pbx-mb-8"><p>per month</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-10 pbx-text-gray-600 pbx-text-left pbx-max-w-xs pbx-mx-auto"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </section>`,
+          html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-xl"> <div class="pbx-border pbx-border-gray-200 pbx-rounded-3xl pbx-p-10 lg:pbx-p-12 pbx-text-center"> <div class="pbx-text-xs pbx-font-semibold pbx-tracking-widest pbx-uppercase pbx-text-gray-400 pbx-mb-4"><p>Simple pricing</p></div> <div class="pbx-break-words pbx-text-3xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-5xl pbx-font-bold pbx-mb-2"><p>$29</p></div> <div class="pbx-text-gray-500 pbx-mb-8"><p>per month</p></div> <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-mb-10 pbx-text-gray-600 pbx-text-left pbx-max-w-xs pbx-mx-auto"> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> <div><p>Layouts and visual.</p></div> </div> <div class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full" id="linktree"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div> </div> </div> </div> </section>`,
           category: 'Pricing',
           cover_image: null,
         },
@@ -532,6 +532,290 @@ const component: Components[] = [
           html_code: `<section> <div class="pbx-py-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-mb-10 pbx-max-w-2xl"> <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-bold pbx-tracking-tight pbx-mb-4"><h2>Layouts and visual.</h2></div> <div class="pbx-text-gray-500 pbx-text-lg"><p>Start customizing by editing this default text directly in the editor.</p></div> </div> <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-3"> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[3/4] pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="gallery"> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[3/4] pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="gallery"> <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[3/4] pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="gallery"> </div> </div> </div> </section>`,
           category: 'Images',
           cover_image: null,
+        },
+
+        // —— Apple design style ——
+        {
+          title: 'Apple Product Hero',
+          html_code: `<section>
+            <div class="pbx-bg-neutral-100">
+              <div class="pbx-pt-20 pbx-pb-10 pbx-px-4">
+                <div class="pbx-mx-auto pbx-max-w-4xl pbx-text-center">
+                  <div class="pbx-text-sm pbx-font-medium pbx-text-sky-600 pbx-mb-4"><p>Layouts and visual.</p></div>
+                  <div class="pbx-break-words pbx-text-5xl lg:pbx-text-7xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-5"><h2>Layouts and visual.</h2></div>
+                  <div class="pbx-text-xl lg:pbx-text-2xl pbx-text-neutral-500 pbx-max-w-2xl pbx-mx-auto pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  <div class="pbx-flex pbx-justify-center pbx-gap-6">
+                    <div class="pbx-text-sky-600 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                    <div class="pbx-text-sky-600 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pbx-px-4 pbx-pb-0">
+                <div class="pbx-mx-auto pbx-max-w-5xl">
+                  <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[16/10] pbx-rounded-t-3xl" src="${getPlaceholderImageDataUrl()}" alt="product" />
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Dual Canvas',
+          html_code: `<section>
+            <div class="pbx-py-8 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-7xl">
+                <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2">
+                  <div class="pbx-bg-neutral-100 pbx-rounded-3xl pbx-overflow-hidden pbx-text-center">
+                    <div class="pbx-pt-14 pbx-px-8 pbx-pb-8">
+                      <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-3"><h2>Layouts and visual.</h2></div>
+                      <div class="pbx-text-neutral-500 pbx-text-lg pbx-mb-5"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                      <div class="pbx-text-sky-600 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                    </div>
+                    <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="product" />
+                  </div>
+                  <div class="pbx-bg-neutral-900 pbx-rounded-3xl pbx-overflow-hidden pbx-text-center pbx-text-white">
+                    <div class="pbx-pt-14 pbx-px-8 pbx-pb-8">
+                      <div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-semibold pbx-tracking-tight pbx-mb-3"><h2>Layouts and visual.</h2></div>
+                      <div class="pbx-text-neutral-400 pbx-text-lg pbx-mb-5"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                      <div class="pbx-text-sky-400 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                    </div>
+                    <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="product" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Dark Stage',
+          html_code: `<section>
+            <div class="pbx-bg-black pbx-text-white">
+              <div class="pbx-pt-24 pbx-pb-12 pbx-px-4">
+                <div class="pbx-mx-auto pbx-max-w-3xl pbx-text-center">
+                  <div class="pbx-break-words pbx-text-5xl lg:pbx-text-7xl pbx-font-semibold pbx-tracking-tight pbx-mb-5"><h2>Layouts and visual.</h2></div>
+                  <div class="pbx-text-xl pbx-text-neutral-400 pbx-mb-8"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  <div class="pbx-flex pbx-justify-center">
+                    <div class="pbx-bg-sky-500 pbx-text-white pbx-font-medium pbx-inline-block pbx-px-7 pbx-py-3 pbx-rounded-full" id="linktree">
+                      <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pbx-px-4 pbx-pb-16">
+                <div class="pbx-mx-auto pbx-max-w-5xl">
+                  <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-video pbx-rounded-3xl" src="${getPlaceholderImageDataUrl()}" alt="stage" />
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Spec Trio',
+          html_code: `<section>
+            <div class="pbx-py-20 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-6xl">
+                <div class="pbx-text-center pbx-mb-16">
+                  <div class="pbx-break-words pbx-text-4xl lg:pbx-text-6xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-4"><h2>Layouts and visual.</h2></div>
+                  <div class="pbx-text-neutral-500 pbx-text-xl pbx-max-w-2xl pbx-mx-auto"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                </div>
+                <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-3 pbx-text-center">
+                  <div class="pbx-px-4">
+                    <div class="pbx-text-5xl lg:pbx-text-6xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-3"><p>01</p></div>
+                    <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  </div>
+                  <div class="pbx-px-4">
+                    <div class="pbx-text-5xl lg:pbx-text-6xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-3"><p>02</p></div>
+                    <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  </div>
+                  <div class="pbx-px-4">
+                    <div class="pbx-text-5xl lg:pbx-text-6xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-3"><p>03</p></div>
+                    <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Soft Panel',
+          html_code: `<section>
+            <div class="pbx-py-12 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-6xl">
+                <div class="pbx-bg-neutral-100 pbx-rounded-[2rem] pbx-overflow-hidden">
+                  <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 lg:pbx-grid-cols-2 pbx-items-center">
+                    <div class="pbx-p-10 lg:pbx-p-16">
+                      <div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-5"><h2>Layouts and visual.</h2></div>
+                      <div class="pbx-text-neutral-500 pbx-text-lg pbx-leading-relaxed pbx-mb-8"><p>Start customizing by editing this default text directly in the editor. Start customizing by editing this default text directly in the editor.</p></div>
+                      <div class="pbx-bg-neutral-900 pbx-text-white pbx-font-medium pbx-inline-block pbx-px-7 pbx-py-3 pbx-rounded-full" id="linktree">
+                        <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p>
+                      </div>
+                    </div>
+                    <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square lg:pbx-aspect-auto lg:pbx-h-full lg:pbx-min-h-[28rem]" src="${getPlaceholderImageDataUrl()}" alt="feature" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Bento Grid',
+          html_code: `<section>
+            <div class="pbx-py-8 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-7xl">
+                <div class="pbx-text-center pbx-mb-12">
+                  <div class="pbx-break-words pbx-text-4xl lg:pbx-text-6xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-4"><h2>Layouts and visual.</h2></div>
+                  <div class="pbx-text-neutral-500 pbx-text-xl"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                </div>
+                <div class="pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2 pbx-gap-5">
+                  <div class="pbx-bg-neutral-100 pbx-rounded-3xl pbx-overflow-hidden md:pbx-row-span-2">
+                    <div class="pbx-p-8 lg:pbx-p-10">
+                      <div class="pbx-break-words pbx-text-2xl lg:pbx-text-3xl pbx-font-semibold pbx-tracking-tight pbx-mb-3"><h3>Layouts and visual.</h3></div>
+                      <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    </div>
+                    <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[4/5]" src="${getPlaceholderImageDataUrl()}" alt="bento" />
+                  </div>
+                  <div class="pbx-bg-neutral-100 pbx-rounded-3xl pbx-overflow-hidden">
+                    <div class="pbx-p-8">
+                      <div class="pbx-break-words pbx-text-2xl pbx-font-semibold pbx-tracking-tight pbx-mb-3"><h3>Layouts and visual.</h3></div>
+                      <div class="pbx-text-neutral-500 pbx-mb-6"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    </div>
+                    <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-video" src="${getPlaceholderImageDataUrl()}" alt="bento" />
+                  </div>
+                  <div class="pbx-bg-neutral-900 pbx-text-white pbx-rounded-3xl pbx-p-8 lg:pbx-p-10 pbx-flex pbx-flex-col pbx-justify-end pbx-min-h-[16rem]">
+                    <div class="pbx-break-words pbx-text-2xl pbx-font-semibold pbx-tracking-tight pbx-mb-3"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-400 pbx-mb-5"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    <div class="pbx-text-sky-400 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Quiet Quote',
+          html_code: `<section>
+            <div class="pbx-py-28 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-3xl pbx-text-center">
+                <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-leading-snug pbx-mb-10">
+                  <p>Start customizing by editing this default text directly in the editor.</p>
+                </div>
+                <div class="pbx-flex pbx-flex-col pbx-items-center pbx-gap-3">
+                  <img class="pbx-object-cover pbx-w-14 pbx-h-14 pbx-min-w-14 pbx-object-center pbx-rounded-full" src="${getPlaceholderImageDataUrl()}" alt="author" />
+                  <div class="pbx-font-medium pbx-text-neutral-900"><p>Full Name</p></div>
+                  <div class="pbx-text-neutral-500 pbx-text-sm"><p>Job Title</p></div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Product Pair',
+          html_code: `<section>
+            <div class="pbx-py-12 pbx-px-4">
+              <div class="pbx-mx-auto pbx-max-w-6xl">
+                <div class="pbx-text-center pbx-mb-14">
+                  <div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900"><h2>Layouts and visual.</h2></div>
+                </div>
+                <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-2">
+                  <div class="pbx-text-center">
+                    <div class="pbx-bg-neutral-100 pbx-rounded-3xl pbx-mb-6 pbx-overflow-hidden">
+                      <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="product" />
+                    </div>
+                    <div class="pbx-font-semibold pbx-text-xl pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-500 pbx-mb-4"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    <div class="pbx-text-sky-600 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                  </div>
+                  <div class="pbx-text-center">
+                    <div class="pbx-bg-neutral-100 pbx-rounded-3xl pbx-mb-6 pbx-overflow-hidden">
+                      <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-square" src="${getPlaceholderImageDataUrl()}" alt="product" />
+                    </div>
+                    <div class="pbx-font-semibold pbx-text-xl pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                    <div class="pbx-text-neutral-500 pbx-mb-4"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    <div class="pbx-text-sky-600 pbx-font-medium"><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Feature Ribbon',
+          html_code: `<section>
+            <div class="pbx-bg-neutral-100">
+              <div class="pbx-py-20 pbx-px-4">
+                <div class="pbx-mx-auto pbx-max-w-6xl">
+                  <div class="pbx-text-center pbx-mb-16">
+                    <div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-semibold pbx-tracking-tight pbx-text-neutral-900 pbx-mb-4"><h2>Layouts and visual.</h2></div>
+                    <div class="pbx-text-neutral-500 pbx-text-lg pbx-max-w-xl pbx-mx-auto"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                  </div>
+                  <div class="pbx-myPrimaryGap pbx-grid pbx-grid-cols-1 md:pbx-grid-cols-3">
+                    <div class="pbx-text-center pbx-px-4">
+                      <div class="pbx-mx-auto pbx-mb-6 pbx-w-16 pbx-h-16 pbx-rounded-full pbx-bg-white pbx-flex pbx-items-center pbx-justify-center">
+                        <div class="pbx-w-3 pbx-h-3 pbx-rounded-full pbx-bg-neutral-900"></div>
+                      </div>
+                      <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                      <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    </div>
+                    <div class="pbx-text-center pbx-px-4">
+                      <div class="pbx-mx-auto pbx-mb-6 pbx-w-16 pbx-h-16 pbx-rounded-full pbx-bg-white pbx-flex pbx-items-center pbx-justify-center">
+                        <div class="pbx-w-3 pbx-h-3 pbx-rounded-full pbx-bg-neutral-900"></div>
+                      </div>
+                      <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                      <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    </div>
+                    <div class="pbx-text-center pbx-px-4">
+                      <div class="pbx-mx-auto pbx-mb-6 pbx-w-16 pbx-h-16 pbx-rounded-full pbx-bg-white pbx-flex pbx-items-center pbx-justify-center">
+                        <div class="pbx-w-3 pbx-h-3 pbx-rounded-full pbx-bg-neutral-900"></div>
+                      </div>
+                      <div class="pbx-font-semibold pbx-text-lg pbx-mb-2"><h3>Layouts and visual.</h3></div>
+                      <div class="pbx-text-neutral-500"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
+        },
+        {
+          title: 'Apple Full Bleed Caption',
+          html_code: `<section>
+            <div class="pbx-relative">
+              <img class="pbx-object-cover pbx-w-full pbx-object-center pbx-aspect-[21/9] pbx-min-h-[22rem]" src="${getPlaceholderImageDataUrl()}" alt="landscape" />
+              <div class="pbx-absolute pbx-inset-0 pbx-bg-black/35 pbx-flex pbx-items-end">
+                <div class="pbx-w-full pbx-p-8 lg:pbx-p-14">
+                  <div class="pbx-mx-auto pbx-max-w-7xl">
+                    <div class="pbx-break-words pbx-text-3xl lg:pbx-text-5xl pbx-font-semibold pbx-tracking-tight pbx-text-white pbx-mb-3"><h2>Layouts and visual.</h2></div>
+                    <div class="pbx-text-white/80 pbx-text-lg pbx-max-w-xl pbx-mb-6"><p>Start customizing by editing this default text directly in the editor.</p></div>
+                    <div class="pbx-bg-white pbx-text-neutral-900 pbx-font-medium pbx-inline-block pbx-px-7 pbx-py-3 pbx-rounded-full" id="linktree">
+                      <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">Layouts and visual.</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`,
+          cover_image: null,
+          category: 'Apple',
         },
       ],
     },
