@@ -30,6 +30,7 @@ export type {
   BuilderResourceComponent,
   BuilderResourceData,
   StartBuilderResult,
+  PassedComponentHtmlWarning,
   PageSettings,
   PageMeta,
   ThemeColorPreset,

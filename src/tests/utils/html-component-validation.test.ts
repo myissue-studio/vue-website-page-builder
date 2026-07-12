@@ -2,6 +2,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   HTML_VALIDATION_MESSAGES,
+  collectPassedComponentsHtmlWarnings,
   formatNonListenerTagClassViolationMessage,
   reportNonListenerTagClassViolations,
   validateMountingHtmlStructure,
@@ -55,5 +56,33 @@ describe('html-component-validation', () => {
     } finally {
       errorSpy.mockRestore()
     }
+  })
+
+  it('collects soft warnings for passed startBuilder components', () => {
+    const warnings = collectPassedComponentsHtmlWarnings([
+      {
+        title: 'Bad Paragraph',
+        html_code: '<section><p class="pbx-bg-red-200">hello</p></section>',
+      },
+      {
+        title: 'Missing Section',
+        html_code: '<div>no section wrapper</div>',
+      },
+    ])
+
+    expect(warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          componentIndex: 0,
+          componentTitle: 'Bad Paragraph',
+          message: expect.stringContaining('non-editable <p>'),
+        }),
+        expect.objectContaining({
+          componentIndex: 1,
+          componentTitle: 'Missing Section',
+          message: HTML_VALIDATION_MESSAGES.NO_SECTIONS_FOUND,
+        }),
+      ]),
+    )
   })
 })

@@ -30,6 +30,13 @@ export type HtmlValidationResult = {
   message: HtmlValidationMessage
 }
 
+export type PassedComponentHtmlWarning = {
+  componentIndex: number
+  componentTitle: string | null
+  message: string
+  detail?: string
+}
+
 export function formatNonListenerTagClassViolationMessage(
   violation: NonListenerTagClassViolation,
 ): string {
@@ -107,6 +114,65 @@ export function validateSectionNotAllowedInElementHtml(
     return { message: HTML_VALIDATION_MESSAGES.SECTION_NOT_ALLOWED_IN_ELEMENT_HTML }
   }
   return null
+}
+
+/**
+ * Scans components passed to startBuilder() for authoring issues.
+ * Soft warnings only — the builder still starts; host apps can surface these.
+ */
+export function collectPassedComponentsHtmlWarnings(
+  components: Array<{ html_code?: unknown; title?: unknown }>,
+): PassedComponentHtmlWarning[] {
+  const warnings: PassedComponentHtmlWarning[] = []
+
+  components.forEach((component, componentIndex) => {
+    if (typeof component.html_code !== 'string') return
+
+    const html = component.html_code
+    const componentTitle = typeof component.title === 'string' ? component.title : null
+
+    const structureError = validateMountingHtmlStructure(html)
+    if (structureError) {
+      warnings.push({
+        componentIndex,
+        componentTitle,
+        message: structureError.message,
+      })
+    } else {
+      const missingSection = validateRequiresSectionWrapper(html)
+      if (missingSection) {
+        warnings.push({
+          componentIndex,
+          componentTitle,
+          message: missingSection.message,
+        })
+      }
+    }
+
+    const template = document.createElement('template')
+    template.innerHTML = html
+    findNonListenerTagClassViolations(template.content).forEach((violation) => {
+      warnings.push({
+        componentIndex,
+        componentTitle,
+        message: formatNonListenerTagClassViolationMessage(violation),
+        detail: violation.outerHTML,
+      })
+    })
+  })
+
+  return warnings
+}
+
+export function reportPassedComponentsHtmlWarnings(
+  warnings: PassedComponentHtmlWarning[],
+): void {
+  warnings.forEach((warning) => {
+    console.error(warning.message, warning.detail ?? '', {
+      componentIndex: warning.componentIndex,
+      componentTitle: warning.componentTitle,
+    })
+  })
 }
 
 export {

@@ -40,7 +40,9 @@ import { isValidHyperlinkInput } from '../utils/builder/url-validation'
 import { NON_LISTENER_TAGS } from '../utils/builder/non-listener-tags'
 import {
   HTML_VALIDATION_MESSAGES,
+  collectPassedComponentsHtmlWarnings,
   reportNonListenerTagClassViolations,
+  reportPassedComponentsHtmlWarnings,
   validateMountingHtmlStructure,
   validateRequiresSectionWrapper,
   validateSectionNotAllowedInElementHtml,
@@ -662,6 +664,14 @@ export class PageBuilderService {
           : null
       const hasUsablePassedComponents = usablePassedComponents !== null
 
+      // Soft HTML authoring checks for host-provided components (do not block start).
+      const htmlWarnings = hasUsablePassedComponents
+        ? collectPassedComponentsHtmlWarnings(usablePassedComponents)
+        : []
+      if (htmlWarnings.length) {
+        reportPassedComponentsHtmlWarnings(htmlWarnings)
+      }
+
       // Update the localStorage key name based on the config/resource
       this.updateLocalStorageItemName()
       this.initializeHistory()
@@ -734,6 +744,10 @@ export class PageBuilderService {
 
       if (validation) {
         result.validation = validation
+      }
+
+      if (htmlWarnings.length) {
+        result.htmlWarnings = htmlWarnings
       }
 
       // PassedComponentsArray
