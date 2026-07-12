@@ -164,21 +164,21 @@
 
   /*
    * Product CTA button variant: keep white text on brand-color backgrounds.
-   * Use raw color (not @apply pbx-text-white) to avoid a Tailwind circular
-   * dependency with selectors that also target .pbx-text-white.
+   * Avoid compound selectors with `.pbx-text-white` — Tailwind dark-mode
+   * rewriting turns them into invalid CSS (`*)a.pbx-product-card-cta-link`).
    * Must beat `#pagebuilder a { color: inherit }` and product CTA text-inherit.
    */
   #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor,
   #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor,
-  #pagebuilder a.pbx-product-card-cta-link.pbx-text-white,
-  #pagebuilder .pbx-product-card-cta a.pbx-text-white {
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white'],
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white'] {
     color: #fff;
   }
 
   #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor:hover,
   #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor:hover,
-  #pagebuilder a.pbx-product-card-cta-link.pbx-text-white:hover,
-  #pagebuilder .pbx-product-card-cta a.pbx-text-white:hover {
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white']:hover,
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white']:hover {
     color: #fff;
   }
 
@@ -1685,19 +1685,19 @@
 
 /*
  * Filled #linktree buttons: beat `#pagebuilder a { color: inherit }` so white
- * (and other explicit text utilities) actually show on the pill.
+ * text shows on the pill. Use attribute selectors for text-white so Tailwind
+ * dark-mode rewriting does not produce invalid CSS.
  */
-#pagebuilder #linktree a.pbx-text-white,
+#pagebuilder #linktree a[class*='pbx-text-white'],
 #pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
   color: #fff;
 }
 
-#pagebuilder #linktree a.pbx-text-black {
+#pagebuilder #linktree a[class*='pbx-text-black'] {
   color: #000;
 }
 
-#pagebuilder #linktree a.pbx-text-white:hover,
-#pagebuilder #linktree a.hover\:pbx-text-white:hover,
+#pagebuilder #linktree a[class*='pbx-text-white']:hover,
 #pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor:hover {
   color: #fff;
 }
