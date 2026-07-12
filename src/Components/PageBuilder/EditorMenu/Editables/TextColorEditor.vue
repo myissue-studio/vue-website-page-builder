@@ -8,6 +8,7 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
 import { transparentSwatchStyle } from '../../../../utils/builder/transparent-swatch-style'
+import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ColorMenuCustomSection from './ColorMenuCustomSection.vue'
 import CustomHexColorModal from './CustomHexColorModal.vue'
 
@@ -100,15 +101,35 @@ const tailwindTextColors = computed(() => {
 })
 
 const textColorOptions = computed(() => {
-  return [
+  const options: Array<{ value: string; label: string; disabled?: boolean }> = [
     { value: 'none', label: translate('Transparent') },
-    ...enabledThemeColorPresets.value.map((preset) => ({
-      value: `custom:${preset.color}`,
-      label: translate(preset.label),
-    })),
-    ...tailwindTextColors.value.map((color) => ({ value: color, label: color })),
     { value: '__custom__', label: translate('Custom color') },
   ]
+
+  if (enabledThemeColorPresets.value.length > 0) {
+    options.push({
+      value: '__section_theme_presets__',
+      label: translate('Theme Color Presets'),
+      disabled: true,
+    })
+    options.push(
+      ...enabledThemeColorPresets.value.map((preset) => ({
+        value: `custom:${preset.color}`,
+        label: translate(preset.label),
+      })),
+    )
+  }
+
+  if (tailwindTextColors.value.length > 0) {
+    options.push({
+      value: '__section_builtin_colors__',
+      label: translate('Built-in colors'),
+      disabled: true,
+    })
+    options.push(...tailwindTextColors.value.map((color) => ({ value: color, label: color })))
+  }
+
+  return options
 })
 
 function applyThemeTextColor(color: string): void {
@@ -129,6 +150,8 @@ function applyCustomHexColor(color: string): void {
 }
 
 function handleTextColorSelect(value: string): void {
+  if (value.startsWith('__section_')) return
+
   if (value === '__custom__') {
     openCustomHexModal()
     return
@@ -167,13 +190,13 @@ watch(
     v-model="textColor"
     :options="textColorOptions"
     button-class="pbx-flex pbx-w-full pbx-flex-row pbx-justify-between pbx-items-center pbx-pl-3 pbx-pr-3 pbx-py-5 pbx-cursor-pointer pbx-duration-200 hover:pbx-bg-myPrimaryLightGrayColor pbx-bg-white hover:pbx-text-black pbx-text-black pbx-font-sans pbx-font-medium pbx-border pbx-border-solid pbx-border-gray-400"
-    menu-class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-overflow-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
+    menu-class="pbx-headless-dropdown pbx-absolute pbx-min-w-[12rem] pbx-z-40 pbx-mt-1 pbx-max-h-72 pbx-w-full pbx-max-w-full pbx-overflow-x-hidden pbx-overflow-y-auto pbx-rounded-md pbx-bg-gray-50 pbx-py-1 pbx-text-base pbx-shadow-lg pbx-ring-1 pbx-ring-black pbx-ring-opacity-5 focus:pbx-outline-none sm:pbx-text-sm"
     @select="handleTextColorSelect"
   >
     <template #button>
-      <div class="pbx-flex pbx-justify-start pbx-items-center pbx-gap-2">
+      <div class="pbx-flex pbx-min-w-0 pbx-justify-start pbx-items-center pbx-gap-2">
         <div
-          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
+          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-shrink-0 pbx-border pbx-border-gray-600 pbx-rounded-full pbx-border-solid"
           :class="selectedCustomTextColor ? '' : isTextTransparent ? '' : textColorSwatchClass"
           :style="
             selectedCustomTextColor
@@ -183,13 +206,19 @@ watch(
                 : textColorSwatchStyle
           "
         ></div>
-        <div>{{ translate('Text Color') }}</div>
+        <div class="pbx-min-w-0 pbx-break-words">{{ translate('Text Color') }}</div>
       </div>
 
-      <span class="material-symbols-outlined"> chevron_right </span>
+      <span class="material-symbols-outlined pbx-shrink-0">chevron_right</span>
     </template>
     <template #option="{ option, selected }">
-      <div class="pbx-flex pbx-w-full pbx-items-center pbx-gap-3">
+      <div
+        v-if="option.value.startsWith('__section_')"
+        class="pbx-px-2 pbx-py-2 pbx-text-xs pbx-font-semibold pbx-text-gray-500"
+      >
+        {{ option.label || option.value }}
+      </div>
+      <div v-else class="pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center pbx-gap-3">
         <div
           v-if="option.value === 'none'"
           class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0"
@@ -197,8 +226,10 @@ watch(
         ></div>
         <div
           v-else-if="option.value === '__custom__'"
-          class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-300 pbx-rounded-sm pbx-shrink-0 pbx-bg-gradient-to-br pbx-from-white pbx-to-gray-200"
-        ></div>
+          class="pbx-w-6 pbx-h-6 pbx-flex pbx-items-center pbx-justify-center pbx-shrink-0"
+        >
+          <SliderIcon />
+        </div>
         <div
           v-else
           class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
@@ -213,10 +244,12 @@ watch(
               : undefined
           "
         ></div>
-        <span class="pbx-flex-1">{{ option.label || option.value }}</span>
+        <span class="pbx-flex-1 pbx-min-w-0 pbx-break-words">{{
+          option.label || option.value
+        }}</span>
         <span
           v-if="selected && option.value !== '__custom__'"
-          class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+          class="pbx-h-3 pbx-w-3 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
           :class="
             option.value.startsWith('pbx-text-')
               ? `pbx-bg-${option.value.replace('pbx-text-', '')}`
@@ -229,6 +262,12 @@ watch(
                 ? { backgroundColor: option.value.replace('custom:', '') }
                 : undefined
           "
+          aria-hidden="true"
+        ></span>
+        <span
+          v-else-if="option.value === '__custom__' && selectedCustomTextColor"
+          class="pbx-h-3 pbx-w-3 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+          :style="{ backgroundColor: selectedCustomTextColor }"
           aria-hidden="true"
         ></span>
       </div>
@@ -270,14 +309,14 @@ watch(
         data-pbx-edit-toolbar-popover
         data-pbx-text-color-menu-popover
         :style="textColorMenuPopoverStyle"
-        class="pbx-fixed pbx-z-50 pbx-max-h-72 pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
+        class="pbx-fixed pbx-z-50 pbx-max-h-72 pbx-w-72 pbx-max-w-[calc(100vw-2rem)] pbx-overflow-x-hidden pbx-overflow-y-auto pbx-rounded-lg pbx-bg-white pbx-py-2 pbx-px-2 pbx-shadow-lg pbx-border pbx-border-solid pbx-border-gray-200"
         @mousedown.stop
         @pointerdown.stop
         @click.stop
       >
         <button
           type="button"
-          class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
           :class="{
             'pbx-bg-myPrimaryLinkColor ': !textColor || textColor === 'none',
           }"
@@ -302,7 +341,7 @@ watch(
             v-for="preset in enabledThemeColorPresets"
             :key="preset.id"
             type="button"
-            class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
             @click="applyThemeTextColor(preset.color)"
           >
             <div
@@ -312,7 +351,7 @@ watch(
             <span class="pbx-flex-1">{{ translate(preset.label) }}</span>
             <span
               v-if="textColor === `custom:${preset.color}`"
-              class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+              class="pbx-h-3 pbx-w-3 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
               :style="{ backgroundColor: preset.color }"
               aria-hidden="true"
             ></span>
@@ -332,17 +371,17 @@ watch(
           v-for="color in tailwindTextColors"
           :key="color"
           type="button"
-          class="pbx-font-sans pbx-w-full pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
           @click="selectTailwindTextColor(color)"
         >
           <div
             class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
             :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
           ></div>
-          <span class="pbx-flex-1">{{ color }}</span>
+          <span class="pbx-flex-1 pbx-min-w-0 pbx-break-words">{{ color }}</span>
           <span
             v-if="textColor === color"
-            class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+            class="pbx-h-3 pbx-w-3 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
             :class="`pbx-bg-${color.replace('pbx-text-', '')}`"
             aria-hidden="true"
           ></span>

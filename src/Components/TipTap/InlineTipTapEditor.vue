@@ -17,6 +17,7 @@ import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
+import { InlineTipTapLink } from '../../utils/builder/inline-tiptap-link'
 import { delay } from '../../composables/delay'
 import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
 
@@ -261,19 +262,7 @@ const getFinalEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): stri
 }
 
 const findEditableElement = function (target: EventTarget | null): HTMLElement | null {
-  if (!(target instanceof Element)) return null
-
-  let current: Element | null = target
-
-  while (current && !current.matches('#pagebuilder')) {
-    if (current instanceof HTMLElement && pageBuilderService.isEditableElement(current)) {
-      return current
-    }
-
-    current = current.parentElement
-  }
-
-  return null
+  return pageBuilderService.findEditableElementFromEventTarget(target)
 }
 
 const teardownEditor = function (html?: string) {
@@ -281,12 +270,26 @@ const teardownEditor = function (html?: string) {
   const activeEditor = editor.value
 
   if (activeEditor && target) {
-    const finalHTML = finalizeInlineTipTapHtml(html ?? activeEditor.getHTML(), originalHTML.value)
-    activeEditor.destroy()
-    target.innerHTML = finalHTML
-    target.removeAttribute('data-pbx-inline-tiptap')
-    target.removeAttribute('data-pbx-inline-original-html')
-    pageBuilderStateStore.setTextAreaVueModel(finalHTML)
+    // Service-side sync commit may have already restored HTML and cleared the
+    // TipTap marker. Rewriting from TipTap's model here would drop class/style
+    // mutations applied via the right sidebar while the editor was open.
+    const alreadyCommitted = !target.hasAttribute('data-pbx-inline-tiptap')
+
+    if (!alreadyCommitted) {
+      // Prefer live ProseMirror DOM so sidebar class/style mutations survive commit.
+      const liveDomHtml = target.querySelector('.ProseMirror')?.innerHTML
+      const finalHTML = finalizeInlineTipTapHtml(
+        liveDomHtml ?? html ?? activeEditor.getHTML(),
+        originalHTML.value,
+      )
+      activeEditor.destroy()
+      target.innerHTML = finalHTML
+      target.removeAttribute('data-pbx-inline-tiptap')
+      target.removeAttribute('data-pbx-inline-original-html')
+      pageBuilderStateStore.setTextAreaVueModel(finalHTML)
+    } else {
+      activeEditor.destroy()
+    }
   }
 
   editor.value = null
@@ -318,10 +321,9 @@ const startEditor = async function () {
     content: originalHTML.value,
     extensions: [
       StarterKit.configure({
-        link: {
-          openOnClick: false,
-        },
+        link: false,
       }),
+      InlineTipTapLink,
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
@@ -369,15 +371,20 @@ const saveInlineEditor = async function () {
 }
 
 const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | null) {
-  if (!editor.value) return
+  const activeEditor = editor.value
+  const target = inlineElement.value
+  if (!activeEditor) return
 
-  await delay(300)
   try {
-    const target = inlineElement.value
-    const html = getFinalEditorHtml(editor.value)
+    // Delay lets the originating click (e.g. sidebar padding) land on the live
+    // ProseMirror DOM first. Commit from live DOM after the delay so those
+    // class/style mutations are kept instead of TipTap's pre-click model HTML.
+    await delay(300)
+
+    if (editor.value !== activeEditor || inlineElement.value !== target) return
 
     removeDocumentMouseDownListener()
-    teardownEditor(html)
+    teardownEditor()
     await pageBuilderService.finishInlineTipTapEditor(target)
 
     if (nextElement && nextElement !== target) {

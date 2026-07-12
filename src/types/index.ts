@@ -1,4 +1,7 @@
 import type { PageBuilderService } from '../services/PageBuilderService'
+import type { PassedComponentHtmlWarning } from '../utils/builder/html-component-validation'
+
+export type { PassedComponentHtmlWarning }
 
 export interface PageBuilderState {
   // ...other state properties...
@@ -132,6 +135,8 @@ export type StartBuilderResult =
       validation?:
         | { error: true; warning: string; status: string }
         | { error: true; reason: string }
+      /** Soft HTML authoring warnings for passed components (builder still starts). */
+      htmlWarnings?: PassedComponentHtmlWarning[]
       passedComponentsArray?: BuilderResourceData
     }
 

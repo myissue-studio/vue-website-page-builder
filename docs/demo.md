@@ -27,3 +27,5 @@ The default component helper library now includes additional simple blocks (for 
 
 Create and enhance digital experiences with Vue on any backend.
 Experience the power and simplicity of the Vue Website Page Builder in action, with a live SEO analyzer for content optimization.
+
+For local demo development inside this repository, demo harness files are organized under `src/tests/demo` (including `PageBuilderTest.vue`, demo page HTML, and demo theme preset utilities).

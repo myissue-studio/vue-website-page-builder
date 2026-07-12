@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
+import { Editor } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
 import {
   buildEditableFallbackInlineHtml,
   finalizeInlineTipTapHtml,
   sanitizeInlineTipTapHtml,
 } from '../../utils/builder/sanitize-inline-tiptap-html'
+import { InlineTipTapLink } from '../../utils/builder/inline-tiptap-link'
 
 describe('sanitizeInlineTipTapHtml', () => {
   it('removes a trailing empty paragraph with ProseMirror trailing break', () => {
@@ -47,5 +50,24 @@ describe('finalizeInlineTipTapHtml', () => {
 
   it('falls back to a paragraph when the original had no block tags', () => {
     expect(buildEditableFallbackInlineHtml('plain text')).toBe('<p><br></p>')
+  })
+})
+
+describe('InlineTipTapLink', () => {
+  it('preserves inline styles on button-like anchors while editing', () => {
+    const editor = new Editor({
+      content:
+        '<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-bg-myPrimaryLinkColor" style="background-color: rgb(240, 11, 11);">Link to landing page</a></p>',
+      extensions: [StarterKit.configure({ link: false }), InlineTipTapLink],
+    })
+
+    try {
+      const html = editor.getHTML()
+      expect(html).toContain('style="background-color: rgb(240, 11, 11);"')
+      expect(html).toContain('class="pbx-inline-flex pbx-bg-myPrimaryLinkColor"')
+      expect(html).toContain('href="https://www.google.com"')
+    } finally {
+      editor.destroy()
+    }
   })
 })

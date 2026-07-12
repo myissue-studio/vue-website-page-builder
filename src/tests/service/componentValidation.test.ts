@@ -371,5 +371,60 @@ describe('Component Validation', () => {
       const result = await service.startBuilder(updateConfig, components)
       expect(result).toHaveProperty('message', 'Page builder started successfully.')
     })
+
+    it('returns htmlWarnings for classes on non-listener tags without blocking start', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        const components = [
+          {
+            id: '1',
+            title: 'Bad Text',
+            html_code: '<section><div><p class="pbx-bg-red-200">hello</p></div></section>',
+          },
+        ]
+
+        const result = await service.startBuilder(updateConfig, components)
+
+        expect(result).toHaveProperty('message', 'Page builder started successfully.')
+        expect(result).toHaveProperty('htmlWarnings')
+        if ('htmlWarnings' in result) {
+          expect(result.htmlWarnings).toEqual([
+            expect.objectContaining({
+              componentIndex: 0,
+              componentTitle: 'Bad Text',
+              message: expect.stringContaining('non-editable <p>'),
+              detail: expect.stringContaining('<p class="pbx-bg-red-200">'),
+            }),
+          ])
+        }
+        expect(errorSpy).toHaveBeenCalled()
+      } finally {
+        errorSpy.mockRestore()
+      }
+    })
+
+    it('returns htmlWarnings for missing section wrappers without blocking start', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        const components = [
+          {
+            id: '1',
+            title: 'No Section',
+            html_code: '<div>missing section</div>',
+          },
+        ]
+
+        const result = await service.startBuilder(updateConfig, components)
+
+        expect(result).toHaveProperty('message', 'Page builder started successfully.')
+        if ('htmlWarnings' in result) {
+          expect(result.htmlWarnings?.[0]?.message).toBe(
+            'No <section> tags found. Each component must be wrapped in a <section> tag.',
+          )
+        }
+      } finally {
+        errorSpy.mockRestore()
+      }
+    })
   })
 })

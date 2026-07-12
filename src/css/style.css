@@ -164,10 +164,22 @@
 
   /*
    * Product CTA button variant: keep white text on brand-color backgrounds.
-   * This must be more specific than the global `#pagebuilder a { color: inherit; }` rule.
+   * Avoid compound selectors with `.pbx-text-white` — Tailwind dark-mode
+   * rewriting turns them into invalid CSS (`*)a.pbx-product-card-cta-link`).
+   * Must beat `#pagebuilder a { color: inherit }` and product CTA text-inherit.
    */
-  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor {
-    @apply pbx-text-white hover:pbx-text-white;
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor,
+  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white'],
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white'] {
+    color: #fff;
+  }
+
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor:hover,
+  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor:hover,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white']:hover,
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white']:hover {
+    color: #fff;
   }
 
   /* Let product copy grow naturally in the builder and on saved pages. */
@@ -1657,15 +1669,66 @@
   text-decoration: underline;
 }
 
+/*
+ * #linktree buttons: chrome (padding, bg, radius, text color) lives on the <a>.
+ * Do not hardcode padding here — it would override editor Tailwind utilities
+ * (e.g. pbx-py-*) because #linktree a is more specific than a single class.
+ */
 #linktree a {
   text-decoration: none !important;
   cursor: pointer;
-  display: block;
-  padding: 18px 14px;
+}
+
+/*
+ * Keep button/CTA labels inside the page width. Long unbroken strings (and TipTap
+ * edits on the same anchors) must wrap instead of overflowing the viewport.
+ */
+#pagebuilder a.pbx-inline-flex,
+#pagebuilder #linktree,
+#pagebuilder .pbx-product-card-cta {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#pagebuilder #linktree > *,
+#pagebuilder #linktree p {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#pagebuilder #linktree a,
+#pagebuilder a.pbx-inline-flex,
+#pagebuilder a.pbx-product-card-cta-link,
+#pagebuilder .pbx-product-card-cta a {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 #pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
   color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
+/*
+ * Filled #linktree buttons: beat `#pagebuilder a { color: inherit }` so white
+ * text shows on the pill. Use attribute selectors for text-white so Tailwind
+ * dark-mode rewriting does not produce invalid CSS.
+ */
+#pagebuilder #linktree a[class*='pbx-text-white'],
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
+  color: #fff;
+}
+
+#pagebuilder #linktree a[class*='pbx-text-black'] {
+  color: #000;
+}
+
+#pagebuilder #linktree a[class*='pbx-text-white']:hover,
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor:hover {
+  color: #fff;
 }
 
 .pbx-reorder-highlight {

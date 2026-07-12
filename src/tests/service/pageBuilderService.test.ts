@@ -1,8 +1,27 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest'
-import { PageBuilderService, AVAILABLE_LANGUAGES } from '../../services/PageBuilderService'
+import {
+  PageBuilderService,
+  AVAILABLE_LANGUAGES,
+} from '../../services/PageBuilderService'
 import { usePageBuilderStateStore } from '../../stores/page-builder-state'
-import componentsArray from '../componentsArray.test.json'
+import { NON_LISTENER_TAGS } from '../../utils/builder/non-listener-tags'
+import { formatNonListenerTagClassViolationMessage } from '../../utils/builder/html-component-validation'
+
+const componentsArray = [
+  {
+    id: null,
+    title: 'Hero',
+    html_code:
+      '<section data-component-title="Hero"><div class="pbx-break-words pbx-text-xl"><p>Test hero content</p></div></section>',
+  },
+  {
+    id: null,
+    title: 'CTA',
+    html_code:
+      '<section data-component-title="Hero"><div class="pbx-break-words pbx-text-xl"><p>Test CTA content</p></div></section>',
+  },
+]
 
 // ---------------------------------------------------------------------------
 // Shared mock store factory
@@ -323,6 +342,49 @@ describe('PageBuilderService', () => {
 
       expect(selectable.hasAttribute('selected')).toBe(true)
       expect(mockStore.setElement).toHaveBeenCalledWith(selectable)
+    })
+
+    it('REGRESSION (button links): reads background color from nested anchor button on initial selection', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="button-link-1" data-component-title="CTA">
+          <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white" id="linktree">
+            <p>
+              <a
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                href="https://www.google.com"
+                class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+              >
+                Link to landing page
+              </a>
+            </p>
+          </div>
+        </section>
+      `
+
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      const wrapper = pagebuilder.querySelector<HTMLElement>('#linktree')
+      const anchor = pagebuilder.querySelector<HTMLAnchorElement>('#linktree a')
+      expect(wrapper).not.toBeNull()
+      expect(anchor).not.toBeNull()
+      if (!wrapper || !anchor) return
+
+      anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(wrapper.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(wrapper)
+      expect(mockStore.setBackgroundColor).toHaveBeenLastCalledWith('pbx-bg-myPrimaryLinkColor')
     })
 
     it('clears stale singleton interaction state so click selection is not blocked on reopen', async () => {
@@ -865,6 +927,48 @@ describe('PageBuilderService', () => {
       expect(service.isEditableElement(el)).toBe(false)
     })
 
+    it('returns false for every non-listener text/inline tag', () => {
+      NON_LISTENER_TAGS.forEach((tagName) => {
+        const el = document.createElement(tagName.toLowerCase())
+        expect(service.isEditableElement(el), tagName).toBe(false)
+      })
+    })
+
+    it('selects the editable wrapper when clicking excluded child content', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="excluded-tags-1" data-component-title="Text">
+          <div id="editable-wrapper" class="pbx-break-words pbx-text-xl">
+            <h2>Heading</h2>
+            <p>Paragraph with <a href="https://www.google.com">a link</a></p>
+          </div>
+        </section>
+      `
+
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      const wrapper = pagebuilder.querySelector<HTMLElement>('#editable-wrapper')
+      const anchor = pagebuilder.querySelector<HTMLAnchorElement>('#editable-wrapper a')
+      expect(wrapper).not.toBeNull()
+      expect(anchor).not.toBeNull()
+      if (!wrapper || !anchor) return
+
+      anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+
+      expect(wrapper.hasAttribute('selected')).toBe(true)
+      expect(anchor.hasAttribute('selected')).toBe(false)
+      expect(mockStore.setElement).toHaveBeenCalledWith(wrapper)
+      expect(mockStore.setElement).not.toHaveBeenCalledWith(anchor)
+    })
+
     it('returns false for element inside [data-pb-no-select]', () => {
       const wrapper = document.createElement('div')
       wrapper.setAttribute('data-pb-no-select', '')
@@ -883,6 +987,114 @@ describe('PageBuilderService', () => {
       document.body.appendChild(wrapper)
       expect(service.isEditableElement(img)).toBe(true)
       document.body.removeChild(wrapper)
+    })
+  })
+
+  // --- findEditableElementFromEventTarget ---
+  describe('findEditableElementFromEventTarget', () => {
+    it('REGRESSION (TipTap + sidebar): returns null for right-sidebar padding buttons', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div id="linktree"><p><a href="https://www.google.com">CTA</a></p></div>
+        </section>
+      `
+
+      const sidebar = document.createElement('aside')
+      sidebar.id = 'pagebuilder-right-menu'
+      const paddingBtn = document.createElement('button')
+      paddingBtn.type = 'button'
+      paddingBtn.className = 'pbx-flex pbx-h-7 pbx-w-7'
+      sidebar.appendChild(paddingBtn)
+      document.body.appendChild(sidebar)
+
+      expect(service.findEditableElementFromEventTarget(paddingBtn)).toBeNull()
+
+      document.body.removeChild(sidebar)
+    })
+
+    it('returns the canvas editable wrapper for clicks inside #pagebuilder', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div id="editable-wrapper" class="pbx-break-words">
+            <p><a href="https://www.google.com">CTA</a></p>
+          </div>
+        </section>
+      `
+
+      const wrapper = pagebuilder.querySelector<HTMLElement>('#editable-wrapper')
+      const anchor = pagebuilder.querySelector<HTMLAnchorElement>('#editable-wrapper a')
+      expect(wrapper).not.toBeNull()
+      expect(anchor).not.toBeNull()
+      if (!wrapper || !anchor) return
+
+      expect(service.findEditableElementFromEventTarget(anchor)).toBe(wrapper)
+      expect(service.findEditableElementFromEventTarget(wrapper)).toBe(wrapper)
+    })
+
+    it('REGRESSION (TipTap + sidebar): selectEditableElement refuses outside-canvas elements', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const canvasEl = document.createElement('div')
+      canvasEl.id = 'canvas-selected'
+      pagebuilder.appendChild(canvasEl)
+
+      const sidebarBtn = document.createElement('button')
+      sidebarBtn.type = 'button'
+      document.body.appendChild(sidebarBtn)
+
+      vi.mocked(mockStore.setElement).mockClear()
+      await service.selectEditableElement(sidebarBtn, false)
+
+      expect(sidebarBtn.hasAttribute('selected')).toBe(false)
+      expect(mockStore.setElement).not.toHaveBeenCalledWith(sidebarBtn)
+
+      document.body.removeChild(sidebarBtn)
+    })
+  })
+
+  // --- TipTap commit keeps live DOM styles ---
+  describe('finishActiveInlineTipTapEditorFromDom', () => {
+    it('REGRESSION (TipTap styles): keeps classes applied to live ProseMirror DOM on commit', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div
+            id="linktree"
+            data-pbx-inline-tiptap
+            data-pbx-inline-original-html='<p><a href="https://www.google.com">CTA</a></p>'
+          >
+            <div class="ProseMirror">
+              <p><a href="https://www.google.com" class="pbx-inline-flex pbx-py-8">CTA</a></p>
+            </div>
+          </div>
+        </section>
+      `
+
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
+      // Stale TipTap model without the padding class that was applied via the sidebar.
+      ;(mockStore as unknown as Record<string, unknown>).getTextAreaVueModel =
+        '<p><a href="https://www.google.com" class="pbx-inline-flex">CTA</a></p>'
+
+      await service.finishActiveInlineTipTapEditorFromDom(null)
+
+      const linktree = pagebuilder.querySelector('#linktree')
+      expect(linktree).not.toBeNull()
+      expect(linktree?.hasAttribute('data-pbx-inline-tiptap')).toBe(false)
+      expect(linktree?.innerHTML).toContain('pbx-py-8')
+      expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(false)
     })
   })
 
@@ -974,6 +1186,83 @@ describe('PageBuilderService', () => {
       }
       const cloned = service.cloneCompObjForDOMInsertion(component)
       expect(cloned.html_code).not.toContain('pbx-pbx-')
+    })
+
+    it('logs an error when inserted component classes are placed on non-listener tags', () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        const component = {
+          id: 'id-1',
+          html_code:
+            '<section><div><p class="pbx-bg-red-400">This class should live on a wrapper.</p></div></section>',
+          title: 'Invalid helper',
+        }
+
+        service.cloneCompObjForDOMInsertion(component)
+
+        expect(errorSpy).toHaveBeenCalledWith(
+          formatNonListenerTagClassViolationMessage({
+            tagName: 'P',
+            className: 'pbx-bg-red-400',
+            outerHTML: '<p class="pbx-bg-red-400">This class should live on a wrapper.</p>',
+          }),
+          expect.stringContaining('<p class="pbx-bg-red-400">'),
+        )
+      } finally {
+        errorSpy.mockRestore()
+      }
+    })
+
+    it('logs an error when mounted HTML places classes on non-listener tags', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        const svc = service as unknown as {
+          completeMountProcess: (
+            html: string,
+            usePassedPageSettings?: boolean,
+            sessionToken?: number,
+          ) => Promise<void>
+          activeBuilderSessionToken: number
+        }
+
+        await svc.completeMountProcess(
+          `<div id="pagebuilder"><section><div><p class="pbx-bg-red-400">Mounted with class</p></div></section></div>`,
+          undefined,
+          svc.activeBuilderSessionToken,
+        )
+
+        expect(errorSpy).toHaveBeenCalledWith(
+          formatNonListenerTagClassViolationMessage({
+            tagName: 'P',
+            className: 'pbx-bg-red-400',
+            outerHTML: '<p class="pbx-bg-red-400">Mounted with class</p>',
+          }),
+          expect.stringContaining('<p class="pbx-bg-red-400">'),
+        )
+      } finally {
+        errorSpy.mockRestore()
+      }
+    })
+
+    it('does not log an error for button-like anchors with visual classes', () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        const component = {
+          id: 'id-1',
+          html_code:
+            '<section><div id="linktree"><p><a href="https://www.google.com" class="pbx-inline-flex pbx-bg-myPrimaryLinkColor pbx-rounded-full">Button</a></p></div></section>',
+          title: 'Button helper',
+        }
+
+        service.cloneCompObjForDOMInsertion(component)
+
+        expect(errorSpy).not.toHaveBeenCalledWith(
+          expect.stringContaining('non-editable <a> tag was inserted with classes'),
+          expect.anything(),
+        )
+      } finally {
+        errorSpy.mockRestore()
+      }
     })
   })
 
@@ -1153,6 +1442,144 @@ describe('PageBuilderService', () => {
       fresh.handleAddClasses('bg-red-500')
 
       expect(mockStore.setCurrentClasses).toHaveBeenCalledWith(['pbx-text-black', 'pbx-bg-red-500'])
+    })
+
+    it('keeps generic custom classes on the selected wrapper instead of nested excluded anchors', () => {
+      const wrapper = document.createElement('div')
+      wrapper.id = 'linktree'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-inline-flex pbx-items-center pbx-bg-myPrimaryLinkColor"
+          >
+            Link
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleAddClasses('shadow-lg')
+
+      expect(wrapper.classList.contains('pbx-shadow-lg')).toBe(true)
+      expect(anchor.classList.contains('pbx-shadow-lg')).toBe(false)
+    })
+
+    it('allows button-like anchor exception for visual background classes only through its wrapper', () => {
+      const wrapper = document.createElement('div')
+      wrapper.id = 'linktree'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-inline-flex pbx-items-center pbx-bg-myPrimaryLinkColor"
+          >
+            Link
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleBackgroundColor('pbx-bg-red-500')
+
+      expect(wrapper.classList.contains('pbx-bg-red-500')).toBe(false)
+      expect(anchor.classList.contains('pbx-bg-myPrimaryLinkColor')).toBe(false)
+      expect(anchor.classList.contains('pbx-bg-red-500')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(wrapper)
+    })
+
+    it('REGRESSION (button links): applies vertical padding to nested anchor, not #linktree wrapper', () => {
+      const wrapper = document.createElement('div')
+      wrapper.id = 'linktree'
+      wrapper.className = 'pbx-flex pbx-items-center pbx-font-medium'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+          >
+            Link
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleVerticalPadding('pbx-py-8')
+
+      expect(wrapper.classList.contains('pbx-py-8')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-2')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-8')).toBe(true)
+    })
+
+    it('REGRESSION (product CTA): applies vertical padding to nested anchor, not product-card-cta wrapper', () => {
+      const wrapper = document.createElement('div')
+      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold pbx-pt-3'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+          >
+            View product
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleVerticalPadding('pbx-py-10')
+
+      expect(wrapper.classList.contains('pbx-py-10')).toBe(false)
+      expect(wrapper.classList.contains('pbx-pt-3')).toBe(true)
+      expect(anchor.classList.contains('pbx-py-2')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-10')).toBe(true)
+    })
+
+    it('REGRESSION (section bg): does not read nested button color when section has its own background', () => {
+      const section = document.createElement('section')
+      section.className = 'pbx-bg-black pbx-text-white'
+      section.innerHTML = `
+        <div id="linktree" class="pbx-flex pbx-items-center pbx-font-medium">
+          <p>
+            <a
+              href="https://www.google.com"
+              class="pbx-inline-flex pbx-bg-sky-500 pbx-text-white pbx-rounded-full pbx-px-4 pbx-py-2"
+            >
+              Layouts and visual.
+            </a>
+          </p>
+        </div>
+      `
+      ;(mockStore as unknown as Record<string, unknown>).getElement = section
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleBackgroundColor(undefined)
+
+      expect(mockStore.setBackgroundColor).toHaveBeenLastCalledWith('pbx-bg-black')
+
+      fresh.handleBackgroundColor('pbx-bg-red-500')
+      expect(section.classList.contains('pbx-bg-red-500')).toBe(true)
+      expect(section.classList.contains('pbx-bg-black')).toBe(false)
+      expect(section.querySelector('a')?.classList.contains('pbx-bg-sky-500')).toBe(true)
     })
   })
 

@@ -82,7 +82,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderStyle(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{ borderStyle || translate('Select') }}</span>
+            <span class="pbx-block pbx-break-words">{{ borderStyle || translate('Select') }}</span>
           </template>
         </CustomDropdown>
       </div>
@@ -98,7 +98,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderWidth(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{ borderWidth || translate('Select') }}</span>
+            <span class="pbx-block pbx-break-words">{{ borderWidth || translate('Select') }}</span>
           </template>
         </CustomDropdown>
       </div>
@@ -115,23 +115,23 @@ watch(
           @select="(value) => pageBuilderService.handleBorderColor(value ?? undefined)"
         >
           <template #button>
-            <span class="pbx-flex pbx-items-center pbx-gap-2">
-              <div v-if="getBorderColor === 'none'">
+            <span class="pbx-flex pbx-min-w-0 pbx-items-center pbx-gap-2">
+              <div v-if="getBorderColor === 'none'" class="pbx-shrink-0">
                 <div class="pbx-myPrimaryColorPreview pbx-border-none">
                   <span class="material-symbols-outlined"> ev_shadow </span>
                 </div>
               </div>
               <div
                 v-if="borderColor !== 'none'"
-                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm"
+                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-border-solid pbx-border pbx-border-gray-100 pbx-rounded-sm pbx-shrink-0"
                 :class="`pbx-bg-${borderColor?.replace('pbx-border-', '')}`"
               ></div>
-              <span class="pbx-block pbx-truncate">{{ borderColor }}</span>
+              <span class="pbx-block pbx-min-w-0 pbx-break-words">{{ borderColor }}</span>
             </span>
           </template>
           <template #option="{ option, selected }">
-            <div class="pbx-flex pbx-w-full pbx-items-center">
-              <div v-if="option.value === 'none'">
+            <div class="pbx-flex pbx-w-full pbx-min-w-0 pbx-items-center">
+              <div v-if="option.value === 'none'" class="pbx-shrink-0">
                 <div class="pbx-myPrimaryColorPreview pbx-border-none">
                   <span class="material-symbols-outlined"> ev_shadow </span>
                 </div>
@@ -139,13 +139,17 @@ watch(
 
               <div
                 v-if="option.value !== 'none'"
-                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-bg-gray-950"
+                class="pbx-aspect-square pbx-w-6 pbx-h-6 pbx-bg-gray-950 pbx-shrink-0"
                 :class="`pbx-bg-${option.value.replace('pbx-border-', '')}`"
               ></div>
-              <span v-if="option.value === 'none'" class="pbx-ml-3">{{
+              <span v-if="option.value === 'none'" class="pbx-ml-3 pbx-min-w-0 pbx-break-words">{{
                 translate('Transparent')
               }}</span>
-              <span v-if="option.value !== 'none'" class="pbx-ml-3">{{ option.value }}</span>
+              <span
+                v-if="option.value !== 'none'"
+                class="pbx-ml-3 pbx-min-w-0 pbx-flex-1 pbx-break-words"
+                >{{ option.value }}</span
+              >
             </div>
           </template>
         </CustomDropdown>
