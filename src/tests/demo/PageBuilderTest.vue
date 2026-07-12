@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import PageBuilder from '../PageBuilder/PageBuilder.vue'
-import DemoMediaLibraryComponentTest from '../tests/TestComponents/DemoMediaLibraryComponentTest.vue'
-import DemoDisplayProductsTest from '../tests/TestComponents/DemoDisplayProductsTest.vue'
-import DemoThemeConfigPanel from '../tests/TestComponents/DemoThemeConfigPanel.vue'
-import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
-import SliderIcon from '../Components/Icons/SliderIcon.vue'
+import PageBuilder from '../../PageBuilder/PageBuilder.vue'
+import DemoMediaLibraryComponentTest from '../TestComponents/DemoMediaLibraryComponentTest.vue'
+import DemoDisplayProductsTest from '../TestComponents/DemoDisplayProductsTest.vue'
+import DemoThemeConfigPanel from '../TestComponents/DemoThemeConfigPanel.vue'
+import FloatingSidePanel from '../../Components/Overlays/FloatingSidePanel.vue'
+import SliderIcon from '../../Components/Icons/SliderIcon.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import { getPageBuilder } from '../composables/usePageBuilder'
-import { useTranslations } from '../composables/useTranslations'
-import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from '../tests/demo-theme-presets'
-import { getDemoPageHtml, translateThemePlaceholderText } from '../tests/demo-theme-utils'
+import { getPageBuilder } from '../../composables/usePageBuilder'
+import { useTranslations } from '../../composables/useTranslations'
+import { DEMO_THEME_HINT_STORAGE_KEY, DEMO_THEME_PACKS } from './demo-theme-presets'
+import { getDemoPageHtml, translateThemePlaceholderText } from './demo-theme-utils'
 
 const pageBuilderService = getPageBuilder()
 const { translate, currentTranslations } = useTranslations()

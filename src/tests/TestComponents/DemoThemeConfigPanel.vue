@@ -11,12 +11,12 @@ import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import { useThemeColorPresets } from '../../composables/useThemeColorPresets'
 import type { PageBuilderConfig, PageBuilderElementFonts } from '../../types'
-import { DEMO_THEME_PACKS, type DemoThemePackId } from '../demo-theme-presets'
+import { DEMO_THEME_PACKS, type DemoThemePackId } from '../demo/demo-theme-presets'
 import {
   getThemeHtmlByTitle,
   restoreDemoPage,
   translateThemePlaceholderText,
-} from '../demo-theme-utils'
+} from '../demo/demo-theme-utils'
 import { useToast } from '../../composables/useToast'
 
 const { translate } = useTranslations()
@@ -178,7 +178,10 @@ async function copyPageHtmlForDemoFile(): Promise<void> {
   const html = await pageBuilderService.generateFullPageHtml()
   try {
     await navigator.clipboard.writeText(html)
-    showToast('Copied — paste into src/tests/demo-page.content.html (replace entire file)', 'success')
+    showToast(
+      'Copied — paste into src/tests/demo/demo-page.content.html (replace entire file)',
+      'success',
+    )
   } catch {
     configModalContent.value = html
     showConfigModal.value = true
@@ -308,7 +311,7 @@ onMounted(() => {
         <p class="pbx-productSettingsSectionTitle">Update demo file</p>
         <p class="pbx-productSettingsSectionDesc">
           After editing the page, copy HTML and paste into
-          <code class="pbx-text-[11px] pbx-font-sans">src/tests/demo-page.content.html</code>
+          <code class="pbx-text-[11px] pbx-font-sans">src/tests/demo/demo-page.content.html</code>
           (replace the whole file — not shipped to npm)
         </p>
       </div>
@@ -322,7 +325,7 @@ onMounted(() => {
         <HtmlActionButton
           icon="restart_alt"
           label="Restore mybuilder demo page"
-          hint="Reload demo-page.content.html"
+          hint="Reload demo/demo-page.content.html"
           @click="restoreMybuilderDemoPage"
         />
       </div>

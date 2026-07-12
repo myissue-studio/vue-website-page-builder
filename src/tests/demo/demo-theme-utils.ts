@@ -1,6 +1,6 @@
-import themes from '../utils/html-elements/themes'
+import themes from '../../utils/html-elements/themes'
 import { DEMO_PAGE_HTML } from './demo-page.html'
-import type { PageBuilderService } from '../services/PageBuilderService'
+import type { PageBuilderService } from '../../services/PageBuilderService'
 
 export function getThemeHtmlByTitle(title: string): string {
   return themes[0].themes.data.find((theme) => theme.title === title)?.html_code ?? ''

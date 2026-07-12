@@ -1,4 +1,4 @@
-import type { ThemeColorPresetSettingsInput } from '../types'
+import type { ThemeColorPresetSettingsInput } from '../../types'
 
 export type DemoThemePackId = 'fashion' | 'corporate' | 'blog'
 

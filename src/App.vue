@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import PageBuilderTest from './tests/PageBuilderTest.vue'
+import PageBuilderTest from './tests/demo/PageBuilderTest.vue'
 import DemoTopLinksBar from './Components/Homepage/DemoTopLinksBar.vue'
 import { useTranslations } from './composables/useTranslations'
 import { sharedPageBuilderStore } from './stores/shared-store'
