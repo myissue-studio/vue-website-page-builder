@@ -1088,9 +1088,18 @@ export class PageBuilderService {
       CSSArray === tailwindColors.backgroundColorVariables ||
       CSSArray === tailwindColors.textColorVariables
 
+    const isPaddingControl =
+      CSSArray === tailwindPaddingAndMargin.verticalPadding ||
+      CSSArray === tailwindPaddingAndMargin.horizontalPadding ||
+      CSSArray === tailwindPaddingAndMargin.topPadding ||
+      CSSArray === tailwindPaddingAndMargin.rightPadding ||
+      CSSArray === tailwindPaddingAndMargin.bottomPadding ||
+      CSSArray === tailwindPaddingAndMargin.leftPadding
+
     const helperButtonAnchor = this.resolveNestedButtonAnchorTarget(currentHTMLElement, {
       forBorderRadius: isBorderRadiusControl,
       forColor: isColorControl,
+      forPadding: isPaddingControl,
       classArray: CSSArray,
     })
 
@@ -1240,11 +1249,12 @@ export class PageBuilderService {
     options: {
       forBorderRadius: boolean
       forColor: boolean
+      forPadding?: boolean
       classArray: string[]
     },
   ): HTMLAnchorElement | null {
     if (currentHTMLElement.tagName === 'A') return null
-    if (!options.forBorderRadius && !options.forColor) return null
+    if (!options.forBorderRadius && !options.forColor && !options.forPadding) return null
 
     const anchors = Array.from(currentHTMLElement.querySelectorAll('a')).filter(
       (el): el is HTMLAnchorElement => el instanceof HTMLAnchorElement,
@@ -1267,7 +1277,7 @@ export class PageBuilderService {
     }
 
     // Generic fallback for button-like wrappers around a single CTA anchor.
-    if (options.forColor && anchors.length === 1) {
+    if ((options.forColor || options.forPadding) && anchors.length === 1) {
       const anchor = anchors[0]
       const className = anchor.className
       const looksLikeButton =
@@ -2508,12 +2518,23 @@ export class PageBuilderService {
    * pbx-pt-*, so the shorthand never silently overrides the directional value).
    */
   private purgeConflictingClasses(conflictArrays: string[][]): void {
-    const el = this.getElement.value
+    const el = this.getActiveStyleTarget()
     if (!el) return
+
+    const buttonAnchor = this.resolveNestedButtonAnchorTarget(el, {
+      forBorderRadius: false,
+      forColor: false,
+      forPadding: true,
+      classArray: conflictArrays.flat(),
+    })
+    // Purge on the visual target only. For product CTAs, the wrapper may keep
+    // outer spacing (e.g. pbx-pt-3) while the <a> owns the pill padding.
+    const target = buttonAnchor ?? el
+
     conflictArrays.forEach((arr) => {
       arr.forEach((cls) => {
-        if (cls !== 'none' && el.classList.contains(cls)) {
-          el.classList.remove(cls)
+        if (cls !== 'none' && target.classList.contains(cls)) {
+          target.classList.remove(cls)
         }
       })
     })

@@ -164,10 +164,22 @@
 
   /*
    * Product CTA button variant: keep white text on brand-color backgrounds.
-   * This must be more specific than the global `#pagebuilder a { color: inherit; }` rule.
+   * Use raw color (not @apply pbx-text-white) to avoid a Tailwind circular
+   * dependency with selectors that also target .pbx-text-white.
+   * Must beat `#pagebuilder a { color: inherit }` and product CTA text-inherit.
    */
-  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor {
-    @apply pbx-text-white hover:pbx-text-white;
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor,
+  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor,
+  #pagebuilder a.pbx-product-card-cta-link.pbx-text-white,
+  #pagebuilder .pbx-product-card-cta a.pbx-text-white {
+    color: #fff;
+  }
+
+  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor:hover,
+  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor:hover,
+  #pagebuilder a.pbx-product-card-cta-link.pbx-text-white:hover,
+  #pagebuilder .pbx-product-card-cta a.pbx-text-white:hover {
+    color: #fff;
   }
 
   /* Let product copy grow naturally in the builder and on saved pages. */
@@ -1657,15 +1669,37 @@
   text-decoration: underline;
 }
 
+/*
+ * #linktree buttons: chrome (padding, bg, radius, text color) lives on the <a>.
+ * Do not hardcode padding here — it would override editor Tailwind utilities
+ * (e.g. pbx-py-*) because #linktree a is more specific than a single class.
+ */
 #linktree a {
   text-decoration: none !important;
   cursor: pointer;
-  display: block;
-  padding: 18px 14px;
 }
 
 #pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
   color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
+/*
+ * Filled #linktree buttons: beat `#pagebuilder a { color: inherit }` so white
+ * (and other explicit text utilities) actually show on the pill.
+ */
+#pagebuilder #linktree a.pbx-text-white,
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
+  color: #fff;
+}
+
+#pagebuilder #linktree a.pbx-text-black {
+  color: #000;
+}
+
+#pagebuilder #linktree a.pbx-text-white:hover,
+#pagebuilder #linktree a.hover\:pbx-text-white:hover,
+#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor:hover {
+  color: #fff;
 }
 
 .pbx-reorder-highlight {

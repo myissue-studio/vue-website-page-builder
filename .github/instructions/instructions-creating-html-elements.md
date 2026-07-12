@@ -123,54 +123,20 @@ Special `href` values:
 - Email: `mailto:hello@example.com`
 - Phone: `tel:+15550000000`
 
-#### Preferred pattern (style the `#linktree` wrapper)
+#### Preferred pattern (style the `<a>` — same as product CTAs)
 
-Most helpers put background / border / flex chrome on the wrapper; the `<a>` stays class-free:
+Put **button chrome** (`pbx-bg-…`, `pbx-px-…`, `pbx-py-…`, `pbx-rounded-…`) on the **`<a>`**, not on `#linktree`.
 
-```html
-<div
-  class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white pbx-bg-myPrimaryLinkColor"
-  id="linktree"
->
-  <p>
-    <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">
-      Link to landing page
-    </a>
-  </p>
-</div>
-```
-
-Outline variant — border on the wrapper instead of fill:
+Why: the editor selects `#linktree` / `.pbx-product-card-cta`. Padding on that wrapper becomes **outer spacing**. Padding on the `<a>` grows the visible pill — matching product “Button design” CTAs.
 
 ```html
-<div
-  class="pbx-flex pbx-items-center pbx-font-medium pbx-border pbx-border-myPrimaryLinkColor pbx-text-myPrimaryLinkColor"
-  id="linktree"
->
-  <p>
-    <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">
-      Link to landing page
-    </a>
-  </p>
-</div>
-```
-
-Alignment is done by a parent flex container (`pbx-justify-start` / `center` / `end`), not on `#linktree` itself.
-
-#### Allowed pattern (style the `<a>` itself)
-
-Classes on `<a>` are normally forbidden, but **button-like** anchors are allowed (`isButtonLikeAnchor` in `non-listener-tags.ts`) when the link is inside `#linktree` / `.pbx-product-card-cta`, or uses classes like `pbx-inline-flex`, `pbx-bg-…`, `pbx-rounded…`, or `pbx-product-card-cta-link`.
-
-Example — chrome on the `<a>`:
-
-```html
-<div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white" id="linktree">
+<div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree">
   <p>
     <a
       target="_blank"
       rel="noopener noreferrer nofollow"
       href="https://www.google.com"
-      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full"
     >
       Link to landing page
     </a>
@@ -178,17 +144,42 @@ Example — chrome on the `<a>`:
 </div>
 ```
 
-#### In components and themes
+Product cards use the same idea (`pbx-product-card-cta` wrapper + styled `pbx-product-card-cta-link` on `<a>`).
 
-Filled / outline CTAs (background, border, rounded pill, etc.) must use the same `#linktree` → `<p>` → `<a>` structure — not only helpers.
+Outline variant — border/text on the `<a>`:
 
 ```html
-<div
-  class="pbx-bg-gray-900 pbx-text-white pbx-font-semibold pbx-inline-block pbx-px-8 pbx-py-3 pbx-rounded-full"
-  id="linktree"
->
+<div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree">
   <p>
-    <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com">
+    <a
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      href="https://www.google.com"
+      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-border pbx-border-myPrimaryLinkColor pbx-text-myPrimaryLinkColor pbx-rounded-full"
+    >
+      Link to landing page
+    </a>
+  </p>
+</div>
+```
+
+Alignment is done by a **parent** flex container (`pbx-justify-start` / `center` / `end`), not by putting layout chrome on `#linktree`.
+
+Classes on `<a>` are allowed for button-like anchors (`isButtonLikeAnchor` in `non-listener-tags.ts`) when inside `#linktree` / `.pbx-product-card-cta`, or with `pbx-inline-flex` / `pbx-bg-…` / `pbx-rounded…` / `pbx-product-card-cta-link`.
+
+#### In components and themes
+
+Same rule: `#linktree` → `<p>` → `<a class="…chrome…">`. Wrapper stays a thin shell.
+
+```html
+<div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree">
+  <p>
+    <a
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      href="https://www.google.com"
+      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-8 pbx-py-3 pbx-bg-gray-900 pbx-text-white pbx-rounded-full"
+    >
       Layouts and visual.
     </a>
   </p>
@@ -203,8 +194,8 @@ Plain text CTAs (`pbx-font-semibold` only, no button chrome) stay as text links 
 <!-- Never use <button> -->
 <button type="button">Click me</button>
 
-<!-- Button chrome without #linktree -->
-<div class="pbx-bg-gray-900 pbx-px-8 pbx-py-3 pbx-rounded-full">
+<!-- Chrome on #linktree (padding then pads the colored parent) -->
+<div class="pbx-bg-gray-900 pbx-px-8 pbx-py-3 pbx-rounded-full" id="linktree">
   <p><a href="https://www.google.com">Layouts and visual.</a></p>
 </div>
 
@@ -361,7 +352,7 @@ Helpers are **small, HTML-only** primitives. Comment in file: do **not** use ima
 
 - Single `<section>` per helper.
 - No `<img>`, no `getPlaceholderImageDataUrl()`.
-- **Buttons:** follow the **Buttons** section above — always `#linktree` → `<p>` → `<a>` (never `<button>`). Prefer styling the wrapper; styling the `<a>` is allowed when button-like.
+- **Buttons:** follow the **Buttons** section above — always `#linktree` → `<p>` → `<a class="…chrome…">` (never `<button>`). Put padding / bg / radius on the `<a>`, same as product CTAs.
 - YouTube helper keeps an empty `iframe` `src=""` for the editor to fill.
 - Spacers / dividers are layout-only (no fake content).
 

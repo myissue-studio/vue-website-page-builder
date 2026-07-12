@@ -1389,6 +1389,62 @@ describe('PageBuilderService', () => {
       expect(anchor.classList.contains('pbx-bg-red-500')).toBe(true)
       expect(mockStore.setElement).toHaveBeenCalledWith(wrapper)
     })
+
+    it('REGRESSION (button links): applies vertical padding to nested anchor, not #linktree wrapper', () => {
+      const wrapper = document.createElement('div')
+      wrapper.id = 'linktree'
+      wrapper.className = 'pbx-flex pbx-items-center pbx-font-medium'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+          >
+            Link
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleVerticalPadding('pbx-py-8')
+
+      expect(wrapper.classList.contains('pbx-py-8')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-2')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-8')).toBe(true)
+    })
+
+    it('REGRESSION (product CTA): applies vertical padding to nested anchor, not product-card-cta wrapper', () => {
+      const wrapper = document.createElement('div')
+      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold pbx-pt-3'
+      wrapper.innerHTML = `
+        <p>
+          <a
+            href="https://www.google.com"
+            class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+          >
+            View product
+          </a>
+        </p>
+      `
+      const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
+      expect(anchor).not.toBeNull()
+      if (!anchor) return
+
+      ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleVerticalPadding('pbx-py-10')
+
+      expect(wrapper.classList.contains('pbx-py-10')).toBe(false)
+      expect(wrapper.classList.contains('pbx-pt-3')).toBe(true)
+      expect(anchor.classList.contains('pbx-py-2')).toBe(false)
+      expect(anchor.classList.contains('pbx-py-10')).toBe(true)
+    })
   })
 
   // --- handleAddStyle / handleRemoveStyle ---
