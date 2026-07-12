@@ -31,6 +31,7 @@ npm test -- --run src/tests/utils/html-elements-structure.test.ts
 - Every **component** and **helper** must be a single paired `<section>…</section>`.
 - **Themes** are one or more top-level sections (often wrapped in `#pagebuilder`). Nested `<section>` inside `<section>` is forbidden.
 - Uneven open/close `<section>` tags will fail validation.
+- **Never put `pbx-bg-*` (or other fill) on `<section>`.** The editor selects inner wrappers, not the section, so section backgrounds cannot be seen or changed in the bg dropdown. Put band fills on the first content `div` under the section instead (see Components → Recommended skeleton).
 
 ### 2. `pbx-` Tailwind prefix
 
@@ -210,6 +211,7 @@ Plain text CTAs (`pbx-font-semibold` only, no button chrome) stay as text links 
 
 - **No contact forms** (no mail server / submit API in the page builder). Use Contact Banner, Address Block, Email Button, Phone Button instead.
 - **No fake interactive widgets** that imply backend behavior (newsletter inputs that do nothing, form fields, etc.). A CTA **link** is fine.
+- **No text overlays on images** (`pbx-absolute` caption layers on top of `<img>`). The overlay intercepts clicks, so the Image settings panel never opens and users cannot replace the image. Put captions below or beside the image instead.
 - Keep layouts simple and powerful — avoid decorative complexity.
 
 ---
@@ -240,6 +242,27 @@ Plain text CTAs (`pbx-font-semibold` only, no button chrome) stay as text links 
   </div>
 </section>
 ```
+
+When the **whole band** has a background (black hero, soft gray strip, etc.), put that class on the **first content wrapper** users click — usually the padded `div` directly under `<section>`. That is the element the editor selects for background color.
+
+```html
+<section>
+  <div class="pbx-bg-gray-100 pbx-py-20 pbx-px-4">
+    …
+  </div>
+</section>
+```
+
+**Never** put `pbx-bg-*` on `<section>`:
+
+```html
+<!-- WRONG — bg dropdown will not show/update this -->
+<section class="pbx-bg-gray-100">
+  <div class="pbx-py-20 pbx-px-4">…</div>
+</section>
+```
+
+Card fills (`pbx-bg-gray-50` on a card) stay on the card itself — that is fine when the card is what users select.
 
 Narrower content (articles, quotes) may use `pbx-max-w-3xl` / `pbx-max-w-4xl` / `pbx-max-w-5xl`.
 
@@ -382,6 +405,7 @@ Same fields as components (`title`, `html_code`, `cover_image: null`, `category`
 - Compose from existing component/helper patterns.
 - Prefer multiple sibling `<section data-component-title="…">…</section>` blocks (`data-component-title` should match the source component/helper title when reusing one).
 - May wrap everything in `<div id="pagebuilder" …>…</div>`.
+- **Never put `pbx-bg-*` on `<section>`** — same rule as components (fill on the first content wrapper).
 - Images: same rules as **new** components (`getPlaceholderImageDataUrl()`, `pbx-object-center`, aspect ratio). Do not introduce `pbx-object-top` / `object-top` in new theme HTML.
 - No nested sections.
 - Keep non-listener class rules for every section inside the theme (classes on wrappers, not on `p` / headings).
@@ -488,6 +512,7 @@ Fix by moving classes to a wrapper `<div>`.
 ### All kinds
 
 - [ ] Valid paired `<section>` tags (themes: no nesting)
+- [ ] **No `pbx-bg-*` on `<section>`** — band fills go on the first content wrapper `div`
 - [ ] Classes only on editable wrappers — not on `p` / headings / `a` / `span` / list tags
 - [ ] Prefer `pbx-` utilities; no inline styles
 - [ ] No emoji / icon glyphs in `html_code`

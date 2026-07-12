@@ -1268,23 +1268,14 @@ export class PageBuilderService {
       if (withRadiusClass) return withRadiusClass
     }
 
-    // Known wrappers where visual button styles are owned by the nested anchor.
+    // Only known button shells own nested-anchor chrome. Do NOT redirect color/padding
+    // from section/containers that merely contain a CTA (e.g. Dark Product Stage's
+    // black background was incorrectly reading the sky button color).
     if (
       currentHTMLElement.id === 'linktree' ||
       currentHTMLElement.classList.contains('pbx-product-card-cta')
     ) {
       return anchors[0] ?? null
-    }
-
-    // Generic fallback for button-like wrappers around a single CTA anchor.
-    if ((options.forColor || options.forPadding) && anchors.length === 1) {
-      const anchor = anchors[0]
-      const className = anchor.className
-      const looksLikeButton =
-        className.includes('pbx-inline-flex') ||
-        className.includes('pbx-bg-') ||
-        className.includes('pbx-rounded')
-      if (looksLikeButton) return anchor
     }
 
     return null

@@ -1445,6 +1445,34 @@ describe('PageBuilderService', () => {
       expect(anchor.classList.contains('pbx-py-2')).toBe(false)
       expect(anchor.classList.contains('pbx-py-10')).toBe(true)
     })
+
+    it('REGRESSION (section bg): does not read nested button color when section has its own background', () => {
+      const section = document.createElement('section')
+      section.className = 'pbx-bg-black pbx-text-white'
+      section.innerHTML = `
+        <div id="linktree" class="pbx-flex pbx-items-center pbx-font-medium">
+          <p>
+            <a
+              href="https://www.google.com"
+              class="pbx-inline-flex pbx-bg-sky-500 pbx-text-white pbx-rounded-full pbx-px-4 pbx-py-2"
+            >
+              Layouts and visual.
+            </a>
+          </p>
+        </div>
+      `
+      ;(mockStore as unknown as Record<string, unknown>).getElement = section
+
+      const fresh = new PageBuilderService(mockStore)
+      fresh.handleBackgroundColor(undefined)
+
+      expect(mockStore.setBackgroundColor).toHaveBeenLastCalledWith('pbx-bg-black')
+
+      fresh.handleBackgroundColor('pbx-bg-red-500')
+      expect(section.classList.contains('pbx-bg-red-500')).toBe(true)
+      expect(section.classList.contains('pbx-bg-black')).toBe(false)
+      expect(section.querySelector('a')?.classList.contains('pbx-bg-sky-500')).toBe(true)
+    })
   })
 
   // --- handleAddStyle / handleRemoveStyle ---
