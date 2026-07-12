@@ -1,7 +1,15 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import components from '../../utils/html-elements/component'
 import componentHelpers from '../../utils/html-elements/componentHelpers'
 import themes from '../../utils/html-elements/themes'
+import {
+  countSectionTags,
+  findNonListenerTagClassViolations,
+  HTML_VALIDATION_MESSAGES,
+  validateMountingHtmlStructure,
+  validateRequiresSectionWrapper,
+} from '../../utils/builder/html-component-validation'
 
 type HtmlEntry = {
   title: string
@@ -31,8 +39,17 @@ describe('HTML elements structure', () => {
 
     for (const entry of entries) {
       const html = normalizeHtml(entry.html_code)
-      expect(html).toMatch(/^<section\b/i)
-      expect(html).toContain('</section>')
+      expect(html, entry.title).toMatch(/^<section\b/i)
+
+      const sectionRequirement = validateRequiresSectionWrapper(html)
+      expect(sectionRequirement, entry.title).toBeNull()
+
+      const structure = validateMountingHtmlStructure(html)
+      expect(structure, entry.title).toBeNull()
+
+      const { opening, closing } = countSectionTags(html)
+      expect(opening, entry.title).toBeGreaterThan(0)
+      expect(opening, entry.title).toBe(closing)
     }
   })
 
@@ -42,8 +59,13 @@ describe('HTML elements structure', () => {
 
     for (const entry of entries) {
       const html = normalizeHtml(entry.html_code)
-      expect(html).toMatch(/^<section\b/i)
-      expect(html).toContain('</section>')
+      expect(html, entry.title).toMatch(/^<section\b/i)
+
+      const sectionRequirement = validateRequiresSectionWrapper(html)
+      expect(sectionRequirement, entry.title).toBeNull()
+
+      const structure = validateMountingHtmlStructure(html)
+      expect(structure, entry.title).toBeNull()
     }
   })
 
@@ -53,8 +75,14 @@ describe('HTML elements structure', () => {
 
     for (const entry of entries) {
       const html = normalizeHtml(entry.html_code)
-      expect(html).toContain('<section')
-      expect(html).toContain('</section>')
+      const sectionRequirement = validateRequiresSectionWrapper(html)
+      expect(sectionRequirement, entry.title).toBeNull()
+
+      const structure = validateMountingHtmlStructure(
+        // Themes may wrap multiple top-level sections; only check pairing/nesting.
+        html.includes('<section') ? html : `<section>${html}</section>`,
+      )
+      expect(structure, `${entry.title}: ${structure?.message ?? ''}`).toBeNull()
     }
   })
 
@@ -71,5 +99,23 @@ describe('HTML elements structure', () => {
       expect(html).toMatch(/<a[^>]*href=["'][^"']+["']/i)
       expect(html).toMatch(/<a[^>]*target=["']_blank["']/i)
     }
+  })
+
+  it('keeps classes off non-listener tags in reusable HTML entries', () => {
+    const entries = [...getComponentEntries(), ...getHelperEntries()]
+
+    for (const entry of entries) {
+      const template = document.createElement('template')
+      template.innerHTML = entry.html_code
+      const violations = findNonListenerTagClassViolations(template.content)
+
+      expect(violations, entry.title).toEqual([])
+    }
+  })
+
+  it('exposes shared uneven-section message for service + tests', () => {
+    expect(validateMountingHtmlStructure('<section><div>x</div>')).toEqual({
+      message: HTML_VALIDATION_MESSAGES.UNEVEN_SECTIONS,
+    })
   })
 })

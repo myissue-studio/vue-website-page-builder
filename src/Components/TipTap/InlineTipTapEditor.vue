@@ -17,6 +17,7 @@ import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
 import { getEditToolbarPopoverTop } from '../../utils/builder/clamp-edit-toolbar-popover-top'
 import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-toolbar-popover-events'
+import { InlineTipTapLink } from '../../utils/builder/inline-tiptap-link'
 import { delay } from '../../composables/delay'
 import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
 
@@ -318,10 +319,9 @@ const startEditor = async function () {
     content: originalHTML.value,
     extensions: [
       StarterKit.configure({
-        link: {
-          openOnClick: false,
-        },
+        link: false,
       }),
+      InlineTipTapLink,
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
@@ -369,12 +369,16 @@ const saveInlineEditor = async function () {
 }
 
 const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | null) {
-  if (!editor.value) return
+  const activeEditor = editor.value
+  const target = inlineElement.value
+  if (!activeEditor) return
 
-  await delay(300)
   try {
-    const target = inlineElement.value
-    const html = getFinalEditorHtml(editor.value)
+    const html = getFinalEditorHtml(activeEditor)
+
+    await delay(300)
+
+    if (editor.value !== activeEditor || inlineElement.value !== target) return
 
     removeDocumentMouseDownListener()
     teardownEditor(html)

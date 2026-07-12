@@ -37,6 +37,14 @@ import { loadFontFromClass } from '../utils/builder/dynamic-font-loader'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
 import { getEditorFontFamilyClasses } from '../utils/builder/font-family-map'
 import { isValidHyperlinkInput } from '../utils/builder/url-validation'
+import { NON_LISTENER_TAGS } from '../utils/builder/non-listener-tags'
+import {
+  HTML_VALIDATION_MESSAGES,
+  reportNonListenerTagClassViolations,
+  validateMountingHtmlStructure,
+  validateRequiresSectionWrapper,
+  validateSectionNotAllowedInElementHtml,
+} from '../utils/builder/html-component-validation'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
@@ -133,7 +141,7 @@ export class PageBuilderService {
   private getComponent: ComputedRef<ComponentObject | null>
   private getElement: ComputedRef<HTMLElement | null>
   private getComponentArrayAddMethod: ComputedRef<string | null>
-  private NoneListernesTags: string[]
+  private NoneListernesTags: readonly string[]
   private hasStartedEditing: boolean = false
   // Hold data from Database or Backend for updated post
   private originalComponents: BuilderResourceData | undefined = undefined
@@ -191,34 +199,7 @@ export class PageBuilderService {
       () => this.pageBuilderStateStore.getComponentArrayAddMethod,
     )
 
-    this.NoneListernesTags = [
-      'P',
-      'H1',
-      'H2',
-      'H3',
-      'H4',
-      'H5',
-      'H6',
-      'IFRAME',
-      'UL',
-      'OL',
-      'LI',
-      'EM',
-      'STRONG',
-      'B',
-      'A',
-      'SPAN',
-      'BLOCKQUOTE',
-      'BR',
-      'PRE',
-      'CODE',
-      'MARK',
-      'DEL',
-      'INS',
-      'U',
-      'FIGURE',
-      'FIGCAPTION',
-    ]
+    this.NoneListernesTags = NON_LISTENER_TAGS
   }
 
   // ---------------------------------------------------------------------------
@@ -1520,6 +1501,10 @@ export class PageBuilderService {
     }
   }
 
+  private reportNonListenerTagClassViolations(root: ParentNode): void {
+    reportNonListenerTagClassViolations(root)
+  }
+
   /**
    * Toggles the visibility of the TipTap modal for rich text editing.
    * @param {boolean} status - Whether to show or hide the modal.
@@ -2306,6 +2291,8 @@ export class PageBuilderService {
 
     // Parse the HTML content of the clonedComponent using the DOMParser
     const doc = parser.parseFromString(clonedComponent.html_code || '', 'text/html')
+
+    this.reportNonListenerTagClassViolations(doc)
 
     // Selects all elements within the HTML document, including elements like:
     const elements = doc.querySelectorAll('*')
@@ -5073,16 +5060,12 @@ export class PageBuilderService {
    */
   public async applyModifiedHTML(htmlString: string): Promise<string | null> {
     if (!htmlString || (typeof htmlString === 'string' && htmlString.length === 0)) {
-      return this.translate(
-        'No HTML content was provided. Please ensure a valid HTML string is passed.',
-      )
+      return this.translate(HTML_VALIDATION_MESSAGES.NO_HTML_CONTENT)
     }
 
-    // Check if the htmlString contains any <section> tags
-    if (/<section[\s>]/i.test(htmlString)) {
-      return this.translate(
-        'Error: The <section> tag cannot be used as it is already included inside this component.',
-      )
+    const sectionInElementError = validateSectionNotAllowedInElementHtml(htmlString)
+    if (sectionInElementError) {
+      return this.translate(sectionInElementError.message)
     }
 
     const tempDiv = document.createElement('div')
@@ -5091,7 +5074,7 @@ export class PageBuilderService {
     const parsedElement = tempDiv.firstElementChild as HTMLElement | null
 
     if (!parsedElement) {
-      return this.translate('Could not parse element from HTML string.')
+      return this.translate(HTML_VALIDATION_MESSAGES.COULD_NOT_PARSE_ELEMENT)
     }
 
     // Replace the actual DOM element
@@ -5113,65 +5096,14 @@ export class PageBuilderService {
     htmlString: string,
     options?: { logError?: boolean },
   ): string | null {
-    // Trim HTML string
-    const trimmedData = htmlString.trim()
-    const openingSectionMatches = htmlString.match(/<section\b[^>]*>/gi) || []
-    const closingSectionMatches = htmlString.match(/<\/section>/gi) || []
+    const validation = validateMountingHtmlStructure(htmlString)
+    if (!validation) return null
 
-    if (!htmlString || htmlString.trim().length === 0) {
-      const error = this.translate(
-        'No HTML content was provided. Please ensure a valid HTML string is passed.',
-      )
-      if (options && options.logError) {
-        console.error(error)
-        // Behavior
-        return error
-      }
-      // default behavior
-      return error
+    const error = this.translate(validation.message)
+    if (options?.logError) {
+      console.error(error)
     }
-
-    if (openingSectionMatches.length !== closingSectionMatches.length) {
-      const error = this.translate(
-        'Uneven <section> tags detected in the provided HTML. Each component must be wrapped in its own properly paired <section>...</section>. Ensure that all <section> tags have a matching closing </section> tag.',
-      )
-
-      if (options && options.logError) {
-        console.error(error)
-        return error
-      }
-
-      return error
-    }
-
-    const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = trimmedData
-    const nestedSection = tempDiv.querySelector('section section')
-    if (nestedSection) {
-      const error = this.translate(
-        'Nested <section> tags are not allowed. Please ensure that no <section> is placed inside another <section>.',
-      )
-      if (options && options.logError) {
-        console.error(error)
-        return error
-      }
-      return error
-    }
-
-    // Return error since JSON data has been passed to mount HTML to DOM
-    if (trimmedData.startsWith('[') || trimmedData.startsWith('{')) {
-      const error = this.translate(
-        'Brackets [] or curly braces {} are not valid HTML. They are used for data formats like JSON.',
-      )
-      if (options && options.logError) {
-        console.error(error)
-        return error
-      }
-
-      return error
-    }
-
-    return null
+    return error
   }
 
   /**
@@ -5183,15 +5115,9 @@ export class PageBuilderService {
     // Trim HTML string
     const trimmedData = htmlString.trim()
 
-    const openingSectionMatches = htmlString.match(/<section\b[^>]*>/gi) || []
-
-    if (openingSectionMatches.length === 0) {
-      const error = this.translate(
-        'No <section> tags found. Each component must be wrapped in a <section> tag.',
-      )
-      if (error) {
-        return error
-      }
+    const missingSectionError = validateRequiresSectionWrapper(htmlString)
+    if (missingSectionError) {
+      return this.translate(missingSectionError.message)
     }
 
     const validationError = this.validateMountingHTML(trimmedData)
@@ -5235,6 +5161,10 @@ export class PageBuilderService {
     try {
       const parser = new DOMParser()
       const doc = parser.parseFromString(htmlString, 'text/html')
+
+      // Catch bad reusable HTML on every mount path (startBuilder, draft restore,
+      // history), not only when adding a component via cloneCompObjForDOMInsertion.
+      this.reportNonListenerTagClassViolations(doc)
 
       const importedPageBuilder = doc.querySelector('#pagebuilder') as HTMLElement | null
       const importedPageSettings: PageSettings | null = importedPageBuilder
