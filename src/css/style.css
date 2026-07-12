@@ -1679,6 +1679,35 @@
   cursor: pointer;
 }
 
+/*
+ * Keep button/CTA labels inside the page width. Long unbroken strings (and TipTap
+ * edits on the same anchors) must wrap instead of overflowing the viewport.
+ */
+#pagebuilder a.pbx-inline-flex,
+#pagebuilder #linktree,
+#pagebuilder .pbx-product-card-cta {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#pagebuilder #linktree > *,
+#pagebuilder #linktree p {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#pagebuilder #linktree a,
+#pagebuilder a.pbx-inline-flex,
+#pagebuilder a.pbx-product-card-cta-link,
+#pagebuilder .pbx-product-card-cta a {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 #pagebuilder #linktree a.pbx-text-myPrimaryLinkColor {
   color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
 }
