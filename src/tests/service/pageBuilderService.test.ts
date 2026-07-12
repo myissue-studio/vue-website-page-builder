@@ -1052,7 +1052,7 @@ describe('PageBuilderService', () => {
       sidebarBtn.type = 'button'
       document.body.appendChild(sidebarBtn)
 
-      mockStore.setElement.mockClear()
+      vi.mocked(mockStore.setElement).mockClear()
       await service.selectEditableElement(sidebarBtn, false)
 
       expect(sidebarBtn.hasAttribute('selected')).toBe(false)
