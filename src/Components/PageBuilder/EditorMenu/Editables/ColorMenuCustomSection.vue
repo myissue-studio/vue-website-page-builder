@@ -27,7 +27,7 @@ const { translate } = useTranslations()
     <span class="pbx-flex-1">{{ translate('Custom color') }}</span>
     <span
       v-if="modelValue"
-      class="pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
+      class="pbx-h-3 pbx-w-3 pbx-shrink-0 pbx-rounded-full pbx-border pbx-border-solid pbx-border-gray-200"
       :style="{ backgroundColor: modelValue }"
       aria-hidden="true"
     ></span>

@@ -1932,6 +1932,14 @@ export class PageBuilderService {
     if (!(target instanceof Element)) return null
 
     const pagebuilder = this.getBuilderCanvasElement()
+    if (!pagebuilder) return null
+
+    // Clicks outside the canvas (right sidebar padding controls, top chrome, etc.)
+    // must never become selection targets. BUTTON/DIV in builder UI are "editable"
+    // by tag rules, so walking ancestors without this check selects sidebar buttons
+    // and then style panels mutate the UI instead of the canvas.
+    if (!pagebuilder.contains(target)) return null
+
     let current: Element | null = target
 
     while (current && current !== pagebuilder) {
@@ -2023,13 +2031,17 @@ export class PageBuilderService {
 
     const prosemirror = inlineElement.querySelector<HTMLElement>('.ProseMirror')
     const originalHtml = inlineElement.getAttribute('data-pbx-inline-original-html') ?? ''
-    // Prefer the Vue store's live model (updated on every TipTap onUpdate) because
-    // DOM reads from ProseMirror can lag behind the editor state in some cases.
+    // Prefer the live ProseMirror DOM. Style panels can mutate classes on nodes
+    // inside the editor (e.g. button <a> padding) without updating TipTap's model;
+    // committing the store/model HTML would drop those changes.
+    const liveDomHtml = prosemirror?.innerHTML ?? inlineElement.innerHTML
     const modelHtml = this.pageBuilderStateStore.getTextAreaVueModel
     const htmlSource =
-      typeof modelHtml === 'string' && modelHtml.trim().length > 0
-        ? modelHtml
-        : (prosemirror?.innerHTML ?? inlineElement.innerHTML)
+      typeof liveDomHtml === 'string' && liveDomHtml.trim().length > 0
+        ? liveDomHtml
+        : typeof modelHtml === 'string' && modelHtml.trim().length > 0
+          ? modelHtml
+          : ''
     const html = finalizeInlineTipTapHtml(htmlSource, originalHtml)
 
     inlineElement.innerHTML = html
@@ -2157,6 +2169,18 @@ export class PageBuilderService {
         elementId: element?.id ?? null,
         key: this.getLocalStorageItemName.value,
       })
+      return
+    }
+
+    if (!pagebuilder.contains(element) && element !== pagebuilder) {
+      this.debugLog(
+        'warn',
+        'selectEditableElement(): refusing element outside #pagebuilder',
+        {
+          elementTag: element?.tagName,
+          elementId: element?.id ?? null,
+        },
+      )
       return
     }
 

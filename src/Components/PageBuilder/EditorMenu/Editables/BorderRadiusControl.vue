@@ -94,7 +94,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderRadiusGlobal(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{
+            <span class="pbx-block pbx-break-words">{{
               borderRadiusGlobal || translate('Select')
             }}</span>
           </template>
@@ -115,7 +115,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderRadiusTopLeft(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{
+            <span class="pbx-block pbx-break-words">{{
               borderRadiusTopLeft || translate('Select')
             }}</span>
           </template>
@@ -133,7 +133,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderRadiusTopRight(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{
+            <span class="pbx-block pbx-break-words">{{
               borderRadiusTopRight || translate('Select')
             }}</span>
           </template>
@@ -151,7 +151,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderRadiusBottomleft(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{
+            <span class="pbx-block pbx-break-words">{{
               borderRadiusBottomleft || translate('Select')
             }}</span>
           </template>
@@ -169,7 +169,7 @@ watch(
           @select="(value) => pageBuilderService.handleBorderRadiusBottomRight(value || undefined)"
         >
           <template #button>
-            <span class="pbx-block pbx-truncate">{{
+            <span class="pbx-block pbx-break-words">{{
               borderRadiusBottomRight || translate('Select')
             }}</span>
           </template>

@@ -990,6 +990,114 @@ describe('PageBuilderService', () => {
     })
   })
 
+  // --- findEditableElementFromEventTarget ---
+  describe('findEditableElementFromEventTarget', () => {
+    it('REGRESSION (TipTap + sidebar): returns null for right-sidebar padding buttons', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div id="linktree"><p><a href="https://www.google.com">CTA</a></p></div>
+        </section>
+      `
+
+      const sidebar = document.createElement('aside')
+      sidebar.id = 'pagebuilder-right-menu'
+      const paddingBtn = document.createElement('button')
+      paddingBtn.type = 'button'
+      paddingBtn.className = 'pbx-flex pbx-h-7 pbx-w-7'
+      sidebar.appendChild(paddingBtn)
+      document.body.appendChild(sidebar)
+
+      expect(service.findEditableElementFromEventTarget(paddingBtn)).toBeNull()
+
+      document.body.removeChild(sidebar)
+    })
+
+    it('returns the canvas editable wrapper for clicks inside #pagebuilder', () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div id="editable-wrapper" class="pbx-break-words">
+            <p><a href="https://www.google.com">CTA</a></p>
+          </div>
+        </section>
+      `
+
+      const wrapper = pagebuilder.querySelector<HTMLElement>('#editable-wrapper')
+      const anchor = pagebuilder.querySelector<HTMLAnchorElement>('#editable-wrapper a')
+      expect(wrapper).not.toBeNull()
+      expect(anchor).not.toBeNull()
+      if (!wrapper || !anchor) return
+
+      expect(service.findEditableElementFromEventTarget(anchor)).toBe(wrapper)
+      expect(service.findEditableElementFromEventTarget(wrapper)).toBe(wrapper)
+    })
+
+    it('REGRESSION (TipTap + sidebar): selectEditableElement refuses outside-canvas elements', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const canvasEl = document.createElement('div')
+      canvasEl.id = 'canvas-selected'
+      pagebuilder.appendChild(canvasEl)
+
+      const sidebarBtn = document.createElement('button')
+      sidebarBtn.type = 'button'
+      document.body.appendChild(sidebarBtn)
+
+      mockStore.setElement.mockClear()
+      await service.selectEditableElement(sidebarBtn, false)
+
+      expect(sidebarBtn.hasAttribute('selected')).toBe(false)
+      expect(mockStore.setElement).not.toHaveBeenCalledWith(sidebarBtn)
+
+      document.body.removeChild(sidebarBtn)
+    })
+  })
+
+  // --- TipTap commit keeps live DOM styles ---
+  describe('finishActiveInlineTipTapEditorFromDom', () => {
+    it('REGRESSION (TipTap styles): keeps classes applied to live ProseMirror DOM on commit', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section>
+          <div
+            id="linktree"
+            data-pbx-inline-tiptap
+            data-pbx-inline-original-html='<p><a href="https://www.google.com">CTA</a></p>'
+          >
+            <div class="ProseMirror">
+              <p><a href="https://www.google.com" class="pbx-inline-flex pbx-py-8">CTA</a></p>
+            </div>
+          </div>
+        </section>
+      `
+
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
+      // Stale TipTap model without the padding class that was applied via the sidebar.
+      ;(mockStore as unknown as Record<string, unknown>).getTextAreaVueModel =
+        '<p><a href="https://www.google.com" class="pbx-inline-flex">CTA</a></p>'
+
+      await service.finishActiveInlineTipTapEditorFromDom(null)
+
+      const linktree = pagebuilder.querySelector('#linktree')
+      expect(linktree).not.toBeNull()
+      expect(linktree?.hasAttribute('data-pbx-inline-tiptap')).toBe(false)
+      expect(linktree?.innerHTML).toContain('pbx-py-8')
+      expect(mockStore.setInlineTipTapEditor).toHaveBeenCalledWith(false)
+    })
+  })
+
   // --- sanitizeForLocalStorage ---
   describe('sanitizeForLocalStorage', () => {
     it('converts to lowercase', () => {
