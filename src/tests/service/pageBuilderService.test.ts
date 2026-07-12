@@ -339,6 +339,49 @@ describe('PageBuilderService', () => {
       expect(mockStore.setElement).toHaveBeenCalledWith(selectable)
     })
 
+    it('REGRESSION (button links): reads background color from nested anchor button on initial selection', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="button-link-1" data-component-title="CTA">
+          <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white" id="linktree">
+            <p>
+              <a
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                href="https://www.google.com"
+                class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
+              >
+                Link to landing page
+              </a>
+            </p>
+          </div>
+        </section>
+      `
+
+      await (
+        service as unknown as {
+          addListenersToEditableElements: () => Promise<void>
+        }
+      ).addListenersToEditableElements()
+
+      const wrapper = pagebuilder.querySelector<HTMLElement>('#linktree')
+      const anchor = pagebuilder.querySelector<HTMLAnchorElement>('#linktree a')
+      expect(wrapper).not.toBeNull()
+      expect(anchor).not.toBeNull()
+      if (!wrapper || !anchor) return
+
+      anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(wrapper.hasAttribute('selected')).toBe(true)
+      expect(mockStore.setElement).toHaveBeenCalledWith(wrapper)
+      expect(mockStore.setBackgroundColor).toHaveBeenLastCalledWith('pbx-bg-myPrimaryLinkColor')
+    })
+
     it('clears stale singleton interaction state so click selection is not blocked on reopen', async () => {
       ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = true
       ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
