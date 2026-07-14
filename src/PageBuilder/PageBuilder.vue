@@ -822,7 +822,7 @@ const ensureBuilderInitialized = function () {
 
 const pbxBuilderWrapper = ref<HTMLElement | null>(null)
 const pageBuilderCanvas = ref<HTMLElement | null>(null)
-const editToolbarPinned = ref(true)
+const editToolbarPinned = ref(false)
 let panelPositionRaf = 0
 let panelPositionObserver: MutationObserver | null = null
 let builderScrollTop = 0
