@@ -17,11 +17,6 @@ const pageBuilderStateStore = sharedPageBuilderStore
 
 const isPadding = computed(() => props.mode === 'padding')
 
-const boxBgColor = computed(() => (isPadding.value ? 'pbx-bg-emerald-50/40' : 'pbx-bg-amber-50/40'))
-const boxBorderColor = computed(() =>
-  isPadding.value ? 'pbx-border-emerald-200/60' : 'pbx-border-amber-200/60',
-)
-
 const vertical = ref<string | null>(null)
 const horizontal = ref<string | null>(null)
 const top = ref<string | null>(null)
@@ -231,61 +226,54 @@ function stepLeft(dir: 1 | -1) {
         {{ translate(isPadding ? 'Padding' : 'Margin') }}
       </div>
 
-      <!-- Box model -->
       <div
-        class="pbx-relative pbx-rounded-full pbx-border pbx-border-solid pbx-p-8 pbx-pt-8 pbx-flex pbx-items-center pbx-justify-center"
-        :class="[boxBgColor, boxBorderColor]"
+        class="pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3"
       >
-        <div class="pbx-flex pbx-flex-col pbx-items-center pbx-justify-center">
-          <!-- Top -->
-          <div class="pbx-mb-3 pbx-flex pbx-justify-center">
-            <SpacingStepper
-              :value="effectiveTop()"
-              :side-label="translate('top')"
-              @decrement="stepTop(-1)"
-              @increment="stepTop(1)"
-            />
-          </div>
+        <div
+          class="pbx-grid pbx-items-center pbx-justify-items-center pbx-gap-y-2"
+          style="grid-template-columns: 4.75rem minmax(4.75rem, 1fr) 4.75rem"
+        >
+          <div></div>
+          <SpacingStepper
+            :value="effectiveTop()"
+            :side-label="translate('top')"
+            @decrement="stepTop(-1)"
+            @increment="stepTop(1)"
+          />
+          <div></div>
 
-          <!-- Middle: left | element | right -->
+          <SpacingStepper
+            :value="effectiveLeft()"
+            :side-label="translate('left')"
+            compact
+            @decrement="stepLeft(-1)"
+            @increment="stepLeft(1)"
+          />
+
           <div
-            class="pbx-items-center pbx-gap-2"
-            style="display: grid; grid-template-columns: auto 1fr auto"
+            class="pbx-flex pbx-h-14 pbx-w-20 pbx-items-center pbx-justify-center pbx-rounded-md pbx-border pbx-border-solid pbx-border-gray-300 pbx-bg-gray-50"
           >
-            <SpacingStepper
-              :value="effectiveLeft()"
-              :side-label="translate('left')"
-              compact
-              @decrement="stepLeft(-1)"
-              @increment="stepLeft(1)"
-            />
-
-            <div
-              class="pbx-flex pbx-h-10 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200/80 pbx-bg-white pbx-shadow-sm"
-            >
-              <span class="pbx-select-none pbx-text-[10px] pbx-font-medium pbx-text-gray-400">{{
-                translate('element')
-              }}</span>
-            </div>
-
-            <SpacingStepper
-              :value="effectiveRight()"
-              :side-label="translate('right')"
-              compact
-              @decrement="stepRight(-1)"
-              @increment="stepRight(1)"
-            />
+            <span class="pbx-select-none pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-text-gray-500">
+              {{ translate('element') }}
+            </span>
           </div>
 
-          <!-- Bottom -->
-          <div class="pbx-mt-3 pbx-flex pbx-justify-center">
-            <SpacingStepper
-              :value="effectiveBottom()"
-              :side-label="translate('bottom')"
-              @decrement="stepBottom(-1)"
-              @increment="stepBottom(1)"
-            />
-          </div>
+          <SpacingStepper
+            :value="effectiveRight()"
+            :side-label="translate('right')"
+            compact
+            @decrement="stepRight(-1)"
+            @increment="stepRight(1)"
+          />
+
+          <div></div>
+          <SpacingStepper
+            :value="effectiveBottom()"
+            :side-label="translate('bottom')"
+            @decrement="stepBottom(-1)"
+            @increment="stepBottom(1)"
+          />
+          <div></div>
         </div>
       </div>
     </template>
