@@ -2173,14 +2173,10 @@ export class PageBuilderService {
     }
 
     if (!pagebuilder.contains(element) && element !== pagebuilder) {
-      this.debugLog(
-        'warn',
-        'selectEditableElement(): refusing element outside #pagebuilder',
-        {
-          elementTag: element?.tagName,
-          elementId: element?.id ?? null,
-        },
-      )
+      this.debugLog('warn', 'selectEditableElement(): refusing element outside #pagebuilder', {
+        elementTag: element?.tagName,
+        elementId: element?.id ?? null,
+      })
       return
     }
 
@@ -3001,7 +2997,6 @@ export class PageBuilderService {
 
   public async undo() {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await sleep(300)
     const baseKey = this.getHistoryBaseKey()
     if (!baseKey) return
 
@@ -3020,7 +3015,6 @@ export class PageBuilderService {
 
   public async redo() {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await sleep(300)
     const baseKey = this.getHistoryBaseKey()
     if (!baseKey) return
 
