@@ -1226,15 +1226,11 @@ defineExpose({ openDeleteConfirm: handleDeleteElement })
         <template v-if="isInsideSlider">
           <div
             @click="showSliderModal = true"
-            :class="
-              sliderAutoRotate
-                ? 'pbx-bg-myPrimaryLinkColor pbx-text-white'
-                : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor'
-            "
-            class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+            :class="sliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor pbx-text-white' : ''"
+            class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 pbx-text-myPrimaryDarkGrayColor"
             :title="translate('Slider Settings')"
           >
-            <span class="material-symbols-outlined"> settings </span>
+            <span class="material-symbols-outlined"> adjust </span>
           </div>
         </template>
 
