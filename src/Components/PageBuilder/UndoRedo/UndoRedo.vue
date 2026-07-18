@@ -5,13 +5,13 @@ import GlobalLoader from '../../../Components/Loaders/GlobalLoader.vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
 import CustomDropdown from '../../Inputs/CustomDropdown.vue'
-import TimelineIcon from '../../Icons/TimelineIcon.vue'
 import {
   buildHistoryHint,
   buildHistoryHintParts,
   getHistoryPageTitle,
   type HistorySnapshotLike,
 } from '../../../utils/builder/history-snapshot-summary'
+import SliderIcon from '@/Components/Icons/SliderIcon.vue'
 
 interface HistoryDropdownOption {
   value: string
@@ -147,10 +147,14 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
             {{ translate('Open history') }}
             {{ historyIndex + 1 }}/{{ historyLength }}
           </span>
-          <span v-if="historyLength >= 1" class="pbx-history-trigger-count" aria-hidden="true">
+          <span v-if="historyLength >= 1" class="pbx-text-[10px]" n="true">
             {{ historyLength }}
           </span>
-          <TimelineIcon />
+          <div
+            v-if="historyLength >= 1"
+            class="pbx-h-4 pbx-border-l pbx-border-gray-500 pbx-mx-1"
+          ></div>
+          <SliderIcon size="12" />
         </span>
       </template>
 
