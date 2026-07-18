@@ -25,6 +25,19 @@ describe('LocalStorageManager history', () => {
     expect(LocalStorageManager.getHistory('page')).toHaveLength(1)
   })
 
+  it('does not add duplicate undo states when pageSettings classes only differ by token order', () => {
+    LocalStorageManager.addToHistory('page', {
+      components: [{ title: 'Text', html_code: '<section><p>Hello</p></section>' }],
+      pageSettings: { classes: 'pbx-bg-white pbx-font-jost', style: '' },
+    })
+    const history = LocalStorageManager.addToHistory('page', {
+      components: [{ title: 'Text', html_code: '<section><p>Hello</p></section>' }],
+      pageSettings: { classes: 'pbx-font-jost pbx-bg-white', style: '  ' },
+    })
+
+    expect(history).toHaveLength(1)
+  })
+
   it('adds real content changes and truncates redo history from the current index', () => {
     LocalStorageManager.addToHistory('page', {
       components: [{ title: 'Text', html_code: '<section><p>One</p></section>' }],
@@ -66,5 +79,25 @@ describe('LocalStorageManager history', () => {
     expect(history).toHaveLength(20)
     expect(JSON.stringify(history)).not.toContain('<p>0</p>')
     expect(JSON.stringify(history)).toContain('<p>24</p>')
+  })
+
+  it('REGRESSION (first edit): seeding baseline then next state leaves an undo target', () => {
+    const baseline = {
+      components: [{ title: 'Text', html_code: '<section><p>Before</p></section>' }],
+      pageSettings: { classes: '', style: '' },
+    }
+    const next = {
+      components: [{ title: 'Text', html_code: '<section><p>After</p></section>' }],
+      pageSettings: { classes: '', style: '' },
+    }
+
+    // Mimic PageBuilderService first-undoable-save: empty history → seed previous draft.
+    expect(LocalStorageManager.getHistory('page')).toHaveLength(0)
+    LocalStorageManager.addToHistory('page', baseline)
+    const history = LocalStorageManager.addToHistory('page', next)
+
+    expect(history).toHaveLength(2)
+    expect(JSON.stringify(history[0])).toContain('Before')
+    expect(JSON.stringify(history[1])).toContain('After')
   })
 })

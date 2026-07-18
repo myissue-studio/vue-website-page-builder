@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 interface DropdownOption {
   value: string
   label?: string
+  title?: string
+  pageTitle?: string
+  hint?: string
+  position?: string
   disabled?: boolean
 }
 
@@ -15,12 +23,14 @@ const props = withDefaults(
     buttonClass?: string
     menuClass?: string
     menuItemClass?: string
+    disabled?: boolean
   }>(),
   {
     id: undefined,
     buttonClass: 'pbx-myPrimarySelect pbx-w-full pbx-text-left',
     menuClass: '',
     menuItemClass: '',
+    disabled: false,
   },
 )
 
@@ -31,6 +41,7 @@ const emit = defineEmits<{
 
 const rootRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
+const attrs = useAttrs()
 
 const selectedOption = computed(() => {
   return props.options.find((option) => option.value === props.modelValue) || null
@@ -43,6 +54,7 @@ const selectedLabel = computed(() => {
 const optionLabel = (option: DropdownOption) => option.label || option.value
 
 const toggle = () => {
+  if (props.disabled) return
   isOpen.value = !isOpen.value
 }
 
@@ -86,6 +98,9 @@ onBeforeUnmount(() => {
       class="pbx-custom-dropdown__trigger"
       :class="buttonClass"
       :aria-expanded="isOpen"
+      aria-haspopup="listbox"
+      :disabled="disabled"
+      v-bind="attrs"
       @click="toggle"
     >
       <slot name="button" :selected-option="selectedOption">
@@ -205,6 +220,26 @@ onBeforeUnmount(() => {
 .pbx-custom-dropdown__item:hover:not(:disabled):not(.pbx-custom-dropdown__item--selected)
   :deep(span) {
   color: inherit;
+}
+
+/* Quiet/panel menus (e.g. history cards) — no brand fill or forced white text. */
+.pbx-custom-dropdown__menu--quiet .pbx-custom-dropdown__item,
+.pbx-custom-dropdown__menu--quiet .pbx-custom-dropdown__item:hover:not(:disabled),
+.pbx-custom-dropdown__menu--quiet .pbx-custom-dropdown__item--selected,
+.pbx-custom-dropdown__menu--quiet .pbx-custom-dropdown__item--selected:hover:not(:disabled) {
+  padding: 0;
+  background-color: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pbx-custom-dropdown__menu--quiet
+  .pbx-custom-dropdown__item:hover:not(:disabled)
+  :deep(span),
+.pbx-custom-dropdown__menu--quiet
+  .pbx-custom-dropdown__item--selected:hover:not(:disabled)
+  :deep(span) {
+  color: unset;
 }
 
 .pbx-custom-dropdown__item--selected,

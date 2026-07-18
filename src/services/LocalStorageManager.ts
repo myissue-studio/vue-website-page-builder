@@ -34,7 +34,61 @@ export class LocalStorageManager {
 
     return {
       components: snapshot?.components ?? [],
-      pageSettings: snapshot?.pageSettings ?? null,
+      pageSettings: this.normalizePageSettingsForUndo(snapshot?.pageSettings),
+    }
+  }
+
+  private static normalizePageSettingsForUndo(pageSettings: unknown): unknown {
+    if (!pageSettings || typeof pageSettings !== 'object') {
+      return pageSettings ?? null
+    }
+
+    const settings = pageSettings as {
+      classes?: unknown
+      style?: unknown
+      meta?: unknown
+    }
+
+    const classes =
+      typeof settings.classes === 'string'
+        ? Array.from(
+            new Set(
+              settings.classes
+                .split(/\s+/)
+                .map((token) => token.trim())
+                .filter(Boolean),
+            ),
+          )
+            .sort()
+            .join(' ')
+        : settings.classes
+
+    const style =
+      typeof settings.style === 'string' ? settings.style.trim() : (settings.style ?? '')
+
+    const meta =
+      settings.meta && typeof settings.meta === 'object'
+        ? {
+            title:
+              typeof (settings.meta as { title?: unknown }).title === 'string'
+                ? (settings.meta as { title: string }).title.trim()
+                : '',
+            description:
+              typeof (settings.meta as { description?: unknown }).description === 'string'
+                ? (settings.meta as { description: string }).description.trim()
+                : '',
+          }
+        : { title: '', description: '' }
+
+    // Treat missing/empty meta the same so older drafts without meta do not
+    // create history entries when a save adds empty title/description fields.
+    const normalizedMeta =
+      meta.title || meta.description ? meta : { title: '', description: '' }
+
+    return {
+      classes: classes ?? '',
+      style,
+      meta: normalizedMeta,
     }
   }
 

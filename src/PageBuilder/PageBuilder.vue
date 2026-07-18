@@ -1652,9 +1652,9 @@ onBeforeUnmount(() => {
       id="pagebuilder-main"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-relative pbx-h-full pbx-flex pbx-pb-2 pbx-gap-2"
       style="
-        background-color: #ffffff;
-        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-        background-size: 20px 20px;
+        background-color: rgb(255 255 255);
+        background-image: radial-gradient(rgb(229, 231, 235) 0px, #ffffff00 1px);
+        background-size: 15px 15px;
       "
     >
       <main
