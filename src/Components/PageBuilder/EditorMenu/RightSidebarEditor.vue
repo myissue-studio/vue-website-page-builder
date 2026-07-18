@@ -5,6 +5,8 @@ import ClassEditor from './Editables/ClassEditor.vue'
 import StyleEditor from './Editables/StyleEditor.vue'
 import ElementHtmlEditorSettingsEditor from './Editables/ElementHtmlEditorSettingsEditor.vue'
 import ImageEditor from './Editables/ImageEditor.vue'
+import ProductSectionSettingsEditor from './Editables/ProductSectionSettingsEditor.vue'
+import SliderSettingsEditor from './Editables/SliderSettingsEditor.vue'
 import OpacityEditor from './Editables/OpacityEditor.vue'
 import PaddingControl from './Editables/PaddingControl.vue'
 import MarginControl from './Editables/MarginControl.vue'
@@ -32,7 +34,12 @@ const { showToast } = useToast()
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 
-defineEmits(['closeEditor'])
+defineEmits([
+  'closeEditor',
+  'open-image-settings',
+  'open-product-section-settings',
+  'open-slider-settings',
+])
 
 type SidebarTab = 'styles' | 'settings' | 'tools'
 
@@ -55,6 +62,17 @@ const showImageEditor = computed(() => {
   const element = getElement.value
   if (!element) return false
   return element.tagName === 'IMG' || Boolean(pageBuilderStateStore.getBasePrimaryImage)
+})
+
+const showProductSectionSettings = computed(() => {
+  void getElement.value
+  void pageBuilderStateStore.getComponent
+  return pageBuilderService.isSelectedProductSection()
+})
+
+const showSliderSettings = computed(() => {
+  const element = getElement.value
+  return !!(element instanceof HTMLElement && element.closest('[data-isl]'))
 })
 
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -207,7 +225,15 @@ const closeHTMLSettings = async function () {
     >
       <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <div v-show="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
-          <ImageEditor v-if="showImageEditor" />
+          <ImageEditor v-if="showImageEditor" @open="$emit('open-image-settings')" />
+          <ProductSectionSettingsEditor
+            v-if="showProductSectionSettings"
+            @open="$emit('open-product-section-settings')"
+          />
+          <SliderSettingsEditor
+            v-if="showSliderSettings"
+            @open="$emit('open-slider-settings')"
+          />
           <OpacityEditor />
           <PaddingControl />
           <MarginControl />

@@ -2,12 +2,17 @@
 import { computed, ref, inject, watch, onMounted, nextTick } from 'vue'
 import MediaLibraryModal from '../../../Modals/MediaLibraryModal.vue'
 import EditorAccordion from '../EditorAccordion.vue'
+import SliderIcon from '../../../Icons/SliderIcon.vue'
 import { sharedPageBuilderStore } from '../../../../stores/shared-store'
 import { preloadImage } from '../../../../utils/preload-image'
 import { sleep } from '../../../../utils/sleep'
 import { useTranslations } from '../../../../composables/useTranslations'
 
 const { translate } = useTranslations()
+
+const emit = defineEmits<{
+  open: []
+}>()
 
 const pageBuilderStateStore = sharedPageBuilderStore
 const customMediaComponent = inject<Record<string, unknown> | null>('CustomMediaComponent', null)
@@ -121,6 +126,21 @@ const loadingImage = async function (imageURL: string) {
           {{ translate('No image has been selected.') }}
         </p>
       </div>
+
+      <button type="button" class="pbx-pageDesignOpenButton" @click="emit('open')">
+        <span class="pbx-pageDesignOpenButtonIcon">
+          <SliderIcon />
+        </span>
+        <span class="pbx-pageDesignOpenButtonText">
+          <span class="pbx-pageDesignOpenButtonLabel">{{ translate('Open image settings') }}</span>
+          <span class="pbx-pageDesignOpenButtonHint">
+            {{ translate('Fit, crop focus & alt text') }}
+          </span>
+        </span>
+        <span class="pbx-pageDesignOpenButtonArrow material-symbols-outlined" aria-hidden="true">
+          arrow_forward
+        </span>
+      </button>
     </template>
   </EditorAccordion>
 
