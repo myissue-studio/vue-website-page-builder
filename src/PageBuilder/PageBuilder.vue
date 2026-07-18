@@ -1820,7 +1820,14 @@ onBeforeUnmount(() => {
               : 'pbx-w-0 pbx-mr-0',
           ]"
         >
-          <RightSidebarEditor @closeEditor="pageBuilderStateStore.setMenuRight(false)">
+          <RightSidebarEditor
+            @closeEditor="pageBuilderStateStore.setMenuRight(false)"
+            @open-image-settings="openImageSettings"
+            @open-product-section-settings="
+              () => selectedElementToolbarRef?.openProductSectionSettings()
+            "
+            @open-slider-settings="() => selectedElementToolbarRef?.openSliderSettings()"
+          >
           </RightSidebarEditor>
         </aside>
         <div

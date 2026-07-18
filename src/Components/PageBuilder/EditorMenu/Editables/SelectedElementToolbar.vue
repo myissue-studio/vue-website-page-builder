@@ -986,7 +986,13 @@ const handleDuplicateComponent = async function () {
   showToast(translate('Component duplicated'), 'success')
 }
 
-defineExpose({ openDeleteConfirm: handleDeleteElement })
+defineExpose({
+  openDeleteConfirm: handleDeleteElement,
+  openProductSectionSettings,
+  openSliderSettings: () => {
+    showSliderModal.value = true
+  },
+})
 </script>
 <template v-if="getElement">
   <div class="pbx-max-w-full pbx-min-w-0">
