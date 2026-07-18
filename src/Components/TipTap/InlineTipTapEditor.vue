@@ -11,7 +11,9 @@ import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyF
 import ConfirmActionModal from '../Modals/ConfirmActionModal.vue'
 import {
   sanitizeInlineTipTapHtml,
-  finalizeInlineTipTapHtml,
+  preserveOriginalInlineHtmlIfUnchanged,
+  rememberInlineTipTapHostClass,
+  restoreInlineTipTapHostElement,
 } from '../../utils/builder/sanitize-inline-tiptap-html'
 import { isRtlContentContext } from '../../utils/builder/is-rtl-content'
 import { shouldPreserveInlineEditorForToolbarPopover } from '../../utils/builder/should-preserve-inline-editor-for-toolbar-popover'
@@ -258,16 +260,17 @@ const getSanitizedEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): 
 }
 
 const getFinalEditorHtml = function (tiptapEditor: InlineEditorHtmlSource): string {
-  return finalizeInlineTipTapHtml(tiptapEditor.getHTML(), originalHTML.value)
+  return preserveOriginalInlineHtmlIfUnchanged(tiptapEditor.getHTML(), originalHTML.value)
 }
 
 const findEditableElement = function (target: EventTarget | null): HTMLElement | null {
   return pageBuilderService.findEditableElementFromEventTarget(target)
 }
 
-const teardownEditor = function (html?: string) {
+const teardownEditor = function (html?: string): boolean {
   const target = inlineElement.value
   const activeEditor = editor.value
+  let changed = false
 
   if (activeEditor && target) {
     // Service-side sync commit may have already restored HTML and cleared the
@@ -278,17 +281,18 @@ const teardownEditor = function (html?: string) {
     if (!alreadyCommitted) {
       // Prefer live ProseMirror DOM so sidebar class/style mutations survive commit.
       const liveDomHtml = target.querySelector('.ProseMirror')?.innerHTML
-      const finalHTML = finalizeInlineTipTapHtml(
+      const finalHTML = preserveOriginalInlineHtmlIfUnchanged(
         liveDomHtml ?? html ?? activeEditor.getHTML(),
         originalHTML.value,
       )
+      changed = finalHTML !== originalHTML.value
       activeEditor.destroy()
       target.innerHTML = finalHTML
-      target.removeAttribute('data-pbx-inline-tiptap')
-      target.removeAttribute('data-pbx-inline-original-html')
+      restoreInlineTipTapHostElement(target)
       pageBuilderStateStore.setTextAreaVueModel(finalHTML)
     } else {
       activeEditor.destroy()
+      restoreInlineTipTapHostElement(target)
     }
   }
 
@@ -296,6 +300,7 @@ const teardownEditor = function (html?: string) {
   inlineElement.value = null
   originalHTML.value = ''
   showTypography.value = false
+  return changed
 }
 
 const startEditor = async function () {
@@ -307,6 +312,7 @@ const startEditor = async function () {
 
   originalHTML.value = target.innerHTML
   inlineElement.value = target
+  rememberInlineTipTapHostClass(target)
   target.innerHTML = ''
   target.setAttribute('data-pbx-inline-tiptap', '')
   target.setAttribute('data-pbx-inline-original-html', originalHTML.value)
@@ -359,12 +365,14 @@ const saveInlineEditor = async function () {
   try {
     const target = inlineElement.value
     const html = getFinalEditorHtml(editor.value)
+    const changed = html !== originalHTML.value
     removeDocumentMouseDownListener()
     teardownEditor(html)
-    await pageBuilderService.finishInlineTipTapEditor(target)
-    // Inline "Save" should behave like a page save (persist draft + history),
-    // not just close the editor.
-    await pageBuilderService.handleManualSave(true)
+    await pageBuilderService.finishInlineTipTapEditor(target, changed)
+    // Explicit Save always persists draft + history when there was a change.
+    if (changed) {
+      await pageBuilderService.handleManualSave(true)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -384,11 +392,11 @@ const saveInlineEditorAndSelect = async function (nextElement: HTMLElement | nul
     if (editor.value !== activeEditor || inlineElement.value !== target) return
 
     removeDocumentMouseDownListener()
-    teardownEditor()
-    await pageBuilderService.finishInlineTipTapEditor(target)
+    const changed = teardownEditor()
+    await pageBuilderService.finishInlineTipTapEditor(target, changed)
 
     if (nextElement && nextElement !== target) {
-      await pageBuilderService.selectEditableElement(nextElement)
+      await pageBuilderService.selectEditableElement(nextElement, false)
     }
   } catch (error) {
     console.error(error)

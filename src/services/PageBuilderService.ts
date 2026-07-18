@@ -31,7 +31,12 @@ import { useToast } from '../composables/useToast'
 import { useTranslations } from '../composables/useTranslations'
 import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
-import { finalizeInlineTipTapHtml } from '../utils/builder/sanitize-inline-tiptap-html'
+import {
+  preserveOriginalInlineHtmlIfUnchanged,
+  rememberInlineTipTapHostClass,
+  restoreInlineTipTapHostElement,
+  stripInlineTipTapHostArtifacts,
+} from '../utils/builder/sanitize-inline-tiptap-html'
 import { normalizeCssColorToHex } from '../utils/builder/color-utils'
 import { loadFontFromClass } from '../utils/builder/dynamic-font-loader'
 import { buildProductSectionHtml } from '../utils/builder/product-section-html'
@@ -130,6 +135,11 @@ export const AVAILABLE_LANGUAGES: AvailableLanguage[] = [
 
 const FULL_WIDTH_COMPONENT_CLASS = 'pbx-full-width-component'
 
+type InlineTipTapCommitResult = {
+  element: HTMLElement
+  changed: boolean
+}
+
 export class PageBuilderService {
   // Class properties with types
   private fontSizeRegex =
@@ -161,6 +171,8 @@ export class PageBuilderService {
   private activeBuilderSessionToken: number = 0
   private canvasClickCaptureListener: EventListener | null = null
   private canvasDblClickCaptureListener: EventListener | null = null
+  /** Bumped when TipTap opens (or other work must cancel in-flight selection/autosave). */
+  private persistenceGeneration = 0
 
   // Add a class-level WeakMap to track elements and their listeners
   // Use class-level WeakMap from being a local variable inside addListenersToEditableElements to a private class-level property.
@@ -205,10 +217,17 @@ export class PageBuilderService {
   }
 
   // ---------------------------------------------------------------------------
-  // Debug logging (enable via localStorage: pbx-debug = "1")
+  // Debug logging — enable with localStorage/sessionStorage pbx-debug = "1"
+  // or window.__PBX_DEBUG__ = true. History growth always logs a console.warn.
   // ---------------------------------------------------------------------------
   private isDebugEnabled(): boolean {
     try {
+      if (typeof window !== 'undefined' && (window as { __PBX_DEBUG__?: boolean }).__PBX_DEBUG__) {
+        return true
+      }
+      if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('pbx-debug') === '1') {
+        return true
+      }
       return typeof localStorage !== 'undefined' && localStorage.getItem('pbx-debug') === '1'
     } catch {
       return false
@@ -223,6 +242,63 @@ export class PageBuilderService {
       return
     }
     console[level](`${prefix} ${message}`)
+  }
+
+  private isInlineTipTapActive(): boolean {
+    return (
+      Boolean(this.pageBuilderStateStore.getInlineTipTapEditor) || this.hasInlineTipTapElement()
+    )
+  }
+
+  private invalidatePendingPersistence(reason: string): void {
+    this.persistenceGeneration += 1
+    this.debugLog('warn', 'invalidatePendingPersistence()', {
+      reason,
+      persistenceGeneration: this.persistenceGeneration,
+    })
+  }
+
+  private debugPreview(value: unknown, maxLength = 320): string {
+    const text = typeof value === 'string' ? value : JSON.stringify(value)
+    if (!text) return ''
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text
+  }
+
+  private debugFindFirstHistoryDiff(
+    currentData: { components?: { html_code?: string; title?: string }[]; pageSettings?: unknown },
+    dataToSave: { components?: { html_code?: string; title?: string }[]; pageSettings?: unknown },
+  ): Record<string, unknown> {
+    const currentComponents = currentData.components ?? []
+    const nextComponents = dataToSave.components ?? []
+
+    if (currentComponents.length !== nextComponents.length) {
+      return {
+        reason: 'component-count',
+        currentLength: currentComponents.length,
+        nextLength: nextComponents.length,
+      }
+    }
+
+    const diffIndex = nextComponents.findIndex((nextComponent, index) => {
+      const currentComponent = currentComponents[index]
+      return currentComponent?.html_code !== nextComponent.html_code
+    })
+
+    if (diffIndex >= 0) {
+      return {
+        reason: 'component-html',
+        index: diffIndex,
+        title: nextComponents[diffIndex]?.title ?? currentComponents[diffIndex]?.title ?? null,
+        currentHtml: this.debugPreview(currentComponents[diffIndex]?.html_code ?? ''),
+        nextHtml: this.debugPreview(nextComponents[diffIndex]?.html_code ?? ''),
+      }
+    }
+
+    return {
+      reason: 'page-settings',
+      currentPageSettings: currentData.pageSettings ?? null,
+      nextPageSettings: dataToSave.pageSettings ?? null,
+    }
   }
 
   /**
@@ -1546,15 +1622,21 @@ export class PageBuilderService {
   public async toggleInlineTipTapEditor(status: boolean): Promise<void> {
     if (status && !this.isValidTextElement(this.getElement.value)) return
 
+    if (status) {
+      this.invalidatePendingPersistence('toggleInlineTipTapEditor:open')
+    }
+
     this.pageBuilderStateStore.setInlineTipTapEditor(status)
 
     await nextTick()
     await this.addListenersToEditableElements()
 
     if (!status) {
-      // Persist inline edits even if userSettings.autoSave is disabled.
-      this.commitActiveInlineTipTapEditorSync()
-      this.saveDomComponentsToLocalStorage()
+      const commitResult = this.commitActiveInlineTipTapEditorSync()
+      // Only grow history when TipTap actually changed content.
+      if (commitResult?.changed) {
+        this.saveDomComponentsToLocalStorage()
+      }
     }
   }
 
@@ -1591,8 +1673,10 @@ export class PageBuilderService {
 
     if (shouldAutoSave) {
       // Persist inline edits even if userSettings.autoSave is disabled.
-      this.commitActiveInlineTipTapEditorSync()
-      this.saveDomComponentsToLocalStorage()
+      // TipTap should already be committed/torn down before this path runs.
+      if (!this.isInlineTipTapActive()) {
+        this.saveDomComponentsToLocalStorage()
+      }
     }
   }
 
@@ -2008,6 +2092,7 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
+    this.invalidatePendingPersistence('openInlineTipTapFromEvent')
     this.pageBuilderStateStore.setElement(element)
     this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
@@ -2022,7 +2107,7 @@ export class PageBuilderService {
    * Writes any active inline TipTap editor back to the live DOM synchronously.
    * Used before localStorage persistence and before the builder unmounts.
    */
-  private commitActiveInlineTipTapEditorSync(): HTMLElement | null {
+  private commitActiveInlineTipTapEditorSync(): InlineTipTapCommitResult | null {
     const inlineElement = document.querySelector<HTMLElement>(
       '#pagebuilder [data-pbx-inline-tiptap]',
     )
@@ -2042,15 +2127,27 @@ export class PageBuilderService {
         : typeof modelHtml === 'string' && modelHtml.trim().length > 0
           ? modelHtml
           : ''
-    const html = finalizeInlineTipTapHtml(htmlSource, originalHtml)
+    const html = preserveOriginalInlineHtmlIfUnchanged(htmlSource, originalHtml)
+    const changed = html !== originalHtml
+
+    this.debugLog('error', 'commitActiveInlineTipTapEditorSync()', {
+      changed,
+      elementTag: inlineElement.tagName,
+      elementId: inlineElement.id || null,
+      originalHtml: this.debugPreview(originalHtml),
+      htmlSource: this.debugPreview(htmlSource),
+      committedHtml: this.debugPreview(html),
+    })
 
     inlineElement.innerHTML = html
-    inlineElement.removeAttribute('data-pbx-inline-tiptap')
-    inlineElement.removeAttribute('data-pbx-inline-original-html')
+    restoreInlineTipTapHostElement(inlineElement)
     this.pageBuilderStateStore.setTextAreaVueModel(html)
     this.pageBuilderStateStore.setInlineTipTapEditor(false)
 
-    return inlineElement
+    return {
+      element: inlineElement,
+      changed,
+    }
   }
 
   /**
@@ -2065,13 +2162,14 @@ export class PageBuilderService {
   public async finishActiveInlineTipTapEditorFromDom(
     nextElement: HTMLElement | null = null,
   ): Promise<void> {
-    const inlineElement = this.commitActiveInlineTipTapEditorSync()
+    const commitResult = this.commitActiveInlineTipTapEditorSync()
 
-    if (!inlineElement) {
+    if (!commitResult) {
       await this.toggleInlineTipTapEditor(false)
       return
     }
 
+    const inlineElement = commitResult.element
     this.pageBuilderStateStore.setElement(inlineElement)
 
     // Close TipTap without blocking on auto-save so the next element can be
@@ -2083,12 +2181,28 @@ export class PageBuilderService {
       await this.selectEditableElement(nextElement, false)
     }
 
-    // Persist the committed inline HTML immediately, even if autoSave is disabled.
-    this.saveDomComponentsToLocalStorage()
+    if (commitResult.changed) {
+      this.debugLog('error', 'finishActiveInlineTipTapEditorFromDom(): inline commit changed', {
+        elementTag: inlineElement.tagName,
+        elementId: inlineElement.id || null,
+        nextElementTag: nextElement?.tagName ?? null,
+        nextElementId: nextElement?.id ?? null,
+      })
+      // Persist the committed inline HTML immediately, even if autoSave is disabled.
+      this.saveDomComponentsToLocalStorage()
 
-    // If autoSave is enabled, still run it (non-blocking) so any other
-    // DOM-only changes are captured by the normal pipeline.
-    void this.handleAutoSave()
+      // If autoSave is enabled, still run it (non-blocking) so any other
+      // DOM-only changes are captured by the normal pipeline.
+      void this.handleAutoSave()
+      return
+    }
+
+    this.debugLog('error', 'finishActiveInlineTipTapEditorFromDom(): inline commit unchanged', {
+      elementTag: inlineElement.tagName,
+      elementId: inlineElement.id || null,
+      nextElementTag: nextElement?.tagName ?? null,
+      nextElementId: nextElement?.id ?? null,
+    })
   }
 
   /**
@@ -2110,7 +2224,9 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
-    await this.selectEditableElement(element)
+    // Selection alone is not an edit — do not snapshot/history on click.
+    // Style/image/TipTap/manual save paths persist explicitly.
+    await this.selectEditableElement(element, false)
   }
 
   /**
@@ -2130,6 +2246,7 @@ export class PageBuilderService {
     e.preventDefault()
     e.stopPropagation()
 
+    this.invalidatePendingPersistence('handleElementDoubleClick')
     this.pageBuilderStateStore.setElement(element)
     this.pageBuilderStateStore.setInlineTipTapEditor(true)
 
@@ -2155,12 +2272,15 @@ export class PageBuilderService {
    * Selects an editable builder element and syncs builder state.
    * @param {HTMLElement} element - The element to select.
    * @param {boolean} shouldAutoSave - Whether to autosave after selection.
+   *   Defaults to false: clicking/selecting must not inflate undo history.
+   *   Pass true only when the caller knows the DOM was edited.
    * @returns {Promise<void>}
    */
   public async selectEditableElement(
     element: HTMLElement,
-    shouldAutoSave: boolean = true,
+    shouldAutoSave: boolean = false,
   ): Promise<void> {
+    const persistenceGenerationAtStart = this.persistenceGeneration
     const pagebuilder = this.getBuilderCanvasElement()
 
     if (!pagebuilder) {
@@ -2173,14 +2293,10 @@ export class PageBuilderService {
     }
 
     if (!pagebuilder.contains(element) && element !== pagebuilder) {
-      this.debugLog(
-        'warn',
-        'selectEditableElement(): refusing element outside #pagebuilder',
-        {
-          elementTag: element?.tagName,
-          elementId: element?.id ?? null,
-        },
-      )
+      this.debugLog('warn', 'selectEditableElement(): refusing element outside #pagebuilder', {
+        elementTag: element?.tagName,
+        elementId: element?.id ?? null,
+      })
       return
     }
 
@@ -2201,18 +2317,37 @@ export class PageBuilderService {
     await this.initializeElementStyles()
 
     if (shouldAutoSave) {
+      // Click → TipTap open races: TipTap sets the flag / bumps generation while
+      // this selection await is in flight. Never snapshot mid-edit or after cancel.
+      if (this.isInlineTipTapActive()) {
+        this.debugLog('warn', 'selectEditableElement(): skip save — TipTap active', {
+          elementTag: element.tagName,
+          elementId: element.id || null,
+        })
+        return
+      }
+      if (persistenceGenerationAtStart !== this.persistenceGeneration) {
+        this.debugLog('warn', 'selectEditableElement(): skip save — persistence invalidated', {
+          elementTag: element.tagName,
+          elementId: element.id || null,
+          startedAt: persistenceGenerationAtStart,
+          current: this.persistenceGeneration,
+        })
+        return
+      }
+
       const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
       const autoSaveSetting =
         passedConfig && passedConfig.userSettings ? passedConfig.userSettings.autoSave : undefined
 
-      // Always persist a draft snapshot on selection change. This is the lightest,
-      // most reliable persistence path (DOM → localStorage) and covers edits like
-      // image src changes, link href changes, and inline text edits.
+      // Always persist a draft snapshot on selection change when explicitly requested.
+      // Default selection (clicks) does not save — that was rewriting Vue-injected
+      // #pagebuilder font classes into pageSettings and inflating undo history.
       this.saveDomComponentsToLocalStorage()
 
       // If auto-save is enabled, also run the full auto-save pipeline (non-blocking).
       if (autoSaveSetting !== false) {
-        void this.handleAutoSave()
+        void this.handleAutoSave(persistenceGenerationAtStart)
       }
     }
   }
@@ -2230,13 +2365,33 @@ export class PageBuilderService {
     }
   }
 
+  public getHistorySnapshots(): unknown[] {
+    const baseKey = this.getHistoryBaseKey()
+    return baseKey ? LocalStorageManager.getHistory(baseKey) : []
+  }
+
   /**
    * Triggers an auto-save of the current page builder content to local storage if enabled.
+   * @param expectedPersistenceGeneration - When set, abort if TipTap open invalidated pending work.
    */
-  public handleAutoSave = async () => {
+  public handleAutoSave = async (expectedPersistenceGeneration?: number) => {
     this.startEditing()
 
-    if (this.pageBuilderStateStore.getInlineTipTapEditor) return
+    if (
+      expectedPersistenceGeneration !== undefined &&
+      expectedPersistenceGeneration !== this.persistenceGeneration
+    ) {
+      this.debugLog('warn', 'handleAutoSave(): skipped — persistence invalidated', {
+        expected: expectedPersistenceGeneration,
+        current: this.persistenceGeneration,
+      })
+      return
+    }
+
+    if (this.isInlineTipTapActive()) {
+      this.debugLog('warn', 'handleAutoSave(): skipped — TipTap active')
+      return
+    }
 
     const passedConfig = this.pageBuilderStateStore.getPageBuilderConfig
 
@@ -2251,7 +2406,17 @@ export class PageBuilderService {
         if (this.pageBuilderStateStore.getIsSaving) return
 
         try {
-          this.commitActiveInlineTipTapEditorSync()
+          // Re-check immediately before snapshot — click→TipTap races land here.
+          if (this.isInlineTipTapActive()) {
+            this.debugLog('warn', 'handleAutoSave(): skipped before write — TipTap active')
+            return
+          }
+          if (
+            expectedPersistenceGeneration !== undefined &&
+            expectedPersistenceGeneration !== this.persistenceGeneration
+          ) {
+            return
+          }
           this.pageBuilderStateStore.setIsSaving(true)
           this.saveDomComponentsToLocalStorage()
           await sleep(400)
@@ -2268,7 +2433,16 @@ export class PageBuilderService {
     }
     if (passedConfig && !passedConfig.userSettings) {
       try {
-        this.commitActiveInlineTipTapEditorSync()
+        if (this.isInlineTipTapActive()) {
+          this.debugLog('warn', 'handleAutoSave(): skipped before write — TipTap active')
+          return
+        }
+        if (
+          expectedPersistenceGeneration !== undefined &&
+          expectedPersistenceGeneration !== this.persistenceGeneration
+        ) {
+          return
+        }
         this.pageBuilderStateStore.setIsSaving(true)
         this.saveDomComponentsToLocalStorage()
         await sleep(400)
@@ -2999,42 +3173,42 @@ export class PageBuilderService {
     }
   }
 
-  public async undo() {
+  private async restoreHistoryStateAtIndex(index: number) {
     this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await sleep(300)
-    const baseKey = this.getHistoryBaseKey()
-    if (!baseKey) return
 
-    const history = LocalStorageManager.getHistory(baseKey)
-    if (history.length > 1 && this.pageBuilderStateStore.getHistoryIndex > 0) {
-      this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex - 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
+    try {
+      const baseKey = this.getHistoryBaseKey()
+      if (!baseKey) return
+
+      const history = LocalStorageManager.getHistory(baseKey)
+      if (index < 0 || index >= history.length) return
+
+      this.pageBuilderStateStore.setHistoryIndex(index)
+      this.pageBuilderStateStore.setHistoryLength(history.length)
+
+      const data = history[index] as {
         components: BuilderResourceData
         pageSettings?: PageSettings
       }
       const htmlString = this.renderComponentsToHtml(data.components)
       await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
+    } finally {
+      this.pageBuilderStateStore.setIsLoadingGlobal(false)
     }
-    this.pageBuilderStateStore.setIsLoadingGlobal(false)
+  }
+
+  public async restoreHistoryIndex(index: number) {
+    await this.restoreHistoryStateAtIndex(index)
+  }
+
+  public async undo() {
+    const currentIndex = this.pageBuilderStateStore.getHistoryIndex
+    await this.restoreHistoryStateAtIndex(currentIndex - 1)
   }
 
   public async redo() {
-    this.pageBuilderStateStore.setIsLoadingGlobal(true)
-    await sleep(300)
-    const baseKey = this.getHistoryBaseKey()
-    if (!baseKey) return
-
-    const history = LocalStorageManager.getHistory(baseKey)
-    if (history.length > 0 && this.pageBuilderStateStore.getHistoryIndex < history.length - 1) {
-      this.pageBuilderStateStore.setHistoryIndex(this.pageBuilderStateStore.getHistoryIndex + 1)
-      const data = history[this.pageBuilderStateStore.getHistoryIndex] as {
-        components: BuilderResourceData
-        pageSettings?: PageSettings
-      }
-      const htmlString = this.renderComponentsToHtml(data.components)
-      await this.mountComponentsToDOM(htmlString, false, data.pageSettings)
-    }
-    this.pageBuilderStateStore.setIsLoadingGlobal(false)
+    const currentIndex = this.pageBuilderStateStore.getHistoryIndex
+    await this.restoreHistoryStateAtIndex(currentIndex + 1)
   }
 
   private hasVisibleContent(element: HTMLElement): boolean {
@@ -3559,6 +3733,7 @@ export class PageBuilderService {
     // Also remove from the root element itself if present
     clone.removeAttribute('hovered')
     clone.removeAttribute('selected')
+    stripInlineTipTapHostArtifacts(clone)
 
     return clone
   }
@@ -3686,10 +3861,19 @@ export class PageBuilderService {
 
   /**
    * Saves the current DOM state of components to local storage.
+   * Never snapshots while TipTap is open — callers must commit TipTap first,
+   * then save after the editor flag/host attributes are cleared.
    * @private
    */
   private saveDomComponentsToLocalStorage() {
-    this.commitActiveInlineTipTapEditorSync()
+    if (this.isInlineTipTapActive()) {
+      this.debugLog('warn', 'saveDomComponentsToLocalStorage(): blocked — TipTap active', {
+        flag: this.pageBuilderStateStore.getInlineTipTapEditor,
+        hasHost: this.hasInlineTipTapElement(),
+      })
+      return
+    }
+
     // IMPORTANT: Do not continuously recompute the storage key while editing.
     // If the key changes between "save" and "reopen", the builder will load from
     // a different key and it will look like the draft never persisted.
@@ -3740,30 +3924,24 @@ export class PageBuilderService {
       hasInlineTipTap: Boolean(pagebuilder.querySelector('[data-pbx-inline-tiptap]')),
     })
 
-    const livePageSettings: PageSettings | null = pagebuilder
-      ? {
-          classes: pagebuilder.className || '',
-          style: pagebuilder.getAttribute('style') || pagebuilder.style.cssText || '',
-          meta: readPageMetaFromElement(pagebuilder as HTMLElement),
-        }
-      : null
-
-    const pageSettings = livePageSettings ??
-      this.readCurrentPageSettings() ??
-      this._lastKnownPageSettings ?? {
-        classes: '',
-        style: '',
-      }
+    const pageSettings = this.buildPageSettingsForPersistence(pagebuilder as HTMLElement)
 
     // Persist page settings into the in-memory config so Vue bindings can use it.
     // Without this, PageBuilder.vue's :class binding on #pagebuilder will overwrite
-    // the DOM class/style on each reopen.
+    // the DOM class/style on each reopen. Skip no-op writes to avoid class thrash.
     const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
     if (currentConfig && typeof currentConfig === 'object') {
-      this.pageBuilderStateStore.setPageBuilderConfig({
-        ...(currentConfig as Record<string, unknown>),
-        pageSettings,
-      } as never)
+      const prevSettings = (currentConfig as { pageSettings?: unknown }).pageSettings
+      const settingsChanged = !LocalStorageManager.hasSameUndoPayload(
+        { components: [], pageSettings: prevSettings ?? null },
+        { components: [], pageSettings },
+      )
+      if (settingsChanged) {
+        this.pageBuilderStateStore.setPageBuilderConfig({
+          ...(currentConfig as Record<string, unknown>),
+          pageSettings,
+        } as never)
+      }
     }
 
     this.debugLog('warn', 'saveDomComponentsToLocalStorage(): pageSettings snapshot', {
@@ -3806,64 +3984,53 @@ export class PageBuilderService {
       }
 
       if (currentDataRaw) {
-        const currentData = JSON.parse(currentDataRaw)
+        const currentData = JSON.parse(currentDataRaw) as {
+          components?: { html_code?: string; title?: string }[]
+          pageSettings?: unknown
+        }
+        const hasUndoChanges = !LocalStorageManager.hasSameUndoPayload(currentData, dataToSave)
 
-        // Compare components
-        const currentComponents = currentData.components || []
-        const newComponents = dataToSave.components || []
-
-        const hasChanges =
-          newComponents.length !== currentComponents.length ||
-          newComponents.some((newComponent, index) => {
-            const currentComponent = currentComponents[index]
-            return (
-              // New component added
-              !currentComponent ||
-              // Component HTML changed
-              currentComponent.html_code !== newComponent.html_code
-            )
-          })
-
-        // Compare pageSettings
-        const hasPageSettingsChanges =
-          (currentData.pageSettings &&
-            currentData.pageSettings.classes !== dataToSave.pageSettings.classes) ||
-          (currentData.pageSettings &&
-            currentData.pageSettings.style !== dataToSave.pageSettings.style)
-
-        // Only save to local storage if there's a difference between the existing saved data and the current DOM data
-        if (hasChanges || hasPageSettingsChanges) {
+        if (hasUndoChanges) {
+          const historyBefore = LocalStorageManager.getHistory(baseKey)
           this.debugLog('error', 'saveDomComponentsToLocalStorage(): wrote draft', {
             baseKey,
             sections: dataToSave.components.length,
+            historyIndex: this.pageBuilderStateStore.getHistoryIndex,
+            historyLengthBefore: historyBefore.length,
+            diff: this.debugFindFirstHistoryDiff(currentData, dataToSave),
           })
-          let history = LocalStorageManager.getHistory(baseKey)
 
-          const lastState = history[history.length - 1] as
-            | { components: unknown; pageSettings: unknown }
-            | undefined
-          if (lastState) {
-            const lastComponents = JSON.stringify(lastState.components)
-            const newComponents = JSON.stringify(dataToSave.components)
-            const lastSettings = JSON.stringify(lastState.pageSettings)
-            const newSettings = JSON.stringify(dataToSave.pageSettings)
-            if (lastComponents === newComponents && lastSettings === newSettings) {
-              return // Do not save duplicate state
-            }
+          // First undoable change used to push only the *new* state, leaving history
+          // length 1 with nowhere to undo. Seed the previous draft as the baseline.
+          if (historyBefore.length === 0) {
+            LocalStorageManager.addToHistory(
+              baseKey,
+              currentData,
+              this.pageBuilderStateStore.getHistoryIndex,
+            )
           }
 
-          if (this.pageBuilderStateStore.getHistoryIndex < history.length - 1) {
-            history = history.slice(0, this.pageBuilderStateStore.getHistoryIndex + 1)
-          }
-          history.push(dataToSave)
-          if (history.length > 10) {
-            history = history.slice(history.length - 10)
-          }
-          localStorage.setItem(baseKey + '-history', JSON.stringify(history))
+          const history = LocalStorageManager.addToHistory(
+            baseKey,
+            dataToSave,
+            this.pageBuilderStateStore.getHistoryIndex,
+          )
+          this.debugLog('error', 'saveDomComponentsToLocalStorage(): history after write', {
+            baseKey,
+            historyLengthAfter: history.length,
+            nextHistoryIndex: history.length - 1,
+          })
           this.pageBuilderStateStore.setHistoryIndex(history.length - 1)
           this.pageBuilderStateStore.setHistoryLength(history.length)
           return
         }
+
+        this.debugLog('warn', 'saveDomComponentsToLocalStorage(): no undo changes', {
+          baseKey,
+          sections: dataToSave.components.length,
+          historyIndex: this.pageBuilderStateStore.getHistoryIndex,
+          historyLength: LocalStorageManager.getHistory(baseKey).length,
+        })
       }
     }
   }
@@ -3939,6 +4106,38 @@ export class PageBuilderService {
         }
         localStorage.setItem(key, JSON.stringify(dataToSave))
       }
+    }
+  }
+
+  /**
+   * Builds pageSettings for draft/history persistence from the live canvas.
+   *
+   * Normalizes class token order and reads only the style *attribute* (never
+   * `style.cssText`), so Vue `:class` / `:style` re-renders do not invent
+   * undo-history diffs on every click/save.
+   */
+  private buildPageSettingsForPersistence(pagebuilder: HTMLElement): PageSettings {
+    const meta = readPageMetaFromElement(pagebuilder)
+
+    const classes = Array.from(
+      new Set(
+        (pagebuilder.className || '')
+          .split(/\s+/)
+          .map((token) => token.trim())
+          .filter(Boolean),
+      ),
+    )
+      .sort()
+      .join(' ')
+
+    // Do not fall back to style.cssText — browsers/Vue can serialize it differently
+    // than the authored attribute and inflate history without real edits.
+    const style = (pagebuilder.getAttribute('style') || '').trim()
+
+    return {
+      classes,
+      style,
+      meta,
     }
   }
 

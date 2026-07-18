@@ -1,9 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest'
-import {
-  PageBuilderService,
-  AVAILABLE_LANGUAGES,
-} from '../../services/PageBuilderService'
+import { PageBuilderService, AVAILABLE_LANGUAGES } from '../../services/PageBuilderService'
 import { usePageBuilderStateStore } from '../../stores/page-builder-state'
 import { NON_LISTENER_TAGS } from '../../utils/builder/non-listener-tags'
 import { formatNonListenerTagClassViolationMessage } from '../../utils/builder/html-component-validation'
@@ -1064,6 +1061,244 @@ describe('PageBuilderService', () => {
 
   // --- TipTap commit keeps live DOM styles ---
   describe('finishActiveInlineTipTapEditorFromDom', () => {
+    it('REGRESSION (TipTap history): does not add history when inline editor content is unchanged', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const originalSection =
+        '<section data-componentid="section-1" data-component-title="Text"><div id="text-block"><h2 class="pbx-text-2xl">Demo Content</h2></div></section>'
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [{ title: 'Text', html_code: originalSection }],
+          pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+          pageSettings: { classes: '', style: '' },
+        }),
+      )
+      localStorage.setItem(
+        'test-key-history',
+        JSON.stringify([
+          {
+            components: [{ title: 'Text', html_code: originalSection }],
+            pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+            pageSettings: { classes: '', style: '' },
+          },
+        ]),
+      )
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryIndex = 0
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryLength = 1
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="section-1" data-component-title="Text">
+          <div
+            id="text-block"
+            class="tiptap ProseMirror pbx-inline-tiptap-editor"
+            contenteditable="true"
+            role="textbox"
+            translate="no"
+            tabindex="0"
+            data-pbx-inline-tiptap
+            data-pbx-inline-original-html='<h2 class="pbx-text-2xl">Demo Content</h2>'
+            data-pbx-inline-original-class="pbx-break-words pbx-text-xl"
+          >
+            <div class="ProseMirror">
+              <h2 class="pbx-text-2xl">Demo Content<br class="ProseMirror-trailingBreak"></h2>
+            </div>
+          </div>
+        </section>
+      `
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
+      ;(mockStore as unknown as Record<string, unknown>).getTextAreaVueModel =
+        '<h2 class="pbx-text-2xl">Demo Content</h2>'
+
+      await service.finishActiveInlineTipTapEditorFromDom(null)
+
+      const textBlock = pagebuilder.querySelector('#text-block')
+      expect(textBlock?.className).toBe('pbx-break-words pbx-text-xl')
+      expect(textBlock?.hasAttribute('contenteditable')).toBe(false)
+      expect(textBlock?.hasAttribute('data-pbx-inline-tiptap')).toBe(false)
+      expect(JSON.parse(localStorage.getItem('test-key-history') || '[]')).toHaveLength(1)
+      expect(mockStore.setHistoryLength).not.toHaveBeenCalledWith(2)
+    })
+
+    it('REGRESSION (TipTap open race): does not snapshot while TipTap flag is set without host yet', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const originalSection =
+        '<section data-componentid="section-1" data-component-title="Text"><div id="text-block"><h2>Hello</h2></div></section>'
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [{ title: 'Text', html_code: originalSection }],
+          pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+          pageSettings: { classes: '', style: '' },
+        }),
+      )
+      localStorage.setItem(
+        'test-key-history',
+        JSON.stringify([
+          {
+            components: [{ title: 'Text', html_code: originalSection }],
+            pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+            pageSettings: { classes: '', style: '' },
+          },
+        ]),
+      )
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryIndex = 0
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryLength = 1
+
+      // Flag true, host attribute not yet applied (startEditor race window).
+      pagebuilder.innerHTML = originalSection
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+
+      await service.selectEditableElement(
+        pagebuilder.querySelector('#text-block') as HTMLElement,
+        true,
+      )
+
+      expect(JSON.parse(localStorage.getItem('test-key-history') || '[]')).toHaveLength(1)
+      expect(mockStore.setHistoryLength).not.toHaveBeenCalledWith(2)
+    })
+
+    it('REGRESSION (TipTap open race): opening TipTap cancels in-flight selection autosave', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const originalSection =
+        '<section data-componentid="section-1" data-component-title="Text"><div id="text-block" class="pbx-break-words"><h2>Hello</h2></div></section>'
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [{ title: 'Text', html_code: originalSection }],
+          pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+          pageSettings: { classes: '', style: '' },
+        }),
+      )
+      localStorage.setItem(
+        'test-key-history',
+        JSON.stringify([
+          {
+            components: [{ title: 'Text', html_code: originalSection }],
+            pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+            pageSettings: { classes: '', style: '' },
+          },
+        ]),
+      )
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryIndex = 0
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryLength = 1
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = false
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="section-1" data-component-title="Text">
+          <div id="text-block" class="pbx-break-words"><h2>Hello changed</h2></div>
+        </section>
+      `
+
+      const textBlock = pagebuilder.querySelector('#text-block') as HTMLElement
+      vi.spyOn(service, 'initializeElementStyles').mockImplementation(async () => {
+        // Simulate TipTap opening while selection await is in flight.
+        ;(
+          service as unknown as { invalidatePendingPersistence: (reason: string) => void }
+        ).invalidatePendingPersistence('test-open-tiptap')
+      })
+
+      await service.selectEditableElement(textBlock, true)
+
+      expect(JSON.parse(localStorage.getItem('test-key-history') || '[]')).toHaveLength(1)
+      expect(mockStore.setHistoryLength).not.toHaveBeenCalledWith(2)
+    })
+
+    it('REGRESSION (selection): default select does not grow history', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const originalSection =
+        '<section data-componentid="section-1" data-component-title="Text"><div id="text-block" class="pbx-break-words"><h2>Hello</h2></div></section>'
+      localStorage.setItem(
+        'test-key',
+        JSON.stringify({
+          components: [{ title: 'Text', html_code: originalSection }],
+          pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+          pageSettings: { classes: '', style: '' },
+        }),
+      )
+      localStorage.setItem(
+        'test-key-history',
+        JSON.stringify([
+          {
+            components: [{ title: 'Text', html_code: originalSection }],
+            pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+            pageSettings: { classes: '', style: '' },
+          },
+        ]),
+      )
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryIndex = 0
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryLength = 1
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        pageSettings: { classes: '', style: '' },
+      }
+
+      pagebuilder.className = 'pbx-font-jost'
+      pagebuilder.innerHTML = `
+        <section data-componentid="section-1" data-component-title="Text">
+          <div id="text-block" class="pbx-break-words"><h2>Hello</h2></div>
+        </section>
+      `
+
+      vi.spyOn(service, 'initializeElementStyles').mockResolvedValue()
+      const textBlock = pagebuilder.querySelector('#text-block') as HTMLElement
+
+      await service.selectEditableElement(textBlock)
+      await service.selectEditableElement(textBlock)
+      await service.selectEditableElement(textBlock)
+      await service.selectEditableElement(textBlock)
+      await service.selectEditableElement(textBlock)
+
+      expect(JSON.parse(localStorage.getItem('test-key-history') || '[]')).toHaveLength(1)
+      expect(mockStore.setHistoryLength).not.toHaveBeenCalledWith(2)
+    })
+
+    it('REGRESSION (pageSettings): repeated saves do not persist Vue-injected font into history', async () => {
+      const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      const originalSection =
+        '<section data-component-title="Text"><div id="text-block"><h2>Hello</h2></div></section>'
+      const draft = {
+        components: [{ title: 'Text', html_code: originalSection }],
+        pageBuilderContentSavedAt: '2026-01-01T00:00:00.000Z',
+        pageSettings: { classes: 'pbx-font-jost', style: '' },
+      }
+      localStorage.setItem('test-key', JSON.stringify(draft))
+      localStorage.setItem('test-key-history', JSON.stringify([draft]))
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryIndex = 0
+      ;(mockStore as unknown as Record<string, unknown>).getHistoryLength = 1
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        pageSettings: { classes: 'pbx-font-jost', style: '' },
+      }
+      ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = false
+
+      // Vue-injected order may differ from persisted settings; sorting must keep history stable.
+      pagebuilder.className = 'pbx-font-jost'
+      pagebuilder.innerHTML =
+        '<section data-componentid="section-1" data-component-title="Text"><div id="text-block"><h2>Hello</h2></div></section>'
+
+      await service.handleManualSave(true)
+      await service.handleManualSave(true)
+      await service.handleManualSave(true)
+
+      const history = JSON.parse(localStorage.getItem('test-key-history') || '[]')
+      expect(history).toHaveLength(1)
+      expect(mockStore.setHistoryLength).not.toHaveBeenCalledWith(2)
+    })
+
     it('REGRESSION (TipTap styles): keeps classes applied to live ProseMirror DOM on commit', async () => {
       const pagebuilder = document.querySelector<HTMLElement>('#pagebuilder')
       expect(pagebuilder).not.toBeNull()
@@ -1082,7 +1317,6 @@ describe('PageBuilderService', () => {
           </div>
         </section>
       `
-
       ;(mockStore as unknown as Record<string, unknown>).getInlineTipTapEditor = true
       // Stale TipTap model without the padding class that was applied via the sidebar.
       ;(mockStore as unknown as Record<string, unknown>).getTextAreaVueModel =
@@ -1460,7 +1694,6 @@ describe('PageBuilderService', () => {
       const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
       expect(anchor).not.toBeNull()
       if (!anchor) return
-
       ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
 
       const fresh = new PageBuilderService(mockStore)
@@ -1486,7 +1719,6 @@ describe('PageBuilderService', () => {
       const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
       expect(anchor).not.toBeNull()
       if (!anchor) return
-
       ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
 
       const fresh = new PageBuilderService(mockStore)
@@ -1515,7 +1747,6 @@ describe('PageBuilderService', () => {
       const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
       expect(anchor).not.toBeNull()
       if (!anchor) return
-
       ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
 
       const fresh = new PageBuilderService(mockStore)
@@ -1542,7 +1773,6 @@ describe('PageBuilderService', () => {
       const anchor = wrapper.querySelector<HTMLAnchorElement>('a')
       expect(anchor).not.toBeNull()
       if (!anchor) return
-
       ;(mockStore as unknown as Record<string, unknown>).getElement = wrapper
 
       const fresh = new PageBuilderService(mockStore)
