@@ -8,6 +8,7 @@ import CustomDropdown from '../../Inputs/CustomDropdown.vue'
 import TimelineIcon from '../../Icons/TimelineIcon.vue'
 import {
   buildHistoryHint,
+  buildHistoryHintParts,
   getHistoryPageTitle,
   type HistorySnapshotLike,
 } from '../../../utils/builder/history-snapshot-summary'
@@ -17,7 +18,9 @@ interface HistoryDropdownOption {
   label: string
   title: string
   pageTitle: string
-  hint: string
+  hintMeta: string
+  hintChange: string
+  hintPreview: string
   position: string
 }
 
@@ -63,6 +66,7 @@ const historyOptions = computed((): HistoryDropdownOption[] => {
           ? translate('Oldest saved')
           : translate('Saved')
       const pageTitle = getHistoryPageTitle(snapshot)
+      const hintParts = buildHistoryHintParts(snapshot, previous, translate)
       const hint = buildHistoryHint(snapshot, previous, translate)
       const position = `${index + 1}/${historyLength.value}`
 
@@ -71,7 +75,9 @@ const historyOptions = computed((): HistoryDropdownOption[] => {
         label: pageTitle ? `${title} · ${pageTitle} · ${hint}` : `${title} · ${hint}`,
         title,
         pageTitle,
-        hint,
+        hintMeta: hintParts.meta,
+        hintChange: hintParts.change,
+        hintPreview: hintParts.preview,
         position,
       }
     })
@@ -165,8 +171,14 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
             <span v-if="option.pageTitle" class="pbx-history-version-page-title">
               {{ option.pageTitle }}
             </span>
-            <span class="pbx-pageDesignOpenButtonHint">
-              {{ option.hint }}
+            <span class="pbx-pageDesignOpenButtonHint pbx-history-version-hint">
+              <span class="pbx-history-version-hint-meta">{{ option.hintMeta }}</span>
+              <span v-if="option.hintChange" class="pbx-history-version-hint-change">
+                {{ option.hintChange }}
+              </span>
+              <span v-if="option.hintPreview" class="pbx-history-version-hint-preview">
+                “{{ option.hintPreview }}”
+              </span>
             </span>
           </span>
           <span class="pbx-history-version-position" aria-hidden="true">
@@ -236,6 +248,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
   width: min(22rem, calc(100vw - 1.5rem));
   min-width: 0;
   max-width: min(22rem, calc(100vw - 1.5rem));
+  max-height: 28rem;
   transform: translateX(-50%);
   padding: 0.375rem;
   border-radius: 0.75rem;
@@ -285,6 +298,23 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
 :deep(.pbx-history-version-row .pbx-pageDesignOpenButtonHint) {
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+:deep(.pbx-history-version-hint) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.125rem;
+}
+
+:deep(.pbx-history-version-hint-change) {
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+:deep(.pbx-history-version-hint-preview) {
+  font-style: italic;
+  color: rgb(156 163 175);
 }
 
 :deep(.pbx-history-version-row .pbx-pageDesignOpenButtonIcon) {

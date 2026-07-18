@@ -11,6 +11,9 @@ interface DropdownOption {
   title?: string
   pageTitle?: string
   hint?: string
+  hintMeta?: string
+  hintChange?: string
+  hintPreview?: string
   position?: string
   disabled?: boolean
 }

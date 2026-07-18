@@ -13,6 +13,8 @@ export type HistorySnapshotLike = {
 
 type TranslateFn = (key: string) => string
 
+const PREVIEW_MAX_LENGTH = 40
+
 export function getHistoryPageTitle(snapshot: HistorySnapshotLike): string {
   const title = snapshot.pageSettings?.meta?.title
   return typeof title === 'string' ? title.trim() : ''
@@ -60,7 +62,50 @@ export function formatHistoryRelativeTime(
   return format(date, 'd MMM · HH:mm')
 }
 
-function componentsContentChanged(
+function extractPlainText(html: string): string {
+  if (!html) return ''
+
+  if (typeof document !== 'undefined') {
+    const template = document.createElement('template')
+    template.innerHTML = html
+    return (template.content.textContent || '').replace(/\s+/g, ' ').trim()
+  }
+
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function collectImageSrcs(html: string): string[] {
+  if (!html) return []
+
+  if (typeof document !== 'undefined') {
+    const template = document.createElement('template')
+    template.innerHTML = html
+    return Array.from(template.content.querySelectorAll('img'))
+      .map((image) => image.getAttribute('src') || '')
+      .filter(Boolean)
+  }
+
+  return Array.from(html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)).map((match) => match[1])
+}
+
+function snapshotImageSrcKey(snapshot: HistorySnapshotLike, endExclusive?: number): string {
+  const components = snapshot.components ?? []
+  const slice =
+    typeof endExclusive === 'number' ? components.slice(0, endExclusive) : components
+  return slice.flatMap((component) => collectImageSrcs(component.html_code ?? '')).join('\n')
+}
+
+function snapshotPlainTextKey(snapshot: HistorySnapshotLike, endExclusive?: number): string {
+  const components = snapshot.components ?? []
+  const slice =
+    typeof endExclusive === 'number' ? components.slice(0, endExclusive) : components
+  return slice.map((component) => extractPlainText(component.html_code ?? '')).join('\n')
+}
+
+function componentsMarkupChanged(
   current: HistorySnapshotLike,
   previous: HistorySnapshotLike,
 ): boolean {
@@ -84,6 +129,35 @@ function pageSettingsChanged(current: HistorySnapshotLike, previous: HistorySnap
   )
 }
 
+/** Short quote from the first section that changed vs previous. */
+export function getHistoryChangePreview(
+  current: HistorySnapshotLike,
+  previous: HistorySnapshotLike | null | undefined,
+  maxLength = PREVIEW_MAX_LENGTH,
+): string {
+  if (!previous) return ''
+
+  const currentComponents = current.components ?? []
+  const previousComponents = previous.components ?? []
+
+  for (let index = 0; index < currentComponents.length; index += 1) {
+    const html = currentComponents[index]?.html_code ?? ''
+    const previousHtml = previousComponents[index]?.html_code ?? ''
+    if (html === previousHtml) continue
+
+    const text = extractPlainText(html)
+    if (!text) continue
+
+    return text.length > maxLength ? `${text.slice(0, maxLength).trimEnd()}…` : text
+  }
+
+  return ''
+}
+
+/**
+ * Multi-label summary of what changed. Several reasons can appear in one save
+ * (e.g. text + image + section add before autosave).
+ */
 export function describeHistoryChange(
   current: HistorySnapshotLike,
   previous: HistorySnapshotLike | null | undefined,
@@ -104,8 +178,20 @@ export function describeHistoryChange(
     parts.push(translate('-{count} sections').replace('{count}', String(Math.abs(delta))))
   }
 
-  if (delta === 0 && componentsContentChanged(current, previous)) {
+  const overlap = Math.min(getHistorySectionCount(current), getHistorySectionCount(previous))
+  const imagesChanged =
+    snapshotImageSrcKey(current, overlap) !== snapshotImageSrcKey(previous, overlap)
+  const textChanged =
+    snapshotPlainTextKey(current, overlap) !== snapshotPlainTextKey(previous, overlap)
+
+  if (imagesChanged) {
+    parts.push(translate('Image updated'))
+  }
+  if (textChanged) {
     parts.push(translate('Text updated'))
+  } else if (delta === 0 && componentsMarkupChanged(current, previous) && !imagesChanged) {
+    // Class/style markup without text or image src changes.
+    parts.push(translate('Content updated'))
   }
 
   if (pageSettingsChanged(current, previous)) {
@@ -116,14 +202,39 @@ export function describeHistoryChange(
   return parts.join(' · ')
 }
 
+export type HistoryHintParts = {
+  /** e.g. "20 minutes ago · 12 sections" */
+  meta: string
+  /** e.g. "+1 section · Image updated · Text updated" */
+  change: string
+  /** Plain preview text without quotes; empty when none */
+  preview: string
+}
+
+/** Structured hint for multi-line history rows. */
+export function buildHistoryHintParts(
+  snapshot: HistorySnapshotLike,
+  previous: HistorySnapshotLike | null | undefined,
+  translate: TranslateFn,
+  now: Date = new Date(),
+): HistoryHintParts {
+  const time = formatHistoryRelativeTime(snapshot.pageBuilderContentSavedAt, translate, now)
+  const sections = formatHistorySectionCount(getHistorySectionCount(snapshot), translate)
+
+  return {
+    meta: `${time} · ${sections}`,
+    change: describeHistoryChange(snapshot, previous, translate),
+    preview: getHistoryChangePreview(snapshot, previous),
+  }
+}
+
+/** Flat string for labels / tests; UI prefers {@link buildHistoryHintParts}. */
 export function buildHistoryHint(
   snapshot: HistorySnapshotLike,
   previous: HistorySnapshotLike | null | undefined,
   translate: TranslateFn,
   now: Date = new Date(),
 ): string {
-  const time = formatHistoryRelativeTime(snapshot.pageBuilderContentSavedAt, translate, now)
-  const sections = formatHistorySectionCount(getHistorySectionCount(snapshot), translate)
-  const change = describeHistoryChange(snapshot, previous, translate)
-  return `${time} · ${sections} · ${change}`
+  const { meta, change, preview } = buildHistoryHintParts(snapshot, previous, translate, now)
+  return preview ? `${meta} · ${change} · “${preview}”` : `${meta} · ${change}`
 }

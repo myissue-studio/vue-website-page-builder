@@ -138,7 +138,7 @@ function normalizeInlineHtmlForComparison(html: string): string {
   const textWalker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT)
   const textNodes: Text[] = []
   while (textWalker.nextNode()) {
-    textNodes.push(textWalker.currentNode)
+    textNodes.push(textWalker.currentNode as Text)
   }
   textNodes.forEach((node) => {
     if (!node.textContent) {
