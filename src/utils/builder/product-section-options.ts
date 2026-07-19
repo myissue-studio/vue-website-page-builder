@@ -212,6 +212,29 @@ export function getProductImageWrapClass(roundedImages: boolean): string {
 }
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'pbx-hidden'
+/** Beats conflicting utilities like `pbx-flex` on price rows (same specificity, later in CSS). */
+export const PRODUCT_CONTENT_HIDDEN_ATTR = 'data-pbx-product-content-hidden'
+
+/**
+ * Finds an element whose class list contains an exact builder token
+ * (`name` or `pbx-name`). Avoids substring false positives such as
+ * `product-card-price` matching `product-card-price-row`.
+ */
+export function findElementByBuilderClass(
+  root: ParentNode,
+  baseName: string,
+): HTMLElement | null {
+  const prefixed = `pbx-${baseName}`
+  const candidates = root.querySelectorAll(`[class*="${baseName}"]`)
+  for (const el of candidates) {
+    if (!(el instanceof HTMLElement)) continue
+    const tokens = el.className.split(/\s+/).filter(Boolean)
+    if (tokens.includes(baseName) || tokens.includes(prefixed)) {
+      return el
+    }
+  }
+  return null
+}
 
 export function buildProductCtaAnchorClass(
   buttonStyle: ProductButtonStyle,
@@ -264,22 +287,22 @@ export function productsHaveLinks(products: ReadonlyArray<PageBuilderProductInpu
 
 export function sectionHasProductImages(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
     return imageWrap?.querySelector('img') != null
   })
 }
 
 export function sectionHasProductPrices(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const price = card.querySelector('[class*="product-card-price"]')
-    const compare = card.querySelector('[class*="product-card-compare"]')
+    const price = findElementByBuilderClass(card, 'product-card-price')
+    const compare = findElementByBuilderClass(card, 'product-card-compare')
     return Boolean(price?.textContent?.trim() || compare?.textContent?.trim())
   })
 }
 
 export function sectionHasProductButtons(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const cta = card.querySelector('[class*="product-card-cta"]')
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
     return Boolean(cta?.querySelector('a[href]')?.textContent?.trim())
   })
 }
@@ -294,6 +317,11 @@ export function sectionHasProductLinks(section: HTMLElement): boolean {
 
 function setProductContentHidden(el: HTMLElement, hidden: boolean): void {
   el.classList.toggle(PRODUCT_CONTENT_HIDDEN_CLASS, hidden)
+  if (hidden) {
+    el.setAttribute(PRODUCT_CONTENT_HIDDEN_ATTR, 'true')
+  } else {
+    el.removeAttribute(PRODUCT_CONTENT_HIDDEN_ATTR)
+  }
 }
 
 export function applyProductContentVisibilityInSection(
@@ -303,18 +331,18 @@ export function applyProductContentVisibilityInSection(
   hideButton: boolean,
 ): void {
   findProductCardsInSection(section).forEach((card) => {
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
-    if (imageWrap instanceof HTMLElement) {
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+    if (imageWrap) {
       setProductContentHidden(imageWrap, hideImage)
     }
 
-    const priceRow = card.querySelector('[class*="product-card-price-row"]')
-    if (priceRow instanceof HTMLElement) {
+    const priceRow = findElementByBuilderClass(card, 'product-card-price-row')
+    if (priceRow) {
       setProductContentHidden(priceRow, hidePrice)
     }
 
-    const cta = card.querySelector('[class*="product-card-cta"]')
-    if (cta instanceof HTMLElement) {
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
+    if (cta) {
       setProductContentHidden(cta, hideButton)
     }
   })
@@ -428,7 +456,8 @@ function applyProductButtonStyleInSection(
 ): void {
   const anchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
   findProductCardsInSection(section).forEach((card) => {
-    const ctaAnchor = card.querySelector('[class*="product-card-cta"] a')
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
+    const ctaAnchor = cta?.querySelector('a')
     if (ctaAnchor instanceof HTMLElement) {
       ctaAnchor.className = prefixBuilderClasses(anchorClass)
     }
@@ -442,39 +471,40 @@ function applyProductCardDesignClasses(
 ): void {
   const parts = getProductCardDesignParts(design)
 
-  const body = card.querySelector('[class*="product-card-body"]')
-  if (body instanceof HTMLElement) {
+  const body = findElementByBuilderClass(card, 'product-card-body')
+  if (body) {
     body.className = prefixBuilderClasses(parts.body)
   }
 
-  const badge = card.querySelector('[class*="product-card-badge"]')
-  if (badge instanceof HTMLElement) {
+  const badge = findElementByBuilderClass(card, 'product-card-badge')
+  if (badge) {
     const badgeClass =
       emptyBadge && !badge.textContent?.trim() ? `${parts.badge} min-h-6` : parts.badge
     badge.className = prefixBuilderClasses(badgeClass)
   }
 
-  const title = card.querySelector('[class*="product-card-title"]')
-  if (title instanceof HTMLElement) {
+  const title = findElementByBuilderClass(card, 'product-card-title')
+  if (title) {
     title.className = prefixBuilderClasses(parts.title)
   }
 
-  const description = card.querySelector('[class*="product-card-description"]')
-  if (description instanceof HTMLElement) {
+  const description = findElementByBuilderClass(card, 'product-card-description')
+  if (description) {
     description.className = prefixBuilderClasses(parts.description)
   }
 
-  const price = card.querySelector('[class*="product-card-price"]')
-  if (price instanceof HTMLElement) {
+  const price = findElementByBuilderClass(card, 'product-card-price')
+  if (price) {
     price.className = prefixBuilderClasses(parts.price)
   }
 
-  const compare = card.querySelector('[class*="product-card-compare"]')
-  if (compare instanceof HTMLElement) {
+  const compare = findElementByBuilderClass(card, 'product-card-compare')
+  if (compare) {
     compare.className = prefixBuilderClasses(parts.compare)
   }
 
-  const img = card.querySelector('[class*="product-card-image"] img')
+  const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+  const img = imageWrap?.querySelector('img')
   if (img instanceof HTMLElement) {
     img.className = prefixBuilderClasses(parts.image)
   }
@@ -530,11 +560,11 @@ export function applyProductSectionOptionsToElement(
 
   findProductCardsInSection(section).forEach((card) => {
     card.className = cardClass
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
-    if (imageWrap instanceof HTMLElement) {
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+    if (imageWrap) {
       imageWrap.className = imageWrapClass
     }
-    const badge = card.querySelector('[class*="product-card-badge"]')
+    const badge = findElementByBuilderClass(card, 'product-card-badge')
     const emptyBadge = Boolean(badge && !(badge.textContent ?? '').trim())
     applyProductCardDesignClasses(card, cardDesign, emptyBadge)
   })

@@ -224,6 +224,8 @@ userSettings: {
 
 Existing `<h1>` content already on the canvas is not removed; authors simply cannot create new H1s via TipTap while `disableH1` is enabled.
 
+SEO Check also respects this flag: when `disableH1` is **not** `true`, the SEO report includes an “Has at least one H1” check and treats H1 as the top of the heading hierarchy. When `disableH1: true`, those H1 requirements are skipped (the host page title is assumed to live outside the builder).
+
 ### Theme Color Presets
 
 Use `settings.themeColorPresets` to provide brand colors that appear in the text color and background color menus. Supported preset IDs are `primary`, `secondary`, and `custom1` through `custom6`.

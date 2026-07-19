@@ -18,7 +18,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/usePageBuilder'
 import UndoRedo from '../Components/PageBuilder/UndoRedo/UndoRedo.vue'
 import LayersIcon from '../Components/Icons/LayersIcon.vue'
-import PreviewDesktopIcon from '../Components/Iconsand/PreviewDesktopIcon.vue'
+import PreviewDesktopIcon from '../Components/Icons/PreviewDesktopIcon.vue'
 import HtmlCodeViewerModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlCodeViewerModal.vue'
 import HtmlEditorModal from '../Components/PageBuilder/EditorMenu/Editables/HtmlEditorModal.vue'
 import ToastContainer from '../Components/Toast/ToastContainer.vue'
@@ -45,6 +45,7 @@ import {
   applyPageBuilderBrandColor,
   clearPageBuilderBrandColor,
 } from '../utils/builder/apply-brand-color'
+import ShoppingIcon from '@/Components/Icons/ShoppingIcon.vue'
 
 const pageBuilderService = getPageBuilder()
 const {
@@ -774,9 +775,9 @@ const openImageSettings = () => {
   showImageSettingsModal.value = true
 }
 
-const closeImageSettings = () => {
+const closeImageSettings = async () => {
   showImageSettingsModal.value = false
-  pageBuilderService.setImageSettingsModalOpen(false)
+  await pageBuilderService.closeImageSettingsModal()
 }
 
 useBuilderKeyboardShortcuts({
@@ -1460,7 +1461,7 @@ onBeforeUnmount(() => {
             <span
               class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined"> shopping_bag </span>
+              <span class="material-symbols-outlined"> <ShoppingIcon /> </span>
             </span>
             <span class="lg:pbx-block pbx-hidden">
               {{ translate('Products') }}

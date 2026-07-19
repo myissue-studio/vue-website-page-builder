@@ -533,6 +533,77 @@ describe('Global Page Settings', () => {
     expect(contentEl.getAttribute('class')).toBe('section-local-class')
   })
 
+  it('replaceTheme clears Page Design global classes and styles before applying theme', async () => {
+    pagebuilderEl.setAttribute(
+      'class',
+      'pbx-font-jost pbx-bg-rose-400 pbx-full-width-component pbx-text-slate-800',
+    )
+    pagebuilderEl.setAttribute('style', 'color:#111111')
+    contentEl.innerHTML = SECTION_HTML
+
+    localStorage.setItem(
+      'page-builder-update-resource-page',
+      JSON.stringify({
+        components: [{ html_code: SECTION_HTML, id: 'old', title: 'Old' }],
+        pageSettings: {
+          classes: 'pbx-font-jost pbx-bg-rose-400 pbx-full-width-component',
+          style: 'color:#111111',
+        },
+      }),
+    )
+
+    const config = {
+      updateOrCreate: { formType: 'update', formName: 'page' },
+      pageSettings: {
+        classes: 'pbx-font-jost pbx-bg-rose-400 pbx-full-width-component',
+        style: 'color:#111111',
+      },
+      userSettings: { autoSave: false },
+    }
+    const mockStore = createMockStore({
+      getPageBuilderConfig: config,
+      getLocalStorageItemName: 'page-builder-update-resource-page',
+      getComponents: [{ html_code: SECTION_HTML, id: 'old', title: 'Old' }],
+      setPageBuilderConfig: vi.fn((next) => {
+        Object.assign(config, next)
+      }),
+    })
+    const service = new PageBuilderService(mockStore)
+
+    await service.replaceTheme(
+      '<section data-component-title="Theme Section"><div><h2>Fresh theme</h2></div></section>',
+    )
+
+    expect(pagebuilderEl.getAttribute('class') || '').not.toContain('pbx-bg-rose-400')
+    expect(pagebuilderEl.getAttribute('class') || '').not.toContain('pbx-full-width-component')
+    expect(pagebuilderEl.getAttribute('class') || '').not.toContain('pbx-text-slate-800')
+    expect(pagebuilderEl.getAttribute('class') || '').not.toContain('pbx-font-jost')
+    expect(pagebuilderEl.getAttribute('style') || '').not.toContain('color:#111111')
+    expect(config.pageSettings).toEqual(
+      expect.objectContaining({
+        classes: '',
+        style: '',
+      }),
+    )
+    expect(mockStore.setFontFamily).toHaveBeenCalledWith('none')
+    expect(mockStore.setBackgroundColor).toHaveBeenCalledWith(null)
+    expect(mockStore.setTextColor).toHaveBeenCalledWith(null)
+    expect(mockStore.setComponents).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Theme Section',
+          html_code: expect.stringContaining('Fresh theme'),
+        }),
+      ]),
+    )
+
+    const persisted = JSON.parse(
+      localStorage.getItem('page-builder-update-resource-page') || '{}',
+    ) as { pageSettings?: { classes?: string; style?: string } }
+    expect(persisted.pageSettings?.classes || '').not.toContain('pbx-bg-rose-400')
+    expect(persisted.pageSettings?.style || '').not.toContain('color:#111111')
+  })
+
   // -------------------------------------------------------------------------
   // REGRESSION: v-if reopen — importedPageBuilder before live DOM
   // -------------------------------------------------------------------------

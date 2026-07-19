@@ -157,6 +157,15 @@
     @apply pbx-text-myPrimaryLinkColor pbx-w-max pbx-p-1;
   }
 
+  /*
+   * Hide product card parts (price/image/CTA). Must beat utilities like
+   * `pbx-flex` on price rows — those share specificity with `pbx-hidden`
+   * and can win depending on CSS order, leaving prices visible.
+   */
+  #pagebuilder [data-pbx-product-content-hidden='true'] {
+    display: none !important;
+  }
+
   #pagebuilder .pbx-product-card-title a,
   #pagebuilder .pbx-product-card-cta a {
     @apply pbx-no-underline pbx-text-inherit hover:pbx-opacity-90;

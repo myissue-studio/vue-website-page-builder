@@ -8,6 +8,7 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
 import { transparentSwatchStyle } from '../../../../utils/builder/transparent-swatch-style'
+import { normalizeCssColorToHex } from '../../../../utils/builder/color-utils'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ColorMenuCustomSection from './ColorMenuCustomSection.vue'
 import CustomHexColorModal from './CustomHexColorModal.vue'
@@ -43,10 +44,29 @@ const {
 } = useEditToolbarPopover({ width: 224 })
 
 const showCustomHexModal = ref(false)
+const customModalInitialColor = ref('')
 
 const selectedCustomTextColor = computed(() => {
   return textColor.value?.startsWith('custom:') ? textColor.value.replace('custom:', '') : ''
 })
+
+function resolveCurrentCustomTextHex(): string {
+  const candidates = [pageBuilderStateStore.getTextColor, textColor.value]
+  for (const value of candidates) {
+    if (value?.startsWith('custom:')) {
+      return value.replace('custom:', '')
+    }
+  }
+
+  const target = pageBuilderStateStore.getToggleGlobalHtmlMode
+    ? document.getElementById('pagebuilder')
+    : pageBuilderStateStore.getElement
+
+  if (!(target instanceof HTMLElement)) return ''
+
+  const raw = target.style.getPropertyValue('color') || target.style.color
+  return normalizeCssColorToHex(raw) ?? ''
+}
 
 const textColorSwatchClass = computed(() => {
   if (selectedCustomTextColor.value) return ''
@@ -168,6 +188,7 @@ function handleTextColorSelect(value: string): void {
 
 function openCustomHexModal(): void {
   closeTextColorMenu()
+  customModalInitialColor.value = resolveCurrentCustomTextHex()
   showCustomHexModal.value = true
 }
 
@@ -392,7 +413,7 @@ watch(
 
   <CustomHexColorModal
     :show="showCustomHexModal"
-    :initial-color="selectedCustomTextColor"
+    :initial-color="customModalInitialColor"
     :title="translate('Text Color')"
     @close="closeCustomHexModal"
     @apply="applyCustomHexColor"

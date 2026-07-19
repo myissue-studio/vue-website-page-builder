@@ -24,6 +24,7 @@ const draftHex = ref(normalizeCssColorToHex(props.initialColor || '') ?? '#00000
 const appliedHex = ref<string | null>(null)
 const initialHex = ref<string | null>(normalizeCssColorToHex(props.initialColor || '#000000'))
 const showSaveModal = ref(false)
+const hasSavedToTheme = ref(false)
 
 watch(
   () => props.show,
@@ -35,6 +36,7 @@ watch(
     initialHex.value = initial
     appliedHex.value = null
     showSaveModal.value = false
+    hasSavedToTheme.value = false
   },
 )
 
@@ -60,9 +62,15 @@ const isCurrentDraftApplied = computed(
   () => Boolean(appliedHex.value) && validDraft.value === appliedHex.value,
 )
 
-const canSaveToTheme = computed(() => Boolean(appliedHex.value))
+const canSaveToTheme = computed(() => {
+  if (appliedHex.value) return true
+  return Boolean(normalizeCssColorToHex(props.initialColor || ''))
+})
 
-const saveColor = computed(() => appliedHex.value ?? '')
+const saveColor = computed(
+  () =>
+    appliedHex.value ?? normalizeCssColorToHex(props.initialColor || '') ?? validDraft.value ?? '',
+)
 
 function onHexInput(event: Event): void {
   draftHex.value = (event.target as HTMLInputElement).value
@@ -93,11 +101,16 @@ function onEnterKey(event: KeyboardEvent): void {
 }
 
 function openSaveModal(): void {
-  if (!canSaveToTheme.value) return
+  if (!canSaveToTheme.value || hasSavedToTheme.value) return
   showSaveModal.value = true
 }
 
 function closeSaveModal(): void {
+  showSaveModal.value = false
+}
+
+function onThemeColorSaved(): void {
+  hasSavedToTheme.value = true
   showSaveModal.value = false
 }
 </script>
@@ -108,10 +121,10 @@ function closeSaveModal(): void {
     :title="title"
     maxWidth="md"
     :z-index="10004"
-    :show-actions="canSaveToTheme"
+    :show-actions="true"
     @closeMainModalBuilder="$emit('close')"
   >
-    <div class="pbx-min-h-[55rem]">
+    <div class="pbx-min-h-[40rem]">
       <div class="pbx-customColorModal">
         <p class="pbx-customColorModalIntro">
           {{
@@ -164,7 +177,9 @@ function closeSaveModal(): void {
               :disabled="!validDraft"
               @click="applyDraft"
             >
-              <span class="material-symbols-outlined pbx-materialIconBase pbx-leading-none">check</span>
+              <span class="material-symbols-outlined pbx-materialIconBase pbx-leading-none"
+                >check</span
+              >
             </button>
           </div>
         </div>
@@ -185,7 +200,7 @@ function closeSaveModal(): void {
         :show="showSaveModal"
         :color="saveColor"
         @close="closeSaveModal"
-        @saved="closeSaveModal"
+        @saved="onThemeColorSaved"
       />
     </div>
 
@@ -193,7 +208,13 @@ function closeSaveModal(): void {
       <button type="button" class="pbx-mySecondaryButton" @click="$emit('close')">
         {{ translate('Close') }}
       </button>
-      <button type="button" class="pbx-myPrimaryButton" @click="openSaveModal">
+      <button
+        v-if="!hasSavedToTheme"
+        type="button"
+        class="pbx-myPrimaryButton"
+        :disabled="!canSaveToTheme"
+        @click="openSaveModal"
+      >
         {{ translate('Save to theme') }}
       </button>
     </template>

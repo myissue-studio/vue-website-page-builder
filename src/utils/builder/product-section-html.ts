@@ -12,6 +12,7 @@ import {
   getProductCardDesignParts,
   getProductImageWrapClass,
   normalizeCardDesign,
+  PRODUCT_CONTENT_HIDDEN_ATTR,
 } from './product-section-options'
 
 function escapeHtml(value: string): string {
@@ -37,6 +38,10 @@ export interface BuildProductSectionStyleOptions {
 }
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'hidden'
+
+function productContentHiddenAttr(hidden: boolean): string {
+  return hidden ? ` ${PRODUCT_CONTENT_HIDDEN_ATTR}="true"` : ''
+}
 
 const STANDARD_PRODUCT_FIELDS = new Set([
   'id',
@@ -98,8 +103,8 @@ function renderProductCard(
   if (imageSrc) {
     const imgTag = `<img class="${design.image} " src="${imageSrc}" alt="${imageAlt}">`
     imageHtml = url
-      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a${linkHref}${linkDataHref}${linkAttrs}>${imgTag}</a></div>`
-      : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
+      ? `<div class="${imageWrapClass}"${productContentHiddenAttr(hideImage)} data-pb-no-inline-text><a${linkHref}${linkDataHref}${linkAttrs}>${imgTag}</a></div>`
+      : `<div class="${imageWrapClass}"${productContentHiddenAttr(hideImage)} data-pb-no-inline-text>${imgTag}</div>`
   }
 
   const badgeHtml = badge
@@ -147,13 +152,13 @@ function renderProductCard(
       ]
         .filter(Boolean)
         .join(' ')
-      priceRowHtml = `<div class="${priceRowClass}">${priceParts.join('')}</div>`
+      priceRowHtml = `<div class="${priceRowClass}"${productContentHiddenAttr(hidePrice)}>${priceParts.join('')}</div>`
     }
 
     const ctaAnchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}"${linkHref}${linkDataHref}${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"${productContentHiddenAttr(hideButton)}><p><a class="${ctaAnchorClass}"${linkHref}${linkDataHref}${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
