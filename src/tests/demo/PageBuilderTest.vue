@@ -87,7 +87,7 @@ watch(
           enable: ['en', 'zh-Hans', 'fr', 'ja', 'ru', 'es', 'pt', 'de', 'ar', 'hi', 'da', 'it'],
           disableLanguageDropDown: false,
         },
-        // Hide TipTap H1 when the host page already owns the page <h1>.
+        // disableH1 defaults to false when omitted (H1 enabled). Set true to hide TipTap H1.
         disableH1: false,
         autoSave: true,
         // Load custom fonts in your app CSS, e.g. dev-global.css or index.html:

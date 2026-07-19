@@ -450,8 +450,8 @@ export interface PageBuilderConfig {
     notifications?: boolean
     /**
      * When `true`, TipTap editors hide the H1 control and do not allow creating
-     * level-1 headings (H2–H6 remain available). Useful when the host page already
-     * owns the single page `<h1>` outside the builder.
+     * level-1 headings (H2–H6 remain available). Defaults to `false` when omitted.
+     * Useful when the host page already owns the single page `<h1>` outside the builder.
      */
     disableH1?: boolean
     /**
