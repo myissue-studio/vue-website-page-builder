@@ -147,12 +147,12 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
             {{ translate('Open history') }}
             {{ historyIndex + 1 }}/{{ historyLength }}
           </span>
-          <span v-if="historyLength >= 1" class="pbx-text-[10px]" n="true">
+          <span v-if="historyLength >= 1" class="pbx-text-[10px] pbx-text-gray-600" n="true">
             {{ historyLength }}
           </span>
           <div
             v-if="historyLength >= 1"
-            class="pbx-h-4 pbx-border-l pbx-border-gray-500 pbx-mx-1"
+            class="pbx-h-4 pbx-border-l pbx-border-gray-300 pbx-mx-1"
           ></div>
           <SliderIcon size="12" />
         </span>
