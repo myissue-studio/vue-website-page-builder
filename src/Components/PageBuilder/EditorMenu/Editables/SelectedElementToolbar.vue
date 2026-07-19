@@ -62,10 +62,16 @@ const showSliderModal = ref(false)
 const draftSliderAutoRotate = ref(false)
 const draftSliderSpeed = ref(3)
 const draftSliderImageCount = ref(3)
+const draftSliderPerView = ref(1)
+const draftSliderLoop = ref(true)
+const draftSliderShowArrows = ref(false)
 const sliderSettingsBaseline = ref<{
   autoRotate: boolean
   speed: number
   imageCount: number
+  perView: number
+  loop: boolean
+  showArrows: boolean
 } | null>(null)
 const isSavingSliderSettings = ref(false)
 
@@ -85,23 +91,44 @@ const isSliderSettingsDirty = computed(() => {
   return (
     draftSliderAutoRotate.value !== baseline.autoRotate ||
     draftSliderSpeed.value !== baseline.speed ||
-    draftSliderImageCount.value !== baseline.imageCount
+    draftSliderImageCount.value !== baseline.imageCount ||
+    draftSliderPerView.value !== baseline.perView ||
+    draftSliderLoop.value !== baseline.loop ||
+    draftSliderShowArrows.value !== baseline.showArrows
   )
 })
 
 const readSliderSettingsFromDom = () => {
   if (!(getElement.value instanceof HTMLElement)) {
-    return { autoRotate: false, speed: 3, imageCount: 3 }
+    return {
+      autoRotate: false,
+      speed: 3,
+      imageCount: 3,
+      perView: 1,
+      loop: true,
+      showArrows: false,
+    }
   }
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   if (!container) {
-    return { autoRotate: false, speed: 3, imageCount: 3 }
+    return {
+      autoRotate: false,
+      speed: 3,
+      imageCount: 3,
+      perView: 1,
+      loop: true,
+      showArrows: false,
+    }
   }
   const track = container.querySelector('.pbx-isl-t')
+  const perViewRaw = parseInt(container.getAttribute('data-isl-per-view') || '1', 10)
   return {
     autoRotate: container.hasAttribute('data-isl-auto'),
     speed: parseInt(container.getAttribute('data-isl-speed') || '3', 10),
     imageCount: track ? track.children.length : 3,
+    perView: perViewRaw === 2 ? 2 : 1,
+    loop: container.getAttribute('data-isl-loop') !== 'false',
+    showArrows: container.hasAttribute('data-isl-arrows'),
   }
 }
 
@@ -110,6 +137,9 @@ const openSliderSettings = () => {
   draftSliderAutoRotate.value = current.autoRotate
   draftSliderSpeed.value = current.speed
   draftSliderImageCount.value = current.imageCount
+  draftSliderPerView.value = current.perView
+  draftSliderLoop.value = current.loop
+  draftSliderShowArrows.value = current.showArrows
   sliderSettingsBaseline.value = { ...current }
   showSliderModal.value = true
 }
@@ -348,12 +378,58 @@ const toggleSliderAutoRotate = (value: boolean) => {
   draftSliderAutoRotate.value = value
 }
 
+const toggleSliderLoop = (value: boolean) => {
+  draftSliderLoop.value = value
+}
+
+const toggleSliderShowArrows = (value: boolean) => {
+  draftSliderShowArrows.value = value
+}
+
 const changeSliderSpeed = (n: number) => {
   draftSliderSpeed.value = n
 }
 
 const changeSlideCount = (newCount: number) => {
   draftSliderImageCount.value = newCount
+}
+
+const changeSliderPerView = (n: number) => {
+  draftSliderPerView.value = n === 2 ? 2 : 1
+}
+
+const SLIDER_ARROW_BACK_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15.5 19L8.5 12L15.5 5" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+const SLIDER_ARROW_FORWARD_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 5L15.5 12L8.5 19" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+const syncSliderArrows = (container: HTMLElement, show: boolean) => {
+  const existing = container.querySelectorAll('.pbx-isl-arrow')
+  existing.forEach((el) => el.remove())
+
+  if (!show) {
+    container.removeAttribute('data-isl-arrows')
+    return
+  }
+
+  container.setAttribute('data-isl-arrows', '')
+
+  const prev = document.createElement('span')
+  prev.className = 'pbx-isl-arrow pbx-isl-prev'
+  prev.setAttribute('role', 'button')
+  prev.setAttribute('aria-label', 'Previous')
+  prev.innerHTML = SLIDER_ARROW_BACK_SVG
+  prev.setAttribute('onclick', buildSliderArrowOnclickJs(-1))
+
+  const next = document.createElement('span')
+  next.className = 'pbx-isl-arrow pbx-isl-next'
+  next.setAttribute('role', 'button')
+  next.setAttribute('aria-label', 'Next')
+  next.innerHTML = SLIDER_ARROW_FORWARD_SVG
+  next.setAttribute('onclick', buildSliderArrowOnclickJs(1))
+
+  container.appendChild(prev)
+  container.appendChild(next)
 }
 
 const applySliderSettingsToDom = async () => {
@@ -368,14 +444,18 @@ const applySliderSettingsToDom = async () => {
   const styleTag = section?.querySelector('style')
   const newCount = draftSliderImageCount.value
   const speed = draftSliderSpeed.value
+  const perView = draftSliderPerView.value === 2 ? 2 : 1
+  const loop = draftSliderLoop.value
+  const showArrows = draftSliderShowArrows.value
   const currentCount = track.children.length
+  const slideMinWidth = `${100 / perView}%`
 
   if (newCount > currentCount) {
     const firstImg = track.querySelector('img') as HTMLImageElement | null
     const placeholderSrc = firstImg?.getAttribute('src') || ''
     for (let i = currentCount; i < newCount; i++) {
       const slide = document.createElement('div')
-      slide.style.minWidth = '100%'
+      slide.style.minWidth = slideMinWidth
       slide.style.scrollSnapAlign = 'start'
       const img = document.createElement('img')
       img.src = placeholderSrc
@@ -392,6 +472,16 @@ const applySliderSettingsToDom = async () => {
       track.children[i]?.remove()
     }
   }
+
+  Array.from(track.children).forEach((child) => {
+    if (child instanceof HTMLElement) {
+      child.style.minWidth = slideMinWidth
+      child.style.scrollSnapAlign = 'start'
+      // Clear per-view inline padding so CSS can own the multi-slide look.
+      child.style.paddingLeft = ''
+      child.style.paddingRight = ''
+    }
+  })
 
   const numsDiv = container.querySelector('.pbx-isl-nums') as HTMLElement | null
   const dotsDiv = numsDiv?.nextElementSibling as HTMLElement | null
@@ -426,13 +516,17 @@ const applySliderSettingsToDom = async () => {
     container.removeAttribute('data-isl-auto')
   }
   container.setAttribute('data-isl-speed', String(speed))
+  container.setAttribute('data-isl-per-view', String(perView))
+  container.setAttribute('data-isl-loop', loop ? 'true' : 'false')
 
   const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
   const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
   nums.forEach((span, i) => span.setAttribute('onclick', buildSliderOnclickJs(i)))
   dots.forEach((dot, i) => dot.setAttribute('onclick', buildSliderOnclickJs(i)))
 
-  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, speed)
+  syncSliderArrows(container, showArrows)
+
+  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, speed, perView, loop)
 
   autoRotateTick.value++
   await pageBuilderService.refreshListeners()
@@ -455,34 +549,60 @@ const saveSliderSettings = async () => {
 }
 
 // ── Slider style/onclick helpers ───────────────────────────────────────────
-function buildSliderOnclickJs(idx: number): string {
-  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.55';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
-  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
-  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(${idx === 0 ? '0' : `(-${idx}*sp)`})+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});}`
-  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}${nav}var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
+function buildSliderNavigateJs(idxExpr: string): string {
+  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===idx?'1':'0.55';s.style.background=i===idx?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===idx?'#111':'#fff';s.style.textShadow=i===idx?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
+  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===idx?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
+  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}`
+  return `var idx=${idxExpr};if(idx<0||idx>=t.children.length)return;c.setAttribute('data-isl-active',String(idx));${numHl}${dotHl}${nav}`
 }
 
-function buildSliderStyle(n: number, speed: number = 3): string {
-  const T = n * speed
-  const step = 100 / n
-  const hold = Math.max(step - 3, 1)
-  const trackW = n * 100
-  const slideW = (100 / n).toFixed(3)
+function buildSliderOnclickJs(idx: number): string {
+  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${buildSliderNavigateJs(String(idx))}var img=t.children[idx].querySelector('img');if(img)img.click();})(this,event)`
+}
 
-  // Track keyframes
+function buildSliderArrowOnclickJs(dir: -1 | 1): string {
+  const nextExpr =
+    dir === 1
+      ? `loop?(cur+1)%n:Math.min(n-1,cur+1)`
+      : `loop?(cur-1+n)%n:Math.max(0,cur-1)`
+  return `(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var n=t.children.length;var loop=c.getAttribute('data-isl-loop')!=='false';var cur=0;var best=Infinity;for(var i=0;i<n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist<best){best=dist;cur=i;}}var next=${nextExpr};${buildSliderNavigateJs('next')}})(this,event)`
+}
+
+function buildSliderStyle(
+  n: number,
+  speed: number = 3,
+  perView: number = 1,
+  loop: boolean = true,
+): string {
+  const pv = perView === 2 ? 2 : 1
+  const slideCount = Math.max(n, pv)
+  // Advance one slide at a time. Without loop, stop once the last page is fully visible.
+  const startCount = loop ? slideCount : Math.max(1, slideCount - pv + 1)
+  const T = startCount * speed
+  const step = 100 / startCount
+  const hold = Math.max(step - 3, 1)
+  const trackW = (slideCount / pv) * 100
+  const slideW = (100 / slideCount).toFixed(3)
+
+  // Track keyframes — translate by one slide width of the track each step
   let trackKf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
-  for (let i = 1; i < n; i++) {
-    const tx = -((100 * i) / n).toFixed(3)
+  for (let i = 1; i < startCount; i++) {
+    const tx = -((100 * i) / slideCount).toFixed(3)
     const s = (i * step).toFixed(3)
     const e2 = (i * step + hold).toFixed(3)
     trackKf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
   }
-  trackKf += `99%,100%{transform:translateX(0)}}`
+  if (loop) {
+    trackKf += `99%,100%{transform:translateX(0)}}`
+  } else {
+    const lastTx = -((100 * (startCount - 1)) / slideCount).toFixed(3)
+    trackKf += `99%,100%{transform:translateX(${lastTx}%)}}`
+  }
 
   // Per-dot keyframes + rules (sync background with track timing)
   let dotKfs = ''
   let dotRules = ''
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < slideCount; i++) {
     const aStart = (i * step).toFixed(3)
     const aEnd = (i * step + hold).toFixed(3)
     const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
@@ -490,17 +610,21 @@ function buildSliderStyle(n: number, speed: number = 3): string {
     const active = 'rgba(255,255,255,1)'
     if (i === 0) {
       dotKfs += `@keyframes pbx-isl-da-${i}{0%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
-    } else {
+    } else if (i < startCount) {
       const before = (i * step - 0.001).toFixed(3)
       dotKfs += `@keyframes pbx-isl-da-${i}{0%,${before}%{background:${dim}}${aStart}%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
+    } else {
+      // Slides never become the "start" index when per-view > 1 without loop
+      dotKfs += `@keyframes pbx-isl-da-${i}{0%,100%{background:${dim}}}`
     }
-    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s infinite}`
+    const iter = loop ? 'infinite' : '1 forwards'
+    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s ${iter}}`
   }
 
   // Per-num keyframes + rules (sync opacity+background with track timing)
   let numKfs = ''
   let numRules = ''
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < slideCount; i++) {
     const aStart = (i * step).toFixed(3)
     const aEnd = (i * step + hold).toFixed(3)
     const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
@@ -508,27 +632,53 @@ function buildSliderStyle(n: number, speed: number = 3): string {
     const activeState = 'opacity:1;background:rgba(255,255,255,0.9)'
     if (i === 0) {
       numKfs += `@keyframes pbx-isl-na-${i}{0%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
-    } else {
+    } else if (i < startCount) {
       const before = (i * step - 0.001).toFixed(3)
       numKfs += `@keyframes pbx-isl-na-${i}{0%,${before}%{${dimState}}${aStart}%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
+    } else {
+      numKfs += `@keyframes pbx-isl-na-${i}{0%,100%{${dimState}}}`
     }
-    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s infinite}`
+    const iter = loop ? 'infinite' : '1 forwards'
+    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s ${iter}}`
   }
 
   // Builder active-slide rules (CSS attribute selector — used in edit mode)
   let activeRules = ''
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < slideCount; i++) {
     if (i > 0) activeRules += ','
     activeRules += `[data-isl-active="${i}"] .pbx-isl-nums span:nth-child(${i + 1})`
   }
   activeRules +=
     '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
 
+  const animIter = loop ? 'infinite' : '1 forwards'
+  const manualSlideMin = `${(100 / pv).toFixed(3)}%`
+  const multiViewStyles =
+    pv === 2
+      ? [
+          // Padding creates a visible gap while keeping 50% widths (auto keyframes stay simple).
+          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box;padding-inline:0.4rem}',
+          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{border-radius:0.75rem;overflow:hidden}',
+        ].join('')
+      : '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div{padding-inline:0}[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img{border-radius:0}'
+
+  const arrowStyles = [
+    '.pbx-isl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:11;width:2.5rem;height:2.5rem;border-radius:9999px;background:rgba(255,255,255,0.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;cursor:pointer;border:0;color:#111;box-shadow:0 1px 4px rgba(0,0,0,0.12);user-select:none}',
+    '[data-isl][data-isl-arrows] .pbx-isl-arrow{display:flex}',
+    '.pbx-isl-prev{left:0.75rem}',
+    '.pbx-isl-next{right:0.75rem}',
+    '.pbx-isl-arrow svg{display:block;flex-shrink:0}',
+    '[data-builder-canvas] .pbx-isl-arrow{pointer-events:auto;z-index:20}',
+  ].join('')
+
   return [
-    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
+    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;width:100%}',
     '.pbx-isl-t::-webkit-scrollbar{display:none}',
+    `.pbx-isl-t>div{min-width:${manualSlideMin};scroll-snap-align:start;box-sizing:border-box}`,
+    multiViewStyles,
+    arrowStyles,
     trackKf,
-    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s infinite;pointer-events:none}`,
+    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`,
     `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
     '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
     '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
@@ -1275,7 +1425,7 @@ defineExpose({
         <template v-if="isInsideSlider">
           <div
             @click="openSliderSettings"
-            :class="sliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor pbx-text-white' : ''"
+            :class="sliderAutoRotate ? '' : ''"
             class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 pbx-text-myPrimaryDarkGrayColor"
             :title="translate('Slider Settings')"
           >
@@ -1362,6 +1512,7 @@ defineExpose({
           :showDynamicModalBuilder="showSliderModal"
           :isLoading="isSavingSliderSettings"
           type="success"
+          maxWidth="3xl"
           :gridColumnAmount="2"
           :title="translate('Slider Settings')"
           description=""
@@ -1372,104 +1523,156 @@ defineExpose({
         >
           <header></header>
           <main>
-            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
-              <!-- Auto Rotate card -->
-              <div
-                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-overflow-hidden"
-              >
-                <div
-                  class="pbx-flex pbx-items-center pbx-justify-between pbx-px-4 pbx-py-3"
-                  :class="
-                    draftSliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor' : 'pbx-bg-gray-50'
-                  "
-                >
-                  <div class="pbx-flex pbx-items-center pbx-gap-2">
-                    <span
-                      class="material-symbols-outlined pbx-materialIconXl"
-                      :class="
-                        draftSliderAutoRotate
-                          ? 'pbx-text-white'
-                          : 'pbx-text-myPrimaryDarkGrayColor'
-                      "
-                      >autoplay</span
-                    >
-                    <span
-                      class="pbx-text-sm pbx-font-semibold"
-                      :class="
-                        draftSliderAutoRotate
-                          ? 'pbx-text-white'
-                          : 'pbx-text-myPrimaryDarkGrayColor'
-                      "
-                      >{{ translate('Auto Rotate') }}</span
-                    >
-                  </div>
-                  <ToggleInput
-                    :model-value="draftSliderAutoRotate"
-                    @update:model-value="toggleSliderAutoRotate"
-                  />
-                </div>
-
-                <!-- Speed row — only when auto rotate is on -->
-                <div
-                  v-if="draftSliderAutoRotate"
-                  class="pbx-px-4 pbx-py-3 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-bg-white"
-                >
-                  <p
-                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-mb-2 pbx-uppercase pbx-tracking-wide"
-                  >
-                    {{ translate('Rotation Speed (s)') }}
-                  </p>
-                  <div class="pbx-flex pbx-gap-2">
-                    <button
-                      v-for="s in [1, 2, 3, 4, 5]"
-                      :key="s"
-                      @click="changeSliderSpeed(s)"
-                      :class="
-                        draftSliderSpeed === s
-                          ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
-                          : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200'
-                      "
-                      class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
-                      type="button"
-                    >
-                      {{ s }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Number of images card -->
-              <div
-                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
-              >
-                <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
-                  <span
-                    class="material-symbols-outlined pbx-materialIconXl pbx-text-myPrimaryDarkGrayColor"
-                    >photo_library</span
-                  >
-                  <p
-                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-uppercase pbx-tracking-wide"
-                  >
-                    {{ translate('Number of images') }}
+            <div class="pbx-productSettingsPanel pbx-pt-1 pbx-pb-2">
+              <!-- Layout -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Slider layout') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('How many images and how they are shown') }}
                   </p>
                 </div>
-                <div class="pbx-flex pbx-gap-2">
-                  <button
-                    v-for="n in [2, 3, 4, 5, 6]"
-                    :key="n"
-                    @click="changeSlideCount(n)"
-                    :class="
-                      draftSliderImageCount === n
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
-                        : 'pbx-bg-white pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200 pbx-border pbx-border-solid pbx-border-gray-200'
-                    "
-                    class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
-                    type="button"
-                  >
-                    {{ n }}
-                  </button>
+
+                <div class="pbx-flex pbx-flex-col pbx-gap-5">
+                  <div>
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Number of images') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="n in [2, 3, 4, 5, 6]"
+                        :key="n"
+                        type="button"
+                        @click="changeSlideCount(n)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderImageCount === n
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ n }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Slides per view') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="n in [1, 2]"
+                        :key="n"
+                        type="button"
+                        @click="changeSliderPerView(n)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderPerView === n
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ n }}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </section>
+
+              <!-- Playback -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Playback') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('Autoplay, speed, and looping') }}
+                  </p>
+                </div>
+
+                <div class="pbx-productSettingsToggleList">
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Auto Rotate') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Advance slides automatically') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderAutoRotate"
+                      @update:model-value="toggleSliderAutoRotate"
+                    />
+                  </div>
+
+                  <div
+                    v-if="draftSliderAutoRotate"
+                    class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-white pbx-px-3 pbx-py-3"
+                  >
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Rotation Speed (s)') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="s in [1, 2, 3, 4, 5]"
+                        :key="s"
+                        type="button"
+                        @click="changeSliderSpeed(s)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderSpeed === s
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ s }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Loop') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Restart after the last slide') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderLoop"
+                      @update:model-value="toggleSliderLoop"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Navigation -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Navigation') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('Previous and next controls') }}
+                  </p>
+                </div>
+
+                <div class="pbx-productSettingsToggleList">
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Show arrows') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Show back and forward buttons on the slider') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderShowArrows"
+                      @update:model-value="toggleSliderShowArrows"
+                    />
+                  </div>
+                </div>
+              </section>
             </div>
           </main>
         </ConfirmActionModal>

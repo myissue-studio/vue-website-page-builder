@@ -434,5 +434,43 @@ describe('HTML Utility Methods', () => {
 
       expect(result).toContain('src="http://localhost:11001/storage/uploads/hero.jpg"')
     })
+
+    it('resets image sliders to the first slide for preview HTML', () => {
+      const root = document.createElement('div')
+      root.id = 'pagebuilder'
+      root.innerHTML = `
+        <section data-isl data-isl-active="2">
+          <div class="pbx-isl-t" style="transform: translateX(-200%)">
+            <div><img src="one.jpg" alt="1" /></div>
+            <div><img src="two.jpg" alt="2" /></div>
+            <div><img src="three.jpg" alt="3" /></div>
+          </div>
+          <div class="pbx-isl-nums">
+            <span style="opacity:0.55">1</span>
+            <span style="opacity:0.55">2</span>
+            <span style="opacity:1;background:rgba(255,255,255,0.9);color:#111">3</span>
+          </div>
+          <div>
+            <span class="pbx-isl-dot" style="background:rgba(255,255,255,0.55)"></span>
+            <span class="pbx-isl-dot" style="background:rgba(255,255,255,0.55)"></span>
+            <span class="pbx-isl-dot" style="background:rgba(255,255,255,1)"></span>
+          </div>
+        </section>
+      `
+
+      const result = extractCleanHTMLFromPageBuilder(root)
+      const wrapper = document.createElement('div')
+      wrapper.innerHTML = result
+      const slider = wrapper.querySelector('[data-isl]') as HTMLElement
+      const firstNum = slider.querySelector('.pbx-isl-nums span') as HTMLElement
+      const firstDot = slider.querySelector('.pbx-isl-dot') as HTMLElement
+      const track = slider.querySelector('.pbx-isl-t') as HTMLElement
+
+      expect(slider.hasAttribute('data-isl-active')).toBe(false)
+      expect(track.getAttribute('style')).toBeNull()
+      expect(firstNum.style.opacity).toBe('1')
+      expect(firstDot.style.background).toMatch(/255/)
+      expect(slider.querySelectorAll('.pbx-isl-nums span')[2].getAttribute('style')).toBeNull()
+    })
   })
 })

@@ -225,14 +225,11 @@ const closeHTMLSettings = async function () {
     >
       <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <div v-show="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
+          <SliderSettingsEditor v-if="showSliderSettings" @open="$emit('open-slider-settings')" />
           <ImageEditor v-if="showImageEditor" @open="$emit('open-image-settings')" />
           <ProductSectionSettingsEditor
             v-if="showProductSectionSettings"
             @open="$emit('open-product-section-settings')"
-          />
-          <SliderSettingsEditor
-            v-if="showSliderSettings"
-            @open="$emit('open-slider-settings')"
           />
           <OpacityEditor />
           <PaddingControl />

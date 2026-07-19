@@ -1922,6 +1922,15 @@ onBeforeUnmount(() => {
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
   min-width: 100% !important;
 }
+/* Keep multi-slide layout visible on canvas (match preview). */
+[data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
+  min-width: 50% !important;
+}
+/* Allow slider arrows to receive clicks in the editor. */
+[data-builder-canvas] .pbx-isl-arrow {
+  pointer-events: auto !important;
+  z-index: 20;
+}
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-dot,
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-nums span {
   animation-play-state: paused !important;
