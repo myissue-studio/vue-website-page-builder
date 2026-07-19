@@ -2026,7 +2026,7 @@ describe('PageBuilderService', () => {
       }
       ;(mockStore as unknown as Record<string, unknown>).getLocalStorageItemName =
         'page-builder-update-resource-article'
-      mockStore.setIsSaving.mockClear()
+      vi.mocked(mockStore.setIsSaving).mockClear()
 
       const fresh = new PageBuilderService(mockStore)
       const syncSpy = vi.spyOn(fresh, 'syncDomToStoreOnly')
