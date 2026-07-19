@@ -1759,7 +1759,9 @@ describe('PageBuilderService', () => {
 
     it('REGRESSION (product CTA): applies vertical padding to nested anchor, not product-card-cta wrapper', () => {
       const wrapper = document.createElement('div')
-      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold'
+      // Real product CTAs keep outer spacing on the wrapper (pt-3) while the
+      // nested <a> owns the pill padding (py-*).
+      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold pbx-pt-3'
       wrapper.innerHTML = `
         <p>
           <a
