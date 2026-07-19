@@ -1930,7 +1930,8 @@ onBeforeUnmount(() => {
 }
 [data-builder-canvas] [data-isl][data-isl-per-view='1'] .pbx-isl-t,
 [data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view='1'] .pbx-isl-t,
-[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view]) .pbx-isl-t {
+[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view]) .pbx-isl-t,
+[data-builder-canvas] [data-isl]:not([data-isl-per-view]) .pbx-isl-t {
   grid-auto-columns: 90% !important;
 }
 [data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t,

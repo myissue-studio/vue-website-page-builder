@@ -104,6 +104,29 @@ describe('slider-layout', () => {
     expect(css).toContain('display:grid')
     // 3 slides × 90% peek track for auto
     expect(css).toContain('width:270%!important')
+    // Both modes are always present so a missing attribute cannot stick on 50%.
+    expect(css).toContain('[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%')
+    expect(css).toContain(':not([data-isl-per-view])')
+  })
+
+  it('normalizeSliderWrapClones defaults missing per-view to 1', () => {
+    const section = document.createElement('section')
+    const style = document.createElement('style')
+    style.textContent = 'old'
+    section.appendChild(style)
+
+    const container = document.createElement('div')
+    container.setAttribute('data-isl', '')
+    container.setAttribute('data-isl-speed', '3')
+    const track = document.createElement('div')
+    track.className = 'pbx-isl-t'
+    for (let i = 0; i < 3; i += 1) track.appendChild(document.createElement('div'))
+    container.appendChild(track)
+    section.appendChild(container)
+
+    expect(normalizeSliderWrapClones(section)).toBe(true)
+    expect(container.getAttribute('data-isl-per-view')).toBe('1')
+    expect(style.textContent).toContain('grid-auto-columns:90%')
   })
 
   it('arrow next from last start wraps to 0 when loop is on', () => {

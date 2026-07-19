@@ -256,22 +256,20 @@ export function buildSliderStyle(
   const animIter = loop ? 'infinite' : '1 forwards'
   // Grid (not flex): % columns resolve against the visible track width. Flex % min-width
   // inside overflow-x:auto often circular-resolves to the image intrinsic width (= 1-up).
-  // Desktop 2-up: 50%. Mobile 2-up: peek ~85% so the active slide stays large.
+  // Default / 1-up: ~90% peek of the next slide. Desktop 2-up: 50%. Mobile 2-up: peek ~85%.
+  // Always emit both per-view rules so a missing/stale attribute cannot leave a 50% base.
   const mobile2UpPeek = 85
-  const colPct = pv === 2 ? '50%' : '90%'
-  const multiViewStyles =
-    pv === 2
-      ? [
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.4rem}',
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
-          `@media (max-width:767px){[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{padding-inline:0.35rem}}`,
-        ].join('')
-      : [
-          '[data-isl][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}',
-          '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.35rem}',
-          '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
-        ].join('')
+  const singlePeek = 90
+  const colPct = `${singlePeek}%`
+  const multiViewStyles = [
+    `[data-isl][data-isl-per-view="1"] .pbx-isl-t,[data-isl]:not([data-isl-per-view]) .pbx-isl-t{grid-auto-columns:${singlePeek}%!important}`,
+    '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div,[data-isl]:not([data-isl-per-view]) .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.35rem}',
+    '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img,[data-isl]:not([data-isl-per-view]) .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
+    '[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
+    '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.4rem}',
+    '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
+    `@media (max-width:767px){[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{padding-inline:0.35rem}}`,
+  ].join('')
 
   const arrowStyles = [
     '.pbx-isl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:11;width:2.5rem;height:2.5rem;border-radius:9999px;background:rgba(255,255,255,0.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;cursor:pointer;border:0;color:#111;box-shadow:0 1px 4px rgba(0,0,0,0.12);user-select:none}',
@@ -283,26 +281,23 @@ export function buildSliderStyle(
   ].join('')
 
   // Auto-rotate: widen the track; column % is of that track so 2-up stays half the viewport.
-  const peekPct = 90
-  const autoTrackW = pv === 1 ? trackSlideCount * peekPct : trackW
+  const autoTrackW = pv === 1 ? trackSlideCount * singlePeek : trackW
   const autoTrackMobile2Up = trackSlideCount * mobile2UpPeek
   const autoTrackDesktop = `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${autoTrackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`
   const autoSlideDesktop =
     pv === 2
       ? `[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
-      : `[data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
+      : `[data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t,[data-isl][data-isl-auto]:not([data-isl-per-view]) .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
   const autoMobile2Up =
     pv === 2
       ? `@media (max-width:767px){[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{width:${autoTrackMobile2Up}%!important;grid-auto-columns:${slideW}%!important}}`
       : ''
-  // Canvas forces track to 100% while editing — keep viewport columns at 50%/90% (mobile 2-up peeks).
-  const canvasManualForce =
-    pv === 2
-      ? [
-          '[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
-          `@media (max-width:767px){[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}}`,
-        ].join('')
-      : '[data-builder-canvas] [data-isl][data-isl-per-view="1"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}'
+  // Canvas: default / 1-up full width; 2-up half (mobile peeks).
+  const canvasManualForce = [
+    `[data-builder-canvas] [data-isl][data-isl-per-view="1"] .pbx-isl-t,[data-builder-canvas] [data-isl]:not([data-isl-per-view]) .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view]) .pbx-isl-t{grid-auto-columns:${singlePeek}%!important}`,
+    '[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
+    `@media (max-width:767px){[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}}`,
+  ].join('')
 
   return [
     `.pbx-isl-t{display:grid;grid-auto-flow:column;grid-auto-columns:${colPct};overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;width:100%}`,
@@ -350,8 +345,18 @@ export function normalizeSliderWrapClones(root: ParentNode): boolean {
     const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
     if (!track) return
 
+    // Missing attribute = 1-up (never leave CSS stuck on a previous 2-up base rule).
+    if (!container.hasAttribute('data-isl-per-view')) {
+      container.setAttribute('data-isl-per-view', '1')
+      changed = true
+    }
+
     const perViewRaw = parseInt(container.getAttribute('data-isl-per-view') || '1', 10)
     const perView = perViewRaw === 2 ? 2 : 1
+    if (perView === 1 && container.getAttribute('data-isl-per-view') !== '1') {
+      container.setAttribute('data-isl-per-view', '1')
+      changed = true
+    }
     if (syncSliderWrapClones(track, perView)) changed = true
 
     // Drop sticky inline slide widths — grid-auto-columns owns sizing (flex % was unreliable).
