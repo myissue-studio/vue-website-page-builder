@@ -32,7 +32,12 @@ import { useTranslations } from '../composables/useTranslations'
 import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { migrateSliderArrowIcons } from '../utils/builder/slider-arrows'
-import { normalizeSliderWrapClones } from '../utils/builder/slider-layout'
+import {
+  captureInlineSliderViewports,
+  normalizeSliderWrapClones,
+  pinSliderActiveFromElement,
+  restoreInlineSliderViewportsAfterLayout,
+} from '../utils/builder/slider-layout'
 import {
   preserveOriginalInlineHtmlIfUnchanged,
   rememberInlineTipTapHostClass,
@@ -3816,6 +3821,9 @@ export class PageBuilderService {
     const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
+    // Remount via v-html resets scrollLeft — keep the slide the user was looking at.
+    const sliderViewports = captureInlineSliderViewports(pagebuilder)
+
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
     const persistableSections = this.getPersistableSections(pagebuilder)
@@ -3835,6 +3843,11 @@ export class PageBuilderService {
     })
 
     await this.setComponentsPreservingPageSettings(componentsToSave)
+
+    const remounted = this.getBuilderCanvasElement()
+    if (remounted && sliderViewports.length > 0) {
+      await restoreInlineSliderViewportsAfterLayout(remounted, sliderViewports)
+    }
   }
 
   public async generateHtmlFromComponents(): Promise<string> {
@@ -4637,6 +4650,8 @@ export class PageBuilderService {
     // Only apply if an image is staged
     if (this.getApplyImageToSelection.value && this.getApplyImageToSelection.value.src) {
       await nextTick()
+      // Stay on the edited slide after remount (sync resets scroll to slide 1 otherwise).
+      pinSliderActiveFromElement(this.getElement.value)
       this.pageBuilderStateStore.setBasePrimaryImage(`${this.getApplyImageToSelection.value.src}`)
 
       // Image src is mutated on the live DOM node inside v-html. Sync into Pinia
@@ -4644,7 +4659,66 @@ export class PageBuilderService {
       await this.syncDomToStoreOnly()
       await this.addListenersToEditableElements()
 
+      // Re-bind selection to the remounted img so the toolbar keeps the same slide.
+      this.reselectSliderImageAfterRemount(image.src)
+
       await this.handleAutoSave()
+    }
+  }
+
+  /** After v-html remount, select the slider image we just updated (same src + active slide). */
+  private reselectSliderImageAfterRemount(src: string): void {
+    const pagebuilder = this.getBuilderCanvasElement()
+    if (!pagebuilder || !src) return
+
+    const matchesSrc = (img: HTMLImageElement): boolean => {
+      const attr = img.getAttribute('src') || ''
+      return attr === src || img.src === src || attr.endsWith(src) || img.src.endsWith(src)
+    }
+
+    const containers = pagebuilder.querySelectorAll<HTMLElement>('[data-isl]')
+    for (const container of Array.from(containers)) {
+      const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+      if (!track) continue
+
+      const activeRaw = container.getAttribute('data-isl-active')
+      const activeIdx = activeRaw != null ? parseInt(activeRaw, 10) : NaN
+      const preferred =
+        !isNaN(activeIdx) && activeIdx >= 0
+          ? (track.children[activeIdx]?.querySelector('img') as HTMLImageElement | null)
+          : null
+
+      const img =
+        preferred && matchesSrc(preferred)
+          ? preferred
+          : (Array.from(track.querySelectorAll('img')).find(
+              (candidate) =>
+                candidate instanceof HTMLImageElement &&
+                matchesSrc(candidate) &&
+                !candidate.closest('[data-isl-clone]'),
+            ) as HTMLImageElement | undefined)
+
+      if (!img) continue
+
+      const slide = Array.from(track.children).find(
+        (child) => child instanceof HTMLElement && child.contains(img),
+      ) as HTMLElement | undefined
+      if (slide && !slide.hasAttribute('data-isl-clone')) {
+        const realIdx = Array.from(track.children)
+          .filter((child) => !child.hasAttribute('data-isl-clone'))
+          .indexOf(slide)
+        if (realIdx >= 0) {
+          container.setAttribute('data-isl-active', String(realIdx))
+          void track.offsetWidth
+          track.scrollLeft = slide.offsetLeft
+        }
+      }
+
+      pagebuilder.querySelectorAll('[selected]').forEach((el) => el.removeAttribute('selected'))
+      img.setAttribute('selected', '')
+      this.pageBuilderStateStore.setElement(img)
+      this.setBasePrimaryImageFromSelectedElement()
+      return
     }
   }
 

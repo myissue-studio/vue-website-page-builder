@@ -534,8 +534,11 @@ const activeSlideIndex = computed(() => {
   if (!container) return -1
   const track = container.querySelector('.pbx-isl-t')
   if (!track) return -1
-  for (let i = 0; i < track.children.length; i++) {
-    if (track.children[i].contains(getElement.value)) return i
+  const realSlides = Array.from(track.children).filter(
+    (child) => !child.hasAttribute('data-isl-clone'),
+  )
+  for (let i = 0; i < realSlides.length; i++) {
+    if (realSlides[i].contains(getElement.value)) return i
   }
   return -1
 })

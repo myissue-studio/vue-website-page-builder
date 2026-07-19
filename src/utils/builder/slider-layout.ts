@@ -75,18 +75,26 @@ export function syncSliderArrows(container: HTMLElement, show: boolean): boolean
   return true
 }
 
-export function buildSliderNavigateJs(idxExpr: string): string {
+export function buildSliderNavigateJs(
+  idxExpr: string,
+  options: { clampToPage?: boolean } = {},
+): string {
   // Clear sticky inline highlight styles — focus comes from data-isl-active CSS (and auto keyframes in preview).
   const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});`
   const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});`
-  // Clamp to a full per-view page (e.g. 4 images @ 2-up → max start 2). Do not clamp when looping to 0.
-  const clamp = `var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var hasClones=!!t.querySelector('[data-isl-clone]');var loop=c.getAttribute('data-isl-loop')!=='false';var maxStart=hasClones&&loop?real.length-1:Math.max(0,real.length-pv);if(idx>maxStart)idx=maxStart;`
+  // Page clamp (arrows): keep a full per-view frame. Direct jumps (nums/dots): allow any real slide
+  // so e.g. slide 5 of 5 is reachable when editing, including 2-up layouts.
+  const clampToPage = options.clampToPage !== false
+  const clamp = clampToPage
+    ? `var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var hasClones=!!t.querySelector('[data-isl-clone]');var loop=c.getAttribute('data-isl-loop')!=='false';var maxStart=hasClones&&loop?real.length-1:Math.max(0,real.length-pv);if(idx>maxStart)idx=maxStart;`
+    : `if(idx>real.length-1)idx=real.length-1;`
   const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}`
   return `var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=${idxExpr};if(idx<0||idx>=real.length)return;${clamp}c.setAttribute('data-isl-active',String(idx));${numHl}${dotHl}${nav}`
 }
 
 export function buildSliderOnclickJs(idx: number): string {
-  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${buildSliderNavigateJs(String(idx))}var img=t.children[idx]&&t.children[idx].querySelector('img');if(img)img.click();})(this,event)`
+  // Do not page-clamp: editors must be able to open/select every image (e.g. #5 of 5).
+  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${buildSliderNavigateJs(String(idx), { clampToPage: false })}var img=t.children[idx]&&t.children[idx].querySelector('img');if(img)img.click();})(this,event)`
 }
 
 export function buildSliderArrowOnclickJs(dir: -1 | 1): string {
@@ -96,7 +104,7 @@ export function buildSliderArrowOnclickJs(dir: -1 | 1): string {
     dir === 1
       ? `loop?(cur>=maxStart?0:cur+1):Math.min(maxStart,cur+1)`
       : `loop?(cur<=0?maxStart:cur-1):Math.max(0,cur-1)`
-  return `(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var n=real.length;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var loop=c.getAttribute('data-isl-loop')!=='false';var hasClones=!!t.querySelector('[data-isl-clone]');var maxStart=hasClones&&loop?n-1:Math.max(0,n-pv);var cur=0;var best=Infinity;for(var i=0;i<n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist<best){best=dist;cur=i;}}if(c.hasAttribute('data-isl-active')){var active=parseInt(c.getAttribute('data-isl-active')||'0',10);if(!isNaN(active)&&active>=0&&active<=maxStart)cur=active;}var next=${nextExpr};${buildSliderNavigateJs('next')}})(this,event)`
+  return `(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var n=real.length;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var loop=c.getAttribute('data-isl-loop')!=='false';var hasClones=!!t.querySelector('[data-isl-clone]');var maxStart=hasClones&&loop?n-1:Math.max(0,n-pv);var cur=0;var best=Infinity;for(var i=0;i<n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist<best){best=dist;cur=i;}}if(c.hasAttribute('data-isl-active')){var active=parseInt(c.getAttribute('data-isl-active')||'0',10);if(!isNaN(active)&&active>=0&&active<=maxStart)cur=active;}var next=${nextExpr};${buildSliderNavigateJs('next', { clampToPage: true })}})(this,event)`
 }
 
 /** For 2-up layouts, clone leading slides at the end only when the last page would be incomplete (e.g. 5 → 5+1). */
@@ -390,4 +398,121 @@ export function normalizeSliderWrapClones(root: ParentNode): boolean {
   })
 
   return changed
+}
+
+export type InlineSliderViewportSnapshot = {
+  componentId: string
+  sliderOrdinal: number
+  active: string | null
+  scrollLeft: number
+}
+
+/** Remember which slide is visible before a v-html remount resets scrollLeft. */
+export function captureInlineSliderViewports(root: ParentNode): InlineSliderViewportSnapshot[] {
+  const snaps: InlineSliderViewportSnapshot[] = []
+
+  root.querySelectorAll<HTMLElement>('section[data-componentid]').forEach((section) => {
+    const componentId = section.getAttribute('data-componentid')
+    if (!componentId) return
+
+    section.querySelectorAll<HTMLElement>('[data-isl]').forEach((container, sliderOrdinal) => {
+      const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+      if (!track) return
+      snaps.push({
+        componentId,
+        sliderOrdinal,
+        active: container.getAttribute('data-isl-active'),
+        scrollLeft: track.scrollLeft,
+      })
+    })
+  })
+
+  return snaps
+}
+
+/** Restore slide position/highlight after canvas remount from store. */
+export function restoreInlineSliderViewports(
+  root: ParentNode,
+  snaps: InlineSliderViewportSnapshot[],
+): void {
+  for (const snap of snaps) {
+    const section = Array.from(root.querySelectorAll<HTMLElement>('section[data-componentid]')).find(
+      (el) => el.getAttribute('data-componentid') === snap.componentId,
+    )
+    if (!section) continue
+
+    const container = section.querySelectorAll<HTMLElement>('[data-isl]')[snap.sliderOrdinal]
+    if (!container) continue
+
+    const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+    if (!track) continue
+
+    if (snap.active !== null) {
+      container.setAttribute('data-isl-active', snap.active)
+    }
+
+    const activeIdx = snap.active != null ? parseInt(snap.active, 10) : NaN
+    const targetSlide =
+      !isNaN(activeIdx) && activeIdx >= 0
+        ? (track.children[activeIdx] as HTMLElement | undefined)
+        : undefined
+
+    // Force layout so offsetLeft is correct after v-html remount (otherwise all are 0).
+    void track.offsetWidth
+
+    if (targetSlide) {
+      track.scrollLeft = targetSlide.offsetLeft
+    } else {
+      track.scrollLeft = snap.scrollLeft
+    }
+  }
+}
+
+/** Run restore after the browser has laid out remounted slider slides. */
+export function restoreInlineSliderViewportsAfterLayout(
+  root: ParentNode,
+  snaps: InlineSliderViewportSnapshot[],
+): Promise<void> {
+  if (!snaps.length) return Promise.resolve()
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        restoreInlineSliderViewports(root, snaps)
+        resolve()
+      })
+    })
+  })
+}
+
+/**
+ * If `el` is a slider image (or wraps one), set data-isl-active to that slide
+ * so remounts can restore the same viewport.
+ */
+export function pinSliderActiveFromElement(el: HTMLElement | null | undefined): number | null {
+  if (!el) return null
+
+  const img =
+    el.tagName === 'IMG'
+      ? (el as HTMLImageElement)
+      : (el.querySelector('img') as HTMLImageElement | null)
+  if (!img) return null
+
+  const container = img.closest('[data-isl]') as HTMLElement | null
+  const track = container?.querySelector('.pbx-isl-t') as HTMLElement | null
+  if (!container || !track) return null
+
+  const slide = Array.from(track.children).find(
+    (child) => child instanceof HTMLElement && child.contains(img),
+  ) as HTMLElement | undefined
+  if (!slide || slide.hasAttribute('data-isl-clone')) return null
+
+  const realSlides = Array.from(track.children).filter(
+    (child) => !child.hasAttribute('data-isl-clone'),
+  )
+  const idx = realSlides.indexOf(slide)
+  if (idx < 0) return null
+
+  container.setAttribute('data-isl-active', String(idx))
+  track.scrollLeft = slide.offsetLeft
+  return idx
 }

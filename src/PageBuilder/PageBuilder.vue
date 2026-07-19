@@ -1914,10 +1914,15 @@ onBeforeUnmount(() => {
 /* In builder edit mode: pause animation, restore full scrollability for editing */
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
   animation-play-state: paused !important;
-  overflow: auto !important;
-  width: auto !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
   pointer-events: auto !important;
   transform: none !important;
+}
+[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
+  flex-shrink: 0 !important;
 }
 /* Single-view auto: force full-width slides while paused for editing. */
 [data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view='2']) .pbx-isl-t > div {
