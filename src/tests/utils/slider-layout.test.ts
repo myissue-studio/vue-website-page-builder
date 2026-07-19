@@ -90,6 +90,14 @@ describe('slider-layout', () => {
     expect(css).toContain('[data-builder-canvas] .pbx-isl-nums{display:flex}')
   })
 
+  it('buildSliderStyle peeks ~85% for 2-up on mobile', () => {
+    const css = buildSliderStyle(4, 3, 2, true)
+    expect(css).toContain('@media (max-width:767px)')
+    expect(css).toContain('grid-auto-columns:85%')
+    // Auto mobile track: 4 slides × 85%
+    expect(css).toContain('width:340%!important')
+  })
+
   it('buildSliderStyle peeks ~90% for single-slide-per-view', () => {
     const css = buildSliderStyle(3, 3, 1, true)
     expect(css).toContain('grid-auto-columns:90%')

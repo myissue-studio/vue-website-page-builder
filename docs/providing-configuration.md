@@ -73,7 +73,7 @@ const configPageBuilder = {
       h6: 'jost',
       p: 'arial',
     },
-    // Hide TipTap H1 control when the host page already owns the page <h1>.
+    // disableH1 omitted defaults to false (H1 enabled). Set true to hide TipTap H1.
     // disableH1: true,
     autoSave: true,
   },
@@ -202,12 +202,13 @@ All fields are optional — omit any element to let it inherit from the global `
 
 ### TipTap headings & `disableH1`
 
-Inline and modal TipTap editors expose heading controls **H1–H6** by default.
+Inline and modal TipTap editors expose heading controls **H1–H6** by default (`disableH1` omitted or `false`).
 
 If your host app already renders the page’s single `<h1>` outside the builder (common for SEO), set `userSettings.disableH1: true` to:
 
 - Hide the **H1** button in TipTap toolbars
 - Restrict the editor so authors can only create **H2–H6** (and paragraphs)
+- Hide the **Header H1** building block in Add Components
 
 ```ts
 userSettings: {
@@ -223,6 +224,8 @@ userSettings: {
 ```
 
 Existing `<h1>` content already on the canvas is not removed; authors simply cannot create new H1s via TipTap while `disableH1` is enabled.
+
+The **Header H1** building block in Add Components is also hidden when `disableH1: true`.
 
 SEO Check also respects this flag: when `disableH1` is **not** `true`, the SEO report includes an “Has at least one H1” check and treats H1 as the top of the heading hierarchy. When `disableH1: true`, those H1 requirements are skipped (the host page title is assumed to live outside the builder).
 

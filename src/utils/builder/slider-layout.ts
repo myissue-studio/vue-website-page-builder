@@ -256,6 +256,8 @@ export function buildSliderStyle(
   const animIter = loop ? 'infinite' : '1 forwards'
   // Grid (not flex): % columns resolve against the visible track width. Flex % min-width
   // inside overflow-x:auto often circular-resolves to the image intrinsic width (= 1-up).
+  // Desktop 2-up: 50%. Mobile 2-up: peek ~85% so the active slide stays large.
+  const mobile2UpPeek = 85
   const colPct = pv === 2 ? '50%' : '90%'
   const multiViewStyles =
     pv === 2
@@ -263,6 +265,7 @@ export function buildSliderStyle(
           '[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
           '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.4rem}',
           '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
+          `@media (max-width:767px){[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{padding-inline:0.35rem}}`,
         ].join('')
       : [
           '[data-isl][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}',
@@ -282,15 +285,23 @@ export function buildSliderStyle(
   // Auto-rotate: widen the track; column % is of that track so 2-up stays half the viewport.
   const peekPct = 90
   const autoTrackW = pv === 1 ? trackSlideCount * peekPct : trackW
+  const autoTrackMobile2Up = trackSlideCount * mobile2UpPeek
   const autoTrackDesktop = `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${autoTrackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`
   const autoSlideDesktop =
     pv === 2
       ? `[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
       : `[data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
-  // Canvas forces track to 100% while editing — keep viewport columns at 50%/90%.
+  const autoMobile2Up =
+    pv === 2
+      ? `@media (max-width:767px){[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{width:${autoTrackMobile2Up}%!important;grid-auto-columns:${slideW}%!important}}`
+      : ''
+  // Canvas forces track to 100% while editing — keep viewport columns at 50%/90% (mobile 2-up peeks).
   const canvasManualForce =
     pv === 2
-      ? '[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}'
+      ? [
+          '[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
+          `@media (max-width:767px){[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${mobile2UpPeek}%!important}}`,
+        ].join('')
       : '[data-builder-canvas] [data-isl][data-isl-per-view="1"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}'
 
   return [
@@ -302,6 +313,7 @@ export function buildSliderStyle(
     trackKf,
     autoTrackDesktop,
     autoSlideDesktop,
+    autoMobile2Up,
     canvasManualForce,
     // Frosted pill behind dots so they read as one control (esp. when centered in the 2-up gap).
     '.pbx-isl-dots{display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:8px 10px;border-radius:10px;background:rgba(128,128,128,0.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-sizing:border-box}',

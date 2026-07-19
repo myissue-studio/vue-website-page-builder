@@ -1,3 +1,6 @@
+import type { PageBuilderConfig } from '../../types'
+import { isTipTapH1Disabled } from '../builder/tiptap-heading-levels'
+
 interface ComponentHelper {
   html_code: string
   id: string | null
@@ -28,6 +31,17 @@ const componentHelpers: ComponentHelper[] = [
     icon: `
     <span class="material-symbols-outlined">
     text_fields
+    </span>
+    `,
+  },
+  {
+    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-medium"><h1>Layouts and visual.</h1></div></div></div></section>`,
+    id: null,
+    title: 'Header H1',
+    category: 'Text',
+    icon: `
+    <span class="material-symbols-outlined">
+    format_h1
     </span>
     `,
   },
@@ -280,17 +294,6 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h1>Layouts and visual.</h1></div></div></div></section>`,
-    id: null,
-    title: 'Header H1',
-    category: 'Text',
-    icon: `
-    <span class="material-symbols-outlined">
-    format_h1
-    </span>
-    `,
-  },
-  {
     html_code: `<section><div class="pbx-py-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-h-px pbx-bg-transparent"></div></div></div></section>`,
     id: null,
     title: 'Spacer Small',
@@ -500,5 +503,15 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
 ]
+
+/** Returns helper blocks for the component library, omitting Header H1 when disabled. */
+export function getComponentHelpers(
+  config?: PageBuilderConfig | null,
+): ComponentHelper[] {
+  if (isTipTapH1Disabled(config)) {
+    return componentHelpers.filter((comp) => comp.title !== 'Header H1')
+  }
+  return componentHelpers
+}
 
 export default componentHelpers

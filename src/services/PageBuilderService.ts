@@ -1581,6 +1581,9 @@ export class PageBuilderService {
 
       if (!hasFontSizeClass) {
         // Apply responsive font size classes based on heading type
+        if (heading.tagName === 'H1') {
+          element.classList.add('pbx-text-4xl', 'lg:pbx-text-5xl', 'pbx-font-medium')
+        }
         if (heading.tagName === 'H2') {
           element.classList.add('pbx-text-3xl', 'lg:pbx-text-4xl', 'pbx-font-medium')
         }
