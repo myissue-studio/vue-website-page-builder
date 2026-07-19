@@ -1,7 +1,7 @@
 {
   "name": "@myissue/vue-website-page-builder",
   "version": "3.5.65",
-  "description": "Vue 3 page builder for ecommerce admin, multi-tenant SaaS, and CMS dashboards. Drag-and-drop editor with custom media library and product catalog integration.",
+  "description": "Free open-source Vue 3 page builder and drag-and-drop visual editor for ecommerce admin, multi-tenant SaaS, and headless CMS. Self-hosted Builder.io / GrapesJS-style alternative with custom media library and product catalog integration.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
   "module": "./dist/vue-website-page-builder.js",
@@ -26,6 +26,9 @@
     "vue",
     "vue3",
     "vue-page-builder",
+    "vue-website-builder",
+    "open-source-page-builder",
+    "self-hosted-page-builder",
     "builder",
     "page-builder",
     "pagebuilder",
@@ -37,6 +40,7 @@
     "multi-tenant",
     "ecommerce",
     "ecommerce-admin",
+    "ecommerce-page-builder",
     "product-catalog",
     "admin-panel",
     "nuxt",
@@ -46,7 +50,10 @@
     "component-based",
     "responsive-design",
     "self-hosted",
-    "open-source"
+    "open-source",
+    "grapesjs-alternative",
+    "builder-io-alternative",
+    "mybuilder"
   ],
   "author": {
     "name": "qaiswardag",

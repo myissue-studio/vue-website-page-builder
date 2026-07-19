@@ -1,12 +1,14 @@
 <p align="center" dir="auto">
-<img width="200" style="max-width: 100%;" src="./public/logo/logo.svg" alt="Vue Website Page Builder Logo" />
+<img width="200" style="max-width: 100%;" src="./public/logo/logo.svg" alt="Vue Website Page Builder Logo — open source Vue 3 page builder by MyBuilder" />
 </p>
 
-# Vue 3 Page Builder — Free, Self-Hosted, Integration-First
+# Vue 3 Page Builder — Free Open-Source Visual Editor for Ecommerce Admin, SaaS & Headless CMS
 
-**The Vue page builder for ecommerce admin panels, multi-tenant SaaS, and API-backed CMS dashboards.** Embed a visual editor in your product, connect your own media library and product catalog, and save portable HTML to your backend.
+**[MyBuilder](https://mybuilder.dev)** is a **free, open-source, self-hosted Vue 3 page builder** you embed in your own product — not a locked hosted CMS. Use it as a **drag-and-drop visual editor** for **ecommerce admin panels**, **multi-tenant SaaS**, and **API-backed headless CMS** dashboards. Connect your media library and product catalog, then save portable HTML to your backend.
 
-- [Vue 3 Page Builder — Free, Self-Hosted, Integration-First](#vue-3-page-builder--free-self-hosted-integration-first)
+Search-friendly aliases: Vue page builder · Vue website builder · open source page builder · self-hosted page builder · drag and drop editor for Vue · ecommerce page builder · headless CMS visual editor · Builder.io alternative for Vue · GrapesJS alternative for Vue 3.
+
+- [Vue 3 Page Builder — Free Open-Source Visual Editor for Ecommerce Admin, SaaS \& Headless CMS](#vue-3-page-builder--free-open-source-visual-editor-for-ecommerce-admin-saas--headless-cms)
   - [Demo](#demo)
   - [Guide \& Documentation](#guide--documentation)
   - [Built for Ecommerce Admin \& Multi-Tenant SaaS](#built-for-ecommerce-admin--multi-tenant-saas)
@@ -14,6 +16,7 @@
   - [Who This Is For](#who-this-is-for)
   - [Backend and CMS Integration](#backend-and-cms-integration)
   - [Why Choose This Vue Page Builder](#why-choose-this-vue-page-builder)
+  - [Open-Source Vue Page Builder vs Hosted Platforms](#open-source-vue-page-builder-vs-hosted-platforms)
   - [Overview](#overview)
   - [Get Started in Minutes](#get-started-in-minutes)
   - [About](#about)
@@ -192,6 +195,27 @@ Many page builders are heavy, opinionated, or tied to one CMS. This project focu
 
 This is a general-purpose builder by design. It does not try to replace your backend, authentication, permissions, CDN, or publishing workflow. It gives your product a visual editor while letting your platform stay in charge of data, scale, security, and deployment.
 
+## Open-Source Vue Page Builder vs Hosted Platforms
+
+Large vendors win on brand recognition and sales teams. This project wins when you need a **Vue-native, self-hosted page builder** inside software you already own. If you are comparing an open-source Vue page builder to hosted visual CMS platforms, this is the honest fit:
+
+| Concern | How this builder addresses it |
+|--------|--------------------------------|
+| **Vendor lock-in** | MIT-licensed, npm package, runs in **your** Vue/Nuxt/Laravel admin. You keep HTML, auth, and hosting. |
+| **Data, GDPR & compliance** | Content never has to leave your infrastructure. You apply **your** policies, audit trail, and region hosting — not a third-party editor cloud. |
+| **Roles & collaboration** | Permissions, SSO, and multi-user workflows stay in **your** product (where enterprises already invest). The builder is the visual layer. |
+| **Support & SLAs** | Community + docs for the editor; **your** team owns production SLAs for the full stack — or hire [customization support](https://mybuilder.dev). |
+| **Ecosystem & integrations** | Integration-first hooks: `:CustomMediaLibraryComponent`, `:DisplayProducts`, TypeScript APIs, portable HTML — plug Shopify, WooCommerce, S3, Cloudinary, Strapi, Directus, or custom APIs. |
+| **Scale & traffic** | The builder is for **authoring**. Public traffic hits **your** CDN, storefront, and database — the same pattern used by serious headless setups. |
+| **Bundle & performance** | Ship the editor to admin users only; publish lean HTML to the public site. Tree-shake and lazy-load the builder where needed. |
+| **Long-term ownership** | You can fork, patch, and extend. No forced plan upgrades or “editor disappeared from the marketplace” risk. |
+
+**Best alternative when:** you want a **Builder.io-style or GrapesJS-style experience**, but as an **embeddable Vue 3 component** with ecommerce product sections, custom media, draft autosave, SEO checks, and HTML you store yourself.
+
+**Not a replacement for:** a full hosted CMS with built-in A/B testing, managed CDN, and enterprise procurement packs out of the box — and that is intentional. Pair this open-source page builder with the platform you already trust for those jobs.
+
+Live product: [mybuilder.dev](https://mybuilder.dev) · Docs: [Guides](https://myissue-studio.github.io/vue-website-page-builder/) · npm: `@myissue/vue-website-page-builder`
+
 ## Overview
 
 If you're a Vue 3 developer, this builder feels right at home. It installs quickly via npm and supports full customization through props and configuration objects. You can even set specific user settings like image, name, theme, language, company logo, and autosave preferences, making it a personalized experience for every user.
@@ -217,39 +241,50 @@ A Page Builder designed for growth. Build your website pages with ready-made com
 
 ## Real-World Application Example
 
-From solo freelancers to fast-growing startups and established enterprises, the Page Builder is trusted by teams everywhere. With its intuitive click-and-drop editor, real-time visual editing, and a rich library of reusable components, you can turn ideas into polished pages in minutes. Built for merchants, brands, and agencies, it empowers anyone to create high-impact content.
+The Vue Website Page Builder is built for production admin products: merchants and editors design landing pages, collection pages, and campaign blocks while your platform owns catalog, checkout, auth, and hosting.
 
-Discover how the Vue Website Page Builder is empowering businesses to create dynamic and responsive web pages. Used by teams at myself.ae, Zara, H&M, Chanel, BOSS, DKNY, Aldo, Bershka, Furla, Pandora, The New York Times, and Pentagram — the builder powers engaging, user-friendly pages across fashion, retail, media, and design.
+A live reference implementation is **[myself.ae](https://myself.ae)** / **[mybuilder.dev](https://mybuilder.dev)** — a Vue-based visual editor with product sections, media integration, responsive components, and HTML persistence suitable for ecommerce and multi-tenant SaaS.
+
+**Typical production shape:**
+
+1. Embed `PageBuilder` in your Vue or Nuxt admin  
+2. Inject your media library and product catalog  
+3. Autosave drafts locally; publish full HTML to your API  
+4. Serve that HTML on your storefront or marketing site behind your CDN  
+
+That model gives medium and large product teams what procurement usually asks for — **control of data, security boundaries, and deployment** — without replacing your existing CMS or commerce stack.
 
 <br>
 
-<h3 align="center">Teams from top companies building using this page builder</h3>
+<h3 align="center">Built for retail, fashion, media, and brand content workflows</h3>
 
 <p align="center">
-  <img src="./public/logo/top-companies/myself.ae.jpg" width="80" height="80" alt="myself.ae" title="myself.ae" />
+  <img src="./public/logo/top-companies/myself.ae.jpg" width="80" height="80" alt="myself.ae — Vue page builder product example" title="myself.ae" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/zara.jpg" width="80" height="80" alt="Zara" title="Zara" />
+  <img src="./public/logo/top-companies/zara.jpg" width="80" height="80" alt="Fashion retail landing page use case" title="Fashion retail" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/hm.png" width="80" height="80" alt="H&amp;M" title="H&amp;M" />
+  <img src="./public/logo/top-companies/hm.png" width="80" height="80" alt="Retail campaign page use case" title="Retail campaigns" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/chanel.avif" width="80" height="80" alt="Chanel" title="Chanel" />
+  <img src="./public/logo/top-companies/chanel.avif" width="80" height="80" alt="Luxury brand content page use case" title="Brand content" />
   <br><br>
-  <img src="./public/logo/top-companies/boss.jpg" width="80" height="80" alt="BOSS" title="BOSS" />
+  <img src="./public/logo/top-companies/boss.jpg" width="80" height="80" alt="Apparel ecommerce page use case" title="Apparel ecommerce" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/dkny.jpg" width="80" height="80" alt="DKNY" title="DKNY" />
+  <img src="./public/logo/top-companies/dkny.jpg" width="80" height="80" alt="Lifestyle brand page use case" title="Lifestyle brands" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/aldo.jpg" width="80" height="80" alt="Aldo" title="Aldo" />
+  <img src="./public/logo/top-companies/aldo.jpg" width="80" height="80" alt="Product collection page use case" title="Collection pages" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/bershka.jpg" width="80" height="80" alt="Bershka" title="Bershka" />
+  <img src="./public/logo/top-companies/bershka.jpg" width="80" height="80" alt="Youth retail marketing page use case" title="Marketing pages" />
   <br><br>
-  <img src="./public/logo/top-companies/furla.jpg" width="80" height="80" alt="Furla" title="Furla" />
+  <img src="./public/logo/top-companies/furla.jpg" width="80" height="80" alt="Accessories brand page use case" title="Brand pages" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/pandora.jpg" width="80" height="80" alt="Pandora" title="Pandora" />
+  <img src="./public/logo/top-companies/pandora.jpg" width="80" height="80" alt="Jewelry ecommerce content use case" title="Ecommerce content" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/bottega_veneta.png" width="80" height="80" alt="Bottega Veneta" title="Bottega Veneta" />
+  <img src="./public/logo/top-companies/bottega_veneta.png" width="80" height="80" alt="Premium retail page use case" title="Premium retail" />
   &nbsp;&nbsp;
-  <img src="./public/logo/top-companies/charles_keith.jpg" width="80" height="80" alt="Charles & Keith" title="Charles & Keith" />
+  <img src="./public/logo/top-companies/charles_keith.jpg" width="80" height="80" alt="Storefront editorial page use case" title="Editorial pages" />
 </p>
+
+<p align="center"><em>Industry examples of the page types teams build — fashion, retail, and brand landing pages — using a self-hosted Vue visual editor connected to their own catalog and CMS.</em></p>
 
 <br>
 
