@@ -88,7 +88,7 @@ const framedPreviewClass = computed(() => {
   if (props.tablet) {
     return `${base} pbx-w-full lg:pbx-max-w-[900px]`
   }
-  return `${base} pbx-w-full lg:pbx-max-w-[420px]`
+  return `${base} pbx-w-full lg:pbx-max-w-[480px]`
 })
 
 const framedPreviewTitle = computed(() => (props.tablet ? 'Tablet preview' : 'Mobile preview'))
