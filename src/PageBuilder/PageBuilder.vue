@@ -1937,6 +1937,12 @@ onBeforeUnmount(() => {
 [data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view='2'] .pbx-isl-t {
   grid-auto-columns: 50% !important;
 }
+@media (max-width: 767px) {
+  [data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t,
+  [data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view='2'] .pbx-isl-t {
+    grid-auto-columns: 85% !important;
+  }
+}
 [data-builder-canvas] [data-isl] .pbx-isl-t > div {
   min-width: 0 !important;
   width: auto !important;
