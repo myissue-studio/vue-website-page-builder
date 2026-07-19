@@ -88,7 +88,7 @@ watch(
           disableLanguageDropDown: false,
         },
         // Hide TipTap H1 when the host page already owns the page <h1>.
-        disableH1: true,
+        disableH1: false,
         autoSave: true,
         // Load custom fonts in your app CSS, e.g. dev-global.css or index.html:
         // @import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap');
