@@ -25,6 +25,14 @@ import {
   CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT,
   suppressEditToolbarPopoverScrollClose,
 } from '../../../../utils/builder/edit-toolbar-popover-events'
+import {
+  buildSliderOnclickJs,
+  buildSliderStyle,
+  isSliderArrowsEnabled,
+  syncSliderArrows,
+  syncSliderWrapClones,
+} from '../../../../utils/builder/slider-layout'
+import { getPlaceholderImageDataUrl } from '../../../../utils/builder/placeholder-image'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -62,10 +70,16 @@ const showSliderModal = ref(false)
 const draftSliderAutoRotate = ref(false)
 const draftSliderSpeed = ref(3)
 const draftSliderImageCount = ref(3)
+const draftSliderPerView = ref(1)
+const draftSliderLoop = ref(true)
+const draftSliderShowArrows = ref(true)
 const sliderSettingsBaseline = ref<{
   autoRotate: boolean
   speed: number
   imageCount: number
+  perView: number
+  loop: boolean
+  showArrows: boolean
 } | null>(null)
 const isSavingSliderSettings = ref(false)
 
@@ -85,23 +99,47 @@ const isSliderSettingsDirty = computed(() => {
   return (
     draftSliderAutoRotate.value !== baseline.autoRotate ||
     draftSliderSpeed.value !== baseline.speed ||
-    draftSliderImageCount.value !== baseline.imageCount
+    draftSliderImageCount.value !== baseline.imageCount ||
+    draftSliderPerView.value !== baseline.perView ||
+    draftSliderLoop.value !== baseline.loop ||
+    draftSliderShowArrows.value !== baseline.showArrows
   )
 })
 
 const readSliderSettingsFromDom = () => {
   if (!(getElement.value instanceof HTMLElement)) {
-    return { autoRotate: false, speed: 3, imageCount: 3 }
+    return {
+      autoRotate: false,
+      speed: 3,
+      imageCount: 3,
+      perView: 1,
+      loop: true,
+      showArrows: true,
+    }
   }
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
   if (!container) {
-    return { autoRotate: false, speed: 3, imageCount: 3 }
+    return {
+      autoRotate: false,
+      speed: 3,
+      imageCount: 3,
+      perView: 1,
+      loop: true,
+      showArrows: true,
+    }
   }
   const track = container.querySelector('.pbx-isl-t')
+  const perViewRaw = parseInt(container.getAttribute('data-isl-per-view') || '1', 10)
+  const realSlideCount = track
+    ? Array.from(track.children).filter((child) => !child.hasAttribute('data-isl-clone')).length
+    : 3
   return {
     autoRotate: container.hasAttribute('data-isl-auto'),
     speed: parseInt(container.getAttribute('data-isl-speed') || '3', 10),
-    imageCount: track ? track.children.length : 3,
+    imageCount: realSlideCount,
+    perView: perViewRaw === 2 ? 2 : 1,
+    loop: container.getAttribute('data-isl-loop') !== 'false',
+    showArrows: isSliderArrowsEnabled(container),
   }
 }
 
@@ -110,6 +148,9 @@ const openSliderSettings = () => {
   draftSliderAutoRotate.value = current.autoRotate
   draftSliderSpeed.value = current.speed
   draftSliderImageCount.value = current.imageCount
+  draftSliderPerView.value = current.perView
+  draftSliderLoop.value = current.loop
+  draftSliderShowArrows.value = current.showArrows
   sliderSettingsBaseline.value = { ...current }
   showSliderModal.value = true
 }
@@ -348,12 +389,24 @@ const toggleSliderAutoRotate = (value: boolean) => {
   draftSliderAutoRotate.value = value
 }
 
+const toggleSliderLoop = (value: boolean) => {
+  draftSliderLoop.value = value
+}
+
+const toggleSliderShowArrows = (value: boolean) => {
+  draftSliderShowArrows.value = value
+}
+
 const changeSliderSpeed = (n: number) => {
   draftSliderSpeed.value = n
 }
 
 const changeSlideCount = (newCount: number) => {
   draftSliderImageCount.value = newCount
+}
+
+const changeSliderPerView = (n: number) => {
+  draftSliderPerView.value = n === 2 ? 2 : 1
 }
 
 const applySliderSettingsToDom = async () => {
@@ -364,24 +417,32 @@ const applySliderSettingsToDom = async () => {
   const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
   if (!track) return
 
+  // Drop wrap clones before counting/mutating real slides.
+  track.querySelectorAll(':scope > [data-isl-clone]').forEach((el) => el.remove())
+
   const section = container.closest('section')
   const styleTag = section?.querySelector('style')
   const newCount = draftSliderImageCount.value
   const speed = draftSliderSpeed.value
+  const perView = draftSliderPerView.value === 2 ? 2 : 1
+  const loop = draftSliderLoop.value
+  const showArrows = draftSliderShowArrows.value
   const currentCount = track.children.length
+  // For 2-up, leave min-width to CSS (80% peek on mobile/tablet, 50% on desktop).
+  const slideMinWidth = perView === 2 ? '' : '100%'
 
   if (newCount > currentCount) {
     const firstImg = track.querySelector('img') as HTMLImageElement | null
-    const placeholderSrc = firstImg?.getAttribute('src') || ''
+    const placeholderSrc = getPlaceholderImageDataUrl()
     for (let i = currentCount; i < newCount; i++) {
       const slide = document.createElement('div')
-      slide.style.minWidth = '100%'
+      if (slideMinWidth) slide.style.minWidth = slideMinWidth
       slide.style.scrollSnapAlign = 'start'
       const img = document.createElement('img')
       img.src = placeholderSrc
-      img.style.width = '100%'
-      img.style.aspectRatio = '16/9'
-      img.style.objectFit = 'cover'
+      img.style.width = firstImg?.style.width || '100%'
+      img.style.aspectRatio = firstImg?.style.aspectRatio || '16/9'
+      img.style.objectFit = firstImg?.style.objectFit || 'cover'
       img.style.display = 'block'
       img.alt = `Slide ${i + 1}`
       slide.appendChild(img)
@@ -393,27 +454,33 @@ const applySliderSettingsToDom = async () => {
     }
   }
 
+  Array.from(track.children).forEach((child) => {
+    if (child instanceof HTMLElement) {
+      // Clear inline min-width so responsive peek CSS can apply for per-view 2.
+      if (perView === 2) child.style.minWidth = ''
+      else child.style.minWidth = slideMinWidth
+      child.style.scrollSnapAlign = 'start'
+      child.style.paddingLeft = ''
+      child.style.paddingRight = ''
+    }
+  })
+
+  // Always keep a full 2-up frame on the last step (e.g. slides 5+1).
+  syncSliderWrapClones(track, perView)
+
   const numsDiv = container.querySelector('.pbx-isl-nums') as HTMLElement | null
   const dotsDiv = numsDiv?.nextElementSibling as HTMLElement | null
   if (numsDiv && dotsDiv) {
     numsDiv.innerHTML = ''
+    dotsDiv.classList.add('pbx-isl-dots')
     dotsDiv.innerHTML = ''
     for (let i = 0; i < newCount; i++) {
       const numSpan = document.createElement('span')
       numSpan.textContent = String(i + 1)
       numSpan.setAttribute('onclick', buildSliderOnclickJs(i))
-      if (i === 0) {
-        numSpan.style.opacity = '1'
-        numSpan.style.background = 'rgba(255,255,255,0.9)'
-        numSpan.style.color = '#111'
-        numSpan.style.borderRadius = '9999px'
-        numSpan.style.padding = '0.1rem 0.55rem'
-        numSpan.style.textShadow = 'none'
-      }
       numsDiv.appendChild(numSpan)
       const dotSpan = document.createElement('span')
       dotSpan.className = 'pbx-isl-dot'
-      if (i === 0) dotSpan.style.background = 'rgba(255,255,255,1)'
       dotSpan.setAttribute('onclick', buildSliderOnclickJs(i))
       dotsDiv.appendChild(dotSpan)
     }
@@ -426,15 +493,22 @@ const applySliderSettingsToDom = async () => {
     container.removeAttribute('data-isl-auto')
   }
   container.setAttribute('data-isl-speed', String(speed))
+  container.setAttribute('data-isl-per-view', String(perView))
+  container.setAttribute('data-isl-loop', loop ? 'true' : 'false')
+  container.setAttribute('data-isl-active', '0')
 
   const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
   const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
   nums.forEach((span, i) => span.setAttribute('onclick', buildSliderOnclickJs(i)))
   dots.forEach((dot, i) => dot.setAttribute('onclick', buildSliderOnclickJs(i)))
 
-  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, speed)
+  syncSliderArrows(container, showArrows)
+
+  if (styleTag) styleTag.textContent = buildSliderStyle(newCount, speed, perView, loop)
 
   autoRotateTick.value++
+  // Keep Vue `v-html` store in sync so remounts don't restore Material Symbol text glyphs.
+  await pageBuilderService.syncDomToStoreOnly()
   await pageBuilderService.refreshListeners()
 }
 
@@ -454,103 +528,17 @@ const saveSliderSettings = async () => {
   }
 }
 
-// ── Slider style/onclick helpers ───────────────────────────────────────────
-function buildSliderOnclickJs(idx: number): string {
-  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===${idx}?'1':'0.55';s.style.background=i===${idx}?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===${idx}?'#111':'#fff';s.style.textShadow=i===${idx}?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
-  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===${idx}?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
-  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(${idx === 0 ? '0' : `(-${idx}*sp)`})+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[${idx}].offsetLeft,behavior:'smooth'});}`
-  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${numHl}${dotHl}${nav}var img=t.children[${idx}].querySelector('img');if(img)img.click();})(this,event)`
-}
-
-function buildSliderStyle(n: number, speed: number = 3): string {
-  const T = n * speed
-  const step = 100 / n
-  const hold = Math.max(step - 3, 1)
-  const trackW = n * 100
-  const slideW = (100 / n).toFixed(3)
-
-  // Track keyframes
-  let trackKf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
-  for (let i = 1; i < n; i++) {
-    const tx = -((100 * i) / n).toFixed(3)
-    const s = (i * step).toFixed(3)
-    const e2 = (i * step + hold).toFixed(3)
-    trackKf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
-  }
-  trackKf += `99%,100%{transform:translateX(0)}}`
-
-  // Per-dot keyframes + rules (sync background with track timing)
-  let dotKfs = ''
-  let dotRules = ''
-  for (let i = 0; i < n; i++) {
-    const aStart = (i * step).toFixed(3)
-    const aEnd = (i * step + hold).toFixed(3)
-    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
-    const dim = 'rgba(255,255,255,0.55)'
-    const active = 'rgba(255,255,255,1)'
-    if (i === 0) {
-      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
-    } else {
-      const before = (i * step - 0.001).toFixed(3)
-      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${before}%{background:${dim}}${aStart}%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
-    }
-    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s infinite}`
-  }
-
-  // Per-num keyframes + rules (sync opacity+background with track timing)
-  let numKfs = ''
-  let numRules = ''
-  for (let i = 0; i < n; i++) {
-    const aStart = (i * step).toFixed(3)
-    const aEnd = (i * step + hold).toFixed(3)
-    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
-    const dimState = 'opacity:0.55;background:rgba(255,255,255,0.25)'
-    const activeState = 'opacity:1;background:rgba(255,255,255,0.9)'
-    if (i === 0) {
-      numKfs += `@keyframes pbx-isl-na-${i}{0%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
-    } else {
-      const before = (i * step - 0.001).toFixed(3)
-      numKfs += `@keyframes pbx-isl-na-${i}{0%,${before}%{${dimState}}${aStart}%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
-    }
-    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s infinite}`
-  }
-
-  // Builder active-slide rules (CSS attribute selector — used in edit mode)
-  let activeRules = ''
-  for (let i = 0; i < n; i++) {
-    if (i > 0) activeRules += ','
-    activeRules += `[data-isl-active="${i}"] .pbx-isl-nums span:nth-child(${i + 1})`
-  }
-  activeRules +=
-    '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
-
-  return [
-    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}',
-    '.pbx-isl-t::-webkit-scrollbar{display:none}',
-    trackKf,
-    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s infinite;pointer-events:none}`,
-    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
-    '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
-    '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
-    '.pbx-isl-nums span{font-size:1rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
-    '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
-    '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
-    activeRules,
-    dotKfs,
-    dotRules,
-    numKfs,
-    numRules,
-  ].join('')
-}
-
 const activeSlideIndex = computed(() => {
   if (!(getElement.value instanceof HTMLElement)) return -1
   const container = getElement.value.closest('[data-isl]')
   if (!container) return -1
   const track = container.querySelector('.pbx-isl-t')
   if (!track) return -1
-  for (let i = 0; i < track.children.length; i++) {
-    if (track.children[i].contains(getElement.value)) return i
+  const realSlides = Array.from(track.children).filter(
+    (child) => !child.hasAttribute('data-isl-clone'),
+  )
+  for (let i = 0; i < realSlides.length; i++) {
+    if (realSlides[i].contains(getElement.value)) return i
   }
   return -1
 })
@@ -1275,7 +1263,7 @@ defineExpose({
         <template v-if="isInsideSlider">
           <div
             @click="openSliderSettings"
-            :class="sliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor pbx-text-white' : ''"
+            :class="sliderAutoRotate ? '' : ''"
             class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200 pbx-text-myPrimaryDarkGrayColor"
             :title="translate('Slider Settings')"
           >
@@ -1362,6 +1350,7 @@ defineExpose({
           :showDynamicModalBuilder="showSliderModal"
           :isLoading="isSavingSliderSettings"
           type="success"
+          maxWidth="3xl"
           :gridColumnAmount="2"
           :title="translate('Slider Settings')"
           description=""
@@ -1372,104 +1361,156 @@ defineExpose({
         >
           <header></header>
           <main>
-            <div class="pbx-flex pbx-flex-col pbx-gap-3 pbx-pt-1 pbx-pb-2">
-              <!-- Auto Rotate card -->
-              <div
-                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-overflow-hidden"
-              >
-                <div
-                  class="pbx-flex pbx-items-center pbx-justify-between pbx-px-4 pbx-py-3"
-                  :class="
-                    draftSliderAutoRotate ? 'pbx-bg-myPrimaryLinkColor' : 'pbx-bg-gray-50'
-                  "
-                >
-                  <div class="pbx-flex pbx-items-center pbx-gap-2">
-                    <span
-                      class="material-symbols-outlined pbx-materialIconXl"
-                      :class="
-                        draftSliderAutoRotate
-                          ? 'pbx-text-white'
-                          : 'pbx-text-myPrimaryDarkGrayColor'
-                      "
-                      >autoplay</span
-                    >
-                    <span
-                      class="pbx-text-sm pbx-font-semibold"
-                      :class="
-                        draftSliderAutoRotate
-                          ? 'pbx-text-white'
-                          : 'pbx-text-myPrimaryDarkGrayColor'
-                      "
-                      >{{ translate('Auto Rotate') }}</span
-                    >
-                  </div>
-                  <ToggleInput
-                    :model-value="draftSliderAutoRotate"
-                    @update:model-value="toggleSliderAutoRotate"
-                  />
-                </div>
-
-                <!-- Speed row — only when auto rotate is on -->
-                <div
-                  v-if="draftSliderAutoRotate"
-                  class="pbx-px-4 pbx-py-3 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-bg-white"
-                >
-                  <p
-                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-mb-2 pbx-uppercase pbx-tracking-wide"
-                  >
-                    {{ translate('Rotation Speed (s)') }}
-                  </p>
-                  <div class="pbx-flex pbx-gap-2">
-                    <button
-                      v-for="s in [1, 2, 3, 4, 5]"
-                      :key="s"
-                      @click="changeSliderSpeed(s)"
-                      :class="
-                        draftSliderSpeed === s
-                          ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
-                          : 'pbx-bg-gray-100 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200'
-                      "
-                      class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
-                      type="button"
-                    >
-                      {{ s }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Number of images card -->
-              <div
-                class="pbx-rounded-2xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-4 pbx-py-3"
-              >
-                <div class="pbx-flex pbx-items-center pbx-gap-2 pbx-mb-2">
-                  <span
-                    class="material-symbols-outlined pbx-materialIconXl pbx-text-myPrimaryDarkGrayColor"
-                    >photo_library</span
-                  >
-                  <p
-                    class="pbx-text-xs pbx-text-gray-400 pbx-font-medium pbx-uppercase pbx-tracking-wide"
-                  >
-                    {{ translate('Number of images') }}
+            <div class="pbx-productSettingsPanel pbx-pt-1 pbx-pb-2">
+              <!-- Layout -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Slider layout') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('How many images and how they are shown') }}
                   </p>
                 </div>
-                <div class="pbx-flex pbx-gap-2">
-                  <button
-                    v-for="n in [2, 3, 4, 5, 6]"
-                    :key="n"
-                    @click="changeSlideCount(n)"
-                    :class="
-                      draftSliderImageCount === n
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
-                        : 'pbx-bg-white pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-200 pbx-border pbx-border-solid pbx-border-gray-200'
-                    "
-                    class="pbx-h-9 pbx-w-9 pbx-rounded-xl pbx-text-sm pbx-font-semibold pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border-0 pbx-transition-colors"
-                    type="button"
-                  >
-                    {{ n }}
-                  </button>
+
+                <div class="pbx-flex pbx-flex-col pbx-gap-5">
+                  <div>
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Number of images') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="n in [2, 3, 4, 5, 6]"
+                        :key="n"
+                        type="button"
+                        @click="changeSlideCount(n)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderImageCount === n
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ n }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Slides per view') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="n in [1, 2]"
+                        :key="n"
+                        type="button"
+                        @click="changeSliderPerView(n)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderPerView === n
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ n }}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </section>
+
+              <!-- Playback -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Playback') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('Autoplay, speed, and looping') }}
+                  </p>
+                </div>
+
+                <div class="pbx-productSettingsToggleList">
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Auto Rotate') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Advance slides automatically') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderAutoRotate"
+                      @update:model-value="toggleSliderAutoRotate"
+                    />
+                  </div>
+
+                  <div
+                    v-if="draftSliderAutoRotate"
+                    class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-white pbx-px-3 pbx-py-3"
+                  >
+                    <p class="pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2 pbx-mt-0">
+                      {{ translate('Rotation Speed (s)') }}
+                    </p>
+                    <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+                      <button
+                        v-for="s in [1, 2, 3, 4, 5]"
+                        :key="s"
+                        type="button"
+                        @click="changeSliderSpeed(s)"
+                        class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
+                        :class="
+                          draftSliderSpeed === s
+                            ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-border-myPrimaryLinkColor'
+                            : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
+                        "
+                      >
+                        {{ s }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Loop') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Restart after the last slide') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderLoop"
+                      @update:model-value="toggleSliderLoop"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Navigation -->
+              <section class="pbx-productSettingsSection">
+                <div class="pbx-productSettingsSectionHeader">
+                  <p class="pbx-productSettingsSectionTitle">{{ translate('Navigation') }}</p>
+                  <p class="pbx-productSettingsSectionDesc">
+                    {{ translate('Previous and next controls') }}
+                  </p>
+                </div>
+
+                <div class="pbx-productSettingsToggleList">
+                  <div class="pbx-productSettingsToggleRow">
+                    <div class="pbx-flex pbx-flex-col pbx-gap-0.5 pbx-min-w-0">
+                      <p class="pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor pbx-m-0">
+                        {{ translate('Show arrows') }}
+                      </p>
+                      <p class="pbx-text-xs pbx-text-gray-500 pbx-m-0">
+                        {{ translate('Show back and forward buttons on the slider') }}
+                      </p>
+                    </div>
+                    <ToggleInput
+                      :model-value="draftSliderShowArrows"
+                      @update:model-value="toggleSliderShowArrows"
+                    />
+                  </div>
+                </div>
+              </section>
             </div>
           </main>
         </ConfirmActionModal>

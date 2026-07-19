@@ -391,32 +391,32 @@ const savePreviewFontSettings = function () {
   )
 }
 
-const previewCurrentDesign = function () {
-  pageBuilderService.previewCurrentDesign()
+const previewCurrentDesign = async function () {
+  await pageBuilderService.previewCurrentDesign()
   savePreviewFontSettings()
 }
-const handlePageBuilderPreview = function () {
+const handlePageBuilderPreview = async function () {
   titleBuilderDesktop.value = translate('Preview')
-  previewCurrentDesign()
+  await previewCurrentDesign()
   openPageBuilderPreviewModal.value = true
 }
 
 const openPageBuilderPreviewMobile = ref(false)
 const openPageBuilderPreviewTablet = ref(false)
 
-const previewCurrentDesignMobile = function () {
-  pageBuilderService.previewCurrentDesign()
+const previewCurrentDesignMobile = async function () {
+  await pageBuilderService.previewCurrentDesign()
   savePreviewFontSettings()
 }
-const handlePageBuilderPreviewMobile = function () {
+const handlePageBuilderPreviewMobile = async function () {
   titleBuilderMobile.value = translate('Mobile')
-  previewCurrentDesignMobile()
+  await previewCurrentDesignMobile()
   openPageBuilderPreviewMobile.value = true
 }
 
-const handlePageBuilderPreviewTablet = function () {
+const handlePageBuilderPreviewTablet = async function () {
   titleBuilderTablet.value = translate('Tablet preview')
-  previewCurrentDesignMobile()
+  await previewCurrentDesignMobile()
   openPageBuilderPreviewTablet.value = true
 }
 
@@ -463,7 +463,7 @@ const openDesktopPreviewFromMenu = async () => {
   pageBuilderStateStore.setMenuRight(false)
   pageBuilderStateStore.setElement(null)
   await pageBuilderService.clearHtmlSelection()
-  handlePageBuilderPreview()
+  await handlePageBuilderPreview()
 }
 
 const openMobilePreviewFromMenu = async () => {
@@ -471,7 +471,7 @@ const openMobilePreviewFromMenu = async () => {
   pageBuilderStateStore.setMenuRight(false)
   pageBuilderStateStore.setElement(null)
   await pageBuilderService.clearHtmlSelection()
-  handlePageBuilderPreviewMobile()
+  await handlePageBuilderPreviewMobile()
 }
 
 const openTabletPreviewFromMenu = async () => {
@@ -479,7 +479,7 @@ const openTabletPreviewFromMenu = async () => {
   pageBuilderStateStore.setMenuRight(false)
   pageBuilderStateStore.setElement(null)
   await pageBuilderService.clearHtmlSelection()
-  handlePageBuilderPreviewTablet()
+  await handlePageBuilderPreviewTablet()
 }
 
 watch(previewMenuOpen, (isOpen) => {
@@ -1914,17 +1914,39 @@ onBeforeUnmount(() => {
 /* In builder edit mode: pause animation, restore full scrollability for editing */
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
   animation-play-state: paused !important;
-  overflow: auto !important;
-  width: auto !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
   pointer-events: auto !important;
   transform: none !important;
 }
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
+  flex-shrink: 0 !important;
+}
+/* Single-view auto: force full-width slides while paused for editing. */
+[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view='2']) .pbx-isl-t > div {
   min-width: 100% !important;
+}
+/* Keep multi-slide layout visible on canvas (match preview).
+   Mobile/tablet: 80% peek; desktop lg+: true 2-up at 50%. */
+[data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
+  min-width: 80% !important;
+}
+@media (min-width: 1024px) {
+  [data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
+    min-width: 50% !important;
+  }
+}
+/* Allow slider arrows to receive clicks in the editor. */
+[data-builder-canvas] .pbx-isl-arrow {
+  pointer-events: auto !important;
+  z-index: 20;
 }
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-dot,
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-nums span {
-  animation-play-state: paused !important;
+  /* Don't freeze auto keyframes on frame 0 — that kept number 1's active background forever. */
+  animation: none !important;
 }
 
 #pagebuilder [data-pbx-insert-btn] {

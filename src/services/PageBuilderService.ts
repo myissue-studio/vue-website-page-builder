@@ -31,6 +31,13 @@ import { useToast } from '../composables/useToast'
 import { useTranslations } from '../composables/useTranslations'
 import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
+import { migrateSliderArrowIcons } from '../utils/builder/slider-arrows'
+import {
+  captureInlineSliderViewports,
+  normalizeSliderWrapClones,
+  pinSliderActiveFromElement,
+  restoreInlineSliderViewportsAfterLayout,
+} from '../utils/builder/slider-layout'
 import {
   preserveOriginalInlineHtmlIfUnchanged,
   rememberInlineTipTapHostClass,
@@ -2417,8 +2424,17 @@ export class PageBuilderService {
           ) {
             return
           }
+          // Keep Pinia html_code aligned with live DOM before any re-render.
+          // Otherwise Vue v-html remounts can restore stale slide images (e.g. after preview).
+          await this.syncDomToStoreOnly()
+          if (this.isInlineTipTapActive()) {
+            this.debugLog('warn', 'handleAutoSave(): skipped after sync — TipTap active')
+            return
+          }
           this.pageBuilderStateStore.setIsSaving(true)
           this.saveDomComponentsToLocalStorage()
+          // Remount from syncDomToStoreOnly drops listeners — put them back.
+          await this.addListenersToEditableElements()
           await sleep(400)
         } catch (err) {
           console.error('Error trying auto save.', err)
@@ -2443,8 +2459,14 @@ export class PageBuilderService {
         ) {
           return
         }
+        await this.syncDomToStoreOnly()
+        if (this.isInlineTipTapActive()) {
+          this.debugLog('warn', 'handleAutoSave(): skipped after sync — TipTap active')
+          return
+        }
         this.pageBuilderStateStore.setIsSaving(true)
         this.saveDomComponentsToLocalStorage()
+        await this.addListenersToEditableElements()
         await sleep(400)
       } catch (err) {
         console.error('Error trying saving.', err)
@@ -2524,6 +2546,9 @@ export class PageBuilderService {
           this.addTailwindPrefixToClasses(el.getAttribute('class') || '', 'pbx-'),
         )
       })
+
+      migrateSliderArrowIcons(section)
+      normalizeSliderWrapClones(section)
 
       // Generate a unique ID using uuidv4() and assign it to the section
       section.dataset.componentid = uuidv4()
@@ -3392,6 +3417,7 @@ export class PageBuilderService {
     element.removeAttribute('selected')
 
     const clone = element.cloneNode(true) as HTMLElement
+    this.ensureVerticalGapOnStackedDuplicate(clone, element)
 
     element.parentNode.insertBefore(clone, element.nextSibling)
 
@@ -3403,6 +3429,32 @@ export class PageBuilderService {
 
     this.saveDomComponentsToLocalStorage()
     await this.handleAutoSave()
+  }
+
+  /**
+   * When duplicating an element under a sibling (e.g. stacking images in a slide),
+   * ensure the copy has top spacing so it doesn't sit flush against the original.
+   */
+  private ensureVerticalGapOnStackedDuplicate(clone: HTMLElement, source: HTMLElement): void {
+    const parent = source.parentElement
+    if (!parent) return
+
+    // Horizontal slider tracks already separate slides sideways — don't force margin-top.
+    if (parent.classList.contains('pbx-isl-t')) return
+
+    const hasMarginTop = Array.from(clone.classList).some(
+      (cls) =>
+        /(^|:)pbx-mt-\S+/.test(cls) ||
+        /(^|:)mt-\S+/.test(cls) ||
+        cls.startsWith('pbx-my-') ||
+        cls.startsWith('pbx-m-'),
+    )
+    if (hasMarginTop) return
+
+    const inlineMarginTop = (clone.style.marginTop || '').trim()
+    if (inlineMarginTop && inlineMarginTop !== '0' && inlineMarginTop !== '0px') return
+
+    clone.classList.add('pbx-mt-4')
   }
 
   /**
@@ -3681,26 +3733,31 @@ export class PageBuilderService {
   /**
    * Generates a preview of the current page design.
    */
-  public previewCurrentDesign() {
+  public async previewCurrentDesign() {
     this.pageBuilderStateStore.setElement(null)
+
+    // Persist live DOM (e.g. replaced slider images) into the Vue store before
+    // any remount can restore stale html_code from Pinia.
+    await this.syncDomToStoreOnly()
 
     const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
-    if (pagebuilder) {
-      // Get cleaned HTML from entire builder
-      const cleanedHTML = extractCleanHTMLFromPageBuilder(
-        pagebuilder as HTMLElement,
-        this.pageBuilderStateStore.getPageBuilderConfig
-          ? this.pageBuilderStateStore.getPageBuilderConfig
-          : undefined,
-      )
+    // Get cleaned HTML from entire builder
+    const cleanedHTML = extractCleanHTMLFromPageBuilder(
+      pagebuilder as HTMLElement,
+      this.pageBuilderStateStore.getPageBuilderConfig
+        ? this.pageBuilderStateStore.getPageBuilderConfig
+        : undefined,
+    )
 
-      // Store as array with one string (as your preview expects an array)
-      const previewData = JSON.stringify([cleanedHTML])
+    // Store as array with one string (as your preview expects an array)
+    const previewData = JSON.stringify([cleanedHTML])
 
-      this.pageBuilderStateStore.setCurrentLayoutPreview(previewData)
-    }
+    this.pageBuilderStateStore.setCurrentLayoutPreview(previewData)
+
+    // syncDomToStoreOnly remounts sections — restore edit listeners on the canvas.
+    await this.addListenersToEditableElements()
   }
   /**
    * Sanitizes a string to be used as a key in local storage.
@@ -3764,6 +3821,9 @@ export class PageBuilderService {
     const pagebuilder = this.getBuilderCanvasElement()
     if (!pagebuilder) return
 
+    // Remount via v-html resets scrollLeft — keep the slide the user was looking at.
+    const sliderViewports = captureInlineSliderViewports(pagebuilder)
+
     const componentsToSave: { html_code: string; id: string | null; title: string }[] = []
 
     const persistableSections = this.getPersistableSections(pagebuilder)
@@ -3783,6 +3843,11 @@ export class PageBuilderService {
     })
 
     await this.setComponentsPreservingPageSettings(componentsToSave)
+
+    const remounted = this.getBuilderCanvasElement()
+    if (remounted && sliderViewports.length > 0) {
+      await restoreInlineSliderViewportsAfterLayout(remounted, sliderViewports)
+    }
   }
 
   public async generateHtmlFromComponents(): Promise<string> {
@@ -4427,6 +4492,15 @@ export class PageBuilderService {
    */
   public async refreshListeners(): Promise<void> {
     await nextTick()
+    const canvas = this.getBuilderCanvasElement()
+    if (canvas) {
+      const arrowsMigrated = migrateSliderArrowIcons(canvas)
+      const clonesFixed = normalizeSliderWrapClones(canvas)
+      if (arrowsMigrated || clonesFixed) {
+        // Persist fixes into the Vue store so the next v-html render keeps them.
+        await this.syncDomToStoreOnly()
+      }
+    }
     await this.addListenersToEditableElements()
     // Re-apply config page settings if the canvas is missing its inline styles.
     // This covers the v-if modal reopen where #pagebuilder is freshly rendered by
@@ -4576,9 +4650,75 @@ export class PageBuilderService {
     // Only apply if an image is staged
     if (this.getApplyImageToSelection.value && this.getApplyImageToSelection.value.src) {
       await nextTick()
+      // Stay on the edited slide after remount (sync resets scroll to slide 1 otherwise).
+      pinSliderActiveFromElement(this.getElement.value)
       this.pageBuilderStateStore.setBasePrimaryImage(`${this.getApplyImageToSelection.value.src}`)
 
+      // Image src is mutated on the live DOM node inside v-html. Sync into Pinia
+      // immediately so later remounts (preview, normalize, setComponents) keep it.
+      await this.syncDomToStoreOnly()
+      await this.addListenersToEditableElements()
+
+      // Re-bind selection to the remounted img so the toolbar keeps the same slide.
+      this.reselectSliderImageAfterRemount(image.src)
+
       await this.handleAutoSave()
+    }
+  }
+
+  /** After v-html remount, select the slider image we just updated (same src + active slide). */
+  private reselectSliderImageAfterRemount(src: string): void {
+    const pagebuilder = this.getBuilderCanvasElement()
+    if (!pagebuilder || !src) return
+
+    const matchesSrc = (img: HTMLImageElement): boolean => {
+      const attr = img.getAttribute('src') || ''
+      return attr === src || img.src === src || attr.endsWith(src) || img.src.endsWith(src)
+    }
+
+    const containers = pagebuilder.querySelectorAll<HTMLElement>('[data-isl]')
+    for (const container of Array.from(containers)) {
+      const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+      if (!track) continue
+
+      const activeRaw = container.getAttribute('data-isl-active')
+      const activeIdx = activeRaw != null ? parseInt(activeRaw, 10) : NaN
+      const preferred =
+        !isNaN(activeIdx) && activeIdx >= 0
+          ? (track.children[activeIdx]?.querySelector('img') as HTMLImageElement | null)
+          : null
+
+      const img =
+        preferred && matchesSrc(preferred)
+          ? preferred
+          : (Array.from(track.querySelectorAll('img')).find(
+              (candidate) =>
+                candidate instanceof HTMLImageElement &&
+                matchesSrc(candidate) &&
+                !candidate.closest('[data-isl-clone]'),
+            ) as HTMLImageElement | undefined)
+
+      if (!img) continue
+
+      const slide = Array.from(track.children).find(
+        (child) => child instanceof HTMLElement && child.contains(img),
+      ) as HTMLElement | undefined
+      if (slide && !slide.hasAttribute('data-isl-clone')) {
+        const realIdx = Array.from(track.children)
+          .filter((child) => !child.hasAttribute('data-isl-clone'))
+          .indexOf(slide)
+        if (realIdx >= 0) {
+          container.setAttribute('data-isl-active', String(realIdx))
+          void track.offsetWidth
+          track.scrollLeft = slide.offsetLeft
+        }
+      }
+
+      pagebuilder.querySelectorAll('[selected]').forEach((el) => el.removeAttribute('selected'))
+      img.setAttribute('selected', '')
+      this.pageBuilderStateStore.setElement(img)
+      this.setBasePrimaryImageFromSelectedElement()
+      return
     }
   }
 
@@ -5147,14 +5287,29 @@ export class PageBuilderService {
    * @private
    */
   private addTailwindPrefixToClasses(classList: string, prefix = 'pbx-'): string {
+    // Icon-font utility from Google Fonts — must stay unprefixed or ligatures render as text.
+    const skipPrefixBases = new Set(['material-symbols-outlined'])
+
     return classList
       .split(/\s+/)
       .map((cls) => {
-        if (!cls || cls.startsWith(prefix)) return cls
+        if (!cls) return cls
+
         const parts = cls.split(':')
         const base = parts.pop()!
-        if (base.startsWith(prefix)) return cls
-        // Always prefix if not already prefixed
+
+        // Undo accidental prefix from older saves (e.g. pbx-material-symbols-outlined).
+        if (base.startsWith(prefix)) {
+          const unprefixed = base.slice(prefix.length)
+          if (skipPrefixBases.has(unprefixed)) {
+            return [...parts, unprefixed].join(':')
+          }
+          return cls
+        }
+
+        if (skipPrefixBases.has(base)) return [...parts, base].join(':')
+        if (cls.startsWith(prefix)) return cls
+
         return [...parts, prefix + base].join(':')
       })
       .join(' ')
@@ -5525,6 +5680,10 @@ export class PageBuilderService {
             this.addTailwindPrefixToClasses(el.getAttribute('class') || '', 'pbx-'),
           )
         })
+
+        // Convert Material Symbol arrow glyphs → SVG before Vue stores/renders html_code.
+        migrateSliderArrowIcons(section)
+        normalizeSliderWrapClones(section)
 
         const htmlElement = section as HTMLElement
 

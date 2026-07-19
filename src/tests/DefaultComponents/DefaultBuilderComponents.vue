@@ -56,8 +56,11 @@ const showButtonsHelperStyleControls = computed(
   () => selectedThemeSelection.value === 'Components' && selectedHelperCategory.value === 'Buttons',
 )
 
+const componentCategoriesOf = (comp: { category: string | string[] }): string[] =>
+  Array.isArray(comp.category) ? comp.category : [comp.category]
+
 const categories = computed(() => {
-  const allCategories = components[0].components.data.map((comp) => comp.category)
+  const allCategories = components[0].components.data.flatMap(componentCategoriesOf)
   return ['All', ...new Set(allCategories)]
 })
 
@@ -65,7 +68,9 @@ const filteredComponents = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
   const byCategory =
     !query && selectedCategory.value !== 'All'
-      ? components[0].components.data.filter((comp) => comp.category === selectedCategory.value)
+      ? components[0].components.data.filter((comp) =>
+          componentCategoriesOf(comp).includes(selectedCategory.value),
+        )
       : components[0].components.data
   if (!query) return byCategory
   return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))

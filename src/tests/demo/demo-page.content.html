@@ -39,8 +39,9 @@
                 rel="noopener noreferrer nofollow"
                 href="https://www.google.com"
                 class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
-                >Link to landing page</a
               >
+                Link to landing page
+              </a>
             </p>
           </div>
           <div class="pbx-flex pbx-items-center pbx-font-medium pbx-text-white" id="linktree">
@@ -50,8 +51,9 @@
                 rel="noopener noreferrer nofollow"
                 href="https://www.google.com"
                 class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white pbx-rounded-full"
-                >Link to landing page</a
               >
+                Link to landing page
+              </a>
             </p>
           </div>
         </div>
@@ -410,6 +412,639 @@
       </div>
     </div>
   </section>
+  <section data-component-title="Image Slider">
+    <style>
+      .pbx-isl-t {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100%;
+      }
+      .pbx-isl-t::-webkit-scrollbar {
+        display: none;
+      }
+      .pbx-isl-t > div {
+        min-width: 80% !important;
+        scroll-snap-align: start;
+        box-sizing: border-box;
+      }
+      [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
+        box-sizing: border-box;
+        min-width: 80% !important;
+        padding-inline: 0.4rem;
+      }
+      [data-isl][data-isl-per-view='2'] .pbx-isl-t > div img {
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+      @media (min-width: 1024px) {
+        [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
+          min-width: 50% !important;
+        }
+      }
+      .pbx-isl-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 11;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.4);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 0;
+        color: #111;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+        user-select: none;
+      }
+      [data-isl][data-isl-arrows]:not([data-isl-arrows='false']) .pbx-isl-arrow {
+        display: flex;
+      }
+      .pbx-isl-prev {
+        left: 0.75rem;
+      }
+      .pbx-isl-next {
+        right: 0.75rem;
+      }
+      .pbx-isl-arrow svg {
+        display: block;
+        flex-shrink: 0;
+      }
+      [data-builder-canvas] .pbx-isl-arrow {
+        pointer-events: auto;
+        z-index: 20;
+      }
+      @keyframes pbx-isl-r {
+        0%,
+        17.000% {
+          transform: translateX(0);
+        }
+        20.000%,
+        37.000% {
+          transform: translateX(-16.667%);
+        }
+        40.000%,
+        57.000% {
+          transform: translateX(-33.333%);
+        }
+        60.000%,
+        77.000% {
+          transform: translateX(-50%);
+        }
+        80.000%,
+        97.000% {
+          transform: translateX(-66.667%);
+        }
+        99%,
+        100% {
+          transform: translateX(0);
+        }
+      }
+      [data-isl][data-isl-auto] .pbx-isl-t {
+        overflow: hidden !important;
+        scroll-snap-type: none !important;
+        width: 300% !important;
+        animation: pbx-isl-r 15s infinite;
+        pointer-events: none;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-t > div {
+        min-width: 16.667% !important;
+      }
+      @media (max-width: 1023px) {
+        [data-isl][data-isl-auto][data-isl-per-view='2'] .pbx-isl-t {
+          width: 480% !important;
+        }
+        [data-isl][data-isl-auto][data-isl-per-view='2'] .pbx-isl-t > div {
+          min-width: 16.667% !important;
+        }
+      }
+      .pbx-isl-dots {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: rgba(128, 128, 128, 0.08);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        box-sizing: border-box;
+      }
+      .pbx-isl-dot {
+        display: block;
+        flex-shrink: 0;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.45);
+        cursor: pointer;
+        transition:
+          width 0.2s ease,
+          background 0.2s ease;
+        box-sizing: border-box;
+      }
+      .pbx-isl-nums {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        margin-bottom: 0.5rem;
+        padding: 6px 8px;
+        border-radius: 10px;
+        background: rgba(128, 128, 128, 0.08);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        box-sizing: border-box;
+        font-family: Jost, Helvetica, Arial, sans-serif;
+      }
+      [data-builder-canvas] .pbx-isl-nums {
+        display: flex;
+      }
+      .pbx-isl-nums span {
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1;
+        color: rgba(255, 255, 255, 0.7);
+        text-shadow: none;
+        cursor: pointer;
+        min-width: 1.35rem;
+        height: 1.35rem;
+        padding: 0 0.35rem;
+        text-align: center;
+        background: transparent;
+        border-radius: 9999px;
+        opacity: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        transition:
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      [data-isl]:not([data-isl-auto]):not([data-isl-active]) .pbx-isl-nums span:first-child {
+        opacity: 1;
+        background: #fff;
+        color: #111;
+        text-shadow: none;
+      }
+      [data-isl]:not([data-isl-auto]):not([data-isl-active]) .pbx-isl-dot:first-child {
+        width: 1.15rem;
+        background: #fff;
+      }
+      [data-isl]:not([data-isl-auto])[data-isl-active='0'] .pbx-isl-nums span:nth-child(1),
+      [data-isl]:not([data-isl-auto])[data-isl-active='1'] .pbx-isl-nums span:nth-child(2),
+      [data-isl]:not([data-isl-auto])[data-isl-active='2'] .pbx-isl-nums span:nth-child(3),
+      [data-isl]:not([data-isl-auto])[data-isl-active='3'] .pbx-isl-nums span:nth-child(4),
+      [data-isl]:not([data-isl-auto])[data-isl-active='4'] .pbx-isl-nums span:nth-child(5) {
+        opacity: 1;
+        background: #fff;
+        color: #111;
+        text-shadow: none;
+      }
+      [data-isl]:not([data-isl-auto])[data-isl-active='0'] .pbx-isl-dot:nth-child(1),
+      [data-isl]:not([data-isl-auto])[data-isl-active='1'] .pbx-isl-dot:nth-child(2),
+      [data-isl]:not([data-isl-auto])[data-isl-active='2'] .pbx-isl-dot:nth-child(3),
+      [data-isl]:not([data-isl-auto])[data-isl-active='3'] .pbx-isl-dot:nth-child(4),
+      [data-isl]:not([data-isl-auto])[data-isl-active='4'] .pbx-isl-dot:nth-child(5) {
+        width: 1.15rem;
+        background: #fff;
+      }
+      [data-builder-canvas] [data-isl]:not([data-isl-active]) .pbx-isl-nums span:first-child {
+        opacity: 1 !important;
+        background: #fff !important;
+        color: #111 !important;
+        text-shadow: none !important;
+      }
+      [data-builder-canvas] [data-isl]:not([data-isl-active]) .pbx-isl-dot:first-child {
+        width: 1.15rem !important;
+        background: #fff !important;
+      }
+      [data-builder-canvas] [data-isl][data-isl-active] .pbx-isl-nums span {
+        opacity: 1 !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        text-shadow: none !important;
+      }
+      [data-builder-canvas] [data-isl][data-isl-active] .pbx-isl-dot {
+        width: 0.45rem !important;
+        background: rgba(255, 255, 255, 0.45) !important;
+      }
+      [data-builder-canvas] [data-isl][data-isl-active='0'] .pbx-isl-nums span:nth-child(1),
+      [data-builder-canvas] [data-isl][data-isl-active='1'] .pbx-isl-nums span:nth-child(2),
+      [data-builder-canvas] [data-isl][data-isl-active='2'] .pbx-isl-nums span:nth-child(3),
+      [data-builder-canvas] [data-isl][data-isl-active='3'] .pbx-isl-nums span:nth-child(4),
+      [data-builder-canvas] [data-isl][data-isl-active='4'] .pbx-isl-nums span:nth-child(5) {
+        opacity: 1 !important;
+        background: #fff !important;
+        color: #111 !important;
+        text-shadow: none !important;
+      }
+      [data-builder-canvas] [data-isl][data-isl-active='0'] .pbx-isl-dot:nth-child(1),
+      [data-builder-canvas] [data-isl][data-isl-active='1'] .pbx-isl-dot:nth-child(2),
+      [data-builder-canvas] [data-isl][data-isl-active='2'] .pbx-isl-dot:nth-child(3),
+      [data-builder-canvas] [data-isl][data-isl-active='3'] .pbx-isl-dot:nth-child(4),
+      [data-builder-canvas] [data-isl][data-isl-active='4'] .pbx-isl-dot:nth-child(5) {
+        width: 1.15rem !important;
+        background: #fff !important;
+      }
+      @keyframes pbx-isl-da-0 {
+        0%,
+        17.000% {
+          width: 1.15rem;
+          background: #fff;
+        }
+        20.000%,
+        100% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+      }
+      @keyframes pbx-isl-da-1 {
+        0%,
+        19.999% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+        20.000%,
+        37.000% {
+          width: 1.15rem;
+          background: #fff;
+        }
+        40.000%,
+        100% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+      }
+      @keyframes pbx-isl-da-2 {
+        0%,
+        39.999% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+        40.000%,
+        57.000% {
+          width: 1.15rem;
+          background: #fff;
+        }
+        60.000%,
+        100% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+      }
+      @keyframes pbx-isl-da-3 {
+        0%,
+        59.999% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+        60.000%,
+        77.000% {
+          width: 1.15rem;
+          background: #fff;
+        }
+        80.000%,
+        100% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+      }
+      @keyframes pbx-isl-da-4 {
+        0%,
+        79.999% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+        80.000%,
+        97.000% {
+          width: 1.15rem;
+          background: #fff;
+        }
+        100.000%,
+        100% {
+          width: 0.45rem;
+          background: rgba(255, 255, 255, 0.45);
+        }
+      }
+      [data-isl][data-isl-auto] .pbx-isl-dot:nth-child(1) {
+        animation: pbx-isl-da-0 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-dot:nth-child(2) {
+        animation: pbx-isl-da-1 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-dot:nth-child(3) {
+        animation: pbx-isl-da-2 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-dot:nth-child(4) {
+        animation: pbx-isl-da-3 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-dot:nth-child(5) {
+        animation: pbx-isl-da-4 15s infinite;
+      }
+      @keyframes pbx-isl-na-0 {
+        0%,
+        17.000% {
+          opacity: 1;
+          background: #fff;
+          color: #111;
+        }
+        20.000%,
+        100% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      @keyframes pbx-isl-na-1 {
+        0%,
+        19.999% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        20.000%,
+        37.000% {
+          opacity: 1;
+          background: #fff;
+          color: #111;
+        }
+        40.000%,
+        100% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      @keyframes pbx-isl-na-2 {
+        0%,
+        39.999% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        40.000%,
+        57.000% {
+          opacity: 1;
+          background: #fff;
+          color: #111;
+        }
+        60.000%,
+        100% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      @keyframes pbx-isl-na-3 {
+        0%,
+        59.999% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        60.000%,
+        77.000% {
+          opacity: 1;
+          background: #fff;
+          color: #111;
+        }
+        80.000%,
+        100% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      @keyframes pbx-isl-na-4 {
+        0%,
+        79.999% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        80.000%,
+        97.000% {
+          opacity: 1;
+          background: #fff;
+          color: #111;
+        }
+        100.000%,
+        100% {
+          opacity: 1;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      [data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(1) {
+        animation: pbx-isl-na-0 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(2) {
+        animation: pbx-isl-na-1 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(3) {
+        animation: pbx-isl-na-2 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(4) {
+        animation: pbx-isl-na-3 15s infinite;
+      }
+      [data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(5) {
+        animation: pbx-isl-na-4 15s infinite;
+      }
+    </style>
+    <div class="pbx-py-8 pbx-px-4">
+      <div class="pbx-mx-auto pbx-max-w-7xl">
+        <div
+          data-pb-no-select=""
+          style="position: relative; border-radius: 0.5rem; overflow: hidden"
+          data-isl=""
+          data-isl-speed="3"
+          data-isl-arrows=""
+          data-isl-per-view="2"
+          data-isl-loop="true"
+          data-isl-active="1"
+        >
+          <div class="pbx-isl-t">
+            <div style="scroll-snap-align: start">
+              <img
+                src="https://images.unsplash.com/photo-1640098322821-492c8de643f4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHwxfHxraW5mb2xrfGVufDB8fHx8MTc4NDM4NDkxMHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block"
+                alt="Slide 1"
+              />
+            </div>
+            <div style="scroll-snap-align: start">
+              <img
+                src="https://images.unsplash.com/photo-1618510120934-8e95e3ee8033?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHw1fHxraW5mb2xrfGVufDB8fHx8MTc4NDM4NDkxMHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block"
+                alt="Slide 2"
+              />
+            </div>
+            <div style="scroll-snap-align: start">
+              <img
+                src="https://images.unsplash.com/photo-1650940513254-d059a40ed20e?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHwyM3x8a2luZm9sa3xlbnwwfHx8fDE3ODQzODQ5MTB8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block"
+                alt="Slide 3"
+              />
+            </div>
+            <div style="scroll-snap-align: start">
+              <img
+                src="https://images.unsplash.com/photo-1640270712121-ae4a538a8ffc?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHwxNXx8a2luZm9sa3xlbnwwfHx8fDE3ODQzODQ5MTB8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                alt="Slide 4"
+                style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block"
+              />
+            </div>
+            <div style="scroll-snap-align: start">
+              <img
+                src="https://images.unsplash.com/photo-1651023939675-0d126a49e388?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHw0fHxraW5mb2xrfGVufDB8fHx8MTc4NDM4NDkxMHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                alt="Slide 5"
+                style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block"
+              />
+            </div>
+            <div style="scroll-snap-align: start" data-isl-clone="" aria-hidden="true">
+              <img
+                src="https://images.unsplash.com/photo-1640098322821-492c8de643f4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMTI0Mzl8MHwxfHNlYXJjaHwxfHxraW5mb2xrfGVufDB8fHx8MTc4NDM4NDkxMHww&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                style="width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block"
+                alt="Slide 1"
+              />
+            </div>
+          </div>
+          <div
+            data-pb-no-select=""
+            style="
+              position: absolute;
+              bottom: 0.75rem;
+              left: 50%;
+              transform: translateX(-50%);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.35rem;
+              z-index: 10;
+            "
+          >
+            <div class="pbx-isl-nums">
+              <span
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=0;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+                1
+              </span>
+              <span
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=1;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+                2
+              </span>
+              <span
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=2;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+                3
+              </span>
+              <span
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=3;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+                4
+              </span>
+              <span
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=4;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+                5
+              </span>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 0.6rem;
+                padding: 8px 10px;
+                border-radius: 10px;
+                background: rgba(128, 128, 128, 0.08);
+              "
+              class="pbx-isl-dots"
+            >
+              <span
+                class="pbx-isl-dot"
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=0;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+              </span>
+              <span
+                class="pbx-isl-dot"
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=1;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+              </span>
+              <span
+                class="pbx-isl-dot"
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=2;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+              </span>
+              <span
+                class="pbx-isl-dot"
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=3;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+              </span>
+              <span
+                class="pbx-isl-dot"
+                onclick="(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=4;if(idx&lt;0||idx&gt;=real.length)return;if(idx&gt;real.length-1)idx=real.length-1;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}var img=t.children[idx]&amp;&amp;t.children[idx].querySelector('img');if(img)img.click();})(this,event)"
+              >
+              </span>
+            </div>
+          </div>
+          <span
+            class="pbx-isl-arrow pbx-isl-prev"
+            aria-label="Previous"
+            onclick="(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var n=real.length;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var loop=c.getAttribute('data-isl-loop')!=='false';var hasClones=!!t.querySelector('[data-isl-clone]');var maxStart=hasClones&amp;&amp;loop?n-1:Math.max(0,n-pv);var cur=0;var best=Infinity;for(var i=0;i&lt;n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist&lt;best){best=dist;cur=i;}}if(c.hasAttribute('data-isl-active')){var active=parseInt(c.getAttribute('data-isl-active')||'0',10);if(!isNaN(active)&amp;&amp;active&gt;=0&amp;&amp;active&lt;=maxStart)cur=active;}var next=loop?(cur&lt;=0?maxStart:cur-1):Math.max(0,cur-1);var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=next;if(idx&lt;0||idx&gt;=real.length)return;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var hasClones=!!t.querySelector('[data-isl-clone]');var loop=c.getAttribute('data-isl-loop')!=='false';var maxStart=hasClones&amp;&amp;loop?real.length-1:Math.max(0,real.length-pv);if(idx&gt;maxStart)idx=maxStart;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}})(this,event)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M15.5 19L8.5 12L15.5 5"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </span>
+          <span
+            class="pbx-isl-arrow pbx-isl-next"
+            aria-label="Next"
+            onclick="(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var n=real.length;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var loop=c.getAttribute('data-isl-loop')!=='false';var hasClones=!!t.querySelector('[data-isl-clone]');var maxStart=hasClones&amp;&amp;loop?n-1:Math.max(0,n-pv);var cur=0;var best=Infinity;for(var i=0;i&lt;n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist&lt;best){best=dist;cur=i;}}if(c.hasAttribute('data-isl-active')){var active=parseInt(c.getAttribute('data-isl-active')||'0',10);if(!isNaN(active)&amp;&amp;active&gt;=0&amp;&amp;active&lt;=maxStart)cur=active;}var next=loop?(cur&gt;=maxStart?0:cur+1):Math.min(maxStart,cur+1);var real=Array.prototype.filter.call(t.children,function(el){return !el.hasAttribute('data-isl-clone');});var idx=next;if(idx&lt;0||idx&gt;=real.length)return;var pv=parseInt(c.getAttribute('data-isl-per-view')||'1',10)||1;var hasClones=!!t.querySelector('[data-isl-clone]');var loop=c.getAttribute('data-isl-loop')!=='false';var maxStart=hasClones&amp;&amp;loop?real.length-1:Math.max(0,real.length-pv);if(idx&gt;maxStart)idx=maxStart;c.setAttribute('data-isl-active',String(idx));var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s){s.style.opacity='';s.style.background='';s.style.color='';s.style.textShadow='';s.style.borderRadius='';s.style.padding='';});var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot){dot.style.background='';dot.style.width='';});var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&amp;&amp;!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}})(this,event)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M8.5 5L15.5 12L8.5 19"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
   <section data-component-title="Header H3">
     <div class="pbx-pb-8 pbx-px-4 pbx-pt-10">
       <div class="pbx-mx-auto pbx-max-w-7xl">
@@ -449,12 +1084,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/structured-wool-coat" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/structured-wool-coat" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1739194097779-4894bac6dc05?w=600&amp;h=600&amp;fit=crop"
                   alt="Editorial fashion photograph taken outdoors"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -473,8 +1109,9 @@
                       href="/products/structured-wool-coat"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >The Tailored Classic</a
                     >
+                      The Tailored Classic
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -499,8 +1136,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >View product</a
                     >
+                      View product
+                    </a>
                   </p>
                 </div>
               </div>
@@ -514,12 +1152,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/relaxed-linen-jacket" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/relaxed-linen-jacket" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1666932521131-d990bd263a2c?w=600&amp;h=600&amp;fit=crop"
                   alt="Lifestyle fashion photograph in a neutral palette"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -538,8 +1177,9 @@
                       href="/products/relaxed-linen-jacket"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >The Neutral Layer</a
                     >
+                      The Neutral Layer
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -564,8 +1204,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >View details</a
                     >
+                      View details
+                    </a>
                   </p>
                 </div>
               </div>
@@ -579,12 +1220,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/tailored-wide-leg-pants" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/tailored-wide-leg-pants" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1743764179699-d3038d1a93e7?w=600&amp;h=600&amp;fit=crop"
                   alt="Editorial fashion photograph with a structured composition"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -603,8 +1245,9 @@
                       href="/products/tailored-wide-leg-pants"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >The Clean Cut</a
                     >
+                      The Clean Cut
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -628,8 +1271,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >Add to cart</a
                     >
+                      Add to cart
+                    </a>
                   </p>
                 </div>
               </div>
@@ -643,12 +1287,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/cognac-leather-tote" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/cognac-leather-tote" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1713425886176-2c618d1e63cd?w=600&amp;h=600&amp;fit=crop"
                   alt="Lifestyle editorial photograph on a neutral surface"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -667,8 +1312,9 @@
                       href="/products/cognac-leather-tote"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >The Everyday Carry</a
                     >
+                      The Everyday Carry
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -693,8 +1339,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >Shop now</a
                     >
+                      Shop now
+                    </a>
                   </p>
                 </div>
               </div>
@@ -708,12 +1355,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/solitaire-ring" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/solitaire-ring" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1731462421090-4ada69dcc946?w=600&amp;h=600&amp;fit=crop"
                   alt="Editorial fashion detail photograph"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -728,9 +1376,9 @@
                   class="pbx-product-card-title pbx-text-lg pbx-font-semibold pbx-pt-2 pbx-min-h-16"
                 >
                   <p>
-                    <a href="/products/solitaire-ring" target="_blank" rel="noopener noreferrer"
-                      >The Bold Statement</a
-                    >
+                    <a href="/products/solitaire-ring" target="_blank" rel="noopener noreferrer">
+                      The Bold Statement
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -759,8 +1407,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >Buy now</a
                     >
+                      Buy now
+                    </a>
                   </p>
                 </div>
               </div>
@@ -774,12 +1423,13 @@
               class="pbx-product-card-image pbx-shrink-0 pbx-rounded-xl pbx-overflow-hidden"
               data-pb-no-inline-text=""
             >
-              <a href="/products/aurora-gold-ring" target="_blank" rel="noopener noreferrer"
-                ><img
+              <a href="/products/aurora-gold-ring" target="_blank" rel="noopener noreferrer">
+                <img
                   class="pbx-object-cover pbx-w-full pbx-object-top pbx-aspect-square"
                   src="https://images.unsplash.com/photo-1626122509259-ea8e0a136ada?w=600&amp;h=600&amp;fit=crop"
                   alt="Close-up editorial product photograph"
-              /></a>
+                />
+              </a>
             </div>
             <div
               class="pbx-break-words pbx-py-2 pbx-product-card-body pbx-flex pbx-flex-col pbx-flex-1"
@@ -794,9 +1444,9 @@
                   class="pbx-product-card-title pbx-text-lg pbx-font-semibold pbx-pt-2 pbx-min-h-16"
                 >
                   <p>
-                    <a href="/products/aurora-gold-ring" target="_blank" rel="noopener noreferrer"
-                      >The Refined Essential</a
-                    >
+                    <a href="/products/aurora-gold-ring" target="_blank" rel="noopener noreferrer">
+                      The Refined Essential
+                    </a>
                   </p>
                 </div>
                 <div class="pbx-product-card-description pbx-text-sm pbx-text-gray-600 pbx-pt-1">
@@ -820,8 +1470,9 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="pbx-product-card-cta-link pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-text-sm pbx-font-semibold pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-md"
-                      >View product</a
                     >
+                      View product
+                    </a>
                   </p>
                 </div>
               </div>
@@ -831,7 +1482,7 @@
       </div>
     </div>
   </section>
-  <section data-component-title="YouTube Video" class="">
+  <section data-component-title="YouTube Video">
     <div class="pbx-py-4 pbx-bg-black pbx-mx-2 pbx-my-2 pbx-rounded-3xl" style="">
       <div class="pbx-mx-auto pbx-max-w-7xl pbx-pt-6 pbx-pb-6">
         <div id="youtube-video" class="pbx-aspect-video pbx-p-4">
@@ -938,28 +1589,36 @@
         >
           <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-8">
             <div class="pbx-w-10 pbx-h-10 pbx-rounded-xl pbx-bg-blue-100 pbx-mb-6"></div>
-            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3"><h3>Layouts and Visuals</h3></div>
+            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3">
+              <h3>Layouts and Visuals</h3>
+            </div>
             <div class="pbx-text-gray-500 pbx-text-sm pbx-leading-relaxed">
               <p>Start customizing by editing this default text directly in the editor.</p>
             </div>
           </div>
           <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-8">
             <div class="pbx-w-10 pbx-h-10 pbx-rounded-xl pbx-bg-indigo-100 pbx-mb-6"></div>
-            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3"><h3>Layouts and Visuals</h3></div>
+            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3">
+              <h3>Layouts and Visuals</h3>
+            </div>
             <div class="pbx-text-gray-500 pbx-text-sm pbx-leading-relaxed">
               <p>Start customizing by editing this default text directly in the editor.</p>
             </div>
           </div>
           <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-8">
             <div class="pbx-w-10 pbx-h-10 pbx-rounded-xl pbx-bg-emerald-100 pbx-mb-6"></div>
-            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3"><h3>Layouts and Visuals</h3></div>
+            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3">
+              <h3>Layouts and Visuals</h3>
+            </div>
             <div class="pbx-text-gray-500 pbx-text-sm pbx-leading-relaxed">
               <p>Start customizing by editing this default text directly in the editor.</p>
             </div>
           </div>
           <div class="pbx-bg-gray-50 pbx-rounded-3xl pbx-p-8">
             <div class="pbx-w-10 pbx-h-10 pbx-rounded-xl pbx-bg-rose-100 pbx-mb-6"></div>
-            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3"><h3>Layouts and Visuals</h3></div>
+            <div class="pbx-font-semibold pbx-text-lg pbx-mb-3">
+              <h3>Layouts and Visuals</h3>
+            </div>
             <div class="pbx-text-gray-500 pbx-text-sm pbx-leading-relaxed">
               <p>Start customizing by editing this default text directly in the editor.</p>
             </div>

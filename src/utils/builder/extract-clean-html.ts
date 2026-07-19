@@ -1,7 +1,32 @@
 import type { PageBuilderConfig } from '../../types'
+import { migrateSliderArrowIcons } from './slider-arrows'
+import { normalizeSliderWrapClones } from './slider-layout'
 
 const isAbsoluteOrInlineImageSrc = (src: string): boolean => {
   return /^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('//')
+}
+
+/** Force every image slider back to slide 1 for preview/publish HTML. */
+function resetInlineSlidersToFirstSlide(root: HTMLElement): void {
+  root.querySelectorAll<HTMLElement>('[data-isl]').forEach((container) => {
+    container.removeAttribute('data-isl-active')
+
+    const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
+    if (track) {
+      track.removeAttribute('style')
+      track.scrollLeft = 0
+    }
+
+    const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
+    nums.forEach((span) => {
+      span.removeAttribute('style')
+    })
+
+    const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
+    dots.forEach((dot) => {
+      dot.removeAttribute('style')
+    })
+  })
 }
 
 export function extractCleanHTMLFromPageBuilder(
@@ -44,6 +69,15 @@ export function extractCleanHTMLFromPageBuilder(
   // data-builder-canvas marks the live edit canvas — must not appear in saved/preview HTML
   // (it would cause the builder's animation-pause rule to fire in preview)
   clone.removeAttribute('data-builder-canvas')
+
+  // Preview/publish should always start on slide 1. Editing often leaves the track scrolled
+  // and num/dot highlight styles stuck on a later slide, which makes preview look wrong.
+  resetInlineSlidersToFirstSlide(clone)
+
+  // Replace Material Symbol arrow text (broken after pbx- class prefix) with SVG chevrons.
+  migrateSliderArrowIcons(clone)
+  // Drop leftover wrap-clones on even slide counts so the last image is never alone.
+  normalizeSliderWrapClones(clone)
 
   if (config && config && typeof config.imageUrlPrefix === 'string') {
     const imageUrlPrefix = config.imageUrlPrefix

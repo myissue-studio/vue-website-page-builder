@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   mobile: {
@@ -13,6 +13,7 @@ const props = defineProps({
 const htmlPage = ref('')
 const previewFontClass = ref('pbx-font-sans')
 const previewElementFontStyle = ref<Record<string, string>>({})
+const previewRootRef = ref<HTMLElement | null>(null)
 
 const previewData = localStorage.getItem('preview')
 if (previewData) {
@@ -61,6 +62,10 @@ const elementFontCssBlock = computed(() => {
   return `<style>#pagebuilder {\n${vars}\n}</style>`
 })
 
+const sliderResetScript =
+  '<script>(function(){document.querySelectorAll("[data-isl] .pbx-isl-t").forEach(function(t){t.scrollLeft=0;t.style.animation="none";void t.offsetHeight;t.style.animation="";});})();</' +
+  'script>'
+
 const iframeContent = computed(() => {
   return `<!DOCTYPE html>
 <html>
@@ -71,6 +76,7 @@ const iframeContent = computed(() => {
 </head>
 <body>
   <div id="pagebuilder" class="${previewFontClass.value} pbx-text-black">${htmlPage.value}</div>
+  ${sliderResetScript}
 </body>
 </html>`
 })
@@ -87,10 +93,27 @@ const framedPreviewClass = computed(() => {
 
 const framedPreviewTitle = computed(() => (props.tablet ? 'Tablet preview' : 'Mobile preview'))
 
+function resetPreviewSlidersToFirstSlide(root: ParentNode | null | undefined) {
+  if (!root) return
+  root.querySelectorAll<HTMLElement>('[data-isl] .pbx-isl-t').forEach((track) => {
+    track.scrollLeft = 0
+    // Restart CSS autoplay from slide 1 if animation is active.
+    track.style.animation = 'none'
+    void track.offsetHeight
+    track.style.animation = ''
+  })
+}
+
 watchEffect(() => {
   if (isFramedPreview.value && htmlPage.value) {
     updateStylesheets()
   }
+})
+
+onMounted(() => {
+  nextTick(() => {
+    resetPreviewSlidersToFirstSlide(previewRootRef.value)
+  })
 })
 </script>
 
@@ -102,7 +125,7 @@ watchEffect(() => {
       >
         <div :style="previewElementFontStyle">
           <div id="pagebuilder" :class="[previewFontClass, 'pbx-text-black']">
-            <div v-html="htmlPage"></div>
+            <div ref="previewRootRef" v-html="htmlPage"></div>
           </div>
         </div>
       </div>
