@@ -69,9 +69,9 @@ describe('slider-layout', () => {
 
     expect(normalizeSliderWrapClones(section)).toBe(true)
     expect(track.querySelectorAll('[data-isl-clone]').length).toBe(0)
-    expect(style.textContent).toContain('min-width:80%')
-    expect(style.textContent).toContain('@media (min-width:1024px)')
-    expect(style.textContent).toContain('min-width:50%')
+    expect(style.textContent).toContain('grid-auto-columns:50%')
+    expect(style.textContent).toContain('display:grid')
+    expect(style.textContent).not.toContain('min-width:80%')
     // 4 slides, no clones → track width 200% for auto (4/2*100)
     expect(style.textContent).toContain('width:200%!important')
   })
@@ -82,12 +82,20 @@ describe('slider-layout', () => {
     expect(css).toContain('animation:pbx-isl-r 9s infinite')
     expect(css).toContain('width:200%!important')
     expect(css).toContain('font-family:Jost')
-    expect(css).toContain('min-width:80%')
-    expect(css).toContain('@media (min-width:1024px)')
+    expect(css).toContain('grid-auto-columns:50%')
+    expect(css).toContain('display:grid')
     expect(css).toContain('.pbx-isl-dots{display:flex')
     expect(css).toContain('background:rgba(128,128,128,0.08)')
     expect(css).toContain('width:1.15rem;background:#fff')
     expect(css).toContain('[data-builder-canvas] .pbx-isl-nums{display:flex}')
+  })
+
+  it('buildSliderStyle peeks ~90% for single-slide-per-view', () => {
+    const css = buildSliderStyle(3, 3, 1, true)
+    expect(css).toContain('grid-auto-columns:90%')
+    expect(css).toContain('display:grid')
+    // 3 slides × 90% peek track for auto
+    expect(css).toContain('width:270%!important')
   })
 
   it('arrow next from last start wraps to 0 when loop is on', () => {

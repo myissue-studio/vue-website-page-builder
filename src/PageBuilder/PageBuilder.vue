@@ -1911,32 +1911,36 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-/* In builder edit mode: pause animation, restore full scrollability for editing */
+/* In builder edit mode: pause auto animation; track stays 100% wide for scrolling. */
 [data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t {
-  animation-play-state: paused !important;
+  animation: none !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   width: 100% !important;
   max-width: 100% !important;
   pointer-events: auto !important;
   transform: none !important;
+  scroll-snap-type: x mandatory !important;
 }
-[data-builder-canvas] [data-isl][data-isl-auto] .pbx-isl-t > div {
-  flex-shrink: 0 !important;
+/* Grid columns resolve against the visible track (flex % min-width does not). */
+[data-builder-canvas] [data-isl] .pbx-isl-t {
+  display: grid !important;
+  grid-auto-flow: column !important;
 }
-/* Single-view auto: force full-width slides while paused for editing. */
-[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view='2']) .pbx-isl-t > div {
-  min-width: 100% !important;
+[data-builder-canvas] [data-isl][data-isl-per-view='1'] .pbx-isl-t,
+[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view='1'] .pbx-isl-t,
+[data-builder-canvas] [data-isl][data-isl-auto]:not([data-isl-per-view]) .pbx-isl-t {
+  grid-auto-columns: 90% !important;
 }
-/* Keep multi-slide layout visible on canvas (match preview).
-   Mobile/tablet: 80% peek; desktop lg+: true 2-up at 50%. */
-[data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
-  min-width: 80% !important;
+[data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t,
+[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view='2'] .pbx-isl-t {
+  grid-auto-columns: 50% !important;
 }
-@media (min-width: 1024px) {
-  [data-builder-canvas] [data-isl][data-isl-per-view='2'] .pbx-isl-t > div {
-    min-width: 50% !important;
-  }
+[data-builder-canvas] [data-isl] .pbx-isl-t > div {
+  min-width: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
 }
 /* Allow slider arrows to receive clicks in the editor. */
 [data-builder-canvas] .pbx-isl-arrow {

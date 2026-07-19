@@ -405,14 +405,30 @@ const changeSlideCount = (newCount: number) => {
   draftSliderImageCount.value = newCount
 }
 
-const changeSliderPerView = (n: number) => {
+const changeSliderPerView = async (n: number) => {
   draftSliderPerView.value = n === 2 ? 2 : 1
+  // Apply immediately so 1-up vs 2-up is visible before Save.
+  await applySliderSettingsToDom()
 }
 
 const applySliderSettingsToDom = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
-  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
-  if (!container) return
+
+  // Prefer a live canvas node — syncDomToStoreOnly remounts and can detach getElement.
+  let container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (container && !container.isConnected) {
+    const canvas = document.querySelector('[data-builder-canvas]')
+    const sectionId = getElement.value
+      .closest('section[data-componentid]')
+      ?.getAttribute('data-componentid')
+    const liveSection = sectionId
+      ? canvas?.querySelector(`section[data-componentid="${sectionId}"]`)
+      : null
+    container =
+      (liveSection?.querySelector('[data-isl]') as HTMLElement | null) ??
+      (canvas?.querySelector('[data-isl]') as HTMLElement | null)
+  }
+  if (!container?.isConnected) return
 
   const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
   if (!track) return
@@ -428,15 +444,11 @@ const applySliderSettingsToDom = async () => {
   const loop = draftSliderLoop.value
   const showArrows = draftSliderShowArrows.value
   const currentCount = track.children.length
-  // For 2-up, leave min-width to CSS (80% peek on mobile/tablet, 50% on desktop).
-  const slideMinWidth = perView === 2 ? '' : '100%'
-
   if (newCount > currentCount) {
     const firstImg = track.querySelector('img') as HTMLImageElement | null
     const placeholderSrc = getPlaceholderImageDataUrl()
     for (let i = currentCount; i < newCount; i++) {
       const slide = document.createElement('div')
-      if (slideMinWidth) slide.style.minWidth = slideMinWidth
       slide.style.scrollSnapAlign = 'start'
       const img = document.createElement('img')
       img.src = placeholderSrc
@@ -456,9 +468,12 @@ const applySliderSettingsToDom = async () => {
 
   Array.from(track.children).forEach((child) => {
     if (child instanceof HTMLElement) {
-      // Clear inline min-width so responsive peek CSS can apply for per-view 2.
-      if (perView === 2) child.style.minWidth = ''
-      else child.style.minWidth = slideMinWidth
+      // Clear inline sizing so per-view CSS (50% / 90%) can apply.
+      child.style.minWidth = ''
+      child.style.width = ''
+      child.style.maxWidth = ''
+      child.style.flex = ''
+      child.style.flexShrink = ''
       child.style.scrollSnapAlign = 'start'
       child.style.paddingLeft = ''
       child.style.paddingRight = ''
@@ -488,8 +503,14 @@ const applySliderSettingsToDom = async () => {
 
   if (draftSliderAutoRotate.value) {
     track.scrollLeft = 0
+    track.style.transform = ''
+    track.style.animation = ''
+    track.style.animationDelay = ''
     container.setAttribute('data-isl-auto', '')
   } else {
+    track.style.transform = ''
+    track.style.animation = ''
+    track.style.animationDelay = ''
     container.removeAttribute('data-isl-auto')
   }
   container.setAttribute('data-isl-speed', String(speed))
