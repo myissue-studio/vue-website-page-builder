@@ -642,5 +642,13 @@
   "3 Card Grid": "3-Karten-Raster",
   "2 Image Columns": "2 Bildspalten",
   "Mosaic Layout": "Mosaik-Layout",
-  "Feature Split": "Feature-Aufteilung"
+  "Feature Split": "Feature-Aufteilung",
+  "Card design": "Kartendesign",
+  "Layout and typography for product cards": "Layout und Typografie für Produktkarten",
+  "Classic": "Klassisch",
+  "Catalog layout with clear hierarchy": "Kataloglayout mit klarer Hierarchie",
+  "Modern": "Modern",
+  "Bold type and tighter spacing": "Fette Schrift und engere Abstände",
+  "Minimal": "Minimal",
+  "Quiet type and more whitespace": "Ruhige Typografie und mehr Weißraum"
 }

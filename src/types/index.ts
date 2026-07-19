@@ -69,6 +69,9 @@ export type ProductGridLayout = 'grid-1' | 'grid-2' | 'grid-3' | 'grid-4' | 'gri
 
 export type ProductCardStyle = 'minimal' | 'bordered' | 'shadow' | 'elevated' | (string & {})
 
+/** Product card layout/typography preset (orthogonal to border/shadow Card style). */
+export type ProductCardDesign = 'classic' | 'modern' | 'minimal' | (string & {})
+
 export type ProductButtonStyle = 'text' | 'button' | (string & {})
 
 export type ProductMobileColumns = 1 | 2
@@ -77,6 +80,8 @@ export interface ProductSectionOptions {
   layout: ProductGridLayout
   mobileColumns?: ProductMobileColumns
   cardStyle?: ProductCardStyle
+  /** Layout/typography preset for product cards */
+  cardDesign?: ProductCardDesign
   roundedImages?: boolean
   openInNewTab?: boolean
   /** Product CTA appearance: plain text link or button style */
@@ -97,6 +102,8 @@ export interface InsertProductsOptions {
   layout?: ProductGridLayout
   mobileColumns?: ProductMobileColumns
   cardStyle?: ProductCardStyle
+  /** Layout/typography preset for product cards */
+  cardDesign?: ProductCardDesign
   /** Adds rounded corners to product images */
   roundedImages?: boolean
   /** Adds target="_blank" rel="noopener noreferrer" to product links */
@@ -441,6 +448,12 @@ export interface PageBuilderConfig {
     }
     autoSave?: boolean
     notifications?: boolean
+    /**
+     * When `true`, TipTap editors hide the H1 control and do not allow creating
+     * level-1 headings (H2–H6 remain available). Useful when the host page already
+     * owns the single page `<h1>` outside the builder.
+     */
+    disableH1?: boolean
     /**
      * Default canvas font and, optionally, the restricted set of fonts shown in
      * the font-family picker.

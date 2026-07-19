@@ -642,5 +642,13 @@
   "3 Card Grid": "3 कार्ड ग्रिड",
   "2 Image Columns": "2 छवि कॉलम",
   "Mosaic Layout": "मोज़ेक लेआउट",
-  "Feature Split": "स्प्लिट फीचर"
+  "Feature Split": "स्प्लिट फीचर",
+  "Card design": "कार्ड डिज़ाइन",
+  "Layout and typography for product cards": "उत्पाद कार्ड का लेआउट और टाइपोग्राफी",
+  "Classic": "क्लासिक",
+  "Catalog layout with clear hierarchy": "स्पष्ट पदानुक्रम वाला कैटलॉग लेआउट",
+  "Modern": "आधुनिक",
+  "Bold type and tighter spacing": "बोल्ड टाइप और सघन स्पेसिंग",
+  "Minimal": "मिनिमल",
+  "Quiet type and more whitespace": "शांत टाइप और अधिक व्हाइटस्पेस"
 }

@@ -20,7 +20,7 @@ Your `configPageBuilder` object can include:
 - **`pageBuilderLogo` (optional):**
   Display your company logo in the builder toolbar.
 - **`userSettings` (optional):**
-  Set user preferences such as language, auto-save, default canvas font (`fontFamily`), and per-element font overrides (`elementFonts`).
+  Set user preferences such as language, auto-save, default canvas font (`fontFamily`), per-element font overrides (`elementFonts`), and TipTap options like `disableH1`.
 - **`brandColor` (optional):**
   Set your brand's primary color for key UI elements (inside the `settings` config).
 - **`themeColorPresets` (optional):**
@@ -73,6 +73,8 @@ const configPageBuilder = {
       h6: 'jost',
       p: 'arial',
     },
+    // Hide TipTap H1 control when the host page already owns the page <h1>.
+    // disableH1: true,
     autoSave: true,
   },
   settings: {
@@ -197,6 +199,30 @@ All fields are optional — omit any element to let it inherit from the global `
 ::: tip
 `elementFonts` overrides are applied via CSS custom properties on the builder's scroll container, so they never conflict with global page styles set through the builder's _Global Page Styles_ panel.
 :::
+
+### TipTap headings & `disableH1`
+
+Inline and modal TipTap editors expose heading controls **H1–H6** by default.
+
+If your host app already renders the page’s single `<h1>` outside the builder (common for SEO), set `userSettings.disableH1: true` to:
+
+- Hide the **H1** button in TipTap toolbars
+- Restrict the editor so authors can only create **H2–H6** (and paragraphs)
+
+```ts
+userSettings: {
+  autoSave: true,
+  fontFamily: 'raleway, jost, arial',
+  elementFonts: {
+    h1: 'raleway', // still applies to any existing <h1> on the canvas
+    h2: 'raleway',
+    p: 'arial',
+  },
+  disableH1: true,
+}
+```
+
+Existing `<h1>` content already on the canvas is not removed; authors simply cannot create new H1s via TipTap while `disableH1` is enabled.
 
 ### Theme Color Presets
 

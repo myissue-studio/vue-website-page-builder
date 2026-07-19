@@ -642,5 +642,13 @@
   "3 Card Grid": "3カードグリッド",
   "2 Image Columns": "2画像カラム",
   "Mosaic Layout": "モザイクレイアウト",
-  "Feature Split": "分割フィーチャー"
+  "Feature Split": "分割フィーチャー",
+  "Card design": "カードデザイン",
+  "Layout and typography for product cards": "商品カードのレイアウトとタイポグラフィ",
+  "Classic": "クラシック",
+  "Catalog layout with clear hierarchy": "階層が明確なカタログレイアウト",
+  "Modern": "モダン",
+  "Bold type and tighter spacing": "太字でコンパクトな余白",
+  "Minimal": "ミニマル",
+  "Quiet type and more whitespace": "控えめな文字と広い余白"
 }

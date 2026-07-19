@@ -642,5 +642,13 @@
   "3 Card Grid": "Cuadrícula de 3 tarjetas",
   "2 Image Columns": "2 columnas de imagen",
   "Mosaic Layout": "Diseño mosaico",
-  "Feature Split": "Bloque dividido"
+  "Feature Split": "Bloque dividido",
+  "Card design": "Diseño de tarjeta",
+  "Layout and typography for product cards": "Diseño y tipografía de las tarjetas de producto",
+  "Classic": "Clásico",
+  "Catalog layout with clear hierarchy": "Diseño de catálogo con jerarquía clara",
+  "Modern": "Moderno",
+  "Bold type and tighter spacing": "Tipografía bold y espaciado más compacto",
+  "Minimal": "Minimalista",
+  "Quiet type and more whitespace": "Tipografía discreta y más espacio"
 }

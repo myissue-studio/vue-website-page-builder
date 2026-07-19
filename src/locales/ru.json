@@ -642,5 +642,13 @@
   "3 Card Grid": "Сетка из 3 карточек",
   "2 Image Columns": "2 колонки изображений",
   "Mosaic Layout": "Мозаичный макет",
-  "Feature Split": "Разделенный блок"
+  "Feature Split": "Разделенный блок",
+  "Card design": "Дизайн карточки",
+  "Layout and typography for product cards": "Макет и типографика карточек товаров",
+  "Classic": "Классический",
+  "Catalog layout with clear hierarchy": "Каталожный макет с ясной иерархией",
+  "Modern": "Современный",
+  "Bold type and tighter spacing": "Жирный шрифт и более плотные отступы",
+  "Minimal": "Минималистичный",
+  "Quiet type and more whitespace": "Спокойная типографика и больше воздуха"
 }

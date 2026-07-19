@@ -642,5 +642,13 @@
   "3 Card Grid": "شبكة 3 بطاقات",
   "2 Image Columns": "عمودا صورتين",
   "Mosaic Layout": "تخطيط فسيفسائي",
-  "Feature Split": "قسم مميز"
+  "Feature Split": "قسم مميز",
+  "Card design": "تصميم البطاقة",
+  "Layout and typography for product cards": "تخطيط وطباعة بطاقات المنتجات",
+  "Classic": "كلاسيكي",
+  "Catalog layout with clear hierarchy": "تخطيط كتالوج بهيكل واضح",
+  "Modern": "حديث",
+  "Bold type and tighter spacing": "خط عريض ومسافات أقرب",
+  "Minimal": "بسيط",
+  "Quiet type and more whitespace": "خط هادئ ومزيد من المساحة"
 }

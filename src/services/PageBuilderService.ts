@@ -1795,13 +1795,12 @@ export class PageBuilderService {
   }
 
   public isSelectedProductSection(): boolean {
-    const section = this.getSelectedComponentSection()
-    return section?.getAttribute('data-pbx-product-section') === 'true'
+    return this.resolveLiveSelectedProductSection() != null
   }
 
   public getSelectedProductSectionOptions(): ProductSectionOptions {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) {
       return { ...DEFAULT_PRODUCT_SECTION_OPTIONS }
     }
     return parseProductSectionFromElement(section)
@@ -1813,8 +1812,8 @@ export class PageBuilderService {
     hasButtons: boolean
     hasLinks: boolean
   } {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) {
       return { hasPrices: false, hasImages: false, hasButtons: false, hasLinks: false }
     }
     return {
@@ -1825,12 +1824,58 @@ export class PageBuilderService {
     }
   }
 
-  public async updateSelectedProductSection(options: ProductSectionOptions): Promise<void> {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) return
+  public async updateSelectedProductSection(
+    options: ProductSectionOptions,
+    applyOptions: { persist?: boolean } = {},
+  ): Promise<void> {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) return
 
+    const componentId = section.getAttribute('data-componentid')
     applyProductSectionOptionsToElement(section, options)
+
+    const persist = applyOptions.persist !== false
+    if (!persist) return
+
     await this.handleAutoSave()
+
+    // Auto-save remounts via v-html — re-bind selection to the live section.
+    if (componentId) {
+      const live = this.findProductSectionByComponentId(componentId)
+      if (live) {
+        this.pageBuilderStateStore.setElement(live)
+      }
+    }
+  }
+
+  /** Prefer the live canvas section; getElement can point at a detached remount leftover. */
+  private resolveLiveSelectedProductSection(): HTMLElement | null {
+    const element = this.getElement.value
+    if (!element || !(element instanceof HTMLElement)) return null
+
+    const fromSelection = element.closest('section') as HTMLElement | null
+    if (
+      fromSelection?.isConnected &&
+      fromSelection.getAttribute('data-pbx-product-section') === 'true'
+    ) {
+      return fromSelection
+    }
+
+    const componentId =
+      fromSelection?.getAttribute('data-componentid') ||
+      element.closest('section[data-componentid]')?.getAttribute('data-componentid')
+    if (!componentId) return null
+
+    return this.findProductSectionByComponentId(componentId)
+  }
+
+  private findProductSectionByComponentId(componentId: string): HTMLElement | null {
+    const canvas = this.getBuilderCanvasElement()
+    if (!canvas) return null
+    const live = canvas.querySelector(
+      `section[data-componentid="${CSS.escape(componentId)}"][data-pbx-product-section="true"]`,
+    )
+    return live instanceof HTMLElement ? live : null
   }
 
   /**
@@ -5266,6 +5311,7 @@ export class PageBuilderService {
     const sectionTitle = options.sectionTitle ?? 'Products'
     const html = buildProductSectionHtml(products, options.layout ?? 'grid-4', sectionTitle, {
       cardStyle: options.cardStyle,
+      cardDesign: options.cardDesign,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
       buttonStyle: options.buttonStyle,

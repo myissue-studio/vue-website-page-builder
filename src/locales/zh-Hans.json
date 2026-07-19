@@ -642,5 +642,13 @@
   "3 Card Grid": "三卡片网格",
   "2 Image Columns": "双图列布局",
   "Mosaic Layout": "拼贴布局",
-  "Feature Split": "特色分栏"
+  "Feature Split": "特色分栏",
+  "Card design": "卡片设计",
+  "Layout and typography for product cards": "产品卡片的布局与字体样式",
+  "Classic": "经典",
+  "Catalog layout with clear hierarchy": "层次清晰的目录式布局",
+  "Modern": "现代",
+  "Bold type and tighter spacing": "粗体字与更紧凑间距",
+  "Minimal": "极简",
+  "Quiet type and more whitespace": "低调字体与更多留白"
 }

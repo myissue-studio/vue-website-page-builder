@@ -1759,7 +1759,7 @@ describe('PageBuilderService', () => {
 
     it('REGRESSION (product CTA): applies vertical padding to nested anchor, not product-card-cta wrapper', () => {
       const wrapper = document.createElement('div')
-      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold pbx-pt-3'
+      wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold'
       wrapper.innerHTML = `
         <p>
           <a

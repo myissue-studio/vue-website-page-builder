@@ -154,7 +154,7 @@
   }
 
   #pagebuilder .pbx-product-card-cta {
-    @apply pbx-text-myPrimaryLinkColor;
+    @apply pbx-text-myPrimaryLinkColor pbx-w-max pbx-p-1;
   }
 
   #pagebuilder .pbx-product-card-title a,

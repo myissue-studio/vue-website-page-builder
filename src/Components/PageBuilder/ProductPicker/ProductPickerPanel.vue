@@ -6,6 +6,7 @@ import { delay } from '../../../composables/delay'
 import type {
   PageBuilderProduct,
   ProductButtonStyle,
+  ProductCardDesign,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -15,6 +16,7 @@ import { useToast } from '../../../composables/useToast'
 import ProductSectionSettingsFields from '../EditorMenu/Editables/ProductSectionSettingsFields.vue'
 import MediaLibraryModal from '../../Modals/MediaLibraryModal.vue'
 import {
+  PRODUCT_CARD_DESIGN_OPTIONS,
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
 } from '../../../utils/builder/product-section-options'
@@ -39,6 +41,7 @@ const selectedMap = ref<Map<SelectionKey, SelectedProductDraft>>(new Map())
 const selectedOrder = ref<SelectedProductDraft[]>([])
 const layout = ref<ProductGridLayout>('grid-4')
 const mobileColumns = ref<ProductMobileColumns>(2)
+const cardDesign = ref<ProductCardDesign>('classic')
 const cardStyle = ref<ProductCardStyle>('minimal')
 const roundedImages = ref(true)
 const openInNewTab = ref(true)
@@ -61,6 +64,7 @@ const mediaSelectionProductKey = ref<SelectionKey | null>(null)
 const productImageOverrides = ref<Map<SelectionKey, string>>(new Map())
 
 const layoutOptions = PRODUCT_LAYOUT_OPTIONS
+const cardDesignOptions = PRODUCT_CARD_DESIGN_OPTIONS
 const cardStyleOptions = PRODUCT_CARD_STYLE_OPTIONS
 
 function productKey(product: PageBuilderProduct): SelectionKey {
@@ -96,6 +100,11 @@ const selectedProducts = computed(() => selectedOrder.value)
 
 const activeLayout = computed(
   () => layoutOptions.find((option) => option.value === layout.value) ?? layoutOptions[0],
+)
+
+const activeCardDesign = computed(
+  () =>
+    cardDesignOptions.find((option) => option.value === cardDesign.value) ?? cardDesignOptions[0],
 )
 
 const activeCardStyle = computed(
@@ -386,6 +395,7 @@ async function insertSelectedProducts() {
     await pageBuilderService.insertProducts(productsToInsert, {
       layout: layout.value,
       mobileColumns: mobileColumns.value,
+      cardDesign: cardDesign.value,
       cardStyle: cardStyle.value,
       roundedImages: roundedImages.value,
       openInNewTab: openInNewTab.value,
@@ -451,6 +461,7 @@ async function insertSelectedProducts() {
         <ProductSectionSettingsFields
           v-model:layout="layout"
           v-model:mobile-columns="mobileColumns"
+          v-model:card-design="cardDesign"
           v-model:card-style="cardStyle"
           v-model:rounded-images="roundedImages"
           v-model:open-in-new-tab="openInNewTab"
@@ -618,6 +629,16 @@ async function insertSelectedProducts() {
                       </p>
                       <p class="pbx-modalSidebarStatHint">
                         {{ translate('Product links open in a new browser tab') }}
+                      </p>
+                    </div>
+
+                    <div class="pbx-modalSidebarStatCard pbx-modalSidebarStatCard--active">
+                      <span class="pbx-modalSidebarStatLabel">{{ translate('Card design') }}</span>
+                      <p class="pbx-modalSidebarStatValue pbx-text-sm">
+                        {{ translate(activeCardDesign.labelKey) }}
+                      </p>
+                      <p class="pbx-modalSidebarStatHint">
+                        {{ translate(activeCardDesign.hintKey) }}
                       </p>
                     </div>
 

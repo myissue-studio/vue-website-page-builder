@@ -21,6 +21,8 @@ describe('buildProductSectionHtml', () => {
     const html = buildProductSectionHtml(sample, 'grid-3')
     expect(html).toContain('data-pbx-product-section="true"')
     expect(html).toContain('data-pbx-product-id="p1"')
+    expect(html).toContain('data-pbx-product-card-design="classic"')
+    expect(html).toContain('product-card-design-classic')
     expect(html).toContain('product-card-title text-lg font-semibold text-gray-900')
     expect(html).toContain('product-card-description text-sm text-gray-600')
     expect(html).toContain('product-card-badge text-xs')
@@ -60,6 +62,28 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('rounded-xl overflow-hidden')
     expect(html).toContain('data-pbx-product-layout="grid-3"')
     expect(html).toContain('data-pbx-product-grid="true"')
+    expect(html).toContain('data-pbx-product-card-design="classic"')
+    expect(html).toContain('product-card-design-classic')
+  })
+
+  it('applies modern card design typography', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      cardDesign: 'modern',
+    })
+    expect(html).toContain('data-pbx-product-card-design="modern"')
+    expect(html).toContain('product-card-design-modern')
+    expect(html).toContain('product-card-title text-xl font-bold tracking-tight')
+    expect(html).toContain('product-card-price text-xl font-bold')
+  })
+
+  it('applies minimal card design typography', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      cardDesign: 'minimal',
+    })
+    expect(html).toContain('data-pbx-product-card-design="minimal"')
+    expect(html).toContain('product-card-design-minimal')
+    expect(html).toContain('product-card-title text-base font-medium')
+    expect(html).toContain('product-card-price text-base font-medium')
   })
 
   it('uses two columns on mobile when mobileColumns is 2', () => {
