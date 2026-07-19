@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import componentHelpers from '../../utils/html-elements/componentHelpers'
+import { getComponentHelpers } from '../../utils/html-elements/componentHelpers'
 import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
 import { getBlockDescriptionKey } from '../../utils/html-elements/block-descriptions'
@@ -47,8 +47,12 @@ const helperButtonStyle = ref<ProductButtonStyle>('button')
 const helperOpenInNewTab = ref(true)
 const helperRoundedButtons = ref(true)
 
+const availableHelpers = computed(() =>
+  getComponentHelpers(pageBuilderStateStore.getPageBuilderConfig),
+)
+
 const helperCategories = computed(() => {
-  const allCategories = componentHelpers.map((comp) => comp.category)
+  const allCategories = availableHelpers.value.map((comp) => comp.category)
   return ['All', ...new Set(allCategories)]
 })
 
@@ -98,10 +102,11 @@ watch([selectedCategory, searchQuery], () => {
 
 const filteredHelpers = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
+  const helpers = availableHelpers.value
   const byCategory =
     !query && selectedHelperCategory.value !== 'All'
-      ? componentHelpers.filter((comp) => comp.category === selectedHelperCategory.value)
-      : componentHelpers
+      ? helpers.filter((comp) => comp.category === selectedHelperCategory.value)
+      : helpers
   if (!query) return byCategory
   return byCategory.filter((comp) => comp.title.toLowerCase().includes(query))
 })
