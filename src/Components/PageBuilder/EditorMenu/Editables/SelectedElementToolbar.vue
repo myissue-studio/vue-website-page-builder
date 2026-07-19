@@ -25,6 +25,14 @@ import {
   CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT,
   suppressEditToolbarPopoverScrollClose,
 } from '../../../../utils/builder/edit-toolbar-popover-events'
+import {
+  buildSliderOnclickJs,
+  buildSliderStyle,
+  isSliderArrowsEnabled,
+  syncSliderArrows,
+  syncSliderWrapClones,
+} from '../../../../utils/builder/slider-layout'
+import { getPlaceholderImageDataUrl } from '../../../../utils/builder/placeholder-image'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -64,7 +72,7 @@ const draftSliderSpeed = ref(3)
 const draftSliderImageCount = ref(3)
 const draftSliderPerView = ref(1)
 const draftSliderLoop = ref(true)
-const draftSliderShowArrows = ref(false)
+const draftSliderShowArrows = ref(true)
 const sliderSettingsBaseline = ref<{
   autoRotate: boolean
   speed: number
@@ -106,7 +114,7 @@ const readSliderSettingsFromDom = () => {
       imageCount: 3,
       perView: 1,
       loop: true,
-      showArrows: false,
+      showArrows: true,
     }
   }
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
@@ -117,18 +125,21 @@ const readSliderSettingsFromDom = () => {
       imageCount: 3,
       perView: 1,
       loop: true,
-      showArrows: false,
+      showArrows: true,
     }
   }
   const track = container.querySelector('.pbx-isl-t')
   const perViewRaw = parseInt(container.getAttribute('data-isl-per-view') || '1', 10)
+  const realSlideCount = track
+    ? Array.from(track.children).filter((child) => !child.hasAttribute('data-isl-clone')).length
+    : 3
   return {
     autoRotate: container.hasAttribute('data-isl-auto'),
     speed: parseInt(container.getAttribute('data-isl-speed') || '3', 10),
-    imageCount: track ? track.children.length : 3,
+    imageCount: realSlideCount,
     perView: perViewRaw === 2 ? 2 : 1,
     loop: container.getAttribute('data-isl-loop') !== 'false',
-    showArrows: container.hasAttribute('data-isl-arrows'),
+    showArrows: isSliderArrowsEnabled(container),
   }
 }
 
@@ -398,40 +409,6 @@ const changeSliderPerView = (n: number) => {
   draftSliderPerView.value = n === 2 ? 2 : 1
 }
 
-const SLIDER_ARROW_BACK_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15.5 19L8.5 12L15.5 5" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-const SLIDER_ARROW_FORWARD_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 5L15.5 12L8.5 19" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-
-const syncSliderArrows = (container: HTMLElement, show: boolean) => {
-  const existing = container.querySelectorAll('.pbx-isl-arrow')
-  existing.forEach((el) => el.remove())
-
-  if (!show) {
-    container.removeAttribute('data-isl-arrows')
-    return
-  }
-
-  container.setAttribute('data-isl-arrows', '')
-
-  const prev = document.createElement('span')
-  prev.className = 'pbx-isl-arrow pbx-isl-prev'
-  prev.setAttribute('role', 'button')
-  prev.setAttribute('aria-label', 'Previous')
-  prev.innerHTML = SLIDER_ARROW_BACK_SVG
-  prev.setAttribute('onclick', buildSliderArrowOnclickJs(-1))
-
-  const next = document.createElement('span')
-  next.className = 'pbx-isl-arrow pbx-isl-next'
-  next.setAttribute('role', 'button')
-  next.setAttribute('aria-label', 'Next')
-  next.innerHTML = SLIDER_ARROW_FORWARD_SVG
-  next.setAttribute('onclick', buildSliderArrowOnclickJs(1))
-
-  container.appendChild(prev)
-  container.appendChild(next)
-}
-
 const applySliderSettingsToDom = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
   const container = getElement.value.closest('[data-isl]') as HTMLElement | null
@@ -439,6 +416,9 @@ const applySliderSettingsToDom = async () => {
 
   const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
   if (!track) return
+
+  // Drop wrap clones before counting/mutating real slides.
+  track.querySelectorAll(':scope > [data-isl-clone]').forEach((el) => el.remove())
 
   const section = container.closest('section')
   const styleTag = section?.querySelector('style')
@@ -448,20 +428,21 @@ const applySliderSettingsToDom = async () => {
   const loop = draftSliderLoop.value
   const showArrows = draftSliderShowArrows.value
   const currentCount = track.children.length
-  const slideMinWidth = `${100 / perView}%`
+  // For 2-up, leave min-width to CSS (80% peek on mobile/tablet, 50% on desktop).
+  const slideMinWidth = perView === 2 ? '' : '100%'
 
   if (newCount > currentCount) {
     const firstImg = track.querySelector('img') as HTMLImageElement | null
-    const placeholderSrc = firstImg?.getAttribute('src') || ''
+    const placeholderSrc = getPlaceholderImageDataUrl()
     for (let i = currentCount; i < newCount; i++) {
       const slide = document.createElement('div')
-      slide.style.minWidth = slideMinWidth
+      if (slideMinWidth) slide.style.minWidth = slideMinWidth
       slide.style.scrollSnapAlign = 'start'
       const img = document.createElement('img')
       img.src = placeholderSrc
-      img.style.width = '100%'
-      img.style.aspectRatio = '16/9'
-      img.style.objectFit = 'cover'
+      img.style.width = firstImg?.style.width || '100%'
+      img.style.aspectRatio = firstImg?.style.aspectRatio || '16/9'
+      img.style.objectFit = firstImg?.style.objectFit || 'cover'
       img.style.display = 'block'
       img.alt = `Slide ${i + 1}`
       slide.appendChild(img)
@@ -475,35 +456,31 @@ const applySliderSettingsToDom = async () => {
 
   Array.from(track.children).forEach((child) => {
     if (child instanceof HTMLElement) {
-      child.style.minWidth = slideMinWidth
+      // Clear inline min-width so responsive peek CSS can apply for per-view 2.
+      if (perView === 2) child.style.minWidth = ''
+      else child.style.minWidth = slideMinWidth
       child.style.scrollSnapAlign = 'start'
-      // Clear per-view inline padding so CSS can own the multi-slide look.
       child.style.paddingLeft = ''
       child.style.paddingRight = ''
     }
   })
 
+  // Always keep a full 2-up frame on the last step (e.g. slides 5+1).
+  syncSliderWrapClones(track, perView)
+
   const numsDiv = container.querySelector('.pbx-isl-nums') as HTMLElement | null
   const dotsDiv = numsDiv?.nextElementSibling as HTMLElement | null
   if (numsDiv && dotsDiv) {
     numsDiv.innerHTML = ''
+    dotsDiv.classList.add('pbx-isl-dots')
     dotsDiv.innerHTML = ''
     for (let i = 0; i < newCount; i++) {
       const numSpan = document.createElement('span')
       numSpan.textContent = String(i + 1)
       numSpan.setAttribute('onclick', buildSliderOnclickJs(i))
-      if (i === 0) {
-        numSpan.style.opacity = '1'
-        numSpan.style.background = 'rgba(255,255,255,0.9)'
-        numSpan.style.color = '#111'
-        numSpan.style.borderRadius = '9999px'
-        numSpan.style.padding = '0.1rem 0.55rem'
-        numSpan.style.textShadow = 'none'
-      }
       numsDiv.appendChild(numSpan)
       const dotSpan = document.createElement('span')
       dotSpan.className = 'pbx-isl-dot'
-      if (i === 0) dotSpan.style.background = 'rgba(255,255,255,1)'
       dotSpan.setAttribute('onclick', buildSliderOnclickJs(i))
       dotsDiv.appendChild(dotSpan)
     }
@@ -518,6 +495,7 @@ const applySliderSettingsToDom = async () => {
   container.setAttribute('data-isl-speed', String(speed))
   container.setAttribute('data-isl-per-view', String(perView))
   container.setAttribute('data-isl-loop', loop ? 'true' : 'false')
+  container.setAttribute('data-isl-active', '0')
 
   const nums = container.querySelectorAll<HTMLElement>('.pbx-isl-nums span')
   const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
@@ -529,6 +507,8 @@ const applySliderSettingsToDom = async () => {
   if (styleTag) styleTag.textContent = buildSliderStyle(newCount, speed, perView, loop)
 
   autoRotateTick.value++
+  // Keep Vue `v-html` store in sync so remounts don't restore Material Symbol text glyphs.
+  await pageBuilderService.syncDomToStoreOnly()
   await pageBuilderService.refreshListeners()
 }
 
@@ -546,151 +526,6 @@ const saveSliderSettings = async () => {
   } finally {
     isSavingSliderSettings.value = false
   }
-}
-
-// ── Slider style/onclick helpers ───────────────────────────────────────────
-function buildSliderNavigateJs(idxExpr: string): string {
-  const numHl = `var ns=c.querySelectorAll('.pbx-isl-nums span');ns.forEach(function(s,i){s.style.opacity=i===idx?'1':'0.55';s.style.background=i===idx?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.25)';s.style.borderRadius='9999px';s.style.padding='0.1rem 0.55rem';s.style.color=i===idx?'#111':'#fff';s.style.textShadow=i===idx?'none':'0 1px 4px rgba(0,0,0,0.7)';});`
-  const dotHl = `var ds=c.querySelectorAll('.pbx-isl-dot');ds.forEach(function(dot,i){dot.style.background=i===idx?'rgba(255,255,255,1)':'rgba(255,255,255,0.55)';});`
-  const nav = `var inBuilder=!!c.closest('[data-builder-canvas]');if(c.hasAttribute('data-isl-auto')&&!inBuilder){var sp=parseInt(c.getAttribute('data-isl-speed')||'3',10);var dl=(idx===0?'0':(-idx*sp))+'s';var els=[t].concat(Array.from(c.querySelectorAll('.pbx-isl-dot,.pbx-isl-nums span')));els.forEach(function(el){el.style.animation='none';});t.offsetHeight;els.forEach(function(el){el.style.animation='';el.style.animationDelay=dl;el.style.opacity='';el.style.background='';});}else{t.scrollTo({left:t.children[idx].offsetLeft,behavior:'smooth'});}`
-  return `var idx=${idxExpr};if(idx<0||idx>=t.children.length)return;c.setAttribute('data-isl-active',String(idx));${numHl}${dotHl}${nav}`
-}
-
-function buildSliderOnclickJs(idx: number): string {
-  return `(function(d,e){e.stopPropagation();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');${buildSliderNavigateJs(String(idx))}var img=t.children[idx].querySelector('img');if(img)img.click();})(this,event)`
-}
-
-function buildSliderArrowOnclickJs(dir: -1 | 1): string {
-  const nextExpr =
-    dir === 1
-      ? `loop?(cur+1)%n:Math.min(n-1,cur+1)`
-      : `loop?(cur-1+n)%n:Math.max(0,cur-1)`
-  return `(function(d,e){e.stopPropagation();e.preventDefault();var c=d.closest('[data-isl]');var t=c.querySelector('.pbx-isl-t');if(!t||!t.children.length)return;var n=t.children.length;var loop=c.getAttribute('data-isl-loop')!=='false';var cur=0;var best=Infinity;for(var i=0;i<n;i++){var dist=Math.abs(t.children[i].offsetLeft-t.scrollLeft);if(dist<best){best=dist;cur=i;}}var next=${nextExpr};${buildSliderNavigateJs('next')}})(this,event)`
-}
-
-function buildSliderStyle(
-  n: number,
-  speed: number = 3,
-  perView: number = 1,
-  loop: boolean = true,
-): string {
-  const pv = perView === 2 ? 2 : 1
-  const slideCount = Math.max(n, pv)
-  // Advance one slide at a time. Without loop, stop once the last page is fully visible.
-  const startCount = loop ? slideCount : Math.max(1, slideCount - pv + 1)
-  const T = startCount * speed
-  const step = 100 / startCount
-  const hold = Math.max(step - 3, 1)
-  const trackW = (slideCount / pv) * 100
-  const slideW = (100 / slideCount).toFixed(3)
-
-  // Track keyframes — translate by one slide width of the track each step
-  let trackKf = `@keyframes pbx-isl-r{0%,${hold.toFixed(3)}%{transform:translateX(0)}`
-  for (let i = 1; i < startCount; i++) {
-    const tx = -((100 * i) / slideCount).toFixed(3)
-    const s = (i * step).toFixed(3)
-    const e2 = (i * step + hold).toFixed(3)
-    trackKf += `${s}%,${e2}%{transform:translateX(${tx}%)}`
-  }
-  if (loop) {
-    trackKf += `99%,100%{transform:translateX(0)}}`
-  } else {
-    const lastTx = -((100 * (startCount - 1)) / slideCount).toFixed(3)
-    trackKf += `99%,100%{transform:translateX(${lastTx}%)}}`
-  }
-
-  // Per-dot keyframes + rules (sync background with track timing)
-  let dotKfs = ''
-  let dotRules = ''
-  for (let i = 0; i < slideCount; i++) {
-    const aStart = (i * step).toFixed(3)
-    const aEnd = (i * step + hold).toFixed(3)
-    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
-    const dim = 'rgba(255,255,255,0.55)'
-    const active = 'rgba(255,255,255,1)'
-    if (i === 0) {
-      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
-    } else if (i < startCount) {
-      const before = (i * step - 0.001).toFixed(3)
-      dotKfs += `@keyframes pbx-isl-da-${i}{0%,${before}%{background:${dim}}${aStart}%,${aEnd}%{background:${active}}${afterEnd}%,100%{background:${dim}}}`
-    } else {
-      // Slides never become the "start" index when per-view > 1 without loop
-      dotKfs += `@keyframes pbx-isl-da-${i}{0%,100%{background:${dim}}}`
-    }
-    const iter = loop ? 'infinite' : '1 forwards'
-    dotRules += `[data-isl][data-isl-auto] .pbx-isl-dot:nth-child(${i + 1}){animation:pbx-isl-da-${i} ${T}s ${iter}}`
-  }
-
-  // Per-num keyframes + rules (sync opacity+background with track timing)
-  let numKfs = ''
-  let numRules = ''
-  for (let i = 0; i < slideCount; i++) {
-    const aStart = (i * step).toFixed(3)
-    const aEnd = (i * step + hold).toFixed(3)
-    const afterEnd = Math.min((i + 1) * step, 100).toFixed(3)
-    const dimState = 'opacity:0.55;background:rgba(255,255,255,0.25)'
-    const activeState = 'opacity:1;background:rgba(255,255,255,0.9)'
-    if (i === 0) {
-      numKfs += `@keyframes pbx-isl-na-${i}{0%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
-    } else if (i < startCount) {
-      const before = (i * step - 0.001).toFixed(3)
-      numKfs += `@keyframes pbx-isl-na-${i}{0%,${before}%{${dimState}}${aStart}%,${aEnd}%{${activeState}}${afterEnd}%,100%{${dimState}}}`
-    } else {
-      numKfs += `@keyframes pbx-isl-na-${i}{0%,100%{${dimState}}}`
-    }
-    const iter = loop ? 'infinite' : '1 forwards'
-    numRules += `[data-isl][data-isl-auto] .pbx-isl-nums span:nth-child(${i + 1}){animation:pbx-isl-na-${i} ${T}s ${iter}}`
-  }
-
-  // Builder active-slide rules (CSS attribute selector — used in edit mode)
-  let activeRules = ''
-  for (let i = 0; i < slideCount; i++) {
-    if (i > 0) activeRules += ','
-    activeRules += `[data-isl-active="${i}"] .pbx-isl-nums span:nth-child(${i + 1})`
-  }
-  activeRules +=
-    '{opacity:1;background:rgba(255,255,255,0.9);color:#111;border-radius:9999px;padding:0.1rem 0.55rem;text-shadow:none}'
-
-  const animIter = loop ? 'infinite' : '1 forwards'
-  const manualSlideMin = `${(100 / pv).toFixed(3)}%`
-  const multiViewStyles =
-    pv === 2
-      ? [
-          // Padding creates a visible gap while keeping 50% widths (auto keyframes stay simple).
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box;padding-inline:0.4rem}',
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{border-radius:0.75rem;overflow:hidden}',
-        ].join('')
-      : '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div{padding-inline:0}[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img{border-radius:0}'
-
-  const arrowStyles = [
-    '.pbx-isl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:11;width:2.5rem;height:2.5rem;border-radius:9999px;background:rgba(255,255,255,0.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;cursor:pointer;border:0;color:#111;box-shadow:0 1px 4px rgba(0,0,0,0.12);user-select:none}',
-    '[data-isl][data-isl-arrows] .pbx-isl-arrow{display:flex}',
-    '.pbx-isl-prev{left:0.75rem}',
-    '.pbx-isl-next{right:0.75rem}',
-    '.pbx-isl-arrow svg{display:block;flex-shrink:0}',
-    '[data-builder-canvas] .pbx-isl-arrow{pointer-events:auto;z-index:20}',
-  ].join('')
-
-  return [
-    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;width:100%}',
-    '.pbx-isl-t::-webkit-scrollbar{display:none}',
-    `.pbx-isl-t>div{min-width:${manualSlideMin};scroll-snap-align:start;box-sizing:border-box}`,
-    multiViewStyles,
-    arrowStyles,
-    trackKf,
-    `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`,
-    `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`,
-    '.pbx-isl-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer}',
-    '.pbx-isl-nums{display:none;gap:0.75rem;margin-bottom:0.625rem}',
-    '.pbx-isl-nums span{font-size:1rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.7);cursor:pointer;min-width:1.5rem;text-align:center;background:rgba(255,255,255,0.25);border-radius:9999px;padding:0.1rem 0.55rem;opacity:0.55;display:inline-block;box-sizing:border-box}',
-    '[data-pagebuilder-content] .pbx-isl-nums{display:flex}',
-    '[data-pagebuilder-content] .pbx-isl-nums span{opacity:0.4;transition:all 0.2s}',
-    activeRules,
-    dotKfs,
-    dotRules,
-    numKfs,
-    numRules,
-  ].join('')
 }
 
 const activeSlideIndex = computed(() => {

@@ -534,11 +534,10 @@ export const usePageBuilderStateStore = defineStore('pageBuilderState', {
     },
 
     setComponents(payload: ComponentObject[] | null): void {
-      // Force reactivity by setting to empty array first, then the actual value
-      this.components = []
-      nextTick(() => {
-        this.components = payload || []
-      })
+      // Replace in one shot. Clearing to [] first remounts the canvas empty and
+      // drops edit listeners until the follow-up tick — which broke editability
+      // after syncDomToStoreOnly in auto-save/preview.
+      this.components = payload || []
     },
     setPushComponents(payload: SetPushComponentsPayload): void {
       const method = payload.componentArrayAddMethod ?? 'push'

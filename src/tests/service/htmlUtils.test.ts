@@ -211,6 +211,24 @@ describe('HTML Utility Methods', () => {
     it('uses custom prefix when provided', () => {
       expect(svc.addTailwindPrefixToClasses('text-black', 'my-')).toBe('my-text-black')
     })
+
+    it('does not prefix material-symbols-outlined (icon font)', () => {
+      expect(svc.addTailwindPrefixToClasses('material-symbols-outlined')).toBe(
+        'material-symbols-outlined',
+      )
+    })
+
+    it('un-prefixes accidentally prefixed material-symbols-outlined', () => {
+      expect(svc.addTailwindPrefixToClasses('pbx-material-symbols-outlined')).toBe(
+        'material-symbols-outlined',
+      )
+    })
+
+    it('keeps material-symbols-outlined when mixed with other classes', () => {
+      expect(
+        svc.addTailwindPrefixToClasses('material-symbols-outlined text-lg pbx-font-bold'),
+      ).toBe('material-symbols-outlined pbx-text-lg pbx-font-bold')
+    })
   })
 
   // -------------------------------------------------------------------------
@@ -468,9 +486,31 @@ describe('HTML Utility Methods', () => {
 
       expect(slider.hasAttribute('data-isl-active')).toBe(false)
       expect(track.getAttribute('style')).toBeNull()
-      expect(firstNum.style.opacity).toBe('1')
-      expect(firstDot.style.background).toMatch(/255/)
+      expect(firstNum.getAttribute('style')).toBeNull()
+      expect(firstDot.getAttribute('style')).toBeNull()
       expect(slider.querySelectorAll('.pbx-isl-nums span')[2].getAttribute('style')).toBeNull()
+    })
+
+    it('migrates Material Symbol slider arrows to SVG in preview HTML', () => {
+      const root = document.createElement('div')
+      root.id = 'pagebuilder'
+      root.innerHTML = `
+        <section data-isl data-isl-arrows>
+          <div class="pbx-isl-t"></div>
+          <span class="pbx-isl-arrow pbx-isl-prev" aria-label="Previous">
+            <span class="pbx-material-symbols-outlined" aria-hidden="true">arrow_back</span>
+          </span>
+          <span class="pbx-isl-arrow pbx-isl-next" aria-label="Next">
+            <span class="pbx-material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+          </span>
+        </section>
+      `
+
+      const result = extractCleanHTMLFromPageBuilder(root)
+      expect(result).toContain('<svg')
+      expect(result).not.toContain('arrow_forward')
+      expect(result).not.toContain('arrow_back')
+      expect(result).not.toContain('pbx-material-symbols-outlined')
     })
   })
 })

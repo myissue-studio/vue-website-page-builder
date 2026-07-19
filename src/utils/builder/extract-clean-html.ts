@@ -1,4 +1,6 @@
 import type { PageBuilderConfig } from '../../types'
+import { migrateSliderArrowIcons } from './slider-arrows'
+import { normalizeSliderWrapClones } from './slider-layout'
 
 const isAbsoluteOrInlineImageSrc = (src: string): boolean => {
   return /^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('//')
@@ -19,24 +21,11 @@ function resetInlineSlidersToFirstSlide(root: HTMLElement): void {
     nums.forEach((span) => {
       span.removeAttribute('style')
     })
-    const firstNum = nums[0]
-    if (firstNum) {
-      firstNum.style.opacity = '1'
-      firstNum.style.background = 'rgba(255,255,255,0.9)'
-      firstNum.style.color = '#111'
-      firstNum.style.borderRadius = '9999px'
-      firstNum.style.padding = '0.1rem 0.55rem'
-      firstNum.style.textShadow = 'none'
-    }
 
     const dots = container.querySelectorAll<HTMLElement>('.pbx-isl-dot')
     dots.forEach((dot) => {
       dot.removeAttribute('style')
     })
-    const firstDot = dots[0]
-    if (firstDot) {
-      firstDot.style.background = 'rgba(255,255,255,1)'
-    }
   })
 }
 
@@ -84,6 +73,11 @@ export function extractCleanHTMLFromPageBuilder(
   // Preview/publish should always start on slide 1. Editing often leaves the track scrolled
   // and num/dot highlight styles stuck on a later slide, which makes preview look wrong.
   resetInlineSlidersToFirstSlide(clone)
+
+  // Replace Material Symbol arrow text (broken after pbx- class prefix) with SVG chevrons.
+  migrateSliderArrowIcons(clone)
+  // Drop leftover wrap-clones on even slide counts so the last image is never alone.
+  normalizeSliderWrapClones(clone)
 
   if (config && config && typeof config.imageUrlPrefix === 'string') {
     const imageUrlPrefix = config.imageUrlPrefix
