@@ -494,6 +494,7 @@
   "Previous": "Forrige",
   "SEO Check Results": "SEO-tjekresultater",
   "At least 300 words of content": "Mindst 300 ord indhold",
+  "Has at least one H1": "Har mindst én H1",
   "Has at least one H2": "Har mindst én H2",
   "Has at least one H3": "Har mindst én H3",
   "Has at least one H4": "Har mindst én H4",
@@ -649,5 +650,13 @@
   "2 Image Columns": "2 billedkolonner",
   "Mosaic Layout": "Mosaiklayout",
   "Feature Split": "Feature-opdeling",
-  "Saved": "Gemt"
+  "Saved": "Gemt",
+  "Card design": "Kortdesign",
+  "Layout and typography for product cards": "Layout og typografi for produktkort",
+  "Classic": "Klassisk",
+  "Catalog layout with clear hierarchy": "Kataloglayout med klar hierarki",
+  "Modern": "Modern",
+  "Bold type and tighter spacing": "Fed typografi og tættere spacing",
+  "Minimal": "Minimal",
+  "Quiet type and more whitespace": "Roligt typografi og mere luft"
 }

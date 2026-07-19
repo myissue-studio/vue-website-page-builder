@@ -22,10 +22,18 @@ import { CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT } from '../../utils/builder/edit-tool
 import { InlineTipTapLink } from '../../utils/builder/inline-tiptap-link'
 import { delay } from '../../composables/delay'
 import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
+import {
+  getTipTapHeadingLevels,
+  type TipTapHeadingLevel,
+} from '../../utils/builder/tiptap-heading-levels'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 const { translate } = useTranslations()
+
+const headingLevels = computed(() =>
+  getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
+)
 
 const editor = ref<Editor | null>(null)
 const inlineElement = ref<HTMLElement | null>(null)
@@ -100,7 +108,7 @@ const editorIsActive = function (...args: Parameters<Editor['isActive']>): boole
   return editor.value?.isActive(...args) ?? false
 }
 
-const headingIsActive = function (level: 2 | 3 | 4 | 5 | 6): boolean {
+const headingIsActive = function (level: TipTapHeadingLevel): boolean {
   return editor.value?.isActive('heading', { level }) ?? false
 }
 
@@ -112,7 +120,7 @@ const toggleItalic = function () {
   editor.value?.chain().focus().toggleItalic().run()
 }
 
-const toggleHeading = function (level: 2 | 3 | 4 | 5 | 6) {
+const toggleHeading = function (level: TipTapHeadingLevel) {
   editor.value?.chain().focus().toggleHeading({ level }).run()
 }
 
@@ -328,6 +336,9 @@ const startEditor = async function () {
     extensions: [
       StarterKit.configure({
         link: false,
+        heading: {
+          levels: getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
+        },
       }),
       InlineTipTapLink,
       TextAlign.configure({
@@ -590,7 +601,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div
-      v-for="level in [2, 3, 4, 5, 6] as const"
+      v-for="level in headingLevels"
       :key="level"
       @click="toggleHeading(level)"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"

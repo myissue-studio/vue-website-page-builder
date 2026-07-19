@@ -1,14 +1,18 @@
 import type {
   ProductButtonStyle,
   PageBuilderProductInput,
+  ProductCardDesign,
   ProductCardStyle,
   ProductGridLayout,
 } from '../../types'
 import {
+  buildProductCardClass,
   buildProductCtaAnchorClass,
   buildProductGridClass,
+  getProductCardDesignParts,
   getProductImageWrapClass,
-  PRODUCT_CARD_STYLE_CLASS,
+  normalizeCardDesign,
+  PRODUCT_CONTENT_HIDDEN_ATTR,
 } from './product-section-options'
 
 function escapeHtml(value: string): string {
@@ -21,6 +25,7 @@ function escapeHtml(value: string): string {
 
 export interface BuildProductSectionStyleOptions {
   cardStyle?: ProductCardStyle
+  cardDesign?: ProductCardDesign
   roundedImages?: boolean
   openInNewTab?: boolean
   buttonStyle?: ProductButtonStyle
@@ -33,6 +38,10 @@ export interface BuildProductSectionStyleOptions {
 }
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'hidden'
+
+function productContentHiddenAttr(hidden: boolean): string {
+  return hidden ? ` ${PRODUCT_CONTENT_HIDDEN_ATTR}="true"` : ''
+}
 
 const STANDARD_PRODUCT_FIELDS = new Set([
   'id',
@@ -58,6 +67,8 @@ function renderProductCard(
   sectionHasBadge = false,
 ): string {
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
+  const cardDesign = normalizeCardDesign(styleOptions.cardDesign ?? 'classic')
+  const design = getProductCardDesignParts(cardDesign)
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
   const buttonStyle = styleOptions.buttonStyle ?? 'text'
@@ -67,7 +78,7 @@ function renderProductCard(
   const hideButton = styleOptions.hideButton ?? false
   const hideLinks = styleOptions.hideLinks ?? false
   const linkAttrs = productLinkAttrs(openInNewTab)
-  const productCardClass = PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
+  const productCardClass = buildProductCardClass(cardStyle, cardDesign)
   const imageWrapClass = [
     getProductImageWrapClass(roundedImages),
     hideImage ? PRODUCT_CONTENT_HIDDEN_CLASS : '',
@@ -90,24 +101,24 @@ function renderProductCard(
 
   let imageHtml = ''
   if (imageSrc) {
-    const imgTag = `<img class="object-cover w-full object-top aspect-square " src="${imageSrc}" alt="${imageAlt}">`
+    const imgTag = `<img class="${design.image} " src="${imageSrc}" alt="${imageAlt}">`
     imageHtml = url
-      ? `<div class="${imageWrapClass}" data-pb-no-inline-text><a${linkHref}${linkDataHref}${linkAttrs}>${imgTag}</a></div>`
-      : `<div class="${imageWrapClass}" data-pb-no-inline-text>${imgTag}</div>`
+      ? `<div class="${imageWrapClass}"${productContentHiddenAttr(hideImage)} data-pb-no-inline-text><a${linkHref}${linkDataHref}${linkAttrs}>${imgTag}</a></div>`
+      : `<div class="${imageWrapClass}"${productContentHiddenAttr(hideImage)} data-pb-no-inline-text>${imgTag}</div>`
   }
 
   const badgeHtml = badge
-    ? `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2"><p>${badge}</p></div>`
+    ? `<div class="${design.badge}"><p>${badge}</p></div>`
     : sectionHasBadge
-      ? `<div class="product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2 min-h-6"></div>`
+      ? `<div class="${design.badge} min-h-6"></div>`
       : ''
 
   const titleHtml = title
-    ? `<div class="product-card-title text-lg font-semibold text-gray-900 pt-2 min-h-16">${url ? `<p><a${linkHref}${linkDataHref}${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
+    ? `<div class="${design.title}">${url ? `<p><a${linkHref}${linkDataHref}${linkAttrs}>${title}</a></p>` : `<p>${title}</p>`}</div>`
     : ''
 
   const descriptionHtml = description
-    ? `<div class="product-card-description text-sm text-gray-600 pt-1"><p>${description}</p></div>`
+    ? `<div class="${design.description}"><p>${description}</p></div>`
     : ''
 
   const customEntries = Object.entries(product as Record<string, unknown>).filter(
@@ -132,12 +143,8 @@ function renderProductCard(
     let priceRowHtml = ''
     if (price || compareAtPrice) {
       const priceParts = [
-        compareAtPrice
-          ? `<div class="product-card-compare text-sm line-through text-gray-400"><p>${compareAtPrice}</p></div>`
-          : '',
-        price
-          ? `<div class="product-card-price text-2xl font-semibold text-gray-900"><p>${price}</p></div>`
-          : '',
+        compareAtPrice ? `<div class="${design.compare}"><p>${compareAtPrice}</p></div>` : '',
+        price ? `<div class="${design.price}"><p>${price}</p></div>` : '',
       ].filter(Boolean)
       const priceRowClass = [
         'product-card-price-row flex flex-wrap items-baseline gap-2 pt-2',
@@ -145,13 +152,13 @@ function renderProductCard(
       ]
         .filter(Boolean)
         .join(' ')
-      priceRowHtml = `<div class="${priceRowClass}">${priceParts.join('')}</div>`
+      priceRowHtml = `<div class="${priceRowClass}"${productContentHiddenAttr(hidePrice)}>${priceParts.join('')}</div>`
     }
 
     const ctaAnchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
     const ctaHtml =
       url && buttonText
-        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"><p><a class="${ctaAnchorClass}"${linkHref}${linkDataHref}${linkAttrs}>${buttonText}</a></p></div>`
+        ? `<div class="product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3${hideButton ? ` ${PRODUCT_CONTENT_HIDDEN_CLASS}` : ''}"${productContentHiddenAttr(hideButton)}><p><a class="${ctaAnchorClass}"${linkHref}${linkDataHref}${linkAttrs}>${buttonText}</a></p></div>`
         : ''
 
     footerHtml = `<div class="product-card-footer mt-auto flex flex-col">${priceRowHtml}${ctaHtml}</div>`
@@ -160,7 +167,7 @@ function renderProductCard(
   return [
     `<div class="${productCardClass}" data-pbx-product-id="${escapeHtml(id)}">`,
     imageHtml,
-    '<div class="break-words py-2 product-card-body text-gray-900 flex flex-col flex-1">',
+    `<div class="${design.body}">`,
     '<div class="product-card-meta flex flex-col flex-1">',
     badgeHtml,
     titleHtml,
@@ -189,6 +196,7 @@ export function buildProductSectionHtml(
 
   const mobileColumns = styleOptions.mobileColumns === 2 ? 2 : 1
   const cardStyle = styleOptions.cardStyle ?? 'minimal'
+  const cardDesign = normalizeCardDesign(styleOptions.cardDesign ?? 'classic')
   const roundedImages = styleOptions.roundedImages ?? false
   const openInNewTab = styleOptions.openInNewTab ?? false
   const buttonStyle = styleOptions.buttonStyle ?? 'text'
@@ -204,7 +212,7 @@ export function buildProductSectionHtml(
     .join('\n')
   const gridClass = buildProductGridClass(layout, mobileColumns)
 
-  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-button-style="${escapeHtml(buttonStyle)}" data-pbx-product-rounded-buttons="${roundedButtons ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}" data-pbx-product-hide-links="${hideLinks ? 'true' : 'false'}">
+  return `<section data-component-title="${escapeHtml(sectionTitle)}" data-pbx-product-section="true" data-pbx-product-ids="${escapeHtml(productIds)}" data-pbx-product-layout="${escapeHtml(String(layout))}" data-pbx-product-mobile-cols="${mobileColumns}" data-pbx-product-card-style="${escapeHtml(cardStyle)}" data-pbx-product-card-design="${escapeHtml(cardDesign)}" data-pbx-product-rounded-images="${roundedImages ? 'true' : 'false'}" data-pbx-product-open-in-new-tab="${openInNewTab ? 'true' : 'false'}" data-pbx-product-button-style="${escapeHtml(buttonStyle)}" data-pbx-product-rounded-buttons="${roundedButtons ? 'true' : 'false'}" data-pbx-product-hide-price="${hidePrice ? 'true' : 'false'}" data-pbx-product-hide-image="${hideImage ? 'true' : 'false'}" data-pbx-product-hide-button="${hideButton ? 'true' : 'false'}" data-pbx-product-hide-links="${hideLinks ? 'true' : 'false'}">
 <div class="pbx-py-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="${gridClass}" data-pbx-product-grid="true">
 ${cards}
 </div></div></div>

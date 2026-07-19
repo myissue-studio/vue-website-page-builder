@@ -10,6 +10,10 @@ import { useTranslations } from '../../composables/useTranslations'
 import TextAlign from '@tiptap/extension-text-align'
 import TypographyForTipTap from '../PageBuilder/EditorMenu/Editables/TypographyForTipTap.vue'
 import { isValidHyperlinkInput } from '../../utils/builder/url-validation'
+import {
+  getTipTapHeadingLevels,
+  type TipTapHeadingLevel,
+} from '../../utils/builder/tiptap-heading-levels'
 
 const pageBuilderService = getPageBuilder()
 
@@ -17,6 +21,10 @@ const { translate } = useTranslations()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
+
+const headingLevels = computed(() =>
+  getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
+)
 
 const showModalUrl = ref(false)
 
@@ -66,6 +74,9 @@ const editor = useEditor({
       // Configure Link here if needed
       link: {
         openOnClick: false,
+      },
+      heading: {
+        levels: getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
       },
     }),
     TextAlign.configure({
@@ -190,7 +201,7 @@ const editorIsActive = function (...args: Parameters<Editor['isActive']>): boole
   return editor.value?.isActive(...args) ?? false
 }
 
-const headingIsActive = function (level: 2 | 3 | 4 | 5 | 6): boolean {
+const headingIsActive = function (level: TipTapHeadingLevel): boolean {
   return editor.value?.isActive('heading', { level }) ?? false
 }
 
@@ -198,7 +209,7 @@ const toggleBold = function () {
   editor.value?.chain().focus().toggleBold().run()
 }
 
-const toggleHeading = function (level: 2 | 3 | 4 | 5 | 6) {
+const toggleHeading = function (level: TipTapHeadingLevel) {
   editor.value?.chain().focus().toggleHeading({ level }).run()
 }
 
@@ -312,69 +323,19 @@ onMounted(() => {
               <span class="material-symbols-outlined"> link </span>
             </div>
 
-            <!-- H2 -->
+            <!-- Headings -->
 
             <div
-              @click="toggleHeading(2)"
+              v-for="level in headingLevels"
+              :key="level"
+              @click="toggleHeading(level)"
               class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
               :class="{
                 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  headingIsActive(2),
+                  headingIsActive(level),
               }"
             >
-              <div class="pbx-font-semibold pbx-text-sm">H2</div>
-            </div>
-
-            <!-- H3 -->
-
-            <div
-              @click="toggleHeading(3)"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-              :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  headingIsActive(3),
-              }"
-            >
-              <div class="pbx-font-semibold pbx-text-sm">H3</div>
-            </div>
-
-            <!-- H4 -->
-
-            <div
-              @click="toggleHeading(4)"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-              :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  headingIsActive(4),
-              }"
-            >
-              <div class="pbx-font-semibold pbx-text-sm">H4</div>
-            </div>
-
-            <!-- H5 -->
-
-            <div
-              @click="toggleHeading(5)"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-              :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  headingIsActive(5),
-              }"
-            >
-              <div class="pbx-font-semibold pbx-text-sm">H5</div>
-            </div>
-
-            <!-- H6 -->
-
-            <div
-              @click="toggleHeading(6)"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
-              :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
-                  headingIsActive(6),
-              }"
-            >
-              <div class="pbx-font-semibold pbx-text-sm">H6</div>
+              <div class="pbx-font-semibold pbx-text-sm">H{{ level }}</div>
             </div>
 
             <!-- Left Align -->

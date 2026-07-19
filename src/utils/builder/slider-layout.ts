@@ -254,17 +254,21 @@ export function buildSliderStyle(
     '[data-builder-canvas] [data-isl][data-isl-active] .pbx-isl-dot{width:0.45rem!important;background:rgba(255,255,255,0.45)!important}'
 
   const animIter = loop ? 'infinite' : '1 forwards'
-  // Desktop (lg+): true 2-up at 50%. Mobile/tablet: peek ~80% current + 20% next.
-  const manualSlideMin = pv === 2 ? '80%' : '100%'
+  // Grid (not flex): % columns resolve against the visible track width. Flex % min-width
+  // inside overflow-x:auto often circular-resolves to the image intrinsic width (= 1-up).
+  const colPct = pv === 2 ? '50%' : '90%'
   const multiViewStyles =
     pv === 2
       ? [
-          // !important so leftover inline min-width:50% from older saves cannot override peek.
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box;min-width:80%!important;padding-inline:0.4rem}',
-          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{border-radius:0.75rem;overflow:hidden}',
-          '@media (min-width:1024px){[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{min-width:50%!important}}',
+          '[data-isl][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}',
+          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.4rem}',
+          '[data-isl][data-isl-per-view="2"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
         ].join('')
-      : '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div{min-width:100%!important;padding-inline:0}[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img{border-radius:0}'
+      : [
+          '[data-isl][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}',
+          '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div{box-sizing:border-box!important;min-width:0!important;width:auto!important;max-width:none!important;padding-inline:0.35rem}',
+          '[data-isl][data-isl-per-view="1"] .pbx-isl-t>div img{width:100%!important;border-radius:0.75rem;overflow:hidden}',
+        ].join('')
 
   const arrowStyles = [
     '.pbx-isl-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:11;width:2.5rem;height:2.5rem;border-radius:9999px;background:rgba(255,255,255,0.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;cursor:pointer;border:0;color:#111;box-shadow:0 1px 4px rgba(0,0,0,0.12);user-select:none}',
@@ -275,25 +279,30 @@ export function buildSliderStyle(
     '[data-builder-canvas] .pbx-isl-arrow{pointer-events:auto;z-index:20}',
   ].join('')
 
-  // Auto-rotate: desktop keeps 2-up track math; mobile/tablet use peek track (80% × slide count).
-  const autoTrackDesktop = `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${trackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`
-  const autoSlideDesktop = `[data-isl][data-isl-auto] .pbx-isl-t>div{min-width:${slideW}%!important}`
-  const peekTrackW = trackSlideCount * 80
-  const autoPeekMobile =
+  // Auto-rotate: widen the track; column % is of that track so 2-up stays half the viewport.
+  const peekPct = 90
+  const autoTrackW = pv === 1 ? trackSlideCount * peekPct : trackW
+  const autoTrackDesktop = `[data-isl][data-isl-auto] .pbx-isl-t{overflow:hidden!important;scroll-snap-type:none!important;width:${autoTrackW}%!important;animation:pbx-isl-r ${T}s ${animIter};pointer-events:none}`
+  const autoSlideDesktop =
     pv === 2
-      ? `@media (max-width:1023px){[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{width:${peekTrackW}%!important}[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t>div{min-width:${slideW}%!important}}`
-      : ''
+      ? `[data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
+      : `[data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:${slideW}%!important}`
+  // Canvas forces track to 100% while editing — keep viewport columns at 50%/90%.
+  const canvasManualForce =
+    pv === 2
+      ? '[data-builder-canvas] [data-isl][data-isl-per-view="2"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="2"] .pbx-isl-t{grid-auto-columns:50%!important}'
+      : '[data-builder-canvas] [data-isl][data-isl-per-view="1"] .pbx-isl-t,[data-builder-canvas] [data-isl][data-isl-auto][data-isl-per-view="1"] .pbx-isl-t{grid-auto-columns:90%!important}'
 
   return [
-    '.pbx-isl-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;width:100%}',
+    `.pbx-isl-t{display:grid;grid-auto-flow:column;grid-auto-columns:${colPct};overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;width:100%}`,
     '.pbx-isl-t::-webkit-scrollbar{display:none}',
-    `.pbx-isl-t>div{min-width:${manualSlideMin}!important;scroll-snap-align:start;box-sizing:border-box}`,
+    '.pbx-isl-t>div{min-width:0;width:auto;max-width:none;scroll-snap-align:start;box-sizing:border-box}',
     multiViewStyles,
     arrowStyles,
     trackKf,
     autoTrackDesktop,
     autoSlideDesktop,
-    autoPeekMobile,
+    canvasManualForce,
     // Frosted pill behind dots so they read as one control (esp. when centered in the 2-up gap).
     '.pbx-isl-dots{display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:8px 10px;border-radius:10px;background:rgba(128,128,128,0.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-sizing:border-box}',
     '.pbx-isl-dot{display:block;flex-shrink:0;width:0.45rem;height:0.45rem;border-radius:9999px;background:rgba(255,255,255,0.45);cursor:pointer;transition:width 0.2s ease,background 0.2s ease;box-sizing:border-box}',
@@ -333,13 +342,23 @@ export function normalizeSliderWrapClones(root: ParentNode): boolean {
     const perView = perViewRaw === 2 ? 2 : 1
     if (syncSliderWrapClones(track, perView)) changed = true
 
-    // Drop sticky inline slide widths — responsive peek CSS owns min-width for per-view 2.
+    // Drop sticky inline slide widths — grid-auto-columns owns sizing (flex % was unreliable).
     Array.from(track.children).forEach((child) => {
       if (!(child instanceof HTMLElement)) return
-      if (!child.style.minWidth) return
+      const before = child.getAttribute('style')
+      if (!before) return
       child.style.minWidth = ''
-      if (!child.getAttribute('style')?.trim()) child.removeAttribute('style')
-      changed = true
+      child.style.width = ''
+      child.style.maxWidth = ''
+      child.style.flex = ''
+      child.style.flexShrink = ''
+      const after = child.getAttribute('style')?.trim() ?? ''
+      if (!after) {
+        child.removeAttribute('style')
+        changed = true
+      } else if (after !== before.trim()) {
+        changed = true
+      }
     })
 
     // Drop sticky inline focus styles — highlight is driven by data-isl-active / auto keyframes.

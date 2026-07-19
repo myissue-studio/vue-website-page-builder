@@ -8,6 +8,7 @@ import { useTranslations } from '../../../../composables/useTranslations'
 import { useThemeColorPresets } from '../../../../composables/useThemeColorPresets'
 import { useEditToolbarPopover } from '../../../../composables/useEditToolbarPopover'
 import { transparentSwatchStyle } from '../../../../utils/builder/transparent-swatch-style'
+import { normalizeCssColorToHex } from '../../../../utils/builder/color-utils'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ColorMenuCustomSection from './ColorMenuCustomSection.vue'
 import CustomHexColorModal from './CustomHexColorModal.vue'
@@ -43,12 +44,31 @@ const {
 } = useEditToolbarPopover({ width: 224 })
 
 const showCustomHexModal = ref(false)
+const customModalInitialColor = ref('')
 
 const selectedCustomBackgroundColor = computed(() => {
   return backgroundColor.value?.startsWith('custom:')
     ? backgroundColor.value.replace('custom:', '')
     : ''
 })
+
+function resolveCurrentCustomBackgroundHex(): string {
+  const candidates = [pageBuilderStateStore.getBackgroundColor, backgroundColor.value]
+  for (const value of candidates) {
+    if (value?.startsWith('custom:')) {
+      return value.replace('custom:', '')
+    }
+  }
+
+  const target = pageBuilderStateStore.getToggleGlobalHtmlMode
+    ? document.getElementById('pagebuilder')
+    : pageBuilderStateStore.getElement
+
+  if (!(target instanceof HTMLElement)) return ''
+
+  const raw = target.style.getPropertyValue('background-color') || target.style.backgroundColor
+  return normalizeCssColorToHex(raw) ?? ''
+}
 
 const backgroundColorSwatchClass = computed(() => {
   if (selectedCustomBackgroundColor.value) return ''
@@ -148,6 +168,7 @@ function handleBackgroundColorSelect(value: string): void {
 
 function openCustomHexModal(): void {
   closeBackgroundColorMenu()
+  customModalInitialColor.value = resolveCurrentCustomBackgroundHex()
   showCustomHexModal.value = true
 }
 
@@ -368,7 +389,7 @@ watch(
 
   <CustomHexColorModal
     :show="showCustomHexModal"
-    :initial-color="selectedCustomBackgroundColor"
+    :initial-color="customModalInitialColor"
     :title="translate('Background Color')"
     @close="closeCustomHexModal"
     @apply="applyCustomHexColor"

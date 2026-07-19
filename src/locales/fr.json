@@ -486,6 +486,7 @@
   "Previous": "Précédent",
   "SEO Check Results": "Résultats du contrôle SEO",
   "At least 300 words of content": "Au moins 300 mots de contenu",
+  "Has at least one H1": "Contient au moins un H1",
   "Has at least one H2": "Contient au moins un H2",
   "Has at least one H3": "Contient au moins un H3",
   "Has at least one H4": "Contient au moins un H4",
@@ -642,5 +643,13 @@
   "3 Card Grid": "Grille de 3 cartes",
   "2 Image Columns": "2 colonnes d’images",
   "Mosaic Layout": "Mise en page mosaïque",
-  "Feature Split": "Section divisée"
+  "Feature Split": "Section divisée",
+  "Card design": "Design de carte",
+  "Layout and typography for product cards": "Mise en page et typographie des cartes produit",
+  "Classic": "Classique",
+  "Catalog layout with clear hierarchy": "Mise en page catalogue avec hiérarchie claire",
+  "Modern": "Moderne",
+  "Bold type and tighter spacing": "Typographie audacieuse et espacement resserré",
+  "Minimal": "Minimal",
+  "Quiet type and more whitespace": "Typographie discrète et plus d’espace"
 }

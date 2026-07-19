@@ -2,6 +2,7 @@
 import { watch } from 'vue'
 import type {
   ProductButtonStyle,
+  ProductCardDesign,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -10,6 +11,7 @@ import ModalFilterChip from '../../../Modals/ModalFilterChip.vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import LinkStyleSettingsPanel from './LinkStyleSettingsPanel.vue'
 import {
+  PRODUCT_CARD_DESIGN_OPTIONS,
   PRODUCT_CARD_STYLE_OPTIONS,
   PRODUCT_LAYOUT_OPTIONS,
   PRODUCT_MOBILE_COLUMN_OPTIONS,
@@ -17,6 +19,7 @@ import {
 
 const layout = defineModel<ProductGridLayout>('layout', { required: true })
 const mobileColumns = defineModel<ProductMobileColumns>('mobileColumns', { required: true })
+const cardDesign = defineModel<ProductCardDesign>('cardDesign', { required: true })
 const cardStyle = defineModel<ProductCardStyle>('cardStyle', { required: true })
 const roundedImages = defineModel<boolean>('roundedImages', { required: true })
 const openInNewTab = defineModel<boolean>('openInNewTab', { required: true })
@@ -82,6 +85,26 @@ watch(layout, (value) => {
           :hint="translate(option.hintKey)"
           :active="mobileColumns === option.value"
           @click="mobileColumns = option.value"
+        />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">{{ translate('Card design') }}</p>
+        <p class="pbx-productSettingsSectionDesc">
+          {{ translate('Layout and typography for product cards') }}
+        </p>
+      </div>
+      <div class="pbx-productSettingsSectionChips">
+        <ModalFilterChip
+          v-for="option in PRODUCT_CARD_DESIGN_OPTIONS"
+          :key="option.value"
+          :icon="option.iconKey"
+          :label="translate(option.labelKey)"
+          :hint="translate(option.hintKey)"
+          :active="cardDesign === option.value"
+          @click="cardDesign = option.value"
         />
       </div>
     </section>

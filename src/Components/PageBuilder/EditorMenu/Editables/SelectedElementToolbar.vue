@@ -15,6 +15,7 @@ import SliderIcon from '../../../Icons/SliderIcon.vue'
 import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
 import type {
   ProductButtonStyle,
+  ProductCardDesign,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -207,6 +208,9 @@ const productMobileColumns = ref<ProductMobileColumns>(
 const productCardStyle = ref<ProductCardStyle>(
   DEFAULT_PRODUCT_SECTION_OPTIONS.cardStyle ?? 'minimal',
 )
+const productCardDesign = ref<ProductCardDesign>(
+  DEFAULT_PRODUCT_SECTION_OPTIONS.cardDesign ?? 'classic',
+)
 const productRoundedImages = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.roundedImages ?? false)
 const productOpenInNewTab = ref(DEFAULT_PRODUCT_SECTION_OPTIONS.openInNewTab ?? false)
 const productButtonStyle = ref<ProductButtonStyle>(
@@ -221,13 +225,12 @@ const productSectionHasPrices = ref(false)
 const productSectionHasImages = ref(false)
 const productSectionHasButtons = ref(false)
 const productSectionHasLinks = ref(false)
-let productSettingsApplyQueued = false
-let productSettingsPendingSaveToast = false
-let productSettingsSaveToastTimer: ReturnType<typeof setTimeout> | null = null
+const isSavingProductSectionSettings = ref(false)
 let productSettingsBaseline: {
   layout: ProductGridLayout
   mobileColumns: ProductMobileColumns
   cardStyle: ProductCardStyle
+  cardDesign: ProductCardDesign
   roundedImages: boolean
   openInNewTab: boolean
   buttonStyle: ProductButtonStyle
@@ -238,42 +241,23 @@ let productSettingsBaseline: {
   hideLinks: boolean
 } | null = null
 
-const productSettingsMatchBaseline = (): boolean => {
-  if (!productSettingsBaseline) return true
+const isProductSettingsDirty = computed(() => {
+  if (!productSettingsBaseline) return false
   return (
-    productLayout.value === productSettingsBaseline.layout &&
-    productMobileColumns.value === productSettingsBaseline.mobileColumns &&
-    productCardStyle.value === productSettingsBaseline.cardStyle &&
-    productRoundedImages.value === productSettingsBaseline.roundedImages &&
-    productOpenInNewTab.value === productSettingsBaseline.openInNewTab &&
-    productButtonStyle.value === productSettingsBaseline.buttonStyle &&
-    productRoundedButtons.value === productSettingsBaseline.roundedButtons &&
-    productHidePrice.value === productSettingsBaseline.hidePrice &&
-    productHideImage.value === productSettingsBaseline.hideImage &&
-    productHideButton.value === productSettingsBaseline.hideButton &&
-    productHideLinks.value === productSettingsBaseline.hideLinks
+    productLayout.value !== productSettingsBaseline.layout ||
+    productMobileColumns.value !== productSettingsBaseline.mobileColumns ||
+    productCardStyle.value !== productSettingsBaseline.cardStyle ||
+    productCardDesign.value !== productSettingsBaseline.cardDesign ||
+    productRoundedImages.value !== productSettingsBaseline.roundedImages ||
+    productOpenInNewTab.value !== productSettingsBaseline.openInNewTab ||
+    productButtonStyle.value !== productSettingsBaseline.buttonStyle ||
+    productRoundedButtons.value !== productSettingsBaseline.roundedButtons ||
+    productHidePrice.value !== productSettingsBaseline.hidePrice ||
+    productHideImage.value !== productSettingsBaseline.hideImage ||
+    productHideButton.value !== productSettingsBaseline.hideButton ||
+    productHideLinks.value !== productSettingsBaseline.hideLinks
   )
-}
-
-const notifyProductSectionSettingsSaved = () => {
-  productSettingsPendingSaveToast = true
-  if (productSettingsSaveToastTimer) clearTimeout(productSettingsSaveToastTimer)
-  productSettingsSaveToastTimer = setTimeout(() => {
-    showToast(translate('Product section settings saved'), 'success')
-    productSettingsPendingSaveToast = false
-    productSettingsSaveToastTimer = null
-  }, 350)
-}
-
-const flushProductSectionSettingsSavedToast = () => {
-  if (!productSettingsPendingSaveToast) return
-  if (productSettingsSaveToastTimer) {
-    clearTimeout(productSettingsSaveToastTimer)
-    productSettingsSaveToastTimer = null
-  }
-  showToast(translate('Product section settings saved'), 'success')
-  productSettingsPendingSaveToast = false
-}
+})
 
 const isSelectedProductSection = computed(() => {
   void productSectionSettingsTick.value
@@ -284,6 +268,7 @@ const openProductSectionSettings = () => {
   const options = pageBuilderService.getSelectedProductSectionOptions()
   const mobileColumns = options.mobileColumns ?? 1
   const cardStyle = options.cardStyle ?? 'minimal'
+  const cardDesign = options.cardDesign ?? 'classic'
   const roundedImages = options.roundedImages ?? false
   const openInNewTab = options.openInNewTab ?? false
   const buttonStyle = options.buttonStyle ?? 'text'
@@ -298,6 +283,7 @@ const openProductSectionSettings = () => {
     layout: options.layout,
     mobileColumns,
     cardStyle,
+    cardDesign,
     roundedImages,
     openInNewTab,
     buttonStyle,
@@ -311,6 +297,7 @@ const openProductSectionSettings = () => {
   productLayout.value = options.layout
   productMobileColumns.value = mobileColumns
   productCardStyle.value = cardStyle
+  productCardDesign.value = cardDesign
   productRoundedImages.value = roundedImages
   productOpenInNewTab.value = openInNewTab
   productButtonStyle.value = buttonStyle
@@ -327,63 +314,46 @@ const openProductSectionSettings = () => {
   showProductSectionSettingsModal.value = true
 }
 
+const getProductSectionDraftOptions = () => ({
+  layout: productLayout.value,
+  mobileColumns: productMobileColumns.value,
+  cardStyle: productCardStyle.value,
+  cardDesign: productCardDesign.value,
+  roundedImages: productRoundedImages.value,
+  openInNewTab: productOpenInNewTab.value,
+  buttonStyle: productButtonStyle.value,
+  roundedButtons: productRoundedButtons.value,
+  hidePrice: productHidePrice.value,
+  hideImage: productHideImage.value,
+  hideButton: productHideButton.value,
+  hideLinks: productHideLinks.value,
+})
+
 const closeProductSectionSettings = () => {
-  flushProductSectionSettingsSavedToast()
   showProductSectionSettingsModal.value = false
   productSettingsBaseline = null
+  isSavingProductSectionSettings.value = false
 }
 
-const applySelectedProductSectionSettings = async () => {
-  if (!showProductSectionSettingsModal.value || productSettingsApplyQueued) return
-  productSettingsApplyQueued = true
+const saveProductSectionSettings = async () => {
+  if (!isProductSettingsDirty.value) {
+    closeProductSectionSettings()
+    return
+  }
+  isSavingProductSectionSettings.value = true
   try {
-    await pageBuilderService.updateSelectedProductSection({
-      layout: productLayout.value,
-      mobileColumns: productMobileColumns.value,
-      cardStyle: productCardStyle.value,
-      roundedImages: productRoundedImages.value,
-      openInNewTab: productOpenInNewTab.value,
-      buttonStyle: productButtonStyle.value,
-      roundedButtons: productRoundedButtons.value,
-      hidePrice: productHidePrice.value,
-      hideImage: productHideImage.value,
-      hideButton: productHideButton.value,
-      hideLinks: productHideLinks.value,
+    await pageBuilderService.updateSelectedProductSection(getProductSectionDraftOptions(), {
+      persist: true,
     })
     productSectionSettingsTick.value++
-    if (!productSettingsMatchBaseline()) {
-      notifyProductSectionSettingsSaved()
-    }
+    showToast(translate('Product section settings saved'), 'success')
+    closeProductSectionSettings()
   } catch {
-    if (productSettingsSaveToastTimer) {
-      clearTimeout(productSettingsSaveToastTimer)
-      productSettingsSaveToastTimer = null
-    }
-    productSettingsPendingSaveToast = false
     showToast(translate('Could not save product section settings'), 'error')
   } finally {
-    productSettingsApplyQueued = false
+    isSavingProductSectionSettings.value = false
   }
 }
-
-watch(
-  [
-    productLayout,
-    productMobileColumns,
-    productCardStyle,
-    productRoundedImages,
-    productOpenInNewTab,
-    productButtonStyle,
-    productRoundedButtons,
-    productHidePrice,
-    productHideImage,
-    productHideButton,
-    productHideLinks,
-  ],
-  () => {
-    void applySelectedProductSectionSettings()
-  },
-)
 
 const toggleSliderAutoRotate = (value: boolean) => {
   draftSliderAutoRotate.value = value
@@ -405,14 +375,30 @@ const changeSlideCount = (newCount: number) => {
   draftSliderImageCount.value = newCount
 }
 
-const changeSliderPerView = (n: number) => {
+const changeSliderPerView = async (n: number) => {
   draftSliderPerView.value = n === 2 ? 2 : 1
+  // Apply immediately so 1-up vs 2-up is visible before Save.
+  await applySliderSettingsToDom()
 }
 
 const applySliderSettingsToDom = async () => {
   if (!(getElement.value instanceof HTMLElement)) return
-  const container = getElement.value.closest('[data-isl]') as HTMLElement | null
-  if (!container) return
+
+  // Prefer a live canvas node — syncDomToStoreOnly remounts and can detach getElement.
+  let container = getElement.value.closest('[data-isl]') as HTMLElement | null
+  if (container && !container.isConnected) {
+    const canvas = document.querySelector('[data-builder-canvas]')
+    const sectionId = getElement.value
+      .closest('section[data-componentid]')
+      ?.getAttribute('data-componentid')
+    const liveSection = sectionId
+      ? canvas?.querySelector(`section[data-componentid="${sectionId}"]`)
+      : null
+    container =
+      (liveSection?.querySelector('[data-isl]') as HTMLElement | null) ??
+      (canvas?.querySelector('[data-isl]') as HTMLElement | null)
+  }
+  if (!container?.isConnected) return
 
   const track = container.querySelector('.pbx-isl-t') as HTMLElement | null
   if (!track) return
@@ -428,15 +414,11 @@ const applySliderSettingsToDom = async () => {
   const loop = draftSliderLoop.value
   const showArrows = draftSliderShowArrows.value
   const currentCount = track.children.length
-  // For 2-up, leave min-width to CSS (80% peek on mobile/tablet, 50% on desktop).
-  const slideMinWidth = perView === 2 ? '' : '100%'
-
   if (newCount > currentCount) {
     const firstImg = track.querySelector('img') as HTMLImageElement | null
     const placeholderSrc = getPlaceholderImageDataUrl()
     for (let i = currentCount; i < newCount; i++) {
       const slide = document.createElement('div')
-      if (slideMinWidth) slide.style.minWidth = slideMinWidth
       slide.style.scrollSnapAlign = 'start'
       const img = document.createElement('img')
       img.src = placeholderSrc
@@ -456,9 +438,12 @@ const applySliderSettingsToDom = async () => {
 
   Array.from(track.children).forEach((child) => {
     if (child instanceof HTMLElement) {
-      // Clear inline min-width so responsive peek CSS can apply for per-view 2.
-      if (perView === 2) child.style.minWidth = ''
-      else child.style.minWidth = slideMinWidth
+      // Clear inline sizing so per-view CSS (50% / 90%) can apply.
+      child.style.minWidth = ''
+      child.style.width = ''
+      child.style.maxWidth = ''
+      child.style.flex = ''
+      child.style.flexShrink = ''
       child.style.scrollSnapAlign = 'start'
       child.style.paddingLeft = ''
       child.style.paddingRight = ''
@@ -488,8 +473,14 @@ const applySliderSettingsToDom = async () => {
 
   if (draftSliderAutoRotate.value) {
     track.scrollLeft = 0
+    track.style.transform = ''
+    track.style.animation = ''
+    track.style.animationDelay = ''
     container.setAttribute('data-isl-auto', '')
   } else {
+    track.style.transform = ''
+    track.style.animation = ''
+    track.style.animationDelay = ''
     container.removeAttribute('data-isl-auto')
   }
   container.setAttribute('data-isl-speed', String(speed))
@@ -907,10 +898,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
   window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
   window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
-  if (productSettingsSaveToastTimer) {
-    clearTimeout(productSettingsSaveToastTimer)
-    productSettingsSaveToastTimer = null
-  }
 })
 
 const showModalDeleteComponent = ref(false)
@@ -1311,20 +1298,23 @@ defineExpose({
         <ConfirmActionModal
           v-if="showProductSectionSettingsModal"
           :showDynamicModalBuilder="showProductSectionSettingsModal"
-          :isLoading="false"
+          :isLoading="isSavingProductSectionSettings"
           type="success"
           maxWidth="4xl"
-          :gridColumnAmount="1"
+          :gridColumnAmount="2"
           :title="translate('Product section settings')"
           description=""
           :firstButtonText="translate('Close')"
+          :thirdButtonText="translate('Save')"
           @firstModalButtonFunctionDynamicModalBuilder="closeProductSectionSettings"
+          @thirdModalButtonFunctionDynamicModalBuilder="saveProductSectionSettings"
         >
           <header></header>
           <main>
             <ProductSectionSettingsFields
               v-model:layout="productLayout"
               v-model:mobile-columns="productMobileColumns"
+              v-model:card-design="productCardDesign"
               v-model:card-style="productCardStyle"
               v-model:rounded-images="productRoundedImages"
               v-model:open-in-new-tab="productOpenInNewTab"

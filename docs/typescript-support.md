@@ -137,6 +137,8 @@ const config: PageBuilderConfig = {
     // lucida, lucida-console, lucida-sans, candara, optima, avenir, futura, calibri, cambria,
     // didot, franklin-gothic, rockwell, baskerville, sans, serif, mono
     fontFamily: 'jost',
+    // Optional: hide TipTap H1 when the host page owns the page <h1>
+    // disableH1: true,
     autoSave: true,
   },
   settings: {
@@ -419,6 +421,7 @@ const config: PageBuilderConfig = {
       enable: ['en', 'zh-Hans', 'fr'],
     },
     fontFamily: 'jost',
+    // disableH1: true,
     autoSave: true,
   },
   settings: {

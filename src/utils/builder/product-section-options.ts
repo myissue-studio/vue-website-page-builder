@@ -1,6 +1,7 @@
 import type {
   ProductButtonStyle,
   PageBuilderProductInput,
+  ProductCardDesign,
   ProductCardStyle,
   ProductGridLayout,
   ProductMobileColumns,
@@ -28,6 +29,32 @@ export const PRODUCT_MOBILE_COLUMN_OPTIONS: {
 }[] = [
   { value: 1, labelKey: '1 column', hintKey: 'Single product per row', iconKey: 'grid_4x4' },
   { value: 2, labelKey: '2 columns', hintKey: 'Two products per row', iconKey: 'grid_4x4' },
+]
+
+export const PRODUCT_CARD_DESIGN_OPTIONS: {
+  value: ProductCardDesign
+  labelKey: string
+  hintKey: string
+  iconKey: string
+}[] = [
+  {
+    value: 'classic',
+    labelKey: 'Classic',
+    hintKey: 'Catalog layout with clear hierarchy',
+    iconKey: 'landscape',
+  },
+  {
+    value: 'modern',
+    labelKey: 'Modern',
+    hintKey: 'Bold type and tighter spacing',
+    iconKey: 'format_overline',
+  },
+  {
+    value: 'minimal',
+    labelKey: 'Minimal',
+    hintKey: 'Quiet type and more whitespace',
+    iconKey: 'filter_retrolux',
+  },
 ]
 
 export const PRODUCT_CARD_STYLE_OPTIONS: {
@@ -76,6 +103,73 @@ export const PRODUCT_CARD_STYLE_CLASS: Record<ProductCardStyle, string> = {
   elevated: `${PRODUCT_CARD_BASE} pt-4 pb-3 px-4 rounded-2xl border border-solid border-gray-200 bg-white shadow-sm`,
 }
 
+export type ProductCardDesignParts = {
+  marker: string
+  body: string
+  badge: string
+  title: string
+  description: string
+  price: string
+  compare: string
+  image: string
+}
+
+/** Typography/spacing presets — orthogonal to border/shadow card style. */
+export const PRODUCT_CARD_DESIGN_PARTS: Record<ProductCardDesign, ProductCardDesignParts> = {
+  classic: {
+    marker: 'product-card-design-classic',
+    body: 'break-words py-2 product-card-body text-gray-900 flex flex-col flex-1',
+    badge: 'product-card-badge text-xs font-medium uppercase tracking-wide text-gray-500 pt-2',
+    title: 'product-card-title text-lg font-semibold text-gray-900 pt-2 min-h-16',
+    description: 'product-card-description text-sm text-gray-600 pt-1',
+    price: 'product-card-price text-2xl font-semibold text-gray-900',
+    compare: 'product-card-compare text-sm line-through text-gray-400',
+    image: 'object-cover w-full object-top aspect-square',
+  },
+  modern: {
+    marker: 'product-card-design-modern',
+    body: 'break-words pt-3 pb-2 product-card-body text-gray-900 flex flex-col flex-1',
+    badge: 'product-card-badge text-xs font-semibold uppercase tracking-widest text-gray-400 pt-2',
+    title: 'product-card-title text-xl font-bold tracking-tight text-gray-900 pt-2',
+    description: 'product-card-description text-sm text-gray-500 pt-1',
+    price: 'product-card-price text-xl font-bold text-gray-900',
+    compare: 'product-card-compare text-sm line-through text-gray-400',
+    image: 'object-cover w-full object-top aspect-square',
+  },
+  minimal: {
+    marker: 'product-card-design-minimal',
+    body: 'break-words py-4 product-card-body text-gray-900 flex flex-col flex-1',
+    badge: 'product-card-badge text-xs font-normal text-gray-400 pt-3',
+    title: 'product-card-title text-base font-medium text-gray-900 pt-3',
+    description: 'product-card-description text-xs text-gray-500 pt-2',
+    price: 'product-card-price text-base font-medium text-gray-900',
+    compare: 'product-card-compare text-xs line-through text-gray-400',
+    image: 'object-cover w-full object-top aspect-square',
+  },
+}
+
+export function normalizeCardDesign(value: string | null | undefined): ProductCardDesign {
+  if (value === 'classic' || value === 'modern' || value === 'minimal') return value
+  return 'classic'
+}
+
+export function getProductCardDesignParts(
+  design: ProductCardDesign | null | undefined,
+): ProductCardDesignParts {
+  const key = normalizeCardDesign(design ?? null)
+  return PRODUCT_CARD_DESIGN_PARTS[key] ?? PRODUCT_CARD_DESIGN_PARTS.classic
+}
+
+export function buildProductCardClass(
+  cardStyle: ProductCardStyle | null | undefined,
+  cardDesign: ProductCardDesign | null | undefined = 'classic',
+): string {
+  const style =
+    PRODUCT_CARD_STYLE_CLASS[cardStyle as ProductCardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal
+  const design = getProductCardDesignParts(cardDesign)
+  return `${style} ${design.marker}`
+}
+
 export function buildProductGridClass(
   layout: ProductGridLayout,
   mobileColumns: ProductMobileColumns = 1,
@@ -118,6 +212,29 @@ export function getProductImageWrapClass(roundedImages: boolean): string {
 }
 
 const PRODUCT_CONTENT_HIDDEN_CLASS = 'pbx-hidden'
+/** Beats conflicting utilities like `pbx-flex` on price rows (same specificity, later in CSS). */
+export const PRODUCT_CONTENT_HIDDEN_ATTR = 'data-pbx-product-content-hidden'
+
+/**
+ * Finds an element whose class list contains an exact builder token
+ * (`name` or `pbx-name`). Avoids substring false positives such as
+ * `product-card-price` matching `product-card-price-row`.
+ */
+export function findElementByBuilderClass(
+  root: ParentNode,
+  baseName: string,
+): HTMLElement | null {
+  const prefixed = `pbx-${baseName}`
+  const candidates = root.querySelectorAll(`[class*="${baseName}"]`)
+  for (const el of candidates) {
+    if (!(el instanceof HTMLElement)) continue
+    const tokens = el.className.split(/\s+/).filter(Boolean)
+    if (tokens.includes(baseName) || tokens.includes(prefixed)) {
+      return el
+    }
+  }
+  return null
+}
 
 export function buildProductCtaAnchorClass(
   buttonStyle: ProductButtonStyle,
@@ -170,22 +287,22 @@ export function productsHaveLinks(products: ReadonlyArray<PageBuilderProductInpu
 
 export function sectionHasProductImages(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
     return imageWrap?.querySelector('img') != null
   })
 }
 
 export function sectionHasProductPrices(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const price = card.querySelector('[class*="product-card-price"]')
-    const compare = card.querySelector('[class*="product-card-compare"]')
+    const price = findElementByBuilderClass(card, 'product-card-price')
+    const compare = findElementByBuilderClass(card, 'product-card-compare')
     return Boolean(price?.textContent?.trim() || compare?.textContent?.trim())
   })
 }
 
 export function sectionHasProductButtons(section: HTMLElement): boolean {
   return findProductCardsInSection(section).some((card) => {
-    const cta = card.querySelector('[class*="product-card-cta"]')
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
     return Boolean(cta?.querySelector('a[href]')?.textContent?.trim())
   })
 }
@@ -200,6 +317,11 @@ export function sectionHasProductLinks(section: HTMLElement): boolean {
 
 function setProductContentHidden(el: HTMLElement, hidden: boolean): void {
   el.classList.toggle(PRODUCT_CONTENT_HIDDEN_CLASS, hidden)
+  if (hidden) {
+    el.setAttribute(PRODUCT_CONTENT_HIDDEN_ATTR, 'true')
+  } else {
+    el.removeAttribute(PRODUCT_CONTENT_HIDDEN_ATTR)
+  }
 }
 
 export function applyProductContentVisibilityInSection(
@@ -209,18 +331,18 @@ export function applyProductContentVisibilityInSection(
   hideButton: boolean,
 ): void {
   findProductCardsInSection(section).forEach((card) => {
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
-    if (imageWrap instanceof HTMLElement) {
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+    if (imageWrap) {
       setProductContentHidden(imageWrap, hideImage)
     }
 
-    const priceRow = card.querySelector('[class*="product-card-price-row"]')
-    if (priceRow instanceof HTMLElement) {
+    const priceRow = findElementByBuilderClass(card, 'product-card-price-row')
+    if (priceRow) {
       setProductContentHidden(priceRow, hidePrice)
     }
 
-    const cta = card.querySelector('[class*="product-card-cta"]')
-    if (cta instanceof HTMLElement) {
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
+    if (cta) {
       setProductContentHidden(cta, hideButton)
     }
   })
@@ -301,6 +423,7 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
   const mobileRaw = section.getAttribute('data-pbx-product-mobile-cols')
   const mobileColumns: ProductMobileColumns = mobileRaw === '2' ? 2 : 1
   const cardStyle = normalizeCardStyle(section.getAttribute('data-pbx-product-card-style'))
+  const cardDesign = normalizeCardDesign(section.getAttribute('data-pbx-product-card-design'))
   const roundedImages = section.getAttribute('data-pbx-product-rounded-images') === 'true'
   const openInNewTab = section.getAttribute('data-pbx-product-open-in-new-tab') === 'true'
   const buttonStyle = normalizeButtonStyle(section.getAttribute('data-pbx-product-button-style'))
@@ -314,6 +437,7 @@ export function parseProductSectionFromElement(section: HTMLElement): ProductSec
     layout,
     mobileColumns,
     cardStyle,
+    cardDesign,
     roundedImages,
     openInNewTab,
     buttonStyle,
@@ -332,11 +456,58 @@ function applyProductButtonStyleInSection(
 ): void {
   const anchorClass = buildProductCtaAnchorClass(buttonStyle, roundedButtons)
   findProductCardsInSection(section).forEach((card) => {
-    const ctaAnchor = card.querySelector('[class*="product-card-cta"] a')
+    const cta = findElementByBuilderClass(card, 'product-card-cta')
+    const ctaAnchor = cta?.querySelector('a')
     if (ctaAnchor instanceof HTMLElement) {
       ctaAnchor.className = prefixBuilderClasses(anchorClass)
     }
   })
+}
+
+function applyProductCardDesignClasses(
+  card: HTMLElement,
+  design: ProductCardDesign,
+  emptyBadge: boolean,
+): void {
+  const parts = getProductCardDesignParts(design)
+
+  const body = findElementByBuilderClass(card, 'product-card-body')
+  if (body) {
+    body.className = prefixBuilderClasses(parts.body)
+  }
+
+  const badge = findElementByBuilderClass(card, 'product-card-badge')
+  if (badge) {
+    const badgeClass =
+      emptyBadge && !badge.textContent?.trim() ? `${parts.badge} min-h-6` : parts.badge
+    badge.className = prefixBuilderClasses(badgeClass)
+  }
+
+  const title = findElementByBuilderClass(card, 'product-card-title')
+  if (title) {
+    title.className = prefixBuilderClasses(parts.title)
+  }
+
+  const description = findElementByBuilderClass(card, 'product-card-description')
+  if (description) {
+    description.className = prefixBuilderClasses(parts.description)
+  }
+
+  const price = findElementByBuilderClass(card, 'product-card-price')
+  if (price) {
+    price.className = prefixBuilderClasses(parts.price)
+  }
+
+  const compare = findElementByBuilderClass(card, 'product-card-compare')
+  if (compare) {
+    compare.className = prefixBuilderClasses(parts.compare)
+  }
+
+  const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+  const img = imageWrap?.querySelector('img')
+  if (img instanceof HTMLElement) {
+    img.className = prefixBuilderClasses(parts.image)
+  }
 }
 
 export function findProductGridInSection(section: HTMLElement): HTMLElement | null {
@@ -355,6 +526,7 @@ export function applyProductSectionOptionsToElement(
 ): void {
   const layout = normalizeLayout(options.layout)
   const cardStyle = normalizeCardStyle(options.cardStyle ?? 'minimal')
+  const cardDesign = normalizeCardDesign(options.cardDesign ?? 'classic')
   const mobileColumns: ProductMobileColumns = options.mobileColumns === 2 ? 2 : 1
   const roundedImages = Boolean(options.roundedImages)
   const openInNewTab = Boolean(options.openInNewTab)
@@ -368,6 +540,7 @@ export function applyProductSectionOptionsToElement(
   section.setAttribute('data-pbx-product-layout', layout)
   section.setAttribute('data-pbx-product-mobile-cols', String(mobileColumns))
   section.setAttribute('data-pbx-product-card-style', cardStyle)
+  section.setAttribute('data-pbx-product-card-design', cardDesign)
   section.setAttribute('data-pbx-product-rounded-images', roundedImages ? 'true' : 'false')
   section.setAttribute('data-pbx-product-open-in-new-tab', openInNewTab ? 'true' : 'false')
   section.setAttribute('data-pbx-product-button-style', buttonStyle)
@@ -383,16 +556,17 @@ export function applyProductSectionOptionsToElement(
   }
 
   const imageWrapClass = prefixBuilderClasses(getProductImageWrapClass(roundedImages))
-  const cardClass = prefixBuilderClasses(
-    PRODUCT_CARD_STYLE_CLASS[cardStyle] ?? PRODUCT_CARD_STYLE_CLASS.minimal,
-  )
+  const cardClass = prefixBuilderClasses(buildProductCardClass(cardStyle, cardDesign))
 
   findProductCardsInSection(section).forEach((card) => {
     card.className = cardClass
-    const imageWrap = card.querySelector('[class*="product-card-image"]')
-    if (imageWrap instanceof HTMLElement) {
+    const imageWrap = findElementByBuilderClass(card, 'product-card-image')
+    if (imageWrap) {
       imageWrap.className = imageWrapClass
     }
+    const badge = findElementByBuilderClass(card, 'product-card-badge')
+    const emptyBadge = Boolean(badge && !(badge.textContent ?? '').trim())
+    applyProductCardDesignClasses(card, cardDesign, emptyBadge)
   })
 
   applyProductLinksVisibilityInSection(section, hideLinks)
@@ -405,6 +579,7 @@ export const DEFAULT_PRODUCT_SECTION_OPTIONS: ProductSectionOptions = {
   layout: 'grid-4',
   mobileColumns: 1,
   cardStyle: 'minimal',
+  cardDesign: 'classic',
   roundedImages: false,
   openInNewTab: false,
   buttonStyle: 'button',

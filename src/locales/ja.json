@@ -486,6 +486,7 @@
   "Previous": "前へ",
   "SEO Check Results": "SEOチェック結果",
   "At least 300 words of content": "コンテンツが300語以上",
+  "Has at least one H1": "H1が少なくとも1つある",
   "Has at least one H2": "H2が少なくとも1つある",
   "Has at least one H3": "H3が少なくとも1つある",
   "Has at least one H4": "H4が少なくとも1つある",
@@ -642,5 +643,13 @@
   "3 Card Grid": "3カードグリッド",
   "2 Image Columns": "2画像カラム",
   "Mosaic Layout": "モザイクレイアウト",
-  "Feature Split": "分割フィーチャー"
+  "Feature Split": "分割フィーチャー",
+  "Card design": "カードデザイン",
+  "Layout and typography for product cards": "商品カードのレイアウトとタイポグラフィ",
+  "Classic": "クラシック",
+  "Catalog layout with clear hierarchy": "階層が明確なカタログレイアウト",
+  "Modern": "モダン",
+  "Bold type and tighter spacing": "太字でコンパクトな余白",
+  "Minimal": "ミニマル",
+  "Quiet type and more whitespace": "控えめな文字と広い余白"
 }

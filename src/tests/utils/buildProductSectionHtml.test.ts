@@ -1,5 +1,11 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import { buildProductSectionHtml } from '../../utils/builder/product-section-html'
+import {
+  applyProductSectionOptionsToElement,
+  findElementByBuilderClass,
+  PRODUCT_CONTENT_HIDDEN_ATTR,
+} from '../../utils/builder/product-section-options'
 import type { PageBuilderProduct } from '../../types'
 
 describe('buildProductSectionHtml', () => {
@@ -21,6 +27,8 @@ describe('buildProductSectionHtml', () => {
     const html = buildProductSectionHtml(sample, 'grid-3')
     expect(html).toContain('data-pbx-product-section="true"')
     expect(html).toContain('data-pbx-product-id="p1"')
+    expect(html).toContain('data-pbx-product-card-design="classic"')
+    expect(html).toContain('product-card-design-classic')
     expect(html).toContain('product-card-title text-lg font-semibold text-gray-900')
     expect(html).toContain('product-card-description text-sm text-gray-600')
     expect(html).toContain('product-card-badge text-xs')
@@ -60,6 +68,28 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('rounded-xl overflow-hidden')
     expect(html).toContain('data-pbx-product-layout="grid-3"')
     expect(html).toContain('data-pbx-product-grid="true"')
+    expect(html).toContain('data-pbx-product-card-design="classic"')
+    expect(html).toContain('product-card-design-classic')
+  })
+
+  it('applies modern card design typography', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      cardDesign: 'modern',
+    })
+    expect(html).toContain('data-pbx-product-card-design="modern"')
+    expect(html).toContain('product-card-design-modern')
+    expect(html).toContain('product-card-title text-xl font-bold tracking-tight')
+    expect(html).toContain('product-card-price text-xl font-bold')
+  })
+
+  it('applies minimal card design typography', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      cardDesign: 'minimal',
+    })
+    expect(html).toContain('data-pbx-product-card-design="minimal"')
+    expect(html).toContain('product-card-design-minimal')
+    expect(html).toContain('product-card-title text-base font-medium')
+    expect(html).toContain('product-card-price text-base font-medium')
   })
 
   it('uses two columns on mobile when mobileColumns is 2', () => {
@@ -99,6 +129,7 @@ describe('buildProductSectionHtml', () => {
       hidePrice: true,
     })
     expect(html).toContain('data-pbx-product-hide-price="true"')
+    expect(html).toContain('data-pbx-product-content-hidden="true"')
     expect(html).toContain('product-card-price-row flex flex-wrap items-baseline gap-2 pt-2 hidden')
     expect(html).toContain('$10')
   })
@@ -108,6 +139,7 @@ describe('buildProductSectionHtml', () => {
       hideImage: true,
     })
     expect(html).toContain('data-pbx-product-hide-image="true"')
+    expect(html).toContain('data-pbx-product-content-hidden="true"')
     expect(html).toContain('product-card-image shrink-0 hidden')
     expect(html).toContain('https://example.com/a.jpg')
   })
@@ -117,6 +149,7 @@ describe('buildProductSectionHtml', () => {
       hideButton: true,
     })
     expect(html).toContain('data-pbx-product-hide-button="true"')
+    expect(html).toContain('data-pbx-product-content-hidden="true"')
     expect(html).toContain(
       'product-card-cta text-sm font-semibold text-myPrimaryLinkColor pt-3 hidden',
     )
@@ -130,5 +163,41 @@ describe('buildProductSectionHtml', () => {
     expect(html).toContain('data-pbx-product-hide-links="true"')
     expect(html).toContain('data-pbx-href="/p1"')
     expect(/\shref="\/p1"/.test(html)).toBe(false)
+  })
+
+  it('applyProductSectionOptionsToElement hides price rows even when they use flex', () => {
+    const html = buildProductSectionHtml(sample, 'grid-3', 'Products', {
+      hidePrice: false,
+    })
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    const section = doc.querySelector('section') as HTMLElement
+    // Simulate canvas-prefixed classes (flex + price row) as in the live builder.
+    section.querySelectorAll('[class*="product-card-price-row"]').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return
+      node.className =
+        'pbx-product-card-price-row pbx-flex pbx-flex-wrap pbx-items-baseline pbx-gap-2 pbx-pt-2'
+    })
+    section.querySelectorAll('[class*="product-card-image"]').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return
+      node.className = 'pbx-product-card-image pbx-shrink-0'
+    })
+    section.querySelectorAll('[data-pbx-product-id]').forEach((node) => {
+      if (!(node instanceof HTMLElement)) return
+      node.className = 'pbx-product-card pbx-product-card-design-classic'
+    })
+
+    applyProductSectionOptionsToElement(section, {
+      layout: 'grid-3',
+      hidePrice: true,
+      hideImage: false,
+      hideButton: false,
+      hideLinks: false,
+    })
+
+    const priceRow = findElementByBuilderClass(section, 'product-card-price-row')
+    expect(priceRow).not.toBeNull()
+    expect(priceRow!.getAttribute(PRODUCT_CONTENT_HIDDEN_ATTR)).toBe('true')
+    expect(priceRow!.classList.contains('pbx-hidden')).toBe(true)
+    expect(section.getAttribute('data-pbx-product-hide-price')).toBe('true')
   })
 })

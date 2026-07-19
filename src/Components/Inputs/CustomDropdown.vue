@@ -65,9 +65,14 @@ const close = () => {
   isOpen.value = false
 }
 
+/** Action/section sentinels (e.g. `__custom__`) must not replace the real model value. */
+const isActionOnlyOption = (value: string) => value.startsWith('__') && value.endsWith('__')
+
 const handleSelect = (option: DropdownOption) => {
   if (option.disabled) return
-  emit('update:modelValue', option.value)
+  if (!isActionOnlyOption(option.value)) {
+    emit('update:modelValue', option.value)
+  }
   emit('select', option.value)
   close()
 }
@@ -195,7 +200,7 @@ onBeforeUnmount(() => {
 .pbx-custom-dropdown__item {
   box-sizing: border-box;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -267,7 +272,7 @@ onBeforeUnmount(() => {
 .pbx-custom-dropdown__item-body :deep(.pbx-flex),
 .pbx-custom-dropdown__item-body :deep([class*='pbx-flex']) {
   flex-wrap: nowrap;
-  align-items: flex-start;
+  align-items: center;
   min-width: 0;
   max-width: 100%;
 }

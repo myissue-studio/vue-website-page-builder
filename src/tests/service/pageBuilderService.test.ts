@@ -1759,6 +1759,8 @@ describe('PageBuilderService', () => {
 
     it('REGRESSION (product CTA): applies vertical padding to nested anchor, not product-card-cta wrapper', () => {
       const wrapper = document.createElement('div')
+      // Real product CTAs keep outer spacing on the wrapper (pt-3) while the
+      // nested <a> owns the pill padding (py-*).
       wrapper.className = 'pbx-product-card-cta pbx-text-sm pbx-font-semibold pbx-pt-3'
       wrapper.innerHTML = `
         <p>
@@ -1891,6 +1893,73 @@ describe('PageBuilderService', () => {
     })
   })
 
+  // --- SEO ---
+  describe('analyzeSEO', () => {
+    const seoSection = {
+      id: 'seo-1',
+      title: 'SEO',
+      html_code: `
+        <section data-componentid="seo-1" data-component-title="SEO">
+          <h2>Subtitle</h2>
+          <p>${'word '.repeat(320)}</p>
+          <img src="https://example.com/a.jpg" alt="A" />
+          <a href="https://example.com">Link</a>
+        </section>
+      `,
+    }
+
+    it('includes H1 check when disableH1 is false', async () => {
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+        userSettings: { disableH1: false },
+      }
+      const fresh = new PageBuilderService(mockStore)
+      vi.spyOn(fresh, 'returnLatestComponents').mockResolvedValue([seoSection])
+
+      const result = await fresh.analyzeSEO()
+      const h1Check = result.checks.find((check) => check.check === 'Has at least one H1')
+
+      expect(h1Check).toBeDefined()
+      expect(h1Check?.passed).toBe(false)
+      expect(h1Check?.details).toContain('Found 0 H1')
+    })
+
+    it('includes H1 check when disableH1 is omitted', async () => {
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+        userSettings: { autoSave: true },
+      }
+      const fresh = new PageBuilderService(mockStore)
+      vi.spyOn(fresh, 'returnLatestComponents').mockResolvedValue([
+        {
+          ...seoSection,
+          html_code: seoSection.html_code.replace('<h2>Subtitle</h2>', '<h1>Title</h1><h2>Subtitle</h2>'),
+        },
+      ])
+
+      const result = await fresh.analyzeSEO()
+      const h1Check = result.checks.find((check) => check.check === 'Has at least one H1')
+
+      expect(h1Check).toBeDefined()
+      expect(h1Check?.passed).toBe(true)
+    })
+
+    it('skips H1 check when disableH1 is true', async () => {
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+        userSettings: { disableH1: true },
+      }
+      const fresh = new PageBuilderService(mockStore)
+      vi.spyOn(fresh, 'returnLatestComponents').mockResolvedValue([seoSection])
+
+      const result = await fresh.analyzeSEO()
+      const h1Check = result.checks.find((check) => check.check === 'Has at least one H1')
+
+      expect(h1Check).toBeUndefined()
+      expect(result.checks.some((check) => check.check === 'Has at least one H2')).toBe(true)
+    })
+  })
+
   // --- image settings ---
   describe('image settings', () => {
     it('getSelectedImageAltText returns alt attribute from selected img', () => {
@@ -1938,6 +2007,77 @@ describe('PageBuilderService', () => {
       await fresh.clearHtmlSelection()
 
       expect(mockStore.setElement).not.toHaveBeenCalled()
+    })
+
+    it('handleAutoSave persists without remounting while image settings panel is open', async () => {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="img-sec" data-component-title="Image">
+          <img src="https://example.com/photo.jpg" alt="Photo" class="pbx-object-cover" selected />
+        </section>
+      `
+      const img = pagebuilder.querySelector('img') as HTMLImageElement
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = true
+      ;(mockStore as unknown as Record<string, unknown>).getPageBuilderConfig = {
+        updateOrCreate: { formType: 'update', formName: 'article' },
+        userSettings: { autoSave: true },
+      }
+      ;(mockStore as unknown as Record<string, unknown>).getLocalStorageItemName =
+        'page-builder-update-resource-article'
+      vi.mocked(mockStore.setIsSaving).mockClear()
+
+      const fresh = new PageBuilderService(mockStore)
+      const syncSpy = vi.spyOn(fresh, 'syncDomToStoreOnly')
+
+      await fresh.handleAutoSave()
+
+      expect(syncSpy).not.toHaveBeenCalled()
+      expect(document.body.contains(img)).toBe(true)
+      expect(img.classList.contains('pbx-object-cover')).toBe(true)
+    })
+
+    it('closeImageSettingsModal remounts once then reselects the same image', async () => {
+      const pagebuilder = document.querySelector('#pagebuilder')
+      expect(pagebuilder).not.toBeNull()
+      if (!pagebuilder) return
+
+      pagebuilder.innerHTML = `
+        <section data-componentid="img-sec" data-component-title="Image">
+          <img src="https://example.com/photo.jpg" alt="Photo" class="pbx-object-contain" selected />
+        </section>
+      `
+      const img = pagebuilder.querySelector('img') as HTMLImageElement
+      ;(mockStore as unknown as Record<string, unknown>).getElement = img
+      ;(mockStore as unknown as Record<string, unknown>).getImageSettingsPanelOpen = true
+      ;(mockStore as unknown as Record<string, unknown>).getLocalStorageItemName =
+        'page-builder-update-resource-article'
+
+      const fresh = new PageBuilderService(mockStore)
+      vi.spyOn(fresh, 'syncDomToStoreOnly').mockImplementation(async () => {
+        // Simulate Vue remount replacing the selected <img> node.
+        pagebuilder.innerHTML = `
+          <section data-componentid="img-sec" data-component-title="Image">
+            <img src="https://example.com/photo.jpg" alt="Photo" class="pbx-object-contain" />
+          </section>
+        `
+      })
+      vi.spyOn(
+        fresh as unknown as { addListenersToEditableElements: () => Promise<void> },
+        'addListenersToEditableElements',
+      ).mockResolvedValue()
+      const selectSpy = vi.spyOn(fresh, 'selectEditableElement').mockResolvedValue()
+
+      await fresh.closeImageSettingsModal()
+
+      expect(mockStore.setImageSettingsPanelOpen).toHaveBeenCalledWith(false)
+      expect(selectSpy).toHaveBeenCalled()
+      const restored = selectSpy.mock.calls[0]?.[0] as HTMLElement
+      expect(restored.tagName).toBe('IMG')
+      expect(restored.getAttribute('src')).toBe('https://example.com/photo.jpg')
     })
   })
 

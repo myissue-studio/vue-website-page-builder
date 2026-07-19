@@ -486,6 +486,7 @@
   "Previous": "السابق",
   "SEO Check Results": "نتائج فحص تحسين محركات البحث",
   "At least 300 words of content": "على الأقل 300 كلمة من المحتوى",
+  "Has at least one H1": "يحتوي على عنوان H1 واحد على الأقل",
   "Has at least one H2": "يحتوي على عنوان H2 واحد على الأقل",
   "Has at least one H3": "يحتوي على عنوان H3 واحد على الأقل",
   "Has at least one H4": "يحتوي على عنوان H4 واحد على الأقل",
@@ -642,5 +643,13 @@
   "3 Card Grid": "شبكة 3 بطاقات",
   "2 Image Columns": "عمودا صورتين",
   "Mosaic Layout": "تخطيط فسيفسائي",
-  "Feature Split": "قسم مميز"
+  "Feature Split": "قسم مميز",
+  "Card design": "تصميم البطاقة",
+  "Layout and typography for product cards": "تخطيط وطباعة بطاقات المنتجات",
+  "Classic": "كلاسيكي",
+  "Catalog layout with clear hierarchy": "تخطيط كتالوج بهيكل واضح",
+  "Modern": "حديث",
+  "Bold type and tighter spacing": "خط عريض ومسافات أقرب",
+  "Minimal": "بسيط",
+  "Quiet type and more whitespace": "خط هادئ ومزيد من المساحة"
 }

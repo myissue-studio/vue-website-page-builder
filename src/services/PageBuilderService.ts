@@ -59,6 +59,7 @@ import {
   validateRequiresSectionWrapper,
   validateSectionNotAllowedInElementHtml,
 } from '../utils/builder/html-component-validation'
+import { isTipTapH1Disabled } from '../utils/builder/tiptap-heading-levels'
 import {
   applyProductSectionOptionsToElement,
   DEFAULT_PRODUCT_SECTION_OPTIONS,
@@ -1795,13 +1796,12 @@ export class PageBuilderService {
   }
 
   public isSelectedProductSection(): boolean {
-    const section = this.getSelectedComponentSection()
-    return section?.getAttribute('data-pbx-product-section') === 'true'
+    return this.resolveLiveSelectedProductSection() != null
   }
 
   public getSelectedProductSectionOptions(): ProductSectionOptions {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) {
       return { ...DEFAULT_PRODUCT_SECTION_OPTIONS }
     }
     return parseProductSectionFromElement(section)
@@ -1813,8 +1813,8 @@ export class PageBuilderService {
     hasButtons: boolean
     hasLinks: boolean
   } {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) {
       return { hasPrices: false, hasImages: false, hasButtons: false, hasLinks: false }
     }
     return {
@@ -1825,12 +1825,58 @@ export class PageBuilderService {
     }
   }
 
-  public async updateSelectedProductSection(options: ProductSectionOptions): Promise<void> {
-    const section = this.getSelectedComponentSection()
-    if (!section || !this.isSelectedProductSection()) return
+  public async updateSelectedProductSection(
+    options: ProductSectionOptions,
+    applyOptions: { persist?: boolean } = {},
+  ): Promise<void> {
+    const section = this.resolveLiveSelectedProductSection()
+    if (!section) return
 
+    const componentId = section.getAttribute('data-componentid')
     applyProductSectionOptionsToElement(section, options)
+
+    const persist = applyOptions.persist !== false
+    if (!persist) return
+
     await this.handleAutoSave()
+
+    // Auto-save remounts via v-html — re-bind selection to the live section.
+    if (componentId) {
+      const live = this.findProductSectionByComponentId(componentId)
+      if (live) {
+        this.pageBuilderStateStore.setElement(live)
+      }
+    }
+  }
+
+  /** Prefer the live canvas section; getElement can point at a detached remount leftover. */
+  private resolveLiveSelectedProductSection(): HTMLElement | null {
+    const element = this.getElement.value
+    if (!element || !(element instanceof HTMLElement)) return null
+
+    const fromSelection = element.closest('section') as HTMLElement | null
+    if (
+      fromSelection?.isConnected &&
+      fromSelection.getAttribute('data-pbx-product-section') === 'true'
+    ) {
+      return fromSelection
+    }
+
+    const componentId =
+      fromSelection?.getAttribute('data-componentid') ||
+      element.closest('section[data-componentid]')?.getAttribute('data-componentid')
+    if (!componentId) return null
+
+    return this.findProductSectionByComponentId(componentId)
+  }
+
+  private findProductSectionByComponentId(componentId: string): HTMLElement | null {
+    const canvas = this.getBuilderCanvasElement()
+    if (!canvas) return null
+    const live = Array.from(
+      canvas.querySelectorAll('section[data-pbx-product-section="true"]'),
+    ).find((section) => section.getAttribute('data-componentid') === componentId)
+    return live instanceof HTMLElement ? live : null
   }
 
   /**
@@ -1863,6 +1909,59 @@ export class PageBuilderService {
 
   public isImageSettingsModalOpen(): boolean {
     return this.pageBuilderStateStore.getImageSettingsPanelOpen
+  }
+
+  /**
+   * Closes Image Settings after flushing live DOM changes.
+   * Remounts once so Pinia matches the canvas, then re-selects the same image
+   * (autosave remounts during the panel would drop selection mid-edit).
+   */
+  public async closeImageSettingsModal(): Promise<void> {
+    const selected = this.getElement.value
+    const restore =
+      selected instanceof HTMLElement && selected.tagName === 'IMG'
+        ? {
+            componentId: selected.closest('section')?.getAttribute('data-componentid') || null,
+            src: selected.getAttribute('src'),
+            className: selected.className,
+          }
+        : null
+
+    if (!this.pageBuilderStateStore.getIsSaving) {
+      try {
+        this.pageBuilderStateStore.setIsSaving(true)
+        this.saveDomComponentsToLocalStorage()
+      } finally {
+        this.pageBuilderStateStore.setIsSaving(false)
+      }
+    }
+
+    this.pageBuilderStateStore.setImageSettingsPanelOpen(false)
+
+    await this.syncDomToStoreOnly()
+    await this.addListenersToEditableElements()
+
+    if (!restore) return
+
+    const pagebuilder = this.getBuilderCanvasElement()
+    if (!pagebuilder) return
+
+    const scope =
+      (restore.componentId
+        ? Array.from(pagebuilder.querySelectorAll('section')).find(
+            (section) => section.getAttribute('data-componentid') === restore.componentId,
+          )
+        : null) || pagebuilder
+
+    const candidates = Array.from(scope.querySelectorAll('img'))
+    const match =
+      candidates.find((img) => img.getAttribute('src') === restore.src) ||
+      candidates.find((img) => img.className === restore.className) ||
+      null
+
+    if (match) {
+      await this.selectEditableElement(match, false)
+    }
   }
 
   private findImageAspectClass(element: HTMLElement): string | null {
@@ -2397,6 +2496,26 @@ export class PageBuilderService {
 
     if (this.isInlineTipTapActive()) {
       this.debugLog('warn', 'handleAutoSave(): skipped — TipTap active')
+      return
+    }
+
+    // Image Settings applies classes on the live <img>. syncDomToStoreOnly remounts
+    // sections via v-html and would drop the selection mid-edit — persist DOM only.
+    if (this.pageBuilderStateStore.getImageSettingsPanelOpen) {
+      if (this.pageBuilderStateStore.getIsSaving) return
+      try {
+        this.pageBuilderStateStore.setIsSaving(true)
+        this.saveDomComponentsToLocalStorage()
+        await sleep(400)
+      } catch (err) {
+        console.error('Error trying auto save during image settings.', err)
+        this.debugLog('error', 'handleAutoSave(): error (image settings)', err)
+        const { showToast } = useToast()
+        const { translate } = useTranslations()
+        showToast(translate('Auto-save failed — please save manually'), 'error')
+      } finally {
+        this.pageBuilderStateStore.setIsSaving(false)
+      }
       return
     }
 
@@ -4940,6 +5059,8 @@ export class PageBuilderService {
 
   /**
    * Replaces the entire page with a theme template (clears existing sections first).
+   * Also resets Page Design global classes/styles so theme layouts are not mixed
+   * with leftover page-wide font/color/background settings.
    */
   public async replaceTheme(themeHtml: string): Promise<void> {
     const trimmed = themeHtml?.trim()
@@ -4948,9 +5069,67 @@ export class PageBuilderService {
     const validationError = this.validateMountingHTML(trimmed, { logError: true })
     if (validationError) return
 
+    this.resetPageDesignSettingsForThemeReplace()
     this.deleteAllComponentsFromDOM()
     await this.mountComponentsToDOM(trimmed)
     await this.handleAutoSave()
+  }
+
+  /**
+   * Clears #pagebuilder Page Design classes/styles and runtime pageSettings so a
+   * full-page theme is not overridden by previous global page styles.
+   */
+  private resetPageDesignSettingsForThemeReplace(): void {
+    this._lastKnownPageSettings = null
+    this._pendingPageSettings = null
+
+    const pagebuilder = this.getBuilderCanvasElement()
+    pagebuilder?.removeAttribute('class')
+    pagebuilder?.removeAttribute('style')
+    if (pagebuilder) {
+      applyPageMetaToElement(pagebuilder, { title: '', description: '' })
+    }
+
+    const emptyPageSettings: PageSettings = {
+      classes: '',
+      style: '',
+      meta: { title: '', description: '' },
+    }
+    const currentConfig = this.pageBuilderStateStore.getPageBuilderConfig
+    if (currentConfig && typeof currentConfig === 'object') {
+      this.pageBuilderStateStore.setPageBuilderConfig({
+        ...(currentConfig as Record<string, unknown>),
+        pageSettings: emptyPageSettings,
+      } as never)
+    }
+
+    // Clear persisted draft pageSettings so mountComponentsToDOM cannot restore
+    // Page Design classes/styles from localStorage after the DOM wipe.
+    this.updateLocalStorageItemName()
+    const storageKey = this.getLocalStorageItemName.value
+    if (storageKey) {
+      try {
+        const raw = localStorage.getItem(storageKey)
+        if (raw) {
+          const parsed = JSON.parse(raw) as Record<string, unknown>
+          parsed.pageSettings = emptyPageSettings
+          localStorage.setItem(storageKey, JSON.stringify(parsed))
+        }
+      } catch {
+        // Ignore parse/write errors; auto-save will rewrite the draft next.
+      }
+    }
+
+    // Reset Page Design picker state so editors don't re-apply old tokens.
+    this.pageBuilderStateStore.setFontFamily?.('none')
+    this.pageBuilderStateStore.setFontWeight?.('none')
+    this.pageBuilderStateStore.setFontStyle?.('none')
+    this.pageBuilderStateStore.setFontBase?.('none')
+    this.pageBuilderStateStore.setFontDesktop?.('none')
+    this.pageBuilderStateStore.setFontTablet?.('none')
+    this.pageBuilderStateStore.setFontMobile?.('none')
+    this.pageBuilderStateStore.setTextColor?.(null)
+    this.pageBuilderStateStore.setBackgroundColor?.(null)
   }
 
   public getPageMeta(): PageMeta {
@@ -5014,7 +5193,21 @@ export class PageBuilderService {
       category: 'Content',
     })
 
-    // Individual heading checks (H2-H6)
+    // Individual heading checks. H1 is only required when authors can create it
+    // (userSettings.disableH1 is not true). When H1 is disabled, the host app
+    // typically owns the page title outside the builder.
+    const h1Enabled = !isTipTapH1Disabled(this.pageBuilderStateStore.getPageBuilderConfig)
+
+    if (h1Enabled) {
+      const h1Count = doc.querySelectorAll('h1').length
+      checks.push({
+        check: 'Has at least one H1',
+        passed: h1Count > 0,
+        details: `Found ${h1Count} H1 headings`,
+        category: 'Headings',
+      })
+    }
+
     const h2Count = doc.querySelectorAll('h2').length
     checks.push({
       check: 'Has at least one H2',
@@ -5055,8 +5248,9 @@ export class PageBuilderService {
       category: 'Headings',
     })
 
-    // No heading levels are skipped (e.g. H3 without H2)
-    const headingLevels = [2, 3, 4, 5, 6]
+    // No heading levels are skipped (e.g. H3 without H2). Include H1 in the
+    // hierarchy only when H1 is enabled for authors.
+    const headingLevels = h1Enabled ? [1, 2, 3, 4, 5, 6] : [2, 3, 4, 5, 6]
     let headingStructureValid = true
     let headingStructureDetail = 'Heading hierarchy is correct'
     for (let i = 1; i < headingLevels.length; i++) {
@@ -5266,6 +5460,7 @@ export class PageBuilderService {
     const sectionTitle = options.sectionTitle ?? 'Products'
     const html = buildProductSectionHtml(products, options.layout ?? 'grid-4', sectionTitle, {
       cardStyle: options.cardStyle,
+      cardDesign: options.cardDesign,
       roundedImages: options.roundedImages,
       openInNewTab: options.openInNewTab,
       buttonStyle: options.buttonStyle,
