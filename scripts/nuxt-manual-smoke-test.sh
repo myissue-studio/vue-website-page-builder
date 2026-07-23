@@ -27,7 +27,8 @@ cat > "$TMP_DIR/package.json" << 'EOF'
     "build": "nuxt build"
   },
   "dependencies": {
-    "nuxt": "^3.17.6"
+    "nuxt": "3.17.6",
+    "vue": "^3.5.13"
   }
 }
 EOF
@@ -73,10 +74,11 @@ EOF
 
 printf '[nuxt-smoke] Installing Nuxt app dependencies...\n'
 cd "$TMP_DIR"
-npm install --silent
+# Avoid npm arborist peer-resolution crash (edgesOut) on some Nuxt graphs.
+npm install --legacy-peer-deps
 
 printf '[nuxt-smoke] Installing packed page builder package...\n'
-npm install --silent "$PACKAGE_PATH"
+npm install --legacy-peer-deps "$PACKAGE_PATH"
 
 printf '[nuxt-smoke] Running Nuxt build...\n'
 npm run build

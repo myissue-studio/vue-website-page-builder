@@ -1,6 +1,6 @@
 {
   "name": "@myissue/vue-website-page-builder",
-  "version": "3.5.69",
+  "version": "3.5.70",
   "description": "Free open-source Vue 3 page builder and drag-and-drop visual editor for ecommerce admin, multi-tenant SaaS, and headless CMS. Self-hosted Builder.io / GrapesJS-style alternative with custom media library and product catalog integration.",
   "type": "module",
   "main": "./dist/vue-website-page-builder.umd.cjs",
@@ -94,10 +94,12 @@
     "@tiptap/extension-text-align": "^3.4.2",
     "@tiptap/starter-kit": "^3.4.2",
     "@tiptap/vue-3": "^3.4.2",
-    "pinia": "^2.1.7",
+    "pinia": "~2.1.7",
     "uuid": "^14.0.1",
-    "vue": "^3.5.40",
     "date-fns": "^4.4.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.58.9",
@@ -126,6 +128,7 @@
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitepress": "^2.0.0-alpha.15",
     "vitest": "^3.2.4",
+    "vue": "^3.5.40",
     "vue-tsc": "^3.3.6"
   }
 }

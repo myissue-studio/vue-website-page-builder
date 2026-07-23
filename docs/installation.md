@@ -10,3 +10,5 @@ The web builder for stunning pages. Enables users to design and publish modern p
 ```bash
 npm install @myissue/vue-website-page-builder
 ```
+
+`vue` (`^3.3.0`) is a **peer dependency** — use your app’s Vue install (3.3, 3.4, or 3.5). Do not rely on a nested copy from this package.
