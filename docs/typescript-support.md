@@ -15,6 +15,8 @@ When you install the package, TypeScript will automatically pick up the type dec
 npm install @myissue/vue-website-page-builder
 ```
 
+`vue` (`^3.3.0`) is a peer dependency — use your app’s Vue (3.3+) so `app.use(pageBuilder)` type-checks against the same `Plugin` / `App` types.
+
 No additional setup or `@types` packages are needed.
 
 ## Available Types
