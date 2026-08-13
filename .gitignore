@@ -13,7 +13,6 @@ dist-ssr
 *.local
 .env
 todo.txt
-roadmap.md
 
 # Editor directories and files
 .vscode/*
