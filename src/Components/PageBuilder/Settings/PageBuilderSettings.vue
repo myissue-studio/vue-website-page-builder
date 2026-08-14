@@ -100,8 +100,7 @@ function generateHTML(filename: string, HTML: string) {
         #pagebuilder h5,
         #pagebuilder h6,
         #pagebuilder ul,
-        #pagebuilder ol,
-        #pagebuilder li {
+        #pagebuilder ol {
           margin: 0;
           padding: 0;
         }

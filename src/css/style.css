@@ -1879,10 +1879,19 @@
 #pagebuilder ol,
 #page-builder-editor ul,
 #pagebuilder ul {
-  list-style: disc !important;
-  padding: 1rem 0 0 1.4rem;
+  padding: 0.25rem 0 0.5rem 1.4rem;
   margin-left: 1em;
-  line-height: 1rem;
+  line-height: 1.65;
+}
+
+#page-builder-editor ul,
+#pagebuilder ul {
+  list-style: disc;
+}
+
+#page-builder-editor ol,
+#pagebuilder ol {
+  list-style: decimal;
 }
 
 .pbx-headless-dropdown {
@@ -1920,9 +1929,16 @@
 #pagebuilder h5,
 #pagebuilder h6,
 #pagebuilder ul,
-#pagebuilder ol,
-#pagebuilder li {
+#pagebuilder ol {
   margin: 0;
+  font-weight: inherit;
+}
+
+#page-builder-editor li,
+#pagebuilder li {
+  margin: 0.55em 0;
+  padding: 0.1em 0;
+  line-height: 1.65;
   font-weight: inherit;
 }
 
