@@ -1875,6 +1875,55 @@
   background: #ffdfdf;
 }
 
+/*
+  Typography helpers are separate <section>s with the same wrapper padding
+  (pbx-pt-4 pbx-pb-8). Equal gaps make an H2 look equally far from the copy
+  above and below. Group by proximity instead: more space before a heading,
+  almost none between a heading and the text/list that follows.
+*/
+#pagebuilder section[data-component-title*='Header H'] > :first-child {
+  padding-top: 2.75rem;
+  padding-bottom: 0.2rem;
+}
+
+#pagebuilder > section:first-of-type[data-component-title*='Header H'] > :first-child {
+  padding-top: 1rem;
+}
+
+#pagebuilder
+  section[data-component-title*='Header H']
+  + section[data-component-title*='Header H']
+  > :first-child {
+  padding-top: 0.75rem;
+}
+
+#pagebuilder
+  section:is(
+    [data-component-title='Text'],
+    [data-component-title='Simple List'],
+    [data-component-title='Numbered List'],
+    [data-component-title='Lead Text'],
+    [data-component-title='Caption Text']
+  )
+  > :first-child {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+#pagebuilder
+  section[data-component-title*='Header H']
+  + section:is(
+    [data-component-title='Text'],
+    [data-component-title='Simple List'],
+    [data-component-title='Numbered List'],
+    [data-component-title='Lead Text'],
+    [data-component-title='Caption Text'],
+    [data-component-title='List With Title']
+  )
+  > :first-child {
+  padding-top: 0.15rem;
+}
+
 #page-builder-editor ol,
 #pagebuilder ol,
 #page-builder-editor ul,
@@ -1932,6 +1981,20 @@
 #pagebuilder ol {
   margin: 0;
   font-weight: inherit;
+}
+
+#pagebuilder p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+#pagebuilder p + p {
+  margin-top: 0.85em;
+}
+
+#pagebuilder li > p {
+  margin-top: 0;
+  line-height: inherit;
 }
 
 #page-builder-editor li,

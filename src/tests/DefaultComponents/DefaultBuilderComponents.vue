@@ -703,6 +703,8 @@ const convertToComponentObject = function (comp: {
           id="pbx-formatted-text-input"
           v-model="formattedTextInput"
           :placeholder="translate('Paste headings and paragraphs here')"
+          @keydown.meta.enter.prevent="insertFormattedText"
+          @keydown.ctrl.enter.prevent="insertFormattedText"
         />
       </div>
 

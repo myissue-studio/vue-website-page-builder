@@ -99,14 +99,12 @@ function innerAllowedHtml(element: HTMLElement): string {
   return Array.from(element.childNodes).map(serializeAllowedInline).join('').trim()
 }
 
-function looksLikeHeadingLine(line: string): boolean {
+function looksLikeHeadingLine(line: string, nextNonEmpty?: string): boolean {
   const trimmed = line.trim()
   if (!trimmed || trimmed.length > 90) return false
-  if (/[.!?]$/.test(trimmed)) return false
-  if (/,$/.test(trimmed)) return false
-  const words = trimmed.split(/\s+/).length
-  if (/:$/.test(trimmed) && words > 4) return false
-  if (words > 12) return false
+  if (/[.!?,:]$/.test(trimmed)) return false
+  if (nextNonEmpty && isListLine(nextNonEmpty)) return false
+  if (trimmed.split(/\s+/).length > 12) return false
   return true
 }
 
@@ -176,7 +174,7 @@ function collectHtmlBlocks(root: ParentNode): FormattedTextBlock[] {
   return mergeAdjacentParagraphs(blocks)
 }
 
-function lineToBlock(line: string): FormattedTextBlock {
+function lineToBlock(line: string, nextNonEmpty?: string): FormattedTextBlock {
   const atx = parseAtxHeading(line)
   if (atx) return atx
 
@@ -188,7 +186,7 @@ function lineToBlock(line: string): FormattedTextBlock {
     }
   }
 
-  if (looksLikeHeadingLine(plainTextForHeuristics(line))) {
+  if (looksLikeHeadingLine(plainTextForHeuristics(line), nextNonEmpty)) {
     return {
       kind: 'heading',
       level: 2,
@@ -199,19 +197,27 @@ function lineToBlock(line: string): FormattedTextBlock {
   return { kind: 'paragraphs', html: `<p>${inlineMarkdownToHtml(line)}</p>` }
 }
 
+function nextNonEmptyLine(lines: string[], index: number): string | undefined {
+  for (let i = index + 1; i < lines.length; i++) {
+    const next = lines[i].trim()
+    if (next) return next
+  }
+  return undefined
+}
+
 function parsePlainText(input: string): FormattedTextBlock[] {
   const lines = input.replace(/\r\n/g, '\n').split('\n')
   const blocks: FormattedTextBlock[] = []
   let canMergeList = false
 
-  for (const raw of lines) {
-    const line = raw.trim()
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index].trim()
     if (!line) {
       canMergeList = false
       continue
     }
 
-    const block = lineToBlock(line)
+    const block = lineToBlock(line, nextNonEmptyLine(lines, index))
     const prev = blocks[blocks.length - 1]
     if (
       block.kind === 'list' &&

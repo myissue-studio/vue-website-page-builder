@@ -100,6 +100,35 @@ myself.ae is a UAE-focused platform.`)
     expect(blocks[7]).toMatchObject({ kind: 'heading', level: 2 })
     expect(blocks[7].kind === 'heading' && blocks[7].html).toBe('<h2>Why myself.ae?</h2>')
   })
+
+  it('keeps list lead-ins like "You should:" as paragraphs, not H2', () => {
+    const blocks = parseFormattedText(`## What we're looking for
+
+We are looking for an experienced B2B salesperson.
+
+You should:
+
+- Have proven B2B sales experience
+- Be comfortable with cold calling
+
+## This opportunity is for you if...
+
+You are someone who:
+
+- Wants to be your own boss
+- Knows how to close deals`)
+
+    expect(blocks.map((block) => block.kind)).toEqual([
+      'heading',
+      'paragraphs',
+      'list',
+      'heading',
+      'paragraphs',
+      'list',
+    ])
+    expect(blocks[1].kind === 'paragraphs' && blocks[1].html).toContain('You should:')
+    expect(blocks[4].kind === 'paragraphs' && blocks[4].html).toContain('You are someone who:')
+  })
 })
 
 describe('buildComponentsFromFormattedText', () => {
