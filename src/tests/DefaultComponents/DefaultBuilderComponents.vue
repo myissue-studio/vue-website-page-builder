@@ -5,7 +5,7 @@ import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
 import { getBlockDescriptionKey } from '../../utils/html-elements/block-descriptions'
 import { usePageBuilderModal } from '../../composables/usePageBuilderModal'
-import type { ComponentObject } from '../../types'
+import type { ComponentObject, ProductButtonStyle } from '../../types'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import { useToast } from '../../composables/useToast'
@@ -15,8 +15,11 @@ import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
 import ConfirmActionModal from '../../Components/Modals/ConfirmActionModal.vue'
-import type { ProductButtonStyle } from '../../types'
 import LinkStyleSettingsPanel from '../../Components/PageBuilder/EditorMenu/Editables/LinkStyleSettingsPanel.vue'
+import {
+  buildComponentsFromFormattedText,
+  previewFormattedTextBlocks,
+} from '../../utils/builder/formatted-text-to-components'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -134,6 +137,12 @@ const { closeAddComponentModal } = usePageBuilderModal()
 const hasPageContent = computed(() => (pageBuilderStateStore.getComponents?.length ?? 0) > 0)
 
 const showReplaceThemeModal = ref(false)
+const showFormattedTextModal = ref(false)
+const formattedTextInput = ref('')
+const isInsertingFormattedText = ref(false)
+
+const formattedTextPreview = computed(() => previewFormattedTextBlocks(formattedTextInput.value))
+
 const pendingThemeHtml = ref('')
 const typeModal = ref('')
 const gridColumnModal = ref(1)
@@ -221,6 +230,32 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
   showToast(translate('Component added to page'), 'success')
   closeAddComponentModal()
   isLoading.value = false
+}
+
+const closeFormattedTextModal = () => {
+  showFormattedTextModal.value = false
+  formattedTextInput.value = ''
+}
+
+const insertFormattedText = async () => {
+  const components = buildComponentsFromFormattedText(
+    formattedTextInput.value,
+    pageBuilderStateStore.getPageBuilderConfig,
+  )
+  if (!components.length) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
+  }
+
+  isInsertingFormattedText.value = true
+  try {
+    await pageBuilderService.addComponents(components)
+    closeFormattedTextModal()
+    closeAddComponentModal()
+    showToast(translate('Formatted text added to page'), 'success')
+  } finally {
+    isInsertingFormattedText.value = false
+  }
 }
 
 const applyHelperButtonStyle = (componentObject: ComponentObject): ComponentObject => {
@@ -356,17 +391,25 @@ const convertToComponentObject = function (comp: {
 
       <div class="pbx-modalFilterBar">
         <span class="pbx-modalFilterBarTitle">{{ translate('Browse') }}</span>
-        <div class="pbx-modalFilterBarChips">
+        <div class="pbx-modalFilterBarRow">
+          <div class="pbx-modalFilterBarChips">
+            <ModalFilterChip
+              v-for="category in componentOrThemes"
+              :key="category"
+              icon="asterisk"
+              :label="translate(category)"
+              :hint="
+                category === 'Themes' ? translate('Full page themes') : translate('Building blocks')
+              "
+              :active="selectedThemeSelection === category"
+              @click="selectedThemeSelection = category"
+            />
+          </div>
           <ModalFilterChip
-            v-for="category in componentOrThemes"
-            :key="category"
-            :icon="category === 'Themes' ? 'asterisk' : 'asterisk'"
-            :label="translate(category)"
-            :hint="
-              category === 'Themes' ? translate('Full page themes') : translate('Building blocks')
-            "
-            :active="selectedThemeSelection === category"
-            @click="selectedThemeSelection = category"
+            icon="asterisk"
+            :label="translate('Insert formatted text')"
+            :hint="translate('Paste headings and lists')"
+            @click="showFormattedTextModal = true"
           />
         </div>
       </div>
@@ -599,5 +642,40 @@ const convertToComponentObject = function (comp: {
   >
     <header></header>
     <main></main>
+  </ConfirmActionModal>
+
+  <ConfirmActionModal
+    :showDynamicModalBuilder="showFormattedTextModal"
+    type="success"
+    :gridColumnAmount="2"
+    :title="translate('Insert formatted text')"
+    :description="translate('Insert formatted text description')"
+    :isLoading="isInsertingFormattedText"
+    :firstButtonText="translate('Close')"
+    :thirdButtonText="translate('Insert')"
+    :disabled="isInsertingFormattedText || !formattedTextPreview.length"
+    disabledWhichButton="third"
+    maxWidth="3xl"
+    @firstModalButtonFunctionDynamicModalBuilder="closeFormattedTextModal"
+    @thirdModalButtonFunctionDynamicModalBuilder="insertFormattedText"
+  >
+    <div class="pbx-p-2">
+      <label
+        class="pbx-block pbx-text-xs pbx-font-medium pbx-text-gray-500 pbx-mb-2"
+        for="pbx-formatted-text-input"
+      >
+        {{ translate('Paste headings and paragraphs here') }}
+      </label>
+      <textarea
+        id="pbx-formatted-text-input"
+        v-model="formattedTextInput"
+        class="pbx-myPrimaryTextArea pbx-min-h-[60rem]"
+        :placeholder="translate('Paste headings and paragraphs here')"
+      />
+      <p v-if="formattedTextPreview.length" class="pbx-mt-3 pbx-mb-0 pbx-text-xs pbx-text-gray-500">
+        {{ translate('Will insert') }}:
+        {{ formattedTextPreview.map((title) => translate(title)).join(', ') }}
+      </p>
+    </div>
   </ConfirmActionModal>
 </template>

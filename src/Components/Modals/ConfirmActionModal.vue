@@ -92,7 +92,7 @@ const thirdButtonBuilder = function () {
     <div
       class="pbx-min-h-32 pbx-h-max pbx-font-sans pbx-w-full pbx-relative pbx-inline-block pbx-align-bottom pbx-text-left pbx-overflow-hidden pbx-transform pbx-transition-all sm:pbx-align-middle"
     >
-      <div :class="{ 'pbx-pr-4 pbx-pb-4': !simpleModal }">
+      <div :class="{ 'pbx-pb-4': !simpleModal }">
         <template v-if="simpleModal !== true">
           <div v-html="description" class="pbx-myPrimaryParagraph pbx-mb-6"></div>
         </template>

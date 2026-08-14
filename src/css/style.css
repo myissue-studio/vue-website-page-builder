@@ -929,6 +929,10 @@
     @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-gap-2 pbx-overflow-x-auto;
   }
 
+  .pbx-modalFilterBarRow {
+    @apply pbx-flex pbx-flex-wrap pbx-items-stretch pbx-justify-between pbx-gap-2;
+  }
+
   .pbx-modalFilterChip {
     @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor/10 hover:pbx-shadow-sm;
   }
@@ -1144,7 +1148,14 @@
     */
   .pbx-toolbarMoreMenu {
     @apply pbx-fixed pbx-z-50 pbx-flex pbx-max-h-72 pbx-select-none pbx-flex-col pbx-gap-1 pbx-overflow-y-auto pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200/90 pbx-bg-white pbx-p-1.5 pbx-shadow-xl;
-    will-change: top, left;
+    transition-property: opacity, transform;
+  }
+
+  .pbx-toolbarMoreMenu--pending {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 
   .pbx-toolbarMoreMenuSection {
@@ -1924,7 +1935,9 @@
 /* Vue transition hooks for package popovers (toolbar more menu, image panel, TipTap). */
 .popup-fade-enter-active,
 .popup-fade-leave-active {
-  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .popup-fade-enter-from,
 .popup-fade-leave-to {
