@@ -332,9 +332,51 @@ export function buildComponentsFromFormattedText(
 }
 
 export function previewFormattedTextBlocks(input: string): string[] {
+  return previewFormattedTextItems(input).map((item) => item.title)
+}
+
+function stripTags(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export type FormattedTextPreviewItem = {
+  kind: FormattedTextBlock['kind']
+  title: string
+  excerpt: string
+  headingLevel?: FormattedTextHeadingLevel
+  symbol?: string
+}
+
+export function previewFormattedTextItems(input: string): FormattedTextPreviewItem[] {
   return parseFormattedText(input).map((block) => {
-    if (block.kind === 'heading') return HEADING_TITLE[block.level]
-    if (block.kind === 'list') return 'Numbered List'
-    return 'Text'
+    if (block.kind === 'heading') {
+      return {
+        kind: 'heading',
+        title: HEADING_TITLE[block.level],
+        headingLevel: block.level,
+        excerpt: stripTags(block.html),
+      }
+    }
+    if (block.kind === 'list') {
+      return {
+        kind: 'list',
+        title: 'Numbered List',
+        symbol: block.ordered ? 'format_list_numbered' : 'format_list_bulleted',
+        excerpt: block.items.map(stripTags).filter(Boolean).join(', '),
+      }
+    }
+    return {
+      kind: 'paragraphs',
+      title: 'Text',
+      excerpt: stripTags(block.html),
+    }
   })
 }

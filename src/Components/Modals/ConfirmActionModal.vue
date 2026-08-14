@@ -144,7 +144,7 @@ const thirdButtonBuilder = function () {
                 : 'pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-myPrimaryLinkColor focus:pbx-ring-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor',
             ]"
             type="button"
-            :disabled="isLoading"
+            :disabled="isLoading || (disabled && disabledWhichButton === 'third')"
             @click="thirdButtonBuilder"
           >
             <span>

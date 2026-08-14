@@ -5437,16 +5437,29 @@ export class PageBuilderService {
 
   /**
    * Inserts several helper/layout components in one pass (one remount + one autosave).
+   * Pass `{ replace: true }` to clear the canvas first.
    */
-  public async addComponents(componentObjects: ComponentObject[]): Promise<void> {
+  public async addComponents(
+    componentObjects: ComponentObject[],
+    options?: { replace?: boolean },
+  ): Promise<void> {
     if (!componentObjects.length) return
-    if (componentObjects.length === 1) {
+
+    const replace = options?.replace === true
+    if (replace) {
+      this.deleteAllComponentsFromDOM()
+      await nextTick()
+    }
+
+    if (!replace && componentObjects.length === 1) {
       await this.addComponent(componentObjects[0])
       return
     }
 
-    const placeCompAtLocation = this.pageBuilderStateStore.getAddComponentAddIndex ?? 0
-    const method = this.getComponentArrayAddMethod.value || 'push'
+    const placeCompAtLocation = replace
+      ? 0
+      : (this.pageBuilderStateStore.getAddComponentAddIndex ?? 0)
+    const method = replace ? 'push' : this.getComponentArrayAddMethod.value || 'push'
 
     try {
       const cloned = componentObjects.map((componentObject) =>
