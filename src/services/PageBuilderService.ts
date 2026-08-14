@@ -5436,6 +5436,89 @@ export class PageBuilderService {
   }
 
   /**
+   * Inserts several helper/layout components in one pass (one remount + one autosave).
+   * Pass `{ replace: true }` to clear the canvas first.
+   */
+  public async addComponents(
+    componentObjects: ComponentObject[],
+    options?: { replace?: boolean },
+  ): Promise<void> {
+    if (!componentObjects.length) return
+
+    const replace = options?.replace === true
+    if (replace) {
+      this.deleteAllComponentsFromDOM()
+      await nextTick()
+    }
+
+    if (!replace && componentObjects.length === 1) {
+      await this.addComponent(componentObjects[0])
+      return
+    }
+
+    const placeCompAtLocation = replace
+      ? 0
+      : (this.pageBuilderStateStore.getAddComponentAddIndex ?? 0)
+    const method = replace ? 'push' : this.getComponentArrayAddMethod.value || 'push'
+
+    try {
+      const cloned = componentObjects.map((componentObject) =>
+        this.cloneCompObjForDOMInsertion({
+          html_code: componentObject.html_code,
+          id: componentObject.id,
+          title: componentObject.title,
+        }),
+      )
+
+      const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
+      this.globalStylesObserver?.disconnect()
+      await this.syncDomToStoreOnly()
+      await nextTick()
+
+      const components = this.pageBuilderStateStore.getComponents || []
+      let nextComponents: ComponentObject[]
+      if (method === 'insert' && typeof placeCompAtLocation === 'number' && placeCompAtLocation >= 0) {
+        nextComponents = [
+          ...components.slice(0, placeCompAtLocation),
+          ...cloned,
+          ...components.slice(placeCompAtLocation),
+        ]
+      } else if (method === 'unshift') {
+        nextComponents = [...cloned, ...components]
+      } else {
+        nextComponents = [...components, ...cloned]
+      }
+
+      this.pageBuilderStateStore.setComponents(nextComponents)
+      await nextTick()
+      await nextTick()
+
+      if (pageSettings && (pageSettings.classes || pageSettings.style)) {
+        this.applyPageSettingsToPage(pageSettings)
+      }
+      if (this.globalStylesObserver !== null) {
+        this.reconnectGlobalStylesObserver()
+      }
+
+      const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
+      if (pageBuilderWrapper && method === 'push') {
+        pageBuilderWrapper.scrollTo({
+          top: pageBuilderWrapper.scrollHeight + 50,
+          behavior: 'smooth',
+        })
+      }
+
+      await nextTick()
+      await this.addListenersToEditableElements()
+      await this.handleAutoSave()
+    } catch (error) {
+      console.error('Error adding components:', error)
+    } finally {
+      this.pageBuilderStateStore.setAddComponentAddIndex(null)
+    }
+  }
+
+  /**
    * Inserts a product section using raw HTML from a custom product picker.
    */
   public async insertProductHtml(html: string, title = 'Products'): Promise<void> {

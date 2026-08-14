@@ -751,15 +751,18 @@ const handleModalIframeSrc = function () {
 }
 
 const openOptionsMoreOpen = ref(false)
+const moreMenuPositioned = ref(false)
 const moreMenuTriggerRef = ref<HTMLElement | null>(null)
 const moreMenuPopoverRef = ref<HTMLElement | null>(null)
 const MORE_MENU_WIDTH_PX = 240
 
-const moreMenuPopoverStyle = ref({
-  top: '0px',
-  left: '0px',
+const moreMenuPosition = ref({ top: 0, left: 0 })
+
+const moreMenuPopoverStyle = computed(() => ({
+  top: `${moreMenuPosition.value.top}px`,
+  left: `${moreMenuPosition.value.left}px`,
   width: `${MORE_MENU_WIDTH_PX}px`,
-})
+}))
 
 const updateMoreMenuPosition = function () {
   const trigger = moreMenuTriggerRef.value
@@ -770,10 +773,9 @@ const updateMoreMenuPosition = function () {
   let left = rect.left + rect.width / 2 - MORE_MENU_WIDTH_PX / 2
   left = Math.max(margin, Math.min(left, window.innerWidth - MORE_MENU_WIDTH_PX - margin))
 
-  moreMenuPopoverStyle.value = {
-    top: `${getEditToolbarPopoverTop(rect.bottom)}px`,
-    left: `${Math.round(left)}px`,
-    width: `${MORE_MENU_WIDTH_PX}px`,
+  moreMenuPosition.value = {
+    top: getEditToolbarPopoverTop(rect.bottom),
+    left: Math.round(left),
   }
 }
 
@@ -810,17 +812,65 @@ const detachMoreMenuPositionListeners = function () {
   stopMoreMenuPositionTracking()
 }
 
+const attachMoreMenuListeners = function () {
+  document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+  window.addEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
+  window.addEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
+}
+
+const detachMoreMenuListeners = function () {
+  document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
+  window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
+  window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
+  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
+}
+
 const closeMoreMenuOnOutsideClick = function (event: Event) {
   if (!openOptionsMoreOpen.value) return
   if (!(event.target instanceof Node)) return
   if (moreMenuTriggerRef.value?.contains(event.target)) return
   if (moreMenuPopoverRef.value?.contains(event.target)) return
   if (event.target instanceof Element && event.target.closest('#pbxEditToolbar')) return
-  openOptionsMoreOpen.value = false
+  closeMoreMenu()
 }
 
 const closeMoreMenu = () => {
+  if (!openOptionsMoreOpen.value) return
   openOptionsMoreOpen.value = false
+  moreMenuPositioned.value = false
+  cancelAnimationFrame(moreMenuSettleRaf)
+  moreMenuSettleRaf = 0
+  detachMoreMenuPositionListeners()
+  detachMoreMenuListeners()
+}
+
+const waitForAnimationFrame = () =>
+  new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
+const openMoreMenu = async () => {
+  updateMoreMenuPosition()
+  moreMenuPositioned.value = false
+  openOptionsMoreOpen.value = true
+
+  await nextTick()
+  updateMoreMenuPosition()
+  await waitForAnimationFrame()
+  updateMoreMenuPosition()
+  await waitForAnimationFrame()
+  updateMoreMenuPosition()
+  moreMenuPositioned.value = true
+
+  attachMoreMenuPositionListeners()
+  attachMoreMenuListeners()
+}
+
+const toggleMoreMenu = () => {
+  if (openOptionsMoreOpen.value) {
+    closeMoreMenu()
+    return
+  }
+  void openMoreMenu()
 }
 
 const syncMoreMenuPosition = () => {
@@ -868,36 +918,11 @@ const handleMoveComponentDown = async () => {
 }
 
 const closeMoreMenuOnScrollDown = function () {
-  openOptionsMoreOpen.value = false
+  closeMoreMenu()
 }
 
-watch(openOptionsMoreOpen, (isOpen) => {
-  if (isOpen) {
-    attachMoreMenuPositionListeners()
-    document.addEventListener('pointerdown', closeMoreMenuOnOutsideClick)
-    window.addEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
-    window.addEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
-    window.addEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
-    return
-  }
-
-  cancelAnimationFrame(moreMenuSettleRaf)
-  moreMenuSettleRaf = 0
-  detachMoreMenuPositionListeners()
-  document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
-  window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
-  window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
-  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
-})
-
 onBeforeUnmount(() => {
-  cancelAnimationFrame(moreMenuSettleRaf)
-  moreMenuSettleRaf = 0
-  detachMoreMenuPositionListeners()
-  document.removeEventListener('pointerdown', closeMoreMenuOnOutsideClick)
-  window.removeEventListener('pagebuilder:toolbar-positioned', syncMoreMenuPosition)
-  window.removeEventListener('pagebuilder:layout-change', syncMoreMenuPosition)
-  window.removeEventListener(CLOSE_EDIT_TOOLBAR_POPOVERS_EVENT, closeMoreMenuOnScrollDown)
+  closeMoreMenu()
 })
 
 const showModalDeleteComponent = ref(false)
@@ -1513,7 +1538,7 @@ defineExpose({
             :aria-expanded="openOptionsMoreOpen"
             aria-haspopup="menu"
             :aria-label="translate('More options')"
-            @click="openOptionsMoreOpen = !openOptionsMoreOpen"
+            @click="toggleMoreMenu"
           >
             <span class="material-symbols-outlined" aria-hidden="true"> more_horiz </span>
           </button>
@@ -1556,6 +1581,7 @@ defineExpose({
         role="menu"
         :style="moreMenuPopoverStyle"
         class="pbx-toolbarMoreMenu pbx-pb-12"
+        :class="{ 'pbx-toolbarMoreMenu--pending': !moreMenuPositioned }"
         @mousedown.stop
         @pointerdown.stop
         @click.stop

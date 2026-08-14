@@ -15,7 +15,7 @@ const componentHelpers: ComponentHelper[] = [
   {
     html_code: `
     <section>
-    <div class="pbx-pt-4 pbx-pb-8 pbx-px-4">
+    <div class="pbx-pt-2 pbx-pb-2 pbx-px-4">
     <div class="pbx-mx-auto pbx-max-w-7xl">
     <div>
     <p>
@@ -35,7 +35,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-medium"><h1>Layouts and visual.</h1></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-4xl lg:pbx-text-5xl pbx-font-medium"><h1>Layouts and visual.</h1></div></div></div></section>`,
     id: null,
     title: 'Header H1',
     category: 'Text',
@@ -46,7 +46,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-medium"><h2>Layouts and visual.</h2></div></div></div></section>`,
     id: null,
     title: 'Header H2',
     category: 'Text',
@@ -57,7 +57,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h3>Layouts and visual.</h3></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-2xl lg:pbx-text-3xl pbx-font-medium"><h3>Layouts and visual.</h3></div></div></div></section>`,
     id: null,
     title: 'Header H3',
     category: 'Text',
@@ -68,7 +68,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h4>Layouts and visual.</h4></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-xl lg:pbx-text-2xl pbx-font-medium"><h4>Layouts and visual.</h4></div></div></div></section>`,
     id: null,
     title: 'Header H4',
     category: 'Text',
@@ -79,7 +79,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h5>Layouts and visual.</h5></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-lg lg:pbx-text-xl pbx-font-medium"><h5>Layouts and visual.</h5></div></div></div></section>`,
     id: null,
     title: 'Header H5',
     category: 'Text',
@@ -90,7 +90,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words"><h6>Layouts and visual.</h6></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-break-words pbx-text-base pbx-font-medium"><h6>Layouts and visual.</h6></div></div></div></section>`,
     id: null,
     title: 'Header H6',
     category: 'Text',
@@ -206,7 +206,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ul><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ul></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-2 pbx-pb-2 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ul><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ul></div></div></section>`,
     id: null,
     title: 'Simple List',
     category: 'Text',
@@ -305,7 +305,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ol><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ol></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-2 pbx-pb-2 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><ol><li><p>First list item</p></li><li><p>Second list item</p></li><li><p>Third list item</p></li></ol></div></div></section>`,
     id: null,
     title: 'Numbered List',
     category: 'Text',
@@ -327,7 +327,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-text-xl lg:pbx-text-2xl pbx-leading-relaxed"><p>Start customizing by editing this default text directly in the editor.</p></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-2 pbx-pb-2 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-text-xl lg:pbx-text-2xl pbx-leading-relaxed"><p>Start customizing by editing this default text directly in the editor.</p></div></div></div></section>`,
     id: null,
     title: 'Lead Text',
     category: 'Text',
@@ -338,7 +338,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-text-sm pbx-text-gray-500"><p>Start customizing by editing this default text directly in the editor.</p></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-2 pbx-pb-2 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-text-sm pbx-text-gray-500"><p>Start customizing by editing this default text directly in the editor.</p></div></div></div></section>`,
     id: null,
     title: 'Caption Text',
     category: 'Text',
@@ -492,7 +492,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl pbx-text-center"><div class="pbx-break-words"><h2>Layouts and visual.</h2></div></div></div></section>`,
+    html_code: `<section><div class="pbx-pt-10 pbx-pb-1 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl pbx-text-center"><div class="pbx-break-words pbx-text-3xl lg:pbx-text-4xl pbx-font-medium"><h2>Layouts and visual.</h2></div></div></div></section>`,
     id: null,
     title: 'Centered Header H2',
     category: 'Text',
