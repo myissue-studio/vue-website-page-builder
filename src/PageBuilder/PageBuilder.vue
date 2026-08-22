@@ -1508,6 +1508,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openDesktopPreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
               </button>
               <button
@@ -1516,6 +1519,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openTabletPreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Tablet preview') }}</span>
               </button>
               <button
@@ -1524,6 +1530,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openMobilePreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Mobile preview') }}</span>
               </button>
             </div>
