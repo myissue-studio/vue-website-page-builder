@@ -1291,7 +1291,7 @@ onBeforeUnmount(() => {
 
     <div
       id="pagebuilder-navbar"
-      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-bg-myPrimaryLightGrayColor pbx-flex pbx-items-center pbx-justify-between pbx-border-0 pbx-border-solid pbx-border-b pbx-border-gray-200 pbx-mb-1 pbx-font-sans"
+      class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-flex pbx-items-center pbx-font-sans"
     >
       <template
         v-if="
@@ -1307,7 +1307,7 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-justify-start pbx-py-1 lg:pbx-ml-4 pbx-ml-2"
+          class="pbx-navbarGroup pbx-flex pbx-justify-start pbx-py-1 lg:pbx-ml-4 pbx-ml-2"
         >
           <img class="pbx-h-4" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
         </div>
@@ -1322,9 +1322,9 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
+        class="pbx-navbarGroup pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
-        <div class="pbx-flex pbx-items-center pbx-justify-center">
+        <div class="pbx-navbarGroup__cluster pbx-flex pbx-items-center pbx-justify-center">
           <!-- Save Start -->
           <button
             class="pbx-mySecondaryButton pbx-navbarUtilityButton pbx-h-5 pbx-flex pbx-gap-1.5 pbx-mr-2"
@@ -1419,7 +1419,7 @@ onBeforeUnmount(() => {
             await pageBuilderService.clearHtmlSelection()
           }
         "
-        class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
+        class="pbx-navbarGroup pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full"
       >
         <div
           @click.self="
@@ -1427,7 +1427,7 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-flex pbx-items-center pbx-justify-center"
+          class="pbx-navbarGroup__cluster pbx-flex pbx-items-center pbx-justify-center"
         >
           <button
             type="button"
@@ -1508,6 +1508,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openDesktopPreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Desktop preview') }}</span>
               </button>
               <button
@@ -1516,6 +1519,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openTabletPreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Tablet preview') }}</span>
               </button>
               <button
@@ -1524,6 +1530,9 @@ onBeforeUnmount(() => {
                 role="menuitem"
                 @click="openMobilePreviewFromMenu"
               >
+                <span class="pbx-toolbarMoreMenuItemIcon" aria-hidden="true">
+                  <PreviewDesktopIcon :size="18" />
+                </span>
                 <span class="pbx-toolbarMoreMenuItemLabel">{{ translate('Mobile preview') }}</span>
               </button>
             </div>
@@ -1531,7 +1540,9 @@ onBeforeUnmount(() => {
         </transition>
       </Teleport>
 
-      <div class="pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end">
+      <div
+        class="pbx-navbarGroup pbx-navbarGroup--end pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end"
+      >
         <!-- Options # Start -->
         <div
           @click.self="
@@ -1583,6 +1594,7 @@ onBeforeUnmount(() => {
             <div
               class="pbx-flex-1 pbx-flex pbx-justify-end pbx-items-center pbx-ml-2 lg:pbx-mr-4 pbx-mr-2"
             >
+              <label for="pbx-lang" class="pbx-sr-only">{{ translate('Language') }}</label>
               <select
                 id="pbx-lang"
                 class="pbx-myPrimarySelect pbx-min-w-20"

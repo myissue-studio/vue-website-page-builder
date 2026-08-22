@@ -75,7 +75,7 @@ const iframeContent = computed(() => {
   ${elementFontCssBlock.value}
 </head>
 <body>
-  <div id="pagebuilder" class="${previewFontClass.value} pbx-text-black">${htmlPage.value}</div>
+  <div id="pagebuilder" data-builder-canvas class="${previewFontClass.value} pbx-text-black">${htmlPage.value}</div>
   ${sliderResetScript}
 </body>
 </html>`
@@ -121,10 +121,10 @@ onMounted(() => {
   <template v-if="!isFramedPreview">
     <div>
       <div
-        class="pbx-text-black pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-scroll lg:pbx-pt-2 pbx-pt-2"
+        class="pbx-text-black pbx-w-full pbx-inset-x-0 pbx-h-[90vh] pbx-bg-white pbx-overflow-x-hidden pbx-overflow-y-auto lg:pbx-pt-2 pbx-pt-2"
       >
         <div :style="previewElementFontStyle">
-          <div id="pagebuilder" :class="[previewFontClass, 'pbx-text-black']">
+          <div id="pagebuilder" data-builder-canvas :class="[previewFontClass, 'pbx-text-black']">
             <div ref="previewRootRef" v-html="htmlPage"></div>
           </div>
         </div>

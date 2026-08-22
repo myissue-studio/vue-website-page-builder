@@ -112,7 +112,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
 <template>
   <GlobalLoader v-if="getIsLoadingGlobal"></GlobalLoader>
   <div
-    class="pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full pbx-gap-1"
+    class="pbx-navbarGroup pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full pbx-gap-1"
   >
     <button
       type="button"

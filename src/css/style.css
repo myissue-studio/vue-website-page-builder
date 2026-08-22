@@ -1556,75 +1556,234 @@
   }
 }
 
+/* Page builder top bar — compact, neutral toolbar (Figma-style) */
 #pagebuilder-navbar {
   position: relative;
   z-index: 60;
-  max-height: 4rem;
-  background: linear-gradient(180deg, #fdfefe 0%, #f5f7fa 100%);
-  border: 1px solid #e5e7eb;
-  border-bottom-color: #d7dde5;
-  border-radius: 0.9rem;
-  padding: 0.1rem 0.25rem;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    0 6px 18px rgba(15, 23, 42, 0.06);
-  backdrop-filter: saturate(120%) blur(6px);
-  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  min-height: 3rem;
+  padding: 0 0.75rem;
+  margin-bottom: 0.25rem;
+  gap: 0 0.625rem;
+  justify-content: flex-start !important;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-#pagebuilder-navbar .pbx-mySecondaryButton,
-#pagebuilder-navbar .pbx-myPrimaryButton {
-  min-height: 2rem !important;
-  padding-top: 0.2rem !important;
-  padding-bottom: 0.2rem !important;
+/* Stop equal-width columns — let groups size to content */
+#pagebuilder-navbar > .pbx-flex-1 {
+  flex: 0 0 auto !important;
+  width: auto !important;
 }
 
-#pagebuilder-navbar .pbx-navbarUtilityButton {
-  padding-top: 1.2rem !important;
-  padding-bottom: 1.2rem !important;
+#pagebuilder-navbar > .pbx-flex-1.pbx-flex.gap-2,
+#pagebuilder-navbar > .pbx-navbarGroup--end {
+  margin-left: auto;
+}
+
+/* Vertical dividers + pill clusters between toolbar groups */
+#pagebuilder-navbar > .pbx-navbarGroup + .pbx-navbarGroup {
+  position: relative;
+  padding-left: 0.75rem;
+  margin-left: 0.125rem;
+}
+
+#pagebuilder-navbar > .pbx-navbarGroup + .pbx-navbarGroup::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 1.375rem;
+  background: #e5e7eb;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup__cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.0625rem;
+  padding: 0.125rem;
+  background: #fafafa;
+  border: 1px solid #ebebeb;
+  border-radius: 0.5rem;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup__cluster .pbx-navbarUtilityButton {
+  margin-right: 0 !important;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup--end {
+  gap: 0.625rem !important;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup--end > div {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup--end > div + div {
+  position: relative;
+  padding-left: 0.625rem;
+}
+
+#pagebuilder-navbar .pbx-navbarGroup--end > div + div::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 1.375rem;
+  background: #e5e7eb;
+}
+
+#pagebuilder-navbar > .pbx-flex-1.pbx-gap-1,
+#pagebuilder-navbar > .pbx-navbarGroup.pbx-gap-1 {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  padding: 0.125rem;
+  gap: 0.0625rem !important;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.5rem;
+}
+
+#pagebuilder-navbar .pbx-history-trigger {
+  min-height: 1.75rem !important;
+  height: 1.75rem !important;
   padding-left: 0.5rem !important;
   padding-right: 0.5rem !important;
+  border: none !important;
+  border-radius: 0.375rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#pagebuilder-navbar .pbx-history-trigger:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Ghost utility actions (Save, Add, Preview, …) */
+#pagebuilder-navbar .pbx-navbarUtilityButton {
+  min-height: 1.75rem !important;
+  padding: 0.3125rem 0.625rem !important;
   gap: 0.375rem !important;
-  font-size: 11px;
+  border-radius: 0.375rem !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #374151 !important;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.01em;
+  line-height: 1.25rem;
+}
+
+#pagebuilder-navbar .pbx-navbarUtilityButton:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #111827 !important;
+}
+
+#pagebuilder-navbar .pbx-navbarUtilityButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#pagebuilder-navbar .pbx-navbarUtilityButton .pbx-h-8.pbx-w-8 {
+  width: 1.125rem !important;
+  min-width: 1.125rem !important;
+  height: 1.125rem !important;
+  min-height: 1.125rem !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+#pagebuilder-navbar .pbx-navbarUtilityButton .material-symbols-outlined,
+#pagebuilder-navbar .pbx-navbarUtilityButton svg {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 #pagebuilder-navbar .pbx-mySecondaryButton .material-symbols-outlined,
 #pagebuilder-navbar .pbx-h-8 .material-symbols-outlined,
 #pagebuilder-navbar .pbx-w-8 .material-symbols-outlined {
-  font-size: 1rem;
-  line-height: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.125rem;
 }
 
-/* Unified icon chip styling for navbar controls (publish button excluded) */
-#pagebuilder-navbar button.pbx-h-10.pbx-w-10,
+/* Icon-only controls (undo/redo/close) */
 #pagebuilder-navbar button.pbx-h-8.pbx-w-8,
-#pagebuilder-navbar .pbx-mySecondaryButton .pbx-h-8.pbx-w-8,
-#pagebuilder-navbar .pbx-bg-gray-50.pbx-h-8.pbx-w-8,
-#pagebuilder-navbar .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border: 1px solid #dcdcdc;
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10 {
+  width: 1.75rem !important;
+  min-width: 1.75rem !important;
+  height: 1.75rem !important;
+  min-height: 1.75rem !important;
+  border-radius: 0.375rem !important;
+  border: none !important;
+  background: transparent !important;
+  color: #374151 !important;
+  box-shadow: none !important;
 }
 
-#pagebuilder-navbar button.pbx-h-10.pbx-w-10:hover:not(:disabled),
 #pagebuilder-navbar button.pbx-h-8.pbx-w-8:hover:not(:disabled),
-#pagebuilder-navbar .pbx-mySecondaryButton:hover:not(:disabled) .pbx-h-8.pbx-w-8,
-#pagebuilder-navbar button:hover:not(:disabled) .pbx-bg-gray-50.pbx-h-8.pbx-w-8,
-#pagebuilder-navbar button:hover:not(:disabled) .pbx-bg-gray-50.pbx-h-10.pbx-w-10 {
-  background-color: #eef2f7 !important;
-  color: #0f172a !important;
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #111827 !important;
 }
 
-#pagebuilder-navbar button.pbx-h-10.pbx-w-10:focus-visible,
-#pagebuilder-navbar button.pbx-h-8.pbx-w-8:focus-visible,
+#pagebuilder-navbar button.pbx-h-8.pbx-w-8:disabled,
+#pagebuilder-navbar button.pbx-h-10.pbx-w-10:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+#pagebuilder-navbar .pbx-myPrimaryButton {
+  min-height: 1.75rem !important;
+  padding: 0.3125rem 0.875rem !important;
+  border-radius: 0.375rem !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+}
+
+#pagebuilder-navbar .pbx-myPrimarySelect {
+  min-height: 1.75rem;
+  height: 1.75rem;
+  padding: 0.125rem 1.625rem 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  border-color: #e5e7eb;
+  color: #374151;
+}
+
+#pagebuilder-navbar .pbx-myPrimarySelect:hover {
+  border-color: #d1d5db;
+  background-color: #fafafa;
+}
+
+#pagebuilder-navbar img.pbx-h-4 {
+  height: 1.125rem;
+}
+
+#pagebuilder-navbar .pbx-mr-2 .pbx-rounded-full,
+#pagebuilder-navbar .pbx-mr-2 img {
+  width: 1.75rem !important;
+  min-width: 1.75rem !important;
+  height: 1.75rem !important;
+  min-height: 1.75rem !important;
+}
+
+#pagebuilder-navbar button:focus-visible,
 #pagebuilder-navbar .pbx-mySecondaryButton:focus-visible,
-#pagebuilder-navbar .pbx-myPrimaryButton:focus-visible {
+#pagebuilder-navbar .pbx-myPrimaryButton:focus-visible,
+#pagebuilder-navbar .pbx-myPrimarySelect:focus-visible {
   outline: none;
-  box-shadow:
-    0 0 0 3px rgb(var(--pbx-brand-color-rgb, 22 163 74) / 0.2),
-    0 2px 8px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 0 0 2px rgb(var(--pbx-brand-color-rgb, 22 163 74) / 0.35);
 }
 
 /* Toolbar popovers must sit above BaseModal (z-index: 9999) when PageBuilder is in a modal */
