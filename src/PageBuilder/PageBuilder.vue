@@ -1540,7 +1540,9 @@ onBeforeUnmount(() => {
         </transition>
       </Teleport>
 
-      <div class="pbx-navbarGroup pbx-navbarGroup--end pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end">
+      <div
+        class="pbx-navbarGroup pbx-navbarGroup--end pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end"
+      >
         <!-- Options # Start -->
         <div
           @click.self="
@@ -1592,6 +1594,7 @@ onBeforeUnmount(() => {
             <div
               class="pbx-flex-1 pbx-flex pbx-justify-end pbx-items-center pbx-ml-2 lg:pbx-mr-4 pbx-mr-2"
             >
+              <label for="pbx-lang" class="pbx-sr-only">{{ translate('Language') }}</label>
               <select
                 id="pbx-lang"
                 class="pbx-myPrimarySelect pbx-min-w-20"
