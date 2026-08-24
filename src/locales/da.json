@@ -659,5 +659,22 @@
   "Modern": "Modern",
   "Bold type and tighter spacing": "Fed typografi og tættere spacing",
   "Minimal": "Minimal",
-  "Quiet type and more whitespace": "Roligt typografi og mere luft"
+  "Quiet type and more whitespace": "Roligt typografi og mere luft",
+  "Temporary preview": "Temporary preview",
+  "Publish a public preview link that expires after 7 days. Nothing is uploaded until you click publish.": "Publish a public preview link that expires after 7 days. Nothing is uploaded until you click publish.",
+  "Publish temporary preview": "Publish temporary preview",
+  "Update temporary preview": "Update temporary preview",
+  "Publishing...": "Publishing...",
+  "Removing...": "Removing...",
+  "Copy link": "Copy link",
+  "Open preview": "Open preview",
+  "Remove preview": "Remove preview",
+  "Preview link copied": "Preview link copied",
+  "Temporary preview published": "Temporary preview published",
+  "Temporary preview updated": "Temporary preview updated",
+  "Temporary preview removed": "Temporary preview removed",
+  "Expires": "Expires",
+  "Could not publish temporary preview": "Could not publish temporary preview",
+  "Could not remove temporary preview": "Could not remove temporary preview",
+  "Remove this temporary preview permanently?": "Remove this temporary preview permanently?"
 }

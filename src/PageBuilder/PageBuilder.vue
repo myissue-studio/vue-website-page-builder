@@ -71,6 +71,7 @@ const {
  * @property {Object|null} DisplayProducts - Optional custom product picker (replaces built-in sample catalog)
  * @property {boolean} enableDefaultProducts - Show built-in sample catalog when DisplayProducts is omitted (default true)
  * @property {Object|null} CustomBuilderComponents - Custom component
+ * @property {boolean} showTemporaryPreviewButton - Show the optional Temp.md preview action
  * @property {Object} configPageBuilder - Configuration object containing:
  */
 const props = defineProps({
@@ -98,6 +99,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showTemporaryPreviewButton: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const { translate, loadTranslations } = useTranslations()
@@ -116,6 +121,10 @@ provide('internalPinia', internalPinia)
 provide('CustomMediaComponent', props.CustomMediaLibraryComponent)
 provide('DisplayProductsComponent', props.DisplayProducts)
 provide('CustomBuilderComponents', props.CustomBuilderComponents)
+provide(
+  'showTemporaryPreviewButton',
+  computed(() => props.showTemporaryPreviewButton),
+)
 
 /** Products UI: custom picker and/or built-in sample catalog (see enableDefaultProducts). */
 const showProductsFeature = computed(
