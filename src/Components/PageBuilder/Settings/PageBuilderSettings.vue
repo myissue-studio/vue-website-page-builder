@@ -888,17 +888,42 @@ function formatExpiry(expiresAt?: string | null): string {
             }}
           </button>
 
-          <div v-if="temporaryPreview" class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-2">
-            <a
-              :href="temporaryPreview.canonicalUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="pbx-text-xs pbx-text-gray-700 pbx-break-all pbx-underline"
-              >{{ temporaryPreview.canonicalUrl }}</a
+          <div
+            v-if="temporaryPreview"
+            class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3"
+          >
+            <div
+              class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3.5 pbx-py-3"
             >
-            <p v-if="temporaryPreview.expiresAt" class="pbx-editorSectionDesc pbx-mb-0">
-              {{ translate('Expires') }}: {{ formatExpiry(temporaryPreview.expiresAt) }}
-            </p>
+              <p
+                class="pbx-m-0 pbx-mb-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400"
+              >
+                {{ translate('Live link') }}
+              </p>
+              <a
+                :href="temporaryPreview.canonicalUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="pbx-block pbx-text-sm pbx-font-medium pbx-text-gray-900 pbx-break-all pbx-no-underline hover:pbx-text-myPrimaryLinkColor"
+              >
+                {{ temporaryPreview.canonicalUrl }}
+              </a>
+              <div
+                v-if="temporaryPreview.expiresAt"
+                class="pbx-mt-2.5 pbx-flex pbx-items-center pbx-gap-1.5 pbx-text-xs pbx-text-gray-500"
+              >
+                <span class="material-symbols-outlined pbx-text-base pbx-leading-none" aria-hidden="true">
+                  schedule
+                </span>
+                <span>
+                  {{ translate('Expires') }}
+                  <span class="pbx-font-medium pbx-text-gray-700">{{
+                    formatExpiry(temporaryPreview.expiresAt)
+                  }}</span>
+                </span>
+              </div>
+            </div>
+
             <div class="pbx-flex pbx-flex-col pbx-gap-2">
               <button
                 @click="handleCopyTemporaryPreview"
