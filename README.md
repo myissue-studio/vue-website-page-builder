@@ -115,6 +115,16 @@ import YourDisplayProducts from './YourDisplayProducts.vue'
 
 Copy the reference picker from `src/tests/TestComponents/DemoDisplayProductsTest.vue` and swap static JSON for your API. Full walkthrough: [Display Products documentation](https://myissue-studio.github.io/vue-website-page-builder/display-products).
 
+### Optional temporary preview links
+
+Enable `showTemporaryPreviewButton` to let editors publish the same standalone HTML export to a public [Temp.md](https://temp.md) preview link:
+
+```vue
+<PageBuilder :showTemporaryPreviewButton="true" />
+```
+
+The option is off by default. Publishing only happens after an explicit click, the link expires after 7 days, and its scoped update token is stored in the browser so later publishes update the same URL. Editors can copy, open, update, or permanently remove the preview from the Download HTML settings. This is separate from the existing `showPublishButton` callback and does not replace your production publishing workflow.
+
 The package does **not** include cart, checkout, or inventory — by design. You keep your ecommerce stack; the builder handles layout and visual editing.
 
 ## Who This Is For

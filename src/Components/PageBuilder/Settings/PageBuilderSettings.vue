@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
+import type { ComputedRef } from 'vue'
 import { sharedPageBuilderStore } from '../../../stores/shared-store'
 import { isEmptyObject } from '../../../utils/is-empty-object'
 import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
-import { extractCleanHTMLFromPageBuilder } from '../../../utils/builder/extract-clean-html'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
+import {
+  downloadStandaloneHtml,
+  getStandalonePageHtml,
+} from '../../../utils/builder/standalone-html'
+import {
+  isExpiredPreviewCredential,
+  loadTemporaryPreview,
+  publishTemporaryPreview,
+  removeTemporaryPreview,
+  saveTemporaryPreview,
+} from '../../../utils/builder/temp-preview'
+import type { TemporaryPreview } from '../../../utils/builder/temp-preview'
 
 type EmbeddedSection =
   | 'overviewApp'
@@ -21,6 +33,10 @@ const props = defineProps<{
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
+const showTemporaryPreviewButton = inject<ComputedRef<boolean>>(
+  'showTemporaryPreviewButton',
+  computed(() => false),
+)
 
 const isEmbedded = computed(() => Boolean(props.embeddedSection))
 
@@ -72,86 +88,103 @@ const showSelectedHtml = computed(
     (!props.embeddedSection && selectedTab.value === 'viewHTMLConfig'),
 )
 
-function generateHTML(filename: string, HTML: string) {
-  const existingStyles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-    .map((style) => {
-      if (style.tagName === 'STYLE') {
-        return style.outerHTML
-      } else if (style.tagName === 'LINK') {
-        return `<link rel="stylesheet" href="${(style as HTMLLinkElement).href}">`
-      }
-      return ''
-    })
-    .join('\n')
+const temporaryPreviewStorageKey = computed(() => {
+  const resourceId = getPageBuilderConfig.value?.resourceData?.id
+  const scope = pageBuilderStateStore.getLocalStorageItemName ?? resourceId ?? 'page'
+  return `vue-website-page-builder:temp-preview:${String(scope)}`
+})
+const temporaryPreview = ref<TemporaryPreview | null>(
+  loadTemporaryPreview(temporaryPreviewStorageKey.value),
+)
+const temporaryPreviewLoading = ref(false)
+const temporaryPreviewRemoving = ref(false)
+const temporaryPreviewError = ref('')
 
-  const customCSS = `
-      <style>
-        #pagebuilder blockquote,
-        #pagebuilder dl,
-        #pagebuilder dd,
-        #pagebuilder pre,
-        #pagebuilder hr,
-        #pagebuilder figure,
-        #pagebuilder p,
-        #pagebuilder h1,
-        #pagebuilder h2,
-        #pagebuilder h3,
-        #pagebuilder h4,
-        #pagebuilder h5,
-        #pagebuilder h6,
-        #pagebuilder ul,
-        #pagebuilder ol {
-          margin: 0;
-          padding: 0;
-        }
-      </style>
-    `
-
-  const css = `${existingStyles}\n${customCSS}`
-
-  const fullHTML = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Downloaded HTML</title>
-            ${css}
-        </head>
-        <body>
-            <div id="pagebuilder" class="pbx-font-sans pbx-text-black">
-                ${HTML}
-            </div>
-        </body>
-        </html>
-    `
-
-  const element = document.createElement('a')
-  element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(fullHTML))
-  element.setAttribute('download', filename)
-  element.style.display = 'none'
-  document.body.appendChild(element)
-  element.click()
-  document.body.removeChild(element)
+function getCurrentStandaloneHtml(): string | null {
+  const pagebuilder = document.getElementById('pagebuilder')
+  if (!pagebuilder) return null
+  return getStandalonePageHtml(pagebuilder, document)
 }
 
 function handleDownloadHTML() {
-  const pagebuilder = document.getElementById('pagebuilder')
-  if (!pagebuilder) return
-
-  let html = extractCleanHTMLFromPageBuilder(pagebuilder)
-
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = html
-
-  tempDiv.querySelectorAll('[hovered], [selected]').forEach((el) => {
-    el.removeAttribute('hovered')
-    el.removeAttribute('selected')
-  })
-
-  html = tempDiv.innerHTML
-  generateHTML('downloaded_html.html', html)
+  const html = getCurrentStandaloneHtml()
+  if (!html) return
+  downloadStandaloneHtml('downloaded_html.html', html)
   showToast(translate('HTML file downloaded'), 'success')
+}
+
+async function handlePublishTemporaryPreview() {
+  const html = getCurrentStandaloneHtml()
+  if (!html) return
+  temporaryPreviewLoading.value = true
+  temporaryPreviewError.value = ''
+  let wasUpdate = Boolean(temporaryPreview.value)
+
+  try {
+    let published: TemporaryPreview
+    try {
+      published = await publishTemporaryPreview(html, temporaryPreview.value ?? undefined)
+    } catch (error) {
+      if (!temporaryPreview.value || !isExpiredPreviewCredential(error)) throw error
+      temporaryPreview.value = null
+      wasUpdate = false
+      saveTemporaryPreview(temporaryPreviewStorageKey.value, null)
+      published = await publishTemporaryPreview(html)
+    }
+    temporaryPreview.value = published
+    saveTemporaryPreview(temporaryPreviewStorageKey.value, published)
+    showToast(
+      translate(wasUpdate ? 'Temporary preview updated' : 'Temporary preview published'),
+      'success',
+    )
+  } catch (error) {
+    temporaryPreviewError.value =
+      error instanceof Error ? error.message : translate('Could not publish temporary preview')
+    showToast(translate('Could not publish temporary preview'), 'error')
+  } finally {
+    temporaryPreviewLoading.value = false
+  }
+}
+
+async function handleCopyTemporaryPreview() {
+  if (!temporaryPreview.value) return
+  try {
+    await navigator.clipboard.writeText(temporaryPreview.value.canonicalUrl)
+    showToast(translate('Preview link copied'), 'success')
+  } catch {
+    showToast(translate('Clipboard unavailable'), 'error')
+  }
+}
+
+async function handleRemoveTemporaryPreview() {
+  if (
+    !temporaryPreview.value ||
+    !window.confirm(translate('Remove this temporary preview permanently?'))
+  ) {
+    return
+  }
+
+  temporaryPreviewRemoving.value = true
+  temporaryPreviewError.value = ''
+  try {
+    await removeTemporaryPreview(temporaryPreview.value)
+    temporaryPreview.value = null
+    saveTemporaryPreview(temporaryPreviewStorageKey.value, null)
+    showToast(translate('Temporary preview removed'), 'success')
+  } catch (error) {
+    temporaryPreviewError.value =
+      error instanceof Error ? error.message : translate('Could not remove temporary preview')
+    showToast(translate('Could not remove temporary preview'), 'error')
+  } finally {
+    temporaryPreviewRemoving.value = false
+  }
+}
+
+function formatExpiry(expiresAt?: string | null): string {
+  if (!expiresAt) return ''
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
+    new Date(expiresAt),
+  )
 }
 </script>
 
@@ -809,11 +842,119 @@ function handleDownloadHTML() {
           }}
         </p>
         <div class="pbx-editorFieldGroup">
-          <button @click="handleDownloadHTML" type="button" class="pbx-myPrimaryButton">
+          <button
+            @click="handleDownloadHTML"
+            type="button"
+            class="pbx-myPrimaryButton pbx-w-full sm:pbx-w-full"
+          >
             <span>
               {{ translate('Download HTML file') }}
             </span>
           </button>
+        </div>
+
+        <div
+          v-if="showTemporaryPreviewButton"
+          class="pbx-editorFieldGroup pbx-mt-6 pbx-pt-6 pbx-border-0 pbx-border-solid pbx-border-t pbx-border-gray-200"
+        >
+          <h4 class="pbx-myQuaternaryHeader">{{ translate('Temporary preview') }}</h4>
+          <p class="pbx-editorSectionDesc pbx-mt-2">
+            {{
+              translate(
+                'Publish a public preview link that expires after 7 days. Nothing is uploaded until you click publish.',
+              )
+            }}
+            <a
+              href="https://temp.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="pbx-text-gray-700 pbx-underline"
+              >Temp.md</a
+            >
+          </p>
+
+          <button
+            @click="handlePublishTemporaryPreview"
+            type="button"
+            class="pbx-myPrimaryButton pbx-mt-3 pbx-w-full sm:pbx-w-full"
+            :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
+          >
+            {{
+              temporaryPreviewLoading
+                ? translate('Publishing...')
+                : translate(
+                    temporaryPreview ? 'Update temporary preview' : 'Publish temporary preview',
+                  )
+            }}
+          </button>
+
+          <div
+            v-if="temporaryPreview"
+            class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3"
+          >
+            <div
+              class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3.5 pbx-py-3"
+            >
+              <p
+                class="pbx-m-0 pbx-mb-1.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400"
+              >
+                {{ translate('Live link') }}
+              </p>
+              <a
+                :href="temporaryPreview.canonicalUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="pbx-block pbx-text-sm pbx-font-medium pbx-text-gray-900 pbx-break-all pbx-no-underline hover:pbx-text-myPrimaryLinkColor"
+              >
+                {{ temporaryPreview.canonicalUrl }}
+              </a>
+              <div
+                v-if="temporaryPreview.expiresAt"
+                class="pbx-mt-2.5 pbx-flex pbx-items-center pbx-gap-1.5 pbx-text-xs pbx-text-gray-500"
+              >
+                <span class="material-symbols-outlined pbx-text-base pbx-leading-none" aria-hidden="true">
+                  schedule
+                </span>
+                <span>
+                  {{ translate('Expires') }}
+                  <span class="pbx-font-medium pbx-text-gray-700">{{
+                    formatExpiry(temporaryPreview.expiresAt)
+                  }}</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="pbx-flex pbx-flex-col pbx-gap-2">
+              <button
+                @click="handleCopyTemporaryPreview"
+                type="button"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
+              >
+                {{ translate('Copy link') }}
+              </button>
+              <a
+                :href="temporaryPreview.canonicalUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full pbx-no-underline"
+              >
+                {{ translate('Open preview') }}
+              </a>
+              <button
+                @click="handleRemoveTemporaryPreview"
+                type="button"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
+                :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
+              >
+                {{
+                  temporaryPreviewRemoving ? translate('Removing...') : translate('Remove preview')
+                }}
+              </button>
+            </div>
+          </div>
+          <p v-if="temporaryPreviewError" class="pbx-mt-3 pbx-text-xs pbx-text-red-700">
+            {{ temporaryPreviewError }}
+          </p>
         </div>
       </div>
       <div v-else>
