@@ -1292,6 +1292,7 @@ onBeforeUnmount(() => {
     <div
       id="pagebuilder-navbar"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-flex pbx-items-center pbx-font-sans"
+      @click.self="async () => { await pageBuilderService.clearHtmlSelection() }"
     >
       <template
         v-if="
@@ -1541,6 +1542,7 @@ onBeforeUnmount(() => {
       </Teleport>
 
       <div
+        @click.self="async () => { await pageBuilderService.clearHtmlSelection() }"
         class="pbx-navbarGroup pbx-navbarGroup--end pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end"
       >
         <!-- Options # Start -->
