@@ -124,6 +124,7 @@ watch(
         :CustomMediaLibraryComponent="DemoMediaLibraryComponentTest"
         :DisplayProducts="DemoDisplayProductsTest"
         :showPublishButton="true"
+        :showTemporaryPreviewButton="true"
         :showCloseButton="true"
         @handlePublishPageBuilder="publishPageBuilder"
       />
