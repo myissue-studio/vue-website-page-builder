@@ -261,8 +261,8 @@ const closeHTMLSettings = async function () {
       </div>
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
-        <OverviewSettingsSection />
         <DownloadHtmlSettingsSection />
+        <OverviewSettingsSection />
         <SelectedHtmlSettingsSection />
       </div>
     </div>

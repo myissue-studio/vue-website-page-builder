@@ -260,6 +260,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "ページ全体に影響するスタイルを適用。これらの設定には、グローバルフォントファミリー、テキストカラー、背景色、その他すべてのセクションに適用されるユニバーサルスタイルが含まれます。",
   "Update Page Styles": "ページスタイルを更新",
   "Download HTML": "HTMLをダウンロード",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "ページ全体をスタンドアロンのHTMLファイルとしてエクスポート。これにはすべてのセクション、コンテンツ、適用されたスタイルが含まれ、他の場所での使用や統合の準備が整います。",
   "Download HTML file": "HTMLファイルをダウンロード",
   "Loading...": "読み込み中...",

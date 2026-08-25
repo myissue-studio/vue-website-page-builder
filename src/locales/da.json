@@ -268,6 +268,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "Anvend stile, der påvirker hele siden. Disse indstillinger inkluderer global skrifttypefamilie, tekstfarve, baggrundsfarve og andre universelle stile, der gælder for alle sektioner.",
   "Update Page Styles": "Opdater sidestile",
   "Download HTML": "Download HTML",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "Eksporter hele siden som en selvstændig HTML-fil. Dette inkluderer alle sektioner, indhold og anvendte stile, hvilket gør den klar til brug eller integration andre steder.",
   "Download HTML file": "Download HTML-fil",
   "Loading...": "Indlæser...",

@@ -260,6 +260,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "应用影响整个页面的样式。这些设置包括全局字体家族、文本颜色、背景颜色以及适用于所有部分的通用样式。",
   "Update Page Styles": "更新页面样式",
   "Download HTML": "下载HTML",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "将整个页面导出为独立的HTML文件，包括所有部分、内容和应用的样式，随时可用于其他地方或集成。",
   "Download HTML file": "下载HTML文件",
   "Loading...": "加载中...",

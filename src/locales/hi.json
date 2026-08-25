@@ -260,6 +260,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "ऐसी शैलियाँ लागू करें जो पूरे पृष्ठ को प्रभावित करती हैं। इन सेटिंग्स में वैश्विक फ़ॉन्ट परिवार, पाठ का रंग, पृष्ठभूमि का रंग और अन्य सार्वभौमिक शैलियाँ शामिल हैं जो सभी अनुभागों पर लागू होती हैं।",
   "Update Page Styles": "पृष्ठ शैलियाँ अपडेट करें",
   "Download HTML": "HTML डाउनलोड करें",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "पूरे पृष्ठ को एक स्टैंडअलोन HTML फ़ाइल के रूप में निर्यात करें। इसमें सभी अनुभाग, सामग्री और लागू शैलियाँ शामिल हैं, जो इसे उपयोग या अन्यत्र एकीकरण के लिए तैयार बनाता है।",
   "Download HTML file": "HTML फ़ाइल डाउनलोड करें",
   "Loading...": "लोड हो रहा है...",

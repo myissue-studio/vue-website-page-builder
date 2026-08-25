@@ -260,6 +260,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "Применяйте стили, влияющие на всю страницу. Эти настройки включают глобальное семейство шрифтов, цвет текста, цвет фона и другие универсальные стили, применимые ко всем разделам.",
   "Update Page Styles": "Обновить стили страницы",
   "Download HTML": "Скачать HTML",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "Экспортируйте всю страницу как отдельный HTML-файл. Он включает все разделы, контент и применённые стили, готовые к использованию или интеграции.",
   "Download HTML file": "Скачать файл HTML",
   "Loading...": "Загрузка...",

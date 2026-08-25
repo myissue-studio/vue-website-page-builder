@@ -260,6 +260,7 @@
   "Apply styles that affect the entire page. These settings include global font family, text color, background color, and other universal styles that apply to all sections.": "طبق أنماطًا تؤثر على الصفحة بأكملها. تشمل هذه الإعدادات عائلة الخطوط العامة، ولون النص، ولون الخلفية، والأنماط العامة الأخرى التي تنطبق على جميع الأقسام.",
   "Update Page Styles": "تحديث أنماط الصفحة",
   "Download HTML": "تنزيل HTML",
+  "Export & preview": "Export & preview",
   "Export the entire page as a standalone HTML file. This includes all sections, content, and applied styles, making it ready for use or integration elsewhere.": "صدر الصفحة بأكملها كملف HTML مستقل. يشمل ذلك جميع الأقسام والمحتوى والأنماط المطبقة، مما يجعلها جاهزة للاستخدام أو التكامل في مكان آخر.",
   "Download HTML file": "تنزيل ملف HTML",
   "Loading...": "جارٍ التحميل...",
