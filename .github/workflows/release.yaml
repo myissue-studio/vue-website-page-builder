@@ -1,17 +1,16 @@
 name: Create Release
 
+# Runs after merges land on main (including PRs from forks).
+# Skips when package.json version already has a matching git tag.
 on:
-  pull_request:
+  push:
     branches: [main]
-    types: [closed]
 
 jobs:
   create-github-release:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
 
     steps:
       - name: Checkout repository
@@ -20,36 +19,58 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if version tag already exists
+        id: version
+        run: |
+          VERSION="$(jq -r '.version' package.json)"
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "Error: version missing in package.json"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          if git rev-parse "refs/tags/v${VERSION}" >/dev/null 2>&1 \
+            || git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag v${VERSION} already exists — skipping release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No tag for v${VERSION} — will create release."
+          fi
+
       - name: Configure Git
+        if: steps.version.outputs.exists == 'false'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup Node.js
+        if: steps.version.outputs.exists == 'false'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
 
       - name: Install dependencies
+        if: steps.version.outputs.exists == 'false'
         run: npm ci
 
       - name: Run tests
-        if: hashFiles('package.json') != ''
+        if: steps.version.outputs.exists == 'false'
         run: npm test
 
       - name: Make release script executable
+        if: steps.version.outputs.exists == 'false'
         run: chmod +x ./.github/automation/create-release
 
-      # ✅ Only run release when target branch is main
       - name: Run release script
-        if: github.base_ref == 'main'
+        if: steps.version.outputs.exists == 'false'
         run: ./.github/automation/create-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clean up
-        if: always()
+        if: always() && steps.version.outputs.exists == 'false'
         run: |
-          git config --global --unset user.name
-          git config --global --unset user.email
+          git config --global --unset user.name || true
+          git config --global --unset user.email || true
