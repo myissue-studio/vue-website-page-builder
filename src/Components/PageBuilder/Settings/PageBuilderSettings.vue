@@ -842,7 +842,11 @@ function formatExpiry(expiresAt?: string | null): string {
           }}
         </p>
         <div class="pbx-editorFieldGroup">
-          <button @click="handleDownloadHTML" type="button" class="pbx-myPrimaryButton">
+          <button
+            @click="handleDownloadHTML"
+            type="button"
+            class="pbx-myPrimaryButton pbx-w-full sm:pbx-w-full"
+          >
             <span>
               {{ translate('Download HTML file') }}
             </span>
@@ -872,7 +876,7 @@ function formatExpiry(expiresAt?: string | null): string {
           <button
             @click="handlePublishTemporaryPreview"
             type="button"
-            class="pbx-myPrimaryButton pbx-mt-3"
+            class="pbx-myPrimaryButton pbx-mt-3 pbx-w-full sm:pbx-w-full"
             :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
           >
             {{
@@ -892,14 +896,14 @@ function formatExpiry(expiresAt?: string | null): string {
               class="pbx-text-xs pbx-text-gray-700 pbx-break-all pbx-underline"
               >{{ temporaryPreview.canonicalUrl }}</a
             >
-            <p v-if="temporaryPreview.expiresAt" class="pbx-editorSectionDesc">
+            <p v-if="temporaryPreview.expiresAt" class="pbx-editorSectionDesc pbx-mb-0">
               {{ translate('Expires') }}: {{ formatExpiry(temporaryPreview.expiresAt) }}
             </p>
-            <div class="pbx-flex pbx-flex-wrap pbx-gap-2">
+            <div class="pbx-flex pbx-flex-col pbx-gap-2">
               <button
                 @click="handleCopyTemporaryPreview"
                 type="button"
-                class="pbx-mySecondaryButton"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
               >
                 {{ translate('Copy link') }}
               </button>
@@ -907,14 +911,14 @@ function formatExpiry(expiresAt?: string | null): string {
                 :href="temporaryPreview.canonicalUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="pbx-mySecondaryButton pbx-no-underline"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full pbx-no-underline"
               >
                 {{ translate('Open preview') }}
               </a>
               <button
                 @click="handleRemoveTemporaryPreview"
                 type="button"
-                class="pbx-mySecondaryButton"
+                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
                 :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
               >
                 {{
