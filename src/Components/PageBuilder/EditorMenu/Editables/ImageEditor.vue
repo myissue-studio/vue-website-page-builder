@@ -29,6 +29,7 @@ const thirdButtonMedia = ref<string | null>(null)
 const firstMediaButtonFunction = ref<(() => void) | null>(null)
 
 const getBasePrimaryImage = computed(() => {
+  if (!pageBuilderStateStore.getElement) return null
   if (pageBuilderStateStore.getBasePrimaryImage) {
     loadingImage(pageBuilderStateStore.getBasePrimaryImage)
   }

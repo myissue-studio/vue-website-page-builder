@@ -346,6 +346,7 @@ export class PageBuilderService {
     if (this.pageBuilderStateStore.getImageSettingsPanelOpen) return
     this.pageBuilderStateStore.setComponent(null)
     this.pageBuilderStateStore.setElement(null)
+    this.pageBuilderStateStore.setBasePrimaryImage(null)
     await this.removeHoveredAndSelected()
   }
 
@@ -4785,6 +4786,11 @@ export class PageBuilderService {
       this.reselectSliderImageAfterRemount(image.src)
 
       await this.handleAutoSave()
+
+      // Deselect after applying so the sidebar doesn't show a stale image preview
+      this.pageBuilderStateStore.setElement(null)
+      this.pageBuilderStateStore.setBasePrimaryImage(null)
+      await this.removeHoveredAndSelected()
     }
   }
 
