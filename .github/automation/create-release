@@ -25,6 +25,13 @@ if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 
+# Skip if this version was already released
+if git rev-parse "refs/tags/v$VERSION" >/dev/null 2>&1 \
+  || git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+    echo "Tag v$VERSION already exists — nothing to release."
+    exit 0
+fi
+
 # Check if release notes exist
 if [ ! -s "$SCRIPT_DIR/RELEASE_NOTES.md" ]; then
     echo "Error: RELEASE_NOTES.md file is missing or empty"
