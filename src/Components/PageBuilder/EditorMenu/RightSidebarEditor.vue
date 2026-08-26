@@ -18,9 +18,8 @@ import SeoCheckSettingsEditor from './Editables/SeoCheckSettingsEditor.vue'
 import RemoveAllComponentsSettingsEditor from './Editables/RemoveAllComponentsSettingsEditor.vue'
 import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
 import PageHtmlEditorSettingsEditor from './Editables/PageHtmlEditorSettingsEditor.vue'
-import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
 import DownloadHtmlSettingsSection from './Editables/DownloadHtmlSettingsSection.vue'
-import SelectedHtmlSettingsSection from './Editables/SelectedHtmlSettingsSection.vue'
+import DeveloperSettingsSection from './Editables/DeveloperSettingsSection.vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
@@ -41,7 +40,7 @@ defineEmits([
   'open-slider-settings',
 ])
 
-type SidebarTab = 'styles' | 'settings' | 'tools'
+type SidebarTab = 'styles' | 'settings' | 'tools' | 'dev'
 
 const activeTab = ref<SidebarTab>('styles')
 
@@ -169,7 +168,7 @@ const closeHTMLSettings = async function () {
 
     <div class="pbx-px-4 pbx-mb-3">
       <div
-        class="pbx-grid pbx-grid-cols-3 pbx-gap-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
+        class="pbx-grid pbx-grid-cols-4 pbx-gap-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
         role="tablist"
         :aria-label="translate('Properties panel')"
       >
@@ -214,6 +213,20 @@ const closeHTMLSettings = async function () {
           @click="setActiveTab('tools')"
         >
           {{ translate('Tools') }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activeTab === 'dev'"
+          class="pbx-rounded-lg pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans"
+          :class="
+            activeTab === 'dev'
+              ? 'pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm'
+              : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
+          "
+          @click="setActiveTab('dev')"
+        >
+          {{ translate('Dev') }}
         </button>
       </div>
     </div>
@@ -262,8 +275,10 @@ const closeHTMLSettings = async function () {
 
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <DownloadHtmlSettingsSection />
-        <OverviewSettingsSection />
-        <SelectedHtmlSettingsSection />
+      </div>
+
+      <div v-show="activeTab === 'dev'" class="pbx-flex pbx-flex-col pbx-gap-2">
+        <DeveloperSettingsSection />
       </div>
     </div>
   </div>

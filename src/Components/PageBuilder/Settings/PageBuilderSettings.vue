@@ -7,6 +7,7 @@ import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
+import ConfirmActionModal from '../../Modals/ConfirmActionModal.vue'
 import {
   downloadStandaloneHtml,
   getStandalonePageHtml,
@@ -40,10 +41,6 @@ const showTemporaryPreviewButton = inject<ComputedRef<boolean>>(
 
 const isEmbedded = computed(() => Boolean(props.embeddedSection))
 
-const isOverviewSlice = computed(() =>
-  ['overviewApp', 'overviewUser', 'overviewConfig'].includes(props.embeddedSection ?? ''),
-)
-
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
 
@@ -59,9 +56,15 @@ function selectTab(tab: string) {
 }
 
 const showOverview = computed(
-  () => isOverviewSlice.value || (!props.embeddedSection && selectedTab.value === 'overview'),
+  () =>
+    props.embeddedSection === 'overviewApp' ||
+    (!props.embeddedSection && selectedTab.value === 'overview'),
 )
-const showOverviewIntro = computed(() => showOverview.value && !isOverviewSlice.value)
+const showOverviewIntro = computed(() => showOverview.value && !isEmbedded.value)
+const showDeveloper = computed(
+  () => !props.embeddedSection && selectedTab.value === 'developer',
+)
+const showDeveloperIntro = computed(() => showDeveloper.value)
 const showOverviewApp = computed(
   () =>
     props.embeddedSection === 'overviewApp' ||
@@ -70,12 +73,12 @@ const showOverviewApp = computed(
 const showOverviewUser = computed(
   () =>
     props.embeddedSection === 'overviewUser' ||
-    (!props.embeddedSection && selectedTab.value === 'overview'),
+    (!props.embeddedSection && selectedTab.value === 'developer'),
 )
 const showOverviewConfig = computed(
   () =>
     props.embeddedSection === 'overviewConfig' ||
-    (!props.embeddedSection && selectedTab.value === 'overview'),
+    (!props.embeddedSection && selectedTab.value === 'developer'),
 )
 const showDownload = computed(
   () =>
@@ -85,7 +88,12 @@ const showDownload = computed(
 const showSelectedHtml = computed(
   () =>
     props.embeddedSection === 'selectedHtml' ||
-    (!props.embeddedSection && selectedTab.value === 'viewHTMLConfig'),
+    (!props.embeddedSection && selectedTab.value === 'developer'),
+)
+const downloadTabLabel = computed(() =>
+  showTemporaryPreviewButton.value
+    ? translate('Export & preview')
+    : translate('Download HTML'),
 )
 
 const temporaryPreviewStorageKey = computed(() => {
@@ -99,6 +107,7 @@ const temporaryPreview = ref<TemporaryPreview | null>(
 const temporaryPreviewLoading = ref(false)
 const temporaryPreviewRemoving = ref(false)
 const temporaryPreviewError = ref('')
+const showRemoveTemporaryPreviewModal = ref(false)
 
 function getCurrentStandaloneHtml(): string | null {
   const pagebuilder = document.getElementById('pagebuilder')
@@ -156,13 +165,20 @@ async function handleCopyTemporaryPreview() {
   }
 }
 
-async function handleRemoveTemporaryPreview() {
-  if (
-    !temporaryPreview.value ||
-    !window.confirm(translate('Remove this temporary preview permanently?'))
-  ) {
+function openRemoveTemporaryPreviewModal() {
+  if (!temporaryPreview.value || temporaryPreviewLoading.value || temporaryPreviewRemoving.value) {
     return
   }
+  showRemoveTemporaryPreviewModal.value = true
+}
+
+function closeRemoveTemporaryPreviewModal() {
+  if (temporaryPreviewRemoving.value) return
+  showRemoveTemporaryPreviewModal.value = false
+}
+
+async function confirmRemoveTemporaryPreview() {
+  if (!temporaryPreview.value) return
 
   temporaryPreviewRemoving.value = true
   temporaryPreviewError.value = ''
@@ -170,6 +186,7 @@ async function handleRemoveTemporaryPreview() {
     await removeTemporaryPreview(temporaryPreview.value)
     temporaryPreview.value = null
     saveTemporaryPreview(temporaryPreviewStorageKey.value, null)
+    showRemoveTemporaryPreviewModal.value = false
     showToast(translate('Temporary preview removed'), 'success')
   } catch (error) {
     temporaryPreviewError.value =
@@ -226,20 +243,20 @@ function formatExpiry(expiresAt?: string | null): string {
         "
       >
         <span class="material-symbols-outlined" style="font-size: 13px">nest_eco_leaf</span>
-        <span>{{ translate('Download HTML') }}</span>
+        <span>{{ downloadTabLabel }}</span>
       </button>
       <button
-        @click="selectTab('viewHTMLConfig')"
+        @click="selectTab('developer')"
         type="button"
         class="pbx-inline-flex pbx-items-center pbx-gap-1 pbx-px-2.5 pbx-py-2 pbx-rounded pbx-text-xs pbx-font-medium pbx-cursor-pointer pbx-border pbx-transition-colors pbx-whitespace-nowrap"
         :class="
-          selectedTab === 'viewHTMLConfig'
+          selectedTab === 'developer'
             ? 'pbx-bg-gray-900 pbx-text-white pbx-border-gray-900'
             : 'pbx-bg-white pbx-text-gray-500 pbx-border-gray-200 hover:pbx-bg-gray-50 hover:pbx-text-gray-700'
         "
       >
         <span class="material-symbols-outlined" style="font-size: 13px">deployed_code</span>
-        <span>{{ translate('Selected HTML') }}</span>
+        <span>{{ translate('Developer') }}</span>
       </button>
     </div>
     <!-- tab bar end -->
@@ -252,7 +269,7 @@ function formatExpiry(expiresAt?: string | null): string {
           <p :class="isEmbedded ? 'pbx-editorSectionDesc' : 'pbx-myPrimaryParagraph pbx-text-xs'">
             {{
               translate(
-                'A summary of current user preferences, application settings, and system metadata including UI theme, language, saved components, and logo configuration.',
+                'Application version, resource metadata, logo, and form configuration.',
               )
             }}
           </p>
@@ -261,16 +278,6 @@ function formatExpiry(expiresAt?: string | null): string {
 
       <p v-if="embeddedSection === 'overviewApp'" class="pbx-editorSectionDesc">
         {{ translate('Application version, resource metadata, logo, and form configuration.') }}
-      </p>
-      <p v-if="embeddedSection === 'overviewUser'" class="pbx-editorSectionDesc">
-        {{ translate('Current user profile and saved application preferences.') }}
-      </p>
-      <p v-if="embeddedSection === 'overviewConfig'" class="pbx-editorSectionDesc">
-        {{
-          translate(
-            'Complete configuration object currently used by the Page Builder. Includes user information, branding settings, and other context-specific data needed for rendering and managing the builder environment.',
-          )
-        }}
       </p>
 
       <div
@@ -565,8 +572,39 @@ function formatExpiry(expiresAt?: string | null): string {
         </div>
         <!-- Form Type Table - end -->
       </div>
+    </div>
+    <!-- Overview tab end -->
 
-      <div v-if="showOverviewUser" class="pbx-px-2 pbx-settingsSectionGroup">
+    <!-- Developer tab start -->
+    <div v-if="showDeveloper" :class="isEmbedded ? '' : 'pbx-mt-4'">
+      <div class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
+        <h3 class="pbx-myQuaternaryHeader">{{ translate('Developer') }}</h3>
+        <p class="pbx-myPrimaryParagraph pbx-text-xs">
+          {{
+            translate(
+              'Developer inspection tools for user preferences, the full builder configuration, and the currently selected HTML.',
+            )
+          }}
+        </p>
+      </div>
+    </div>
+
+    <p v-if="embeddedSection === 'overviewUser'" class="pbx-editorSectionDesc">
+      {{ translate('Current user profile and saved application preferences.') }}
+    </p>
+    <p v-if="embeddedSection === 'overviewConfig'" class="pbx-editorSectionDesc">
+      {{
+        translate(
+          'Complete configuration object currently used by the Page Builder. Includes user information, branding settings, and other context-specific data needed for rendering and managing the builder environment.',
+        )
+      }}
+    </p>
+
+    <div
+      v-if="showOverviewUser"
+      class="pbx-px-2 pbx-settingsSectionGroup"
+      :class="showDeveloperIntro ? 'pbx-mt-8' : ''"
+    >
         <!-- User Information Table - start -->
         <div
           class="pbx-settingsSection"
@@ -798,9 +836,9 @@ function formatExpiry(expiresAt?: string | null): string {
       <div
         v-if="showOverviewConfig"
         class="pbx-settingsSectionGroup"
-        :class="showOverviewIntro ? 'pbx-mt-12' : ''"
+        :class="showDeveloperIntro ? 'pbx-mt-12' : ''"
       >
-        <div v-if="showOverviewIntro" class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
+        <div v-if="showDeveloperIntro" class="pbx-flex pbx-items-left pbx-flex-col pbx-gap-1">
           <h3 class="pbx-myQuaternaryHeader">{{ translate('Complete Configuration Overview') }}</h3>
           <p class="pbx-myPrimaryParagraph pbx-text-xs">
             {{
@@ -828,8 +866,7 @@ function formatExpiry(expiresAt?: string | null): string {
           </div>
         </div>
       </div>
-    </div>
-    <!-- Overview tab end -->
+    <!-- Developer tab end -->
 
     <!-- Download HTML tab start -->
     <div v-if="showDownload" :class="isEmbedded ? '' : 'pbx-min-h-screen pbx-mt-4'">
@@ -888,10 +925,7 @@ function formatExpiry(expiresAt?: string | null): string {
             }}
           </button>
 
-          <div
-            v-if="temporaryPreview"
-            class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3"
-          >
+          <div v-if="temporaryPreview" class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3">
             <div
               class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3.5 pbx-py-3"
             >
@@ -912,7 +946,10 @@ function formatExpiry(expiresAt?: string | null): string {
                 v-if="temporaryPreview.expiresAt"
                 class="pbx-mt-2.5 pbx-flex pbx-items-center pbx-gap-1.5 pbx-text-xs pbx-text-gray-500"
               >
-                <span class="material-symbols-outlined pbx-text-base pbx-leading-none" aria-hidden="true">
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
                   schedule
                 </span>
                 <span>
@@ -930,7 +967,13 @@ function formatExpiry(expiresAt?: string | null): string {
                 type="button"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
               >
-                {{ translate('Copy link') }}
+                <span>{{ translate('Copy link') }}</span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  content_copy
+                </span>
               </button>
               <a
                 :href="temporaryPreview.canonicalUrl"
@@ -938,17 +981,33 @@ function formatExpiry(expiresAt?: string | null): string {
                 rel="noopener noreferrer"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full pbx-no-underline"
               >
-                {{ translate('Open preview') }}
+                <span>{{ translate('Open preview') }}</span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  arrow_outward
+                </span>
               </a>
               <button
-                @click="handleRemoveTemporaryPreview"
+                @click="openRemoveTemporaryPreviewModal"
                 type="button"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
                 :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
               >
-                {{
-                  temporaryPreviewRemoving ? translate('Removing...') : translate('Remove preview')
-                }}
+                <span>
+                  {{
+                    temporaryPreviewRemoving
+                      ? translate('Removing...')
+                      : translate('Remove preview')
+                  }}
+                </span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  delete_forever
+                </span>
               </button>
             </div>
           </div>
@@ -969,10 +1028,32 @@ function formatExpiry(expiresAt?: string | null): string {
     </div>
     <!-- Download HTML tab end -->
 
-    <!-- Selected HTML tab start -->
-    <div v-if="showSelectedHtml" :class="isEmbedded ? '' : 'pbx-min-h-screen pbx-mt-4'">
+    <!-- Selected HTML (Developer) start -->
+    <div
+      v-if="showSelectedHtml"
+      :class="isEmbedded ? '' : 'pbx-min-h-screen pbx-mt-4'"
+    >
+      <div v-if="showDeveloperIntro" class="pbx-mb-4 pbx-px-2">
+        <h4 class="pbx-myQuaternaryHeader">{{ translate('Selected HTML') }}</h4>
+      </div>
       <SelectedHtmlInspector />
     </div>
-    <!-- Selected HTML tab end -->
+    <!-- Selected HTML (Developer) end -->
+
+    <ConfirmActionModal
+      :showDynamicModalBuilder="showRemoveTemporaryPreviewModal"
+      type="delete"
+      :gridColumnAmount="2"
+      :title="translate('Remove preview')"
+      :description="translate('Remove this temporary preview permanently?')"
+      :isLoading="temporaryPreviewRemoving"
+      :firstButtonText="translate('Close')"
+      :thirdButtonText="translate('Delete')"
+      @firstModalButtonFunctionDynamicModalBuilder="closeRemoveTemporaryPreviewModal"
+      @thirdModalButtonFunctionDynamicModalBuilder="confirmRemoveTemporaryPreview"
+    >
+      <header></header>
+      <main></main>
+    </ConfirmActionModal>
   </div>
 </template>
