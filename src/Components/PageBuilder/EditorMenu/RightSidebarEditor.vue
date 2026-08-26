@@ -311,7 +311,7 @@ const closeHTMLSettings = async function () {
     <div
       ref="scrollContainer"
       @scroll="onScroll"
-      class="pbx-min-h-0 pbx-flex-1 pbx-overflow-y-auto pbx-pl-3 pbx-pr-3 pbx-pb-4"
+      class="pbx-min-h-0 pbx-flex-1 pbx-overflow-y-scroll pbx-pl-3 pbx-pr-3 pbx-pb-4"
     >
       <div v-show="activeTab === 'styles'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <div v-show="hasEditableSelection" class="pbx-flex pbx-flex-col pbx-gap-2">
