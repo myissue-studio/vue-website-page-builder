@@ -888,10 +888,7 @@ function formatExpiry(expiresAt?: string | null): string {
             }}
           </button>
 
-          <div
-            v-if="temporaryPreview"
-            class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3"
-          >
+          <div v-if="temporaryPreview" class="pbx-mt-4 pbx-flex pbx-flex-col pbx-gap-3">
             <div
               class="pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-gray-50 pbx-px-3.5 pbx-py-3"
             >
@@ -912,7 +909,10 @@ function formatExpiry(expiresAt?: string | null): string {
                 v-if="temporaryPreview.expiresAt"
                 class="pbx-mt-2.5 pbx-flex pbx-items-center pbx-gap-1.5 pbx-text-xs pbx-text-gray-500"
               >
-                <span class="material-symbols-outlined pbx-text-base pbx-leading-none" aria-hidden="true">
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
                   schedule
                 </span>
                 <span>
@@ -930,7 +930,13 @@ function formatExpiry(expiresAt?: string | null): string {
                 type="button"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
               >
-                {{ translate('Copy link') }}
+                <span>{{ translate('Copy link') }}</span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  content_copy
+                </span>
               </button>
               <a
                 :href="temporaryPreview.canonicalUrl"
@@ -938,7 +944,13 @@ function formatExpiry(expiresAt?: string | null): string {
                 rel="noopener noreferrer"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full pbx-no-underline"
               >
-                {{ translate('Open preview') }}
+                <span>{{ translate('Open preview') }}</span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  open_in_new
+                </span>
               </a>
               <button
                 @click="handleRemoveTemporaryPreview"
@@ -946,9 +958,19 @@ function formatExpiry(expiresAt?: string | null): string {
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
                 :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
               >
-                {{
-                  temporaryPreviewRemoving ? translate('Removing...') : translate('Remove preview')
-                }}
+                <span>
+                  {{
+                    temporaryPreviewRemoving
+                      ? translate('Removing...')
+                      : translate('Remove preview')
+                  }}
+                </span>
+                <span
+                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
+                  aria-hidden="true"
+                >
+                  delete_forever
+                </span>
               </button>
             </div>
           </div>
