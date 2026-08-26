@@ -211,16 +211,20 @@ const closeHTMLSettings = async function () {
             </template>
           </p>
           <p
-            class="pbx-m-0 pbx-mt-1 pbx-flex pbx-min-h-5 pbx-items-center pbx-justify-end pbx-overflow-hidden pbx-text-xs pbx-leading-5"
+            class="pbx-m-0 pbx-mt-1 pbx-flex pbx-min-h-5 pbx-items-center pbx-justify-end pbx-gap-0.5 pbx-overflow-hidden pbx-text-xs pbx-leading-5"
             :class="selectionBreadcrumb.length ? 'pbx-text-gray-500' : 'pbx-invisible'"
             :title="selectionBreadcrumb.length ? selectionBreadcrumb.join(' / ') : undefined"
             :aria-hidden="selectionBreadcrumb.length ? undefined : 'true'"
           >
             <template v-if="selectionBreadcrumb.length">
               <template v-for="(part, index) in selectionBreadcrumb" :key="`${part}-${index}`">
-                <span v-if="index > 0" class="pbx-mx-1 pbx-shrink-0 pbx-text-gray-400" aria-hidden="true"
-                  >/</span
+                <span
+                  v-if="index > 0"
+                  class="material-symbols-outlined pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-justify-center pbx-text-[14px] pbx-leading-none pbx-text-gray-400"
+                  aria-hidden="true"
                 >
+                  arrow_forward
+                </span>
                 <span
                   class="pbx-min-w-0"
                   :class="index < selectionBreadcrumb.length - 1 ? 'pbx-truncate' : 'pbx-shrink-0'"
