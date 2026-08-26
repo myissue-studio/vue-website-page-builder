@@ -20,7 +20,7 @@ import PageDesignSettingsEditor from './Editables/PageDesignSettingsEditor.vue'
 import PageHtmlEditorSettingsEditor from './Editables/PageHtmlEditorSettingsEditor.vue'
 import OverviewSettingsSection from './Editables/OverviewSettingsSection.vue'
 import DownloadHtmlSettingsSection from './Editables/DownloadHtmlSettingsSection.vue'
-import SelectedHtmlSettingsSection from './Editables/SelectedHtmlSettingsSection.vue'
+import DeveloperSettingsSection from './Editables/DeveloperSettingsSection.vue'
 import { getPageBuilder } from '../../../composables/usePageBuilder'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
@@ -263,7 +263,7 @@ const closeHTMLSettings = async function () {
       <div v-show="activeTab === 'tools'" class="pbx-flex pbx-flex-col pbx-gap-2">
         <DownloadHtmlSettingsSection />
         <OverviewSettingsSection />
-        <SelectedHtmlSettingsSection />
+        <DeveloperSettingsSection />
       </div>
     </div>
   </div>
