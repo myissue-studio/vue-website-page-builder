@@ -168,7 +168,7 @@ const closeHTMLSettings = async function () {
 
     <div class="pbx-px-4 pbx-mb-3">
       <div
-        class="pbx-grid pbx-grid-cols-4 pbx-gap-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
+        class="pbx-grid pbx-grid-cols-4 pbx-gap-2 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-1"
         role="tablist"
         :aria-label="translate('Properties panel')"
       >
