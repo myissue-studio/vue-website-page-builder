@@ -7,6 +7,7 @@ import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
+import ConfirmActionModal from '../../Modals/ConfirmActionModal.vue'
 import {
   downloadStandaloneHtml,
   getStandalonePageHtml,
@@ -106,6 +107,7 @@ const temporaryPreview = ref<TemporaryPreview | null>(
 const temporaryPreviewLoading = ref(false)
 const temporaryPreviewRemoving = ref(false)
 const temporaryPreviewError = ref('')
+const showRemoveTemporaryPreviewModal = ref(false)
 
 function getCurrentStandaloneHtml(): string | null {
   const pagebuilder = document.getElementById('pagebuilder')
@@ -163,13 +165,20 @@ async function handleCopyTemporaryPreview() {
   }
 }
 
-async function handleRemoveTemporaryPreview() {
-  if (
-    !temporaryPreview.value ||
-    !window.confirm(translate('Remove this temporary preview permanently?'))
-  ) {
+function openRemoveTemporaryPreviewModal() {
+  if (!temporaryPreview.value || temporaryPreviewLoading.value || temporaryPreviewRemoving.value) {
     return
   }
+  showRemoveTemporaryPreviewModal.value = true
+}
+
+function closeRemoveTemporaryPreviewModal() {
+  if (temporaryPreviewRemoving.value) return
+  showRemoveTemporaryPreviewModal.value = false
+}
+
+async function confirmRemoveTemporaryPreview() {
+  if (!temporaryPreview.value) return
 
   temporaryPreviewRemoving.value = true
   temporaryPreviewError.value = ''
@@ -177,6 +186,7 @@ async function handleRemoveTemporaryPreview() {
     await removeTemporaryPreview(temporaryPreview.value)
     temporaryPreview.value = null
     saveTemporaryPreview(temporaryPreviewStorageKey.value, null)
+    showRemoveTemporaryPreviewModal.value = false
     showToast(translate('Temporary preview removed'), 'success')
   } catch (error) {
     temporaryPreviewError.value =
@@ -980,7 +990,7 @@ function formatExpiry(expiresAt?: string | null): string {
                 </span>
               </a>
               <button
-                @click="handleRemoveTemporaryPreview"
+                @click="openRemoveTemporaryPreviewModal"
                 type="button"
                 class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
                 :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
@@ -1029,5 +1039,21 @@ function formatExpiry(expiresAt?: string | null): string {
       <SelectedHtmlInspector />
     </div>
     <!-- Selected HTML (Developer) end -->
+
+    <ConfirmActionModal
+      :showDynamicModalBuilder="showRemoveTemporaryPreviewModal"
+      type="delete"
+      :gridColumnAmount="2"
+      :title="translate('Remove preview')"
+      :description="translate('Remove this temporary preview permanently?')"
+      :isLoading="temporaryPreviewRemoving"
+      :firstButtonText="translate('Close')"
+      :thirdButtonText="translate('Delete')"
+      @firstModalButtonFunctionDynamicModalBuilder="closeRemoveTemporaryPreviewModal"
+      @thirdModalButtonFunctionDynamicModalBuilder="confirmRemoveTemporaryPreview"
+    >
+      <header></header>
+      <main></main>
+    </ConfirmActionModal>
   </div>
 </template>

@@ -8,11 +8,12 @@ const { translate } = useTranslations()
 
 <template>
   <div class="pbx-flex pbx-flex-col pbx-gap-2">
-    <p
-      class="pbx-m-0 pbx-px-0.5 pbx-text-[10px] pbx-font-semibold pbx-uppercase pbx-tracking-wider pbx-text-gray-400"
-    >
-      {{ translate('Developer') }}
-    </p>
+    <EditorAccordion>
+      <template #title>{{ translate('App & Resource') }}</template>
+      <template #content>
+        <PageBuilderSettings embedded-section="overviewApp" />
+      </template>
+    </EditorAccordion>
 
     <EditorAccordion>
       <template #title>{{ translate('User & Settings') }}</template>
