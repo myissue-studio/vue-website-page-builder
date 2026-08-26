@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "Использовать скруглённые углы для кнопок CTA",
   "Button links": "Ссылки кнопок",
   "Link behavior on helper button components": "Поведение ссылок в вспомогательных компонентах кнопок",
-  "No additional settings for this category": "Нет дополнительных настроек для этой категории"
+  "No additional settings for this category": "Нет дополнительных настроек для этой категории",
+  "Heading": "Заголовок",
+  "Paragraph": "Абзац",
+  "Button": "Кнопка",
+  "List item": "Элемент списка",
+  "Block": "Блок"
 }

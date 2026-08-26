@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "استخدام زوايا مستديرة لأزرار الدعوة",
   "Button links": "روابط الأزرار",
   "Link behavior on helper button components": "سلوك الرابط في مكوّنات أزرار المساعدة",
-  "No additional settings for this category": "لا توجد إعدادات إضافية لهذه الفئة"
+  "No additional settings for this category": "لا توجد إعدادات إضافية لهذه الفئة",
+  "Heading": "عنوان",
+  "Paragraph": "فقرة",
+  "Button": "زر",
+  "List item": "عنصر قائمة",
+  "Block": "كتلة"
 }

@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "为 CTA 按钮使用圆角",
   "Button links": "按钮链接",
   "Link behavior on helper button components": "辅助按钮组件的链接行为",
-  "No additional settings for this category": "此分类没有更多设置"
+  "No additional settings for this category": "此分类没有更多设置",
+  "Heading": "标题",
+  "Paragraph": "段落",
+  "Button": "按钮",
+  "List item": "列表项",
+  "Block": "区块"
 }

@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "CTAボタンに角丸を使う",
   "Button links": "ボタンリンク",
   "Link behavior on helper button components": "ヘルパーボタンコンポーネントのリンク動作",
-  "No additional settings for this category": "このカテゴリに追加設定はありません"
+  "No additional settings for this category": "このカテゴリに追加設定はありません",
+  "Heading": "見出し",
+  "Paragraph": "段落",
+  "Button": "ボタン",
+  "List item": "リスト項目",
+  "Block": "ブロック"
 }

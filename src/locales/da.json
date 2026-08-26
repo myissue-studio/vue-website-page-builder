@@ -699,5 +699,10 @@
   "Page replaced with formatted text": "Side erstattet med formateret tekst",
   "Replace existing content": "Erstat eksisterende indhold",
   "Remove current page blocks before inserting": "Fjern nuværende sideblokke før indsættelse",
-  "Insert": "Indsæt"
+  "Insert": "Indsæt",
+  "Heading": "Overskrift",
+  "Paragraph": "Afsnit",
+  "Button": "Knap",
+  "List item": "Listepunkt",
+  "Block": "Blok"
 }

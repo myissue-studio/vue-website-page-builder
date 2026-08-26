@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "Utiliser des coins arrondis pour les boutons CTA",
   "Button links": "Liens des boutons",
   "Link behavior on helper button components": "Comportement des liens sur les composants bouton d’aide",
-  "No additional settings for this category": "Aucun paramètre supplémentaire pour cette catégorie"
+  "No additional settings for this category": "Aucun paramètre supplémentaire pour cette catégorie",
+  "Heading": "Titre",
+  "Paragraph": "Paragraphe",
+  "Button": "Bouton",
+  "List item": "Élément de liste",
+  "Block": "Bloc"
 }

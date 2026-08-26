@@ -701,5 +701,10 @@
   "Use rounded corners for CTA buttons": "CTA बटनों के लिए गोल कोने उपयोग करें",
   "Button links": "बटन लिंक",
   "Link behavior on helper button components": "हेल्पर बटन घटकों पर लिंक व्यवहार",
-  "No additional settings for this category": "इस श्रेणी के लिए कोई अतिरिक्त सेटिंग नहीं"
+  "No additional settings for this category": "इस श्रेणी के लिए कोई अतिरिक्त सेटिंग नहीं",
+  "Heading": "शीर्षक",
+  "Paragraph": "अनुच्छेद",
+  "Button": "बटन",
+  "List item": "सूची आइटम",
+  "Block": "ब्लॉक"
 }
