@@ -18,7 +18,7 @@ const showDemoThemePanel = ref(false)
 const showWelcomeHint = ref(false)
 const highlightThemeTrigger = ref(false)
 
-const fashionPreset = DEMO_THEME_PACKS[0]
+const defaultPreset = DEMO_THEME_PACKS[0]
 
 const demoPost = computed(() => ({
   id: 1,
@@ -92,21 +92,23 @@ watch(
         autoSave: true,
         // Load custom fonts in your app CSS, e.g. dev-global.css or index.html:
         // @import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap');
-        fontFamily: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+        fontFamily: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
         elementFonts: {
-          h1: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          h2: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          h3: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          h4: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          h5: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          h6: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
-          p: `${fashionPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h1: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h2: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h3: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h4: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h5: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          h6: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
+          p: `${defaultPreset.fontKey}, raleway, arial, fantasy, Bitcount Grid Double`,
         },
       },
 
       settings: {
-        brandColor: '#000000',
-        themeColorPresets: fashionPreset.themeColorPresets,
+        brandColor: defaultPreset.brandColor,
+        buttonColor: defaultPreset.buttonColor,
+        buttonTextColor: defaultPreset.buttonTextColor,
+        themeColorPresets: defaultPreset.themeColorPresets,
       },
       pageSettings,
     } as const

@@ -111,6 +111,37 @@ describe('PageBuilderConfig Type Flexibility', () => {
     expect(config.settings).toHaveProperty('customSetting')
   })
 
+  it('accepts settings.buttonColor independently from brandColor', () => {
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      settings: {
+        brandColor: '#000000',
+        buttonColor: '#E5D352',
+        buttonTextColor: '#000000',
+      },
+    }
+    expect(config.settings?.brandColor).toBe('#000000')
+    expect(config.settings?.buttonColor).toBe('#E5D352')
+    expect(config.settings?.buttonTextColor).toBe('#000000')
+  })
+
+  it('accepts null brandColor, buttonColor, and buttonTextColor without type errors', () => {
+    const brandFromApi: string | null = null
+    const buttonFromApi: string | null = null
+    const buttonTextFromApi: string | null = null
+    const config: PageBuilderConfig = {
+      updateOrCreate: { formType: 'create', formName: 'article' },
+      settings: {
+        brandColor: brandFromApi,
+        buttonColor: buttonFromApi,
+        buttonTextColor: buttonTextFromApi,
+      },
+    }
+    expect(config.settings?.brandColor).toBeNull()
+    expect(config.settings?.buttonColor).toBeNull()
+    expect(config.settings?.buttonTextColor).toBeNull()
+  })
+
   it('accepts top-level custom properties', () => {
     const config: PageBuilderConfig = {
       updateOrCreate: { formType: 'create', formName: 'article' },

@@ -140,7 +140,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Left Positioned Button',
     category: 'Buttons',
@@ -151,7 +151,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Centered Button',
     category: 'Buttons',
@@ -162,7 +162,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: 'Right Positioned Button',
     category: 'Buttons',
@@ -173,7 +173,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-start pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Left Positioned Buttons',
     category: 'Buttons',
@@ -184,7 +184,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-center pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Centered Buttons',
     category: 'Buttons',
@@ -195,7 +195,7 @@ const componentHelpers: ComponentHelper[] = [
         `,
   },
   {
-    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
+    html_code: `<section> <div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"> <div class="pbx-mx-auto pbx-max-w-7xl"> <div class="pbx-flex pbx-justify-end pbx-gap-4"> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> <div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div> </div> </div> </div> </section>`,
     id: null,
     title: '2 Right Positioned Buttons',
     category: 'Buttons',
@@ -360,7 +360,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-stretch"><div class="pbx-flex pbx-items-center pbx-justify-center pbx-w-full pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-w-full pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Link to landing page</a></p> </div></div></div></div></section>`,
+    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-stretch"><div class="pbx-flex pbx-items-center pbx-justify-center pbx-w-full pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.google.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-w-full pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Link to landing page</a></p> </div></div></div></div></section>`,
     id: null,
     title: 'Full Width Button',
     category: 'Buttons',
@@ -448,7 +448,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-center"><div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="mailto:hello@example.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Email us</a></p> </div></div></div></div></section>`,
+    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-center"><div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="mailto:hello@example.com" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Email us</a></p> </div></div></div></div></section>`,
     id: null,
     title: 'Email Button',
     category: 'Buttons',
@@ -459,7 +459,7 @@ const componentHelpers: ComponentHelper[] = [
     `,
   },
   {
-    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-center"><div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="tel:+15550000000" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full">Call us</a></p> </div></div></div></div></section>`,
+    html_code: `<section><div class="pbx-w-full pbx-pt-4 pbx-pb-8 pbx-px-4"><div class="pbx-mx-auto pbx-max-w-7xl"><div class="pbx-flex pbx-justify-center"><div class="pbx-flex pbx-items-center pbx-font-medium" id="linktree"> <p><a target="_blank" rel="noopener noreferrer nofollow" href="tel:+15550000000" class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full">Call us</a></p> </div></div></div></div></section>`,
     id: null,
     title: 'Phone Button',
     category: 'Buttons',

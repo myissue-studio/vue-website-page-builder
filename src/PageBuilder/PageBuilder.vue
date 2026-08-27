@@ -43,7 +43,11 @@ import {
 } from '../utils/builder/edit-toolbar-popover-events'
 import {
   applyPageBuilderBrandColor,
+  applyPageBuilderButtonColor,
+  applyPageBuilderButtonTextColor,
   clearPageBuilderBrandColor,
+  clearPageBuilderButtonColor,
+  clearPageBuilderButtonTextColor,
 } from '../utils/builder/apply-brand-color'
 import ShoppingIcon from '@/Components/Icons/ShoppingIcon.vue'
 
@@ -371,9 +375,16 @@ const canvasPageStyle = computed(() => {
 })
 
 watch(
-  () => getPageBuilderConfig.value?.settings?.brandColor,
-  (brandColor) => {
+  () =>
+    [
+      getPageBuilderConfig.value?.settings?.brandColor,
+      getPageBuilderConfig.value?.settings?.buttonColor,
+      getPageBuilderConfig.value?.settings?.buttonTextColor,
+    ] as const,
+  ([brandColor, buttonColor, buttonTextColor]) => {
     applyPageBuilderBrandColor(brandColor)
+    applyPageBuilderButtonColor(buttonColor, brandColor)
+    applyPageBuilderButtonTextColor(buttonTextColor)
   },
   { immediate: true },
 )
@@ -1177,6 +1188,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('pagebuilder:layout-change', handlePageBuilderLayoutChange)
   document.removeEventListener('pointerdown', handleInlineEditorDocumentPointerDown, true)
   clearPageBuilderBrandColor()
+  clearPageBuilderButtonColor()
+  clearPageBuilderButtonTextColor()
 })
 </script>
 
@@ -1654,7 +1667,7 @@ onBeforeUnmount(() => {
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
               type="button"
-              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
+              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-fill-myPrimaryButtonTextColor focus-visible:pbx-ring-0"
               :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
@@ -1875,7 +1888,7 @@ onBeforeUnmount(() => {
               v-if="!getMenuRight"
               @click="pageBuilderStateStore.setMenuRight(true)"
               type="button"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
               <span>
                 <svg

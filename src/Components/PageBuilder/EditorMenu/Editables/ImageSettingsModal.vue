@@ -122,7 +122,7 @@ const aspectPresets = [
           class="pbx-font-sans pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedObjectFit === 'pbx-object-cover'
-              ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
+              ? 'pbx-border-myPrimaryButtonColor pbx-bg-myPrimaryButtonColor pbx-text-white'
               : 'pbx-border-gray-200 pbx-bg-white pbx-text-gray-700 hover:pbx-border-gray-300'
           "
           @click="setObjectFit('pbx-object-cover')"
@@ -134,7 +134,7 @@ const aspectPresets = [
           class="pbx-font-sans pbx-flex-1 pbx-rounded-xl pbx-border pbx-border-solid pbx-px-4 pbx-py-3 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedObjectFit === 'pbx-object-contain'
-              ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
+              ? 'pbx-border-myPrimaryButtonColor pbx-bg-myPrimaryButtonColor pbx-text-white'
               : 'pbx-border-gray-200 pbx-bg-white pbx-text-gray-700 hover:pbx-border-gray-300'
           "
           @click="setObjectFit('pbx-object-contain')"
@@ -164,7 +164,7 @@ const aspectPresets = [
             class="pbx-w-10 pbx-h-10 pbx-rounded-lg pbx-border pbx-border-solid pbx-flex pbx-items-center pbx-justify-center pbx-cursor-pointer pbx-text-xs pbx-transition-colors"
             :class="
               selectedObjectPosition === positionClass
-                ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
+                ? 'pbx-border-myPrimaryButtonColor pbx-bg-myPrimaryButtonColor pbx-text-white'
                 : 'pbx-border-gray-200 pbx-bg-white pbx-text-gray-500 hover:pbx-border-gray-300'
             "
             :title="positionClass.replace('pbx-object-', '')"
@@ -189,7 +189,7 @@ const aspectPresets = [
           class="pbx-font-sans pbx-rounded-xl pbx-border pbx-border-solid pbx-px-3 pbx-py-2.5 pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-transition-colors"
           :class="
             selectedAspectRatio === preset.id
-              ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white'
+              ? 'pbx-border-myPrimaryButtonColor pbx-bg-myPrimaryButtonColor pbx-text-white'
               : 'pbx-border-gray-200 pbx-bg-white pbx-text-gray-700 hover:pbx-border-gray-300'
           "
           @click="setAspectRatio(preset.id)"
@@ -223,7 +223,7 @@ const aspectPresets = [
           class="pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-rounded-xl pbx-border pbx-border-solid pbx-flex pbx-items-center pbx-justify-center pbx-cursor-pointer pbx-transition-colors"
           :class="
             altTextDirty
-              ? 'pbx-border-myPrimaryLinkColor pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-opacity-90'
+              ? 'pbx-border-myPrimaryButtonColor pbx-bg-myPrimaryButtonColor pbx-text-white hover:pbx-opacity-90'
               : 'pbx-border-gray-200 pbx-bg-gray-100 pbx-text-gray-400 pbx-cursor-not-allowed'
           "
           :disabled="!altTextDirty || isSavingAlt"

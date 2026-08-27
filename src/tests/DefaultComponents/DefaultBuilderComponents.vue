@@ -285,12 +285,18 @@ const applyHelperButtonStyle = (componentObject: ComponentObject): ComponentObje
     const link = block.querySelector('a')
     if (!(link instanceof HTMLElement)) return
 
-    block.classList.remove('pbx-bg-myPrimaryLinkColor', 'pbx-text-myPrimaryDarkGrayColor')
+    block.classList.remove(
+      'pbx-bg-myPrimaryButtonColor',
+      'pbx-bg-myPrimaryButtonColor',
+      'pbx-text-myPrimaryDarkGrayColor',
+    )
     link.classList.remove(
-      'pbx-bg-myPrimaryLinkColor',
+      'pbx-bg-myPrimaryButtonColor',
+      'pbx-bg-myPrimaryButtonColor',
       'pbx-bg-transparent',
       'pbx-text-myPrimaryDarkGrayColor',
       'pbx-text-myPrimaryLinkColor',
+      'pbx-text-myPrimaryButtonTextColor',
       'pbx-text-white',
       'pbx-inline-flex',
       'pbx-items-center',
@@ -310,7 +316,7 @@ const applyHelperButtonStyle = (componentObject: ComponentObject): ComponentObje
     )
 
     if (helperButtonStyle.value === 'button') {
-      link.classList.add('pbx-bg-myPrimaryLinkColor', 'pbx-text-white')
+      link.classList.add('pbx-bg-myPrimaryButtonColor', 'pbx-text-myPrimaryButtonTextColor')
       if (helperRoundedButtons.value) {
         link.classList.add('pbx-rounded-full')
       }
@@ -587,7 +593,7 @@ const convertToComponentObject = function (comp: {
               >
                 <button
                   type="button"
-                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
+                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                   :disabled="componentsPage === 1"
                   :class="componentsPage === 1 ? 'pbx-opacity-40 pbx-cursor-not-allowed' : ''"
                   @click="componentsPage--"
@@ -600,11 +606,11 @@ const convertToComponentObject = function (comp: {
                     v-for="page in componentsTotalPages"
                     :key="page"
                     type="button"
-                    class="pbx-h-10 pbx-w-10 pbx-text-xs pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
+                    class="pbx-h-10 pbx-w-10 pbx-text-xs pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                     :class="
                       page === componentsPage
-                        ? 'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
-                        : 'hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white'
+                        ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor'
+                        : 'hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor'
                     "
                     @click="componentsPage = page"
                   >
@@ -614,7 +620,7 @@ const convertToComponentObject = function (comp: {
 
                 <button
                   type="button"
-                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
+                  class="pbx-text-xs pbx-h-10 pbx-px-2 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor focus-visible:pbx-outline-none focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor/30 pbx-text-black"
                   :disabled="componentsPage === componentsTotalPages"
                   :class="
                     componentsPage === componentsTotalPages

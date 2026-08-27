@@ -475,7 +475,18 @@ export interface PageBuilderConfig {
     elementFonts?: PageBuilderElementFonts
   } | null // Allow null for maximum flexibility; no [key: string] here so typed UserSettings interfaces assign without error
   settings?: {
-    brandColor?: string
+    /** Primary brand / accent color for links, UI chrome, and focus states. */
+    brandColor?: string | null
+    /**
+     * Filled button / CTA background color (`myPrimaryButtonColor`).
+     * When omitted, falls back to `brandColor`, then the default green.
+     */
+    buttonColor?: string | null
+    /**
+     * Label / icon color on filled buttons (`myPrimaryButtonTextColor`).
+     * Defaults to white when omitted — use a dark hex for light button backgrounds.
+     */
+    buttonTextColor?: string | null
     themeColorPresets?: ThemeColorPresetSettingsInput | ThemeColorPresetSettings | null
     [key: string]: unknown
   } | null

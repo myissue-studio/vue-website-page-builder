@@ -137,7 +137,7 @@ Why: the editor selects `#linktree` / `.pbx-product-card-cta`. Padding on that w
       target="_blank"
       rel="noopener noreferrer nofollow"
       href="https://www.google.com"
-      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white pbx-rounded-full"
+      class="pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor pbx-rounded-full"
     >
       Link to landing page
     </a>
@@ -201,7 +201,7 @@ Plain text CTAs (`pbx-font-semibold` only, no button chrome) stay as text links 
 </div>
 
 <!-- Missing #linktree / <p> wrapper -->
-<a class="pbx-bg-myPrimaryLinkColor pbx-px-4" href="https://www.google.com">Click</a>
+<a class="pbx-bg-myPrimaryButtonColor pbx-px-4" href="https://www.google.com">Click</a>
 
 <!-- Classes on a plain (non-button) <a> -->
 <a class="pbx-font-semibold" href="https://www.google.com">Layouts and visual.</a>

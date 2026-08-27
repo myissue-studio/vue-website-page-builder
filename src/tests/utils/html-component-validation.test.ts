@@ -67,7 +67,7 @@ describe('html-component-validation', () => {
           <div class="product-card-cta text-sm font-semibold">
             <p>
               <a
-                class="product-card-cta-link inline-flex items-center justify-center px-4 py-2 text-sm font-semibold bg-myPrimaryLinkColor text-white hover:text-white rounded-full"
+                class="product-card-cta-link inline-flex items-center justify-center px-4 py-2 text-sm font-semibold bg-myPrimaryButtonColor text-myPrimaryButtonTextColor hover:text-myPrimaryButtonTextColor rounded-full"
                 href="https://www.google.com"
               >View product</a>
             </p>
