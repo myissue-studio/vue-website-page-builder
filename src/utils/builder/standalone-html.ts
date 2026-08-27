@@ -1,4 +1,12 @@
 import { extractCleanHTMLFromPageBuilder } from './extract-clean-html'
+import {
+  PAGE_BUILDER_BRAND_COLOR_RGB_VAR,
+  PAGE_BUILDER_BRAND_COLOR_VAR,
+  PAGE_BUILDER_BUTTON_COLOR_RGB_VAR,
+  PAGE_BUILDER_BUTTON_COLOR_VAR,
+  PAGE_BUILDER_BUTTON_TEXT_COLOR_RGB_VAR,
+  PAGE_BUILDER_BUTTON_TEXT_COLOR_VAR,
+} from './apply-brand-color'
 
 const PAGE_RESET_CSS = `
       <style>
@@ -22,6 +30,32 @@ const PAGE_RESET_CSS = `
         }
       </style>
     `
+
+const THEME_COLOR_VARS = [
+  PAGE_BUILDER_BRAND_COLOR_VAR,
+  PAGE_BUILDER_BRAND_COLOR_RGB_VAR,
+  PAGE_BUILDER_BUTTON_COLOR_VAR,
+  PAGE_BUILDER_BUTTON_COLOR_RGB_VAR,
+  PAGE_BUILDER_BUTTON_TEXT_COLOR_VAR,
+  PAGE_BUILDER_BUTTON_TEXT_COLOR_RGB_VAR,
+] as const
+
+/**
+ * Brand / button colors live on `:root` as inline style properties during editing.
+ * Standalone downloads must re-emit them as a `<style>` block or Tailwind falls back
+ * to the default green.
+ */
+export function collectPageBuilderThemeColorStyle(sourceDocument: Document = document): string {
+  const rootStyle = sourceDocument.documentElement.style
+  const declarations = THEME_COLOR_VARS.flatMap((cssVar) => {
+    const value = rootStyle.getPropertyValue(cssVar).trim()
+    return value ? [`${cssVar}: ${value}`] : []
+  })
+
+  if (declarations.length === 0) return ''
+
+  return `<style>:root { ${declarations.join('; ')}; }</style>`
+}
 
 export function collectDocumentStyles(sourceDocument: Document = document): string {
   return Array.from(sourceDocument.querySelectorAll('style, link[rel="stylesheet"]'))
@@ -50,7 +84,8 @@ export function buildStandaloneHtml(
   sourceDocument: Document = document,
   title = 'Downloaded HTML',
 ): string {
-  const styles = `${collectDocumentStyles(sourceDocument)}\n${PAGE_RESET_CSS}`
+  const themeColors = collectPageBuilderThemeColorStyle(sourceDocument)
+  const styles = `${themeColors}\n${collectDocumentStyles(sourceDocument)}\n${PAGE_RESET_CSS}`
   const escapedTitle = title
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

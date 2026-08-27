@@ -83,7 +83,9 @@ export interface PageBuilderConfig {
       } & Record<string, unknown>)
     | null // ✅ Use intersection type for compatibility, allow null
   settings?: {
-    brandColor?: string
+    brandColor?: string | null
+    buttonColor?: string | null
+    buttonTextColor?: string | null
     [key: string]: unknown
   } | null
   pageSettings?: PageSettings

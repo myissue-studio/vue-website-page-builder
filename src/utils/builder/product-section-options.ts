@@ -250,9 +250,9 @@ export function buildProductCtaAnchorClass(
       'py-2',
       'text-sm',
       'font-semibold',
-      'bg-myPrimaryLinkColor',
-      'text-white',
-      'hover:text-white',
+      'bg-myPrimaryButtonColor',
+      'text-myPrimaryButtonTextColor',
+      'hover:text-myPrimaryButtonTextColor',
       roundedButtons ? 'rounded-full' : 'rounded-md',
     ].join(' ')
   }

@@ -11,7 +11,7 @@ defineEmits<{
 <template>
   <div
     @click="$emit('update:modelValue', !modelValue)"
-    :class="modelValue ? 'pbx-bg-myPrimaryLinkColor' : 'pbx-bg-gray-200'"
+    :class="modelValue ? 'pbx-bg-myPrimaryButtonColor' : 'pbx-bg-gray-200'"
     class="pbx-relative pbx-inline-flex pbx-h-6 pbx-w-11 pbx-shrink-0 pbx-cursor-pointer pbx-rounded-full pbx-p-0.5 pbx-ring-1 pbx-ring-inset pbx-ring-gray-900/10 pbx-transition-colors pbx-duration-200 pbx-ease-in-out"
     role="switch"
     :aria-checked="modelValue"

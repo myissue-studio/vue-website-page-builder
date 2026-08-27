@@ -22,7 +22,11 @@ Your `configPageBuilder` object can include:
 - **`userSettings` (optional):**
   Set user preferences such as language, auto-save, default canvas font (`fontFamily`), per-element font overrides (`elementFonts`), and TipTap options like `disableH1`.
 - **`brandColor` (optional):**
-  Set your brand's primary color for key UI elements (inside the `settings` config).
+  Set your brand's primary color for links, text accents, and focus rings (inside the `settings` config).
+- **`buttonColor` (optional):**
+  Set filled button / CTA backgrounds and selected editor UI (tabs, toolbar active states) separately from `brandColor`. When omitted, falls back to `brandColor`, then the default green.
+- **`buttonTextColor` (optional):**
+  Set the label color on those filled buttons and selected UI controls (`myPrimaryButtonTextColor`). Defaults to white when omitted — use a dark or bright hex for contrast on light/dark button backgrounds.
 - **`themeColorPresets` (optional):**
   Pass primary, secondary, and up to six custom hex colors. User edits to these colors persist automatically in `localStorage` and survive modal close/reopen and page reloads. Enabled presets appear in the text color and background color menus.
 - **`pageSettings` (optional):**
@@ -79,6 +83,10 @@ const configPageBuilder = {
   },
   settings: {
     brandColor: '#DB93B0',
+    // Optional — filled buttons / product CTAs (falls back to brandColor when omitted)
+    buttonColor: '#E5D352',
+    // Optional — button label color (defaults to white; use dark text on light buttons)
+    buttonTextColor: '#000000',
     themeColorPresets: {
       enabled: true,
       colors: [
@@ -228,6 +236,20 @@ Existing `<h1>` content already on the canvas is not removed; authors simply can
 The **Header H1** building block in Add Components is also hidden when `disableH1: true`.
 
 SEO Check also respects this flag: when `disableH1` is **not** `true`, the SEO report includes an “Has at least one H1” check and treats H1 as the top of the heading hierarchy. When `disableH1: true`, those H1 requirements are skipped (the host page title is assumed to live outside the builder).
+
+### Brand color & button color
+
+Use `settings.brandColor` for links, text accents, and focus rings. Use `settings.buttonColor` for filled primary buttons, product / linktree CTAs, and selected editor UI such as property tabs (`myPrimaryButtonColor`). Use `settings.buttonTextColor` for labels on those filled controls (`myPrimaryButtonTextColor`).
+
+```ts
+settings: {
+  brandColor: '#000000', // links & focus accents
+  buttonColor: '#004642', // filled buttons + selected UI
+  buttonTextColor: '#29eaa5', // labels on filled controls
+}
+```
+
+When `buttonColor` is omitted, buttons fall back to `brandColor`, then the default green (`#16a34a`). When `buttonTextColor` is omitted, button labels default to white. All three accept any CSS color string the builder can normalize (hex preferred). Values may also be `null` / omitted without TypeScript errors.
 
 ### Theme Color Presets
 

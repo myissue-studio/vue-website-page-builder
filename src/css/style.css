@@ -172,23 +172,32 @@
   }
 
   /*
-   * Product CTA button variant: keep white text on brand-color backgrounds.
-   * Avoid compound selectors with `.pbx-text-white` — Tailwind dark-mode
-   * rewriting turns them into invalid CSS (`*)a.pbx-product-card-cta-link`).
+   * Product CTA button variant: keep configured button text color on filled backgrounds.
+   * Use attribute selectors for bg/text utilities — Tailwind @apply rewriting of
+   * `.pbx-bg-myPrimaryButtonColor` into component classes (e.g. `.pbx-myPrimaryButton`)
+   * plus hover variants produces `:hover a` which CSS minify collapses to invalid `:hovera`.
    * Must beat `#pagebuilder a { color: inherit }` and product CTA text-inherit.
    */
-  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor,
-  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-bg-myPrimaryButtonColor'],
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-bg-myPrimaryButtonColor'],
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-bg-myPrimaryLinkColor'],
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-bg-myPrimaryLinkColor'],
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-myPrimaryButtonTextColor'],
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-myPrimaryButtonTextColor'],
   #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white'],
   #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white'] {
-    color: #fff;
+    color: rgb(var(--pbx-button-text-color-rgb, 255 255 255));
   }
 
-  #pagebuilder a.pbx-product-card-cta-link.pbx-bg-myPrimaryLinkColor:hover,
-  #pagebuilder .pbx-product-card-cta a.pbx-bg-myPrimaryLinkColor:hover,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-bg-myPrimaryButtonColor']:hover,
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-bg-myPrimaryButtonColor']:hover,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-bg-myPrimaryLinkColor']:hover,
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-bg-myPrimaryLinkColor']:hover,
+  #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-myPrimaryButtonTextColor']:hover,
+  #pagebuilder .pbx-product-card-cta a[class*='pbx-text-myPrimaryButtonTextColor']:hover,
   #pagebuilder a.pbx-product-card-cta-link[class*='pbx-text-white']:hover,
   #pagebuilder .pbx-product-card-cta a[class*='pbx-text-white']:hover {
-    color: #fff;
+    color: rgb(var(--pbx-button-text-color-rgb, 255 255 255));
   }
 
   /* Let product copy grow naturally in the builder and on saved pages. */
@@ -208,8 +217,10 @@
   }
 
   /*
-   * Brand color — RGB channels on :root via PageBuilder when settings.brandColor is provided.
-   * Powers pbx-bg-myPrimaryLinkColor, opacity variants (/30, /20), pbx-myPrimaryButton, etc.
+   * Brand / button colors — RGB channels on :root via PageBuilder when
+   * settings.brandColor / settings.buttonColor / settings.buttonTextColor are provided.
+   * brandColor → myPrimaryLinkColor; buttonColor → myPrimaryButtonColor;
+   * buttonTextColor → myPrimaryButtonTextColor (default white).
    */
 
   /*
@@ -509,7 +520,7 @@
   }
 
   .pbx-inspectorCountBadge {
-    @apply pbx-inline-flex pbx-h-5 pbx-min-w-5 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-myPrimaryLinkColor pbx-px-1.5 pbx-text-[10px] pbx-font-bold pbx-tabular-nums pbx-leading-none pbx-text-white;
+    @apply pbx-inline-flex pbx-h-5 pbx-min-w-5 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-myPrimaryButtonColor pbx-px-1.5 pbx-text-[10px] pbx-font-bold pbx-tabular-nums pbx-leading-none pbx-text-myPrimaryButtonTextColor;
   }
 
   .pbx-inspectorPanel {
@@ -673,7 +684,7 @@
   }
 
   .pbx-htmlCodeViewerBadge {
-    @apply pbx-inline-flex pbx-items-center pbx-rounded-md pbx-bg-myPrimaryLinkColor/20 pbx-px-2 pbx-py-0.5 pbx-text-[10px] pbx-font-bold pbx-uppercase pbx-tracking-wider pbx-text-sky-300;
+    @apply pbx-inline-flex pbx-items-center pbx-rounded-md pbx-bg-myPrimaryButtonColor/20 pbx-px-2 pbx-py-0.5 pbx-text-[10px] pbx-font-bold pbx-uppercase pbx-tracking-wider pbx-text-sky-300;
   }
 
   .pbx-htmlCodeViewerMeta {
@@ -934,11 +945,11 @@
   }
 
   .pbx-modalFilterChip {
-    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor/10 hover:pbx-shadow-sm;
+    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryButtonColor/10 hover:pbx-shadow-sm;
   }
 
   .pbx-modalFilterChip--active {
-    @apply pbx-bg-myPrimaryLinkColor/10 pbx-shadow-sm hover:pbx-bg-myPrimaryLinkColor/30;
+    @apply pbx-bg-myPrimaryButtonColor/10 pbx-shadow-sm hover:pbx-bg-myPrimaryButtonColor/30;
   }
 
   .pbx-modalFilterChipIcon {
@@ -946,7 +957,7 @@
   }
 
   .pbx-modalFilterChip--active .pbx-modalFilterChipIcon {
-    @apply pbx-bg-myPrimaryLinkColor pbx-text-white;
+    @apply pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor;
   }
 
   .pbx-modalFilterChipText {
@@ -975,7 +986,7 @@
   }
 
   .pbx-modalLibraryCardIcon {
-    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-xl pbx-leading-none pbx-text-myPrimaryDarkGrayColor pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor/10 group-hover:pbx-text-myPrimaryLinkColor;
+    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-xl pbx-leading-none pbx-text-myPrimaryDarkGrayColor pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryButtonColor/10 group-hover:pbx-text-myPrimaryLinkColor;
   }
 
   .pbx-modalLibraryCardText {
@@ -991,7 +1002,7 @@
   }
 
   .pbx-modalLibraryCardAction {
-    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-leading-none pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor group-hover:pbx-text-white;
+    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-leading-none pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryButtonColor group-hover:pbx-text-myPrimaryButtonTextColor;
   }
 
   .pbx-formattedTextModal {
@@ -1060,7 +1071,7 @@
   }
 
   .pbx-modalSidebarStatCard--active {
-    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryLinkColor/5;
+    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryButtonColor/5;
   }
 
   .pbx-modalSidebarStatLabel {
@@ -1358,9 +1369,9 @@
 
   .pbx-myPrimaryButton {
     @apply pbx-min-h-[3rem] lg:pbx-px-4 lg:pbx-py-3 pbx-px-3 pbx-py-3 pbx-font-sans 
-            sm:pbx-text-sm pbx-text-xs pbx-whitespace-nowrap pbx-break-keep pbx-font-medium pbx-inline-flex pbx-gap-1 pbx-items-center pbx-justify-center pbx-rounded-full pbx-border pbx-border-transparent pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm hover:pbx-bg-myPrimaryLinkColor sm:pbx-w-auto
-            focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryLinkColor focus:pbx-ring-offset-2
-            focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor pbx-cursor-pointer;
+            sm:pbx-text-sm pbx-text-xs pbx-whitespace-nowrap pbx-break-keep pbx-font-medium pbx-inline-flex pbx-gap-1 pbx-items-center pbx-justify-center pbx-rounded-full pbx-border pbx-border-transparent pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-shadow-sm hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor sm:pbx-w-auto
+            focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryButtonColor focus:pbx-ring-offset-2
+            focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryButtonColor pbx-cursor-pointer;
   }
 
   .pbx-mySecondaryButton {
@@ -1368,7 +1379,7 @@
   }
 
   .pbx-myPrimaryDeleteButton {
-    @apply pbx-myPrimaryButton pbx-bg-myPrimaryErrorColor hover:pbx-bg-myPrimaryErrorColor focus:pbx-ring-myPrimaryErrorColor;
+    @apply pbx-myPrimaryButton pbx-bg-myPrimaryErrorColor hover:pbx-bg-myPrimaryErrorColor focus:pbx-ring-myPrimaryErrorColor pbx-text-white hover:pbx-text-white;
   }
 
   .pbx-myPrimaryToggleButton {
@@ -1936,22 +1947,26 @@
 }
 
 /*
- * Filled #linktree buttons: beat `#pagebuilder a { color: inherit }` so white
- * text shows on the pill. Use attribute selectors for text-white so Tailwind
- * dark-mode rewriting does not produce invalid CSS.
+ * Filled #linktree buttons: beat `#pagebuilder a { color: inherit }` so the
+ * configured button text color shows on the pill. Use attribute selectors for
+ * bg/text utilities so Tailwind @apply rewriting does not produce invalid `:hovera`.
  */
+#pagebuilder #linktree a[class*='pbx-text-myPrimaryButtonTextColor'],
 #pagebuilder #linktree a[class*='pbx-text-white'],
-#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor {
-  color: #fff;
+#pagebuilder #linktree a[class*='pbx-bg-myPrimaryButtonColor'],
+#pagebuilder #linktree a[class*='pbx-bg-myPrimaryLinkColor'] {
+  color: rgb(var(--pbx-button-text-color-rgb, 255 255 255));
 }
 
 #pagebuilder #linktree a[class*='pbx-text-black'] {
   color: #000;
 }
 
+#pagebuilder #linktree a[class*='pbx-text-myPrimaryButtonTextColor']:hover,
 #pagebuilder #linktree a[class*='pbx-text-white']:hover,
-#pagebuilder #linktree a.pbx-bg-myPrimaryLinkColor:hover {
-  color: #fff;
+#pagebuilder #linktree a[class*='pbx-bg-myPrimaryButtonColor']:hover,
+#pagebuilder #linktree a[class*='pbx-bg-myPrimaryLinkColor']:hover {
+  color: rgb(var(--pbx-button-text-color-rgb, 255 255 255));
 }
 
 .pbx-reorder-highlight {

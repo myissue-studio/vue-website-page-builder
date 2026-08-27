@@ -122,7 +122,10 @@ const thirdButtonBuilder = function () {
             :disabled="isLoading"
             @click="firstButtonBuilder"
           >
-            {{ firstButtonText }}
+            <span>
+              {{ firstButtonText }}
+            </span>
+       
           </button>
 
           <button
@@ -132,16 +135,19 @@ const thirdButtonBuilder = function () {
             :disabled="isLoading"
             @click="secondButtonBuilder"
           >
-            {{ secondButtonText }}
+            <span>
+              {{ secondButtonText }}
+            </span>
+            <span class="material-symbols-outlined"> keyboard_return </span>
           </button>
 
           <button
             v-if="thirdButtonText"
-            class="pbx-myPrimaryButton pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-myPrimaryLinkColor focus:pbx-ring-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor pbx-w-full"
+            class="pbx-myPrimaryButton pbx-w-full"
             :class="[
               type === 'danger' || type === 'delete'
-                ? 'pbx-bg-red-600 focus-visible:pbx-ring-red-600 focus:pbx-ring-red-600 hover:pbx-bg-red-600'
-                : 'pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-myPrimaryLinkColor focus:pbx-ring-myPrimaryLinkColor hover:pbx-bg-myPrimaryLinkColor',
+                ? 'pbx-bg-red-600 focus-visible:pbx-ring-red-600 focus:pbx-ring-red-600 hover:pbx-bg-red-600 pbx-text-white hover:pbx-text-white'
+                : 'pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-myPrimaryButtonColor focus:pbx-ring-myPrimaryButtonColor hover:pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor',
             ]"
             type="button"
             :disabled="isLoading || (disabled && disabledWhichButton === 'third')"
@@ -150,7 +156,7 @@ const thirdButtonBuilder = function () {
             <span>
               {{ thirdButtonText }}
             </span>
-            <span v-if="!isLoading" class="material-symbols-outlined">check</span>
+            <span v-if="!isLoading" class="material-symbols-outlined">arrow_forward</span>
             <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
           </button>
         </div>

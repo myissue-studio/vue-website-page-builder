@@ -103,6 +103,7 @@ Configuration object for initializing the page builder.
 - `language.default` accepts any language code string
 - `language.enable` accepts any string array (including readonly arrays from `as const`)
 - `settings.themeColorPresets` accepts `ThemeColorPresetSettingsInput` for database-sourced colors
+- `settings.brandColor`, `settings.buttonColor`, and `settings.buttonTextColor` accept any string (or `null` / omitted)
 - Additional custom properties can be added via index signatures
 - All properties are optional except `updateOrCreate`
 
@@ -145,6 +146,8 @@ const config: PageBuilderConfig = {
   },
   settings: {
     brandColor: '#DB93B0',
+    buttonColor: '#E5D352',
+    buttonTextColor: '#000000',
     themeColorPresets: {
       enabled: true,
       colors: [
@@ -428,6 +431,8 @@ const config: PageBuilderConfig = {
   },
   settings: {
     brandColor: '#DB93B0',
+    buttonColor: '#E5D352',
+    buttonTextColor: '#000000',
     themeColorPresets: {
       enabled: true,
       colors: [

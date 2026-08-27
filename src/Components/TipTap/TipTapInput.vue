@@ -301,9 +301,9 @@ onMounted(() => {
 
             <div
               @click="toggleBold"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive('bold'),
               }"
             >
@@ -314,9 +314,9 @@ onMounted(() => {
 
             <div
               @click="handleURL"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive('link'),
               }"
             >
@@ -329,9 +329,9 @@ onMounted(() => {
               v-for="level in headingLevels"
               :key="level"
               @click="toggleHeading(level)"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   headingIsActive(level),
               }"
             >
@@ -342,9 +342,9 @@ onMounted(() => {
 
             <div
               @click="toggleTextAlign('left')"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive({ textAlign: 'left' }),
               }"
             >
@@ -355,9 +355,9 @@ onMounted(() => {
 
             <div
               @click="toggleTextAlign('center')"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive({ textAlign: 'center' }),
               }"
             >
@@ -368,9 +368,9 @@ onMounted(() => {
 
             <div
               @click="toggleTextAlign('right')"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive({ textAlign: 'right' }),
               }"
             >
@@ -379,9 +379,9 @@ onMounted(() => {
 
             <div
               @click="toggleBulletList"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-bg-gray-100 pbx-rounded-xl hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor"
               :class="{
-                'pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor':
+                'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor':
                   editorIsActive('bulletList'),
               }"
             >

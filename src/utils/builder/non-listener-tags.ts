@@ -39,12 +39,19 @@ function isButtonLikeAnchor(element: HTMLElement): boolean {
   if (element.tagName !== 'A') return false
 
   const className = element.className
+  const classList = element.classList
+
+  // Product HTML is generated without the pbx- prefix; demo/DOM may use either form.
   return (
-    element.classList.contains('pbx-product-card-cta-link') ||
+    classList.contains('pbx-product-card-cta-link') ||
+    classList.contains('product-card-cta-link') ||
     className.includes('pbx-inline-flex') ||
+    /(^|\s)inline-flex(\s|$)/.test(className) ||
     className.includes('pbx-bg-') ||
+    /(^|\s)bg-[^\s]+/.test(className) ||
     className.includes('pbx-rounded') ||
-    Boolean(element.closest('#linktree, .pbx-product-card-cta'))
+    /(^|\s)rounded(-[^\s]+)?(\s|$)/.test(className) ||
+    Boolean(element.closest('#linktree, .pbx-product-card-cta, .product-card-cta'))
   )
 }
 

@@ -45,6 +45,9 @@ export default {
         // Custom colors
         myPrimaryBrandColor: '#000000',
         myPrimaryLinkColor: 'rgb(var(--pbx-brand-color-rgb, 22 163 74) / <alpha-value>)',
+        myPrimaryButtonColor: 'rgb(var(--pbx-button-color-rgb, 22 163 74) / <alpha-value>)',
+        myPrimaryButtonTextColor:
+          'rgb(var(--pbx-button-text-color-rgb, 255 255 255) / <alpha-value>)',
         // gray colors
         myPrimaryLightGrayColor: '#eff2f6',
         // for myPrimaryTag

@@ -10,14 +10,21 @@ import { sharedPageBuilderStore } from '../../stores/shared-store'
 import { getPageBuilder } from '../../composables/usePageBuilder'
 import { useTranslations } from '../../composables/useTranslations'
 import { useThemeColorPresets } from '../../composables/useThemeColorPresets'
-import type { PageBuilderConfig, PageBuilderElementFonts } from '../../types'
-import { DEMO_THEME_PACKS, type DemoThemePackId } from '../demo/demo-theme-presets'
+import type { PageBuilderConfig, PageBuilderElementFonts, PageSettings } from '../../types'
+import {
+  DEMO_PAGE_THEME_TITLE,
+  DEMO_THEME_PACKS,
+  type DemoThemePackId,
+} from '../demo/demo-theme-presets'
 import {
   getThemeHtmlByTitle,
   restoreDemoPage,
   translateThemePlaceholderText,
 } from '../demo/demo-theme-utils'
 import { useToast } from '../../composables/useToast'
+import { normalizeHexColor } from '../../utils/builder/color-utils'
+import { resolveFontFamilyClassForToken } from '../../utils/builder/font-family-config'
+import { loadFontFromClass } from '../../utils/builder/dynamic-font-loader'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -36,9 +43,73 @@ const pageBuilderStateStore = sharedPageBuilderStore
 const getPageBuilderConfig = computed(() => pageBuilderStateStore.getPageBuilderConfig)
 const { resetToConfigDefaults } = useThemeColorPresets(getPageBuilderConfig)
 
-const activePresetId = ref<DemoThemePackId | null>('fashion')
 const showConfigModal = ref(false)
 const configModalContent = ref('')
+
+/** Font-weight utilities — keep these when swapping page font-family classes. */
+const FONT_WEIGHT_CLASSES = new Set([
+  'pbx-font-thin',
+  'pbx-font-extralight',
+  'pbx-font-light',
+  'pbx-font-normal',
+  'pbx-font-medium',
+  'pbx-font-bold',
+  'pbx-font-extrabold',
+  'pbx-font-black',
+])
+
+function normalizePackColor(value?: string | null): string {
+  if (!value?.trim()) return ''
+  return normalizeHexColor(value) ?? value.trim().toLowerCase()
+}
+
+/**
+ * Saved demo HTML often includes `pbx-font-jost` on `#pagebuilder`. That page font
+ * overrides `userSettings.fontFamily` — so the demo picker must update pageSettings too.
+ */
+function buildPageSettingsWithFont(
+  current: PageBuilderConfig['pageSettings'] | null | undefined,
+  fontKey: string,
+): PageSettings {
+  const nextFontClass = resolveFontFamilyClassForToken(fontKey)
+  const tokens = String(current?.classes ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((token) => {
+      if (token.startsWith('pbx-font-custom-')) return false
+      if (!token.startsWith('pbx-font-')) return true
+      return FONT_WEIGHT_CLASSES.has(token)
+    })
+
+  return {
+    ...(current ?? {}),
+    classes: [...tokens, nextFontClass].join(' '),
+  }
+}
+
+/** Match live config so selection survives panel close/reopen (FloatingSidePanel uses v-if). */
+const activePresetId = computed<DemoThemePackId | null>(() => {
+  const config = pageBuilderStateStore.getPageBuilderConfig
+  if (!config) return null
+
+  const brand = normalizePackColor(config.settings?.brandColor)
+  const button = normalizePackColor(
+    config.settings?.buttonColor ?? config.settings?.brandColor,
+  )
+  const buttonText = normalizePackColor(config.settings?.buttonTextColor ?? '#ffffff')
+  const fontKey =
+    config.userSettings?.fontFamily?.split(',')[0]?.trim().toLowerCase() || 'jost'
+
+  const match = DEMO_THEME_PACKS.find(
+    (pack) =>
+      normalizePackColor(pack.brandColor) === brand &&
+      normalizePackColor(pack.buttonColor) === button &&
+      normalizePackColor(pack.buttonTextColor) === buttonText &&
+      pack.fontKey === fontKey,
+  )
+
+  return match?.id ?? null
+})
 
 const DEMO_FONT_OPTIONS = [
   { value: 'jost', label: 'Jost' },
@@ -53,6 +124,7 @@ function patchConfig(
   patch: Partial<PageBuilderConfig> & {
     settings?: PageBuilderConfig['settings']
     userSettings?: PageBuilderConfig['userSettings']
+    pageSettings?: PageBuilderConfig['pageSettings']
   },
 ): void {
   const current = pageBuilderStateStore.getPageBuilderConfig
@@ -65,6 +137,9 @@ function patchConfig(
     userSettings: patch.userSettings
       ? { ...current.userSettings, ...patch.userSettings }
       : current.userSettings,
+    pageSettings: patch.pageSettings
+      ? { ...current.pageSettings, ...patch.pageSettings }
+      : current.pageSettings,
   })
 }
 
@@ -90,11 +165,11 @@ async function applyPresetPack(packId: DemoThemePackId): Promise<void> {
   const pack = DEMO_THEME_PACKS.find((item) => item.id === packId)
   if (!pack) return
 
-  activePresetId.value = packId
-
   patchConfig({
     settings: {
       brandColor: pack.brandColor,
+      buttonColor: pack.buttonColor,
+      buttonTextColor: pack.buttonTextColor,
       themeColorPresets: pack.themeColorPresets,
     },
     userSettings: {
@@ -104,16 +179,27 @@ async function applyPresetPack(packId: DemoThemePackId): Promise<void> {
   })
   await syncThemePresetsFromConfig()
 
-  const themeHtml = getThemeHtmlByTitle(pack.themeTitle)
-  if (themeHtml) {
-    await pageBuilderService.replaceTheme(translateThemePlaceholderText(themeHtml, translate))
+  if (pack.themeTitle === DEMO_PAGE_THEME_TITLE) {
+    await restoreDemoPage(pageBuilderService, translate)
+  } else {
+    const themeHtml = getThemeHtmlByTitle(pack.themeTitle)
+    if (themeHtml) {
+      await pageBuilderService.replaceTheme(translateThemePlaceholderText(themeHtml, translate))
+    }
   }
+
+  // replaceTheme / demo HTML may set or clear page fonts — re-apply the pack font on the wrapper.
+  const pageSettings = buildPageSettingsWithFont(
+    pageBuilderStateStore.getPageBuilderConfig?.pageSettings,
+    pack.fontKey,
+  )
+  patchConfig({ pageSettings })
+  await loadFontFromClass(resolveFontFamilyClassForToken(pack.fontKey))
 }
 
 const brandColor = computed({
   get: () => pageBuilderStateStore.getPageBuilderConfig?.settings?.brandColor ?? '#DB93B0',
   set: (value: string) => {
-    activePresetId.value = null
     patchConfig({
       settings: {
         brandColor: value,
@@ -122,19 +208,63 @@ const brandColor = computed({
   },
 })
 
+const buttonColor = computed({
+  get: () =>
+    pageBuilderStateStore.getPageBuilderConfig?.settings?.buttonColor ??
+    pageBuilderStateStore.getPageBuilderConfig?.settings?.brandColor ??
+    '#DB93B0',
+  set: (value: string) => {
+    patchConfig({
+      settings: {
+        buttonColor: value,
+      },
+    })
+  },
+})
+
+const buttonTextColor = computed({
+  get: () =>
+    pageBuilderStateStore.getPageBuilderConfig?.settings?.buttonTextColor ?? '#ffffff',
+  set: (value: string) => {
+    patchConfig({
+      settings: {
+        buttonTextColor: value,
+      },
+    })
+  },
+})
+
 const canvasFont = computed(() => {
+  const pageClasses = pageBuilderStateStore.getPageBuilderConfig?.pageSettings?.classes ?? ''
+  const pageFontClass = pageClasses
+    .split(/\s+/)
+    .find(
+      (token) =>
+        token.startsWith('pbx-font-') &&
+        !token.startsWith('pbx-font-custom-') &&
+        !FONT_WEIGHT_CLASSES.has(token),
+    )
+  if (pageFontClass?.startsWith('pbx-font-')) {
+    return pageFontClass.slice('pbx-font-'.length)
+  }
+
   const fontConfig = pageBuilderStateStore.getPageBuilderConfig?.userSettings?.fontFamily ?? 'jost'
   return fontConfig.split(',')[0]?.trim().toLowerCase() || 'jost'
 })
 
 async function setCanvasFont(fontKey: string): Promise<void> {
-  activePresetId.value = null
+  const fontClass = resolveFontFamilyClassForToken(fontKey)
   patchConfig({
     userSettings: {
       fontFamily: `${fontKey}, arial, fantasy`,
       elementFonts: buildElementFonts(fontKey),
     },
+    pageSettings: buildPageSettingsWithFont(
+      pageBuilderStateStore.getPageBuilderConfig?.pageSettings,
+      fontKey,
+    ),
   })
+  await loadFontFromClass(fontClass)
 }
 
 const startBuilderSnippet = computed(() => {
@@ -144,6 +274,8 @@ const startBuilderSnippet = computed(() => {
   const snippet = {
     settings: {
       brandColor: config.settings?.brandColor ?? '#DB93B0',
+      buttonColor: config.settings?.buttonColor ?? config.settings?.brandColor ?? '#DB93B0',
+      buttonTextColor: config.settings?.buttonTextColor ?? '#ffffff',
       themeColorPresets: config.settings?.themeColorPresets ?? { enabled: true, colors: [] },
     },
     userSettings: {
@@ -169,8 +301,7 @@ function dismissWelcome(): void {
 }
 
 async function restoreMybuilderDemoPage(): Promise<void> {
-  activePresetId.value = null
-  await restoreDemoPage(pageBuilderService, translate)
+  await applyPresetPack('default')
   showToast('Restored mybuilder.dev demo page', 'success')
 }
 
@@ -238,7 +369,8 @@ onMounted(() => {
       <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Preset packs</p>
         <p class="pbx-productSettingsSectionDesc">
-          Swaps page layout, colors, and fonts for fashion, corporate, or blog sites
+          Swaps page layout, colors, and fonts — Default restores the demo page after trying
+          fashion, corporate, or blog
         </p>
       </div>
       <div class="pbx-productSettingsSectionChips">
@@ -258,7 +390,7 @@ onMounted(() => {
       <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Brand color</p>
         <p class="pbx-productSettingsSectionDesc">
-          UI chrome, buttons, and link accents (toolbar, modals, focus states)
+          Links, text accents, and focus rings
         </p>
       </div>
       <div
@@ -269,6 +401,55 @@ onMounted(() => {
         <input
           id="demo-brand-color-input"
           v-model="brandColor"
+          type="text"
+          class="pbx-myPrimaryInput pbx-min-w-0 pbx-flex-1 pbx-text-sm"
+          spellcheck="false"
+          autocomplete="off"
+        />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">Button color</p>
+        <p class="pbx-productSettingsSectionDesc">
+          Filled CTAs, primary buttons, and selected editor UI via
+          <code class="pbx-text-[11px] pbx-font-sans">settings.buttonColor</code>
+        </p>
+      </div>
+      <div
+        class="pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3"
+      >
+        <HexColorPicker v-model="buttonColor" />
+        <label class="pbx-sr-only" for="demo-button-color-input">Button color hex</label>
+        <input
+          id="demo-button-color-input"
+          v-model="buttonColor"
+          type="text"
+          class="pbx-myPrimaryInput pbx-min-w-0 pbx-flex-1 pbx-text-sm"
+          spellcheck="false"
+          autocomplete="off"
+        />
+      </div>
+    </section>
+
+    <section class="pbx-productSettingsSection">
+      <div class="pbx-productSettingsSectionHeader">
+        <p class="pbx-productSettingsSectionTitle">Button text color</p>
+        <p class="pbx-productSettingsSectionDesc">
+          Label color on filled buttons via
+          <code class="pbx-text-[11px] pbx-font-sans">settings.buttonTextColor</code>
+          (use dark text on light button backgrounds)
+        </p>
+      </div>
+      <div
+        class="pbx-flex pbx-flex-wrap pbx-items-center pbx-gap-3 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50 pbx-px-3 pbx-py-3"
+      >
+        <HexColorPicker v-model="buttonTextColor" />
+        <label class="pbx-sr-only" for="demo-button-text-color-input">Button text color hex</label>
+        <input
+          id="demo-button-text-color-input"
+          v-model="buttonTextColor"
           type="text"
           class="pbx-myPrimaryInput pbx-min-w-0 pbx-flex-1 pbx-text-sm"
           spellcheck="false"
@@ -291,8 +472,11 @@ onMounted(() => {
       <div class="pbx-productSettingsSectionHeader">
         <p class="pbx-productSettingsSectionTitle">Canvas font</p>
         <p class="pbx-productSettingsSectionDesc">
-          Default font for headings and paragraphs via
+          Updates
           <code class="pbx-text-[11px] pbx-font-sans">userSettings.fontFamily</code>
+          and the page wrapper font class (saved demo HTML can lock
+          <code class="pbx-text-[11px] pbx-font-sans">pbx-font-jost</code>
+          otherwise)
         </p>
       </div>
       <div class="pbx-productSettingsSectionChips">

@@ -1,25 +1,60 @@
 import type { ThemeColorPresetSettingsInput } from '../../types'
 
-export type DemoThemePackId = 'fashion' | 'corporate' | 'blog'
+export type DemoThemePackId = 'default' | 'fashion' | 'corporate' | 'blog'
 
 export interface DemoThemePack {
   id: DemoThemePackId
   label: string
   hint: string
-  /** Full-page layout in themes.ts — swapped when the preset is applied */
+  /**
+   * Full-page layout swapped when the preset is applied.
+   * Use `'demo-page'` for the private mybuilder.dev demo HTML (not in Themes tab).
+   * Otherwise a `themes.ts` title such as `'Landing Page'`.
+   */
   themeTitle: string
   brandColor: string
+  /** Filled button / CTA background — independent from brandColor */
+  buttonColor: string
+  /** Label color on filled buttons — use dark text on light button backgrounds */
+  buttonTextColor: string
   fontKey: string
   themeColorPresets: ThemeColorPresetSettingsInput
 }
 
+export const DEMO_PAGE_THEME_TITLE = 'demo-page'
+
 export const DEMO_THEME_PACKS: DemoThemePack[] = [
+  {
+    id: 'default',
+    label: 'Default',
+    hint: 'mybuilder.dev demo',
+    themeTitle: DEMO_PAGE_THEME_TITLE,
+    brandColor: '#000000',
+    buttonColor: '#004642',
+    buttonTextColor: '#29eaa5',
+    fontKey: 'jost',
+    themeColorPresets: {
+      enabled: true,
+      colors: [
+        { id: 'primary', label: 'Primary', color: '482C3D', enabled: true },
+        { id: 'secondary', label: 'Secondary', color: 'E5D352', enabled: true },
+        { id: 'custom1', label: 'Accent', color: 'AC3931', enabled: true },
+        { id: 'custom2', label: 'Highlight', color: 'DB93B0', enabled: true },
+        { id: 'custom3', label: 'Neutral', color: '54426B', enabled: true },
+        { id: 'custom4', label: 'Light', color: '#ffffff', enabled: true },
+        { id: 'custom5', label: 'Custom 5', color: '#f5f5f5', enabled: false },
+        { id: 'custom6', label: 'Custom 6', color: '#ffffff', enabled: false },
+      ],
+    },
+  },
   {
     id: 'fashion',
     label: 'Fashion',
     hint: 'Boutique & retail',
     themeTitle: 'Landing Page',
     brandColor: '#000000',
+    buttonColor: '#E5D352',
+    buttonTextColor: '#000000',
     fontKey: 'jost',
     themeColorPresets: {
       enabled: true,
@@ -41,6 +76,8 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     hint: 'SaaS & enterprise',
     themeTitle: 'Corporate Page',
     brandColor: '#2563EB',
+    buttonColor: '#2563EB',
+    buttonTextColor: '#ffffff',
     fontKey: 'futura',
     themeColorPresets: {
       enabled: true,
@@ -62,6 +99,8 @@ export const DEMO_THEME_PACKS: DemoThemePack[] = [
     hint: 'Editorial & media',
     themeTitle: 'Blog Post',
     brandColor: '#C45C26',
+    buttonColor: '#C45C26',
+    buttonTextColor: '#ffffff',
     fontKey: 'palantino',
     themeColorPresets: {
       enabled: true,
