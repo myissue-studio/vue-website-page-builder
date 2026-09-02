@@ -1851,6 +1851,23 @@
   display: contents;
 }
 
+/* Edit-toolbar icons use brand (link) color — not settings.buttonColor / buttonTextColor. */
+#pbxEditToolbar .pbx-editToolbarIconActive,
+#pbxEditToolbar .pbx-bg-myPrimaryButtonColor {
+  background-color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
+#pbxEditToolbar .pbx-editToolbarIconActive,
+#pbxEditToolbar .pbx-text-myPrimaryButtonTextColor,
+#pbxEditToolbar .pbx-editToolbarIconActive:hover,
+#pbxEditToolbar .pbx-bg-myPrimaryButtonColor:hover {
+  color: #ffffff;
+}
+
+#pbxEditToolbar .pbx-border-myPrimaryButtonColor {
+  border-color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
 /* CSS for content inside page builder # start */
 #pagebuilder {
   position: relative;
