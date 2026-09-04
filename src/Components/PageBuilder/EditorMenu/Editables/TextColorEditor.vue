@@ -301,7 +301,7 @@ watch(
       :title="translate('Text Color')"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md focus-visible:pbx-ring-0"
       :class="{
-        'pbx-editToolbarIconActive': isTextColorMenuOpen,
+        'pbx-editChromeActive': isTextColorMenuOpen,
       }"
       @click.stop="toggleTextColorMenu"
     >
@@ -337,9 +337,9 @@ watch(
       >
         <button
           type="button"
-          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor hover:[&_span]:pbx-text-white"
+          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
           :class="{
-            'pbx-bg-myPrimaryButtonColor ': !textColor || textColor === 'none',
+            'pbx-editChromeActive': !textColor || textColor === 'none',
           }"
           @click="selectTailwindTextColor('none')"
         >
@@ -362,7 +362,7 @@ watch(
             v-for="preset in enabledThemeColorPresets"
             :key="preset.id"
             type="button"
-            class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor hover:[&_span]:pbx-text-white"
+            class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
             @click="applyThemeTextColor(preset.color)"
           >
             <div
@@ -392,7 +392,7 @@ watch(
           v-for="color in tailwindTextColors"
           :key="color"
           type="button"
-          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor hover:[&_span]:pbx-text-white"
+          class="pbx-text-sm pbx-font-sans pbx-w-full pbx-min-w-0 pbx-overflow-hidden pbx-flex pbx-items-center pbx-gap-3 pbx-cursor-pointer pbx-py-2 pbx-px-2 pbx-rounded-none pbx-border-0 pbx-bg-transparent pbx-text-left pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:[&_span]:pbx-text-white"
           @click="selectTailwindTextColor(color)"
         >
           <div

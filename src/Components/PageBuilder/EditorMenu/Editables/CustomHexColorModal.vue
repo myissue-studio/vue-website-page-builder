@@ -211,7 +211,7 @@ function onThemeColorSaved(): void {
       <button
         v-if="!hasSavedToTheme"
         type="button"
-        class="pbx-myPrimaryButton"
+        class="pbx-editChromeButton"
         :disabled="!canSaveToTheme"
         @click="openSaveModal"
       >

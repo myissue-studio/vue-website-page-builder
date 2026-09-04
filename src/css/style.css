@@ -219,7 +219,8 @@
   /*
    * Brand / button colors — RGB channels on :root via PageBuilder when
    * settings.brandColor / settings.buttonColor / settings.buttonTextColor are provided.
-   * brandColor → myPrimaryLinkColor; buttonColor → myPrimaryButtonColor;
+   * brandColor → myPrimaryLinkColor (builder chrome via .pbx-editChromeActive / .pbx-editChromeButton);
+   * buttonColor → myPrimaryButtonColor (canvas CTAs, .pbx-myPrimaryButton on page content);
    * buttonTextColor → myPrimaryButtonTextColor (default white).
    */
 
@@ -520,7 +521,7 @@
   }
 
   .pbx-inspectorCountBadge {
-    @apply pbx-inline-flex pbx-h-5 pbx-min-w-5 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-myPrimaryButtonColor pbx-px-1.5 pbx-text-[10px] pbx-font-bold pbx-tabular-nums pbx-leading-none pbx-text-myPrimaryButtonTextColor;
+    @apply pbx-inline-flex pbx-h-5 pbx-min-w-5 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-myPrimaryLinkColor pbx-px-1.5 pbx-text-[10px] pbx-font-bold pbx-tabular-nums pbx-leading-none pbx-text-white;
   }
 
   .pbx-inspectorPanel {
@@ -684,7 +685,7 @@
   }
 
   .pbx-htmlCodeViewerBadge {
-    @apply pbx-inline-flex pbx-items-center pbx-rounded-md pbx-bg-myPrimaryButtonColor/20 pbx-px-2 pbx-py-0.5 pbx-text-[10px] pbx-font-bold pbx-uppercase pbx-tracking-wider pbx-text-sky-300;
+    @apply pbx-inline-flex pbx-items-center pbx-rounded-md pbx-bg-myPrimaryLinkColor/20 pbx-px-2 pbx-py-0.5 pbx-text-[10px] pbx-font-bold pbx-uppercase pbx-tracking-wider pbx-text-sky-300;
   }
 
   .pbx-htmlCodeViewerMeta {
@@ -945,11 +946,11 @@
   }
 
   .pbx-modalFilterChip {
-    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryButtonColor/10 hover:pbx-shadow-sm;
+    @apply pbx-inline-flex pbx-shrink-0 pbx-items-center pbx-gap-2.5 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-px-3 pbx-py-2.5 pbx-text-left pbx-transition-all pbx-duration-150 pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor/10 hover:pbx-shadow-sm;
   }
 
   .pbx-modalFilterChip--active {
-    @apply pbx-bg-myPrimaryButtonColor/10 pbx-shadow-sm hover:pbx-bg-myPrimaryButtonColor/30;
+    @apply pbx-bg-myPrimaryLinkColor/10 pbx-shadow-sm hover:pbx-bg-myPrimaryLinkColor/30;
   }
 
   .pbx-modalFilterChipIcon {
@@ -957,7 +958,7 @@
   }
 
   .pbx-modalFilterChip--active .pbx-modalFilterChipIcon {
-    @apply pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor;
+    @apply pbx-bg-myPrimaryLinkColor pbx-text-white;
   }
 
   .pbx-modalFilterChipText {
@@ -986,7 +987,7 @@
   }
 
   .pbx-modalLibraryCardIcon {
-    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-xl pbx-leading-none pbx-text-myPrimaryDarkGrayColor pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryButtonColor/10 group-hover:pbx-text-myPrimaryLinkColor;
+    @apply pbx-flex pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-lg pbx-bg-gray-100 pbx-text-xl pbx-leading-none pbx-text-myPrimaryDarkGrayColor pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor/10 group-hover:pbx-text-myPrimaryLinkColor;
   }
 
   .pbx-modalLibraryCardText {
@@ -1002,7 +1003,7 @@
   }
 
   .pbx-modalLibraryCardAction {
-    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-leading-none pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryButtonColor group-hover:pbx-text-myPrimaryButtonTextColor;
+    @apply pbx-flex pbx-h-8 pbx-w-8 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-lg pbx-leading-none pbx-text-gray-400 pbx-transition-colors pbx-duration-150 group-hover:pbx-bg-myPrimaryLinkColor group-hover:pbx-text-white;
   }
 
   .pbx-formattedTextModal {
@@ -1071,7 +1072,7 @@
   }
 
   .pbx-modalSidebarStatCard--active {
-    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryButtonColor/5;
+    @apply pbx-border-myPrimaryLinkColor/30 pbx-bg-myPrimaryLinkColor/5;
   }
 
   .pbx-modalSidebarStatLabel {
@@ -1384,6 +1385,18 @@
 
   .pbx-myPrimaryToggleButton {
     @apply pbx-w-full pbx-inline-flex pbx-items-center pbx-justify-center pbx-px-4 pbx-py-2 sm:pbx-text-sm pbx-text-sm pbx-font-semibold pbx-text-myPrimaryDarkGrayColor pbx-shadow-sm focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryBrandColor focus:pbx-ring-offset-2 pbx-bg-myPrimaryLightGrayColor hover:pbx-bg-myPrimaryBrandColor hover:pbx-text-white;
+  }
+
+  /* Builder chrome — uses brandColor, not settings.buttonColor / buttonTextColor. */
+  .pbx-editChromeActive {
+    @apply pbx-bg-myPrimaryLinkColor pbx-text-white hover:pbx-text-white;
+  }
+
+  .pbx-editChromeButton {
+    @apply pbx-min-h-[3rem] lg:pbx-px-4 lg:pbx-py-3 pbx-px-3 pbx-py-3 pbx-font-sans
+            sm:pbx-text-sm pbx-text-xs pbx-whitespace-nowrap pbx-break-keep pbx-font-medium pbx-inline-flex pbx-gap-1 pbx-items-center pbx-justify-center pbx-rounded-full pbx-border pbx-border-transparent pbx-bg-myPrimaryLinkColor pbx-text-white pbx-shadow-sm hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white sm:pbx-w-auto
+            focus:pbx-outline-none focus:pbx-ring-2 focus:pbx-ring-myPrimaryLinkColor focus:pbx-ring-offset-2
+            focus-visible:pbx-ring-2 focus-visible:pbx-ring-myPrimaryLinkColor pbx-cursor-pointer;
   }
   /*
     |--------------------------------------------------------------------------
@@ -1714,9 +1727,12 @@
 }
 
 #pagebuilder-navbar .pbx-navbarUtilityButton .material-symbols-outlined,
-#pagebuilder-navbar .pbx-navbarUtilityButton svg {
+#pagebuilder-navbar .pbx-navbarUtilityButton svg,
+#pagebuilder-navbar .pbx-navbarUtilityButton .pbx-animate-spin {
   width: 1.125rem;
   height: 1.125rem;
+  font-size: 1.125rem;
+  line-height: 1.125rem;
 }
 
 #pagebuilder-navbar .pbx-mySecondaryButton .material-symbols-outlined,
@@ -1752,7 +1768,8 @@
   cursor: not-allowed;
 }
 
-#pagebuilder-navbar .pbx-myPrimaryButton {
+#pagebuilder-navbar .pbx-myPrimaryButton,
+#pagebuilder-navbar .pbx-editChromeButton {
   min-height: 1.75rem !important;
   padding: 0.3125rem 0.875rem !important;
   border-radius: 0.375rem !important;
@@ -1792,6 +1809,7 @@
 #pagebuilder-navbar button:focus-visible,
 #pagebuilder-navbar .pbx-mySecondaryButton:focus-visible,
 #pagebuilder-navbar .pbx-myPrimaryButton:focus-visible,
+#pagebuilder-navbar .pbx-editChromeButton:focus-visible,
 #pagebuilder-navbar .pbx-myPrimarySelect:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px rgb(var(--pbx-brand-color-rgb, 22 163 74) / 0.35);
@@ -1851,23 +1869,43 @@
   display: contents;
 }
 
-/* Edit-toolbar icons use brand (link) color — not settings.buttonColor / buttonTextColor. */
+/* Builder edit toolbar — brand chrome, not page button theme. */
+#pbxEditToolbar .pbx-editChromeActive,
 #pbxEditToolbar .pbx-editToolbarIconActive,
 #pbxEditToolbar .pbx-bg-myPrimaryButtonColor,
-#pbxEditToolbar .hover\:pbx-bg-myPrimaryButtonColor:hover {
+#pbxEditToolbar .hover\:pbx-bg-myPrimaryButtonColor:hover,
+#pbxEditToolbar .hover\:pbx-bg-myPrimaryLinkColor:hover {
   background-color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
 }
 
+#pbxEditToolbar .pbx-editChromeActive,
 #pbxEditToolbar .pbx-editToolbarIconActive,
 #pbxEditToolbar .pbx-text-myPrimaryButtonTextColor,
+#pbxEditToolbar .pbx-editChromeActive:hover,
 #pbxEditToolbar .pbx-editToolbarIconActive:hover,
 #pbxEditToolbar .pbx-bg-myPrimaryButtonColor:hover,
-#pbxEditToolbar .hover\:pbx-text-myPrimaryButtonTextColor:hover {
+#pbxEditToolbar .hover\:pbx-text-myPrimaryButtonTextColor:hover,
+#pbxEditToolbar .hover\:pbx-text-white:hover {
   color: #ffffff;
 }
 
-#pbxEditToolbar .pbx-border-myPrimaryButtonColor {
+#pbxEditToolbar .pbx-border-myPrimaryButtonColor,
+#pbxEditToolbar .pbx-border-myPrimaryLinkColor {
   border-color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
+[data-pbx-edit-toolbar-popover] .pbx-editChromeActive,
+[data-pbx-edit-toolbar-popover] .pbx-bg-myPrimaryButtonColor,
+[data-pbx-edit-toolbar-popover] .hover\:pbx-bg-myPrimaryLinkColor:hover,
+[data-pbx-edit-toolbar-popover] .hover\:pbx-bg-myPrimaryButtonColor:hover {
+  background-color: rgb(var(--pbx-brand-color-rgb, 22 163 74));
+}
+
+[data-pbx-edit-toolbar-popover] .pbx-editChromeActive,
+[data-pbx-edit-toolbar-popover] .pbx-text-myPrimaryButtonTextColor,
+[data-pbx-edit-toolbar-popover] .hover\:pbx-text-white:hover,
+[data-pbx-edit-toolbar-popover] .hover\:pbx-text-myPrimaryButtonTextColor:hover {
+  color: #ffffff;
 }
 
 /* CSS for content inside page builder # start */

@@ -578,7 +578,7 @@ onBeforeUnmount(() => {
         ref="typographyMenuRef"
         @click="toggleShowTypography"
         class="pbx-h-8 pbx-px-2 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-gap-1 pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-cursor-pointer pbx-border pbx-border-gray-500 pbx-select-none"
-        :class="{ 'pbx-editToolbarIconActive': showTypography }"
+        :class="{ 'pbx-editChromeActive': showTypography }"
       >
         <span class="pbx-text-xs pbx-font-semibold">{{ translate('Font') }}</span>
       </div>
@@ -587,7 +587,7 @@ onBeforeUnmount(() => {
     <div
       @click="toggleBold"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
-      :class="{ 'pbx-editToolbarIconActive': editorIsActive('bold') }"
+      :class="{ 'pbx-editChromeActive': editorIsActive('bold') }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_bold </span>
     </div>
@@ -595,7 +595,7 @@ onBeforeUnmount(() => {
     <div
       @click="toggleItalic"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
-      :class="{ 'pbx-editToolbarIconActive': editorIsActive('italic') }"
+      :class="{ 'pbx-editChromeActive': editorIsActive('italic') }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_italic </span>
     </div>
@@ -606,7 +606,7 @@ onBeforeUnmount(() => {
       @click="toggleHeading(level)"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
-        'pbx-editToolbarIconActive': headingIsActive(level),
+        'pbx-editChromeActive': headingIsActive(level),
       }"
     >
       <span class="pbx-text-xs pbx-font-semibold">H{{ level }}</span>
@@ -615,7 +615,7 @@ onBeforeUnmount(() => {
     <div
       @click="openUrlModal"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
-      :class="{ 'pbx-editToolbarIconActive': editorIsActive('link') }"
+      :class="{ 'pbx-editChromeActive': editorIsActive('link') }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> link </span>
     </div>
@@ -623,7 +623,7 @@ onBeforeUnmount(() => {
     <div
       @click="toggleBulletList"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
-      :class="{ 'pbx-editToolbarIconActive': editorIsActive('bulletList') }"
+      :class="{ 'pbx-editChromeActive': editorIsActive('bulletList') }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_list_bulleted </span>
     </div>
@@ -631,7 +631,7 @@ onBeforeUnmount(() => {
     <div
       @click="toggleTextAlign('left')"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
-      :class="{ 'pbx-editToolbarIconActive': editorIsActive({ textAlign: 'left' }) }"
+      :class="{ 'pbx-editChromeActive': editorIsActive({ textAlign: 'left' }) }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_align_left </span>
     </div>
@@ -640,7 +640,7 @@ onBeforeUnmount(() => {
       @click="toggleTextAlign('center')"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
-        'pbx-editToolbarIconActive': editorIsActive({ textAlign: 'center' }),
+        'pbx-editChromeActive': editorIsActive({ textAlign: 'center' }),
       }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_align_center </span>
@@ -650,7 +650,7 @@ onBeforeUnmount(() => {
       @click="toggleTextAlign('right')"
       class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
       :class="{
-        'pbx-editToolbarIconActive': editorIsActive({ textAlign: 'right' }),
+        'pbx-editChromeActive': editorIsActive({ textAlign: 'right' }),
       }"
     >
       <span class="material-symbols-outlined pbx-materialIcon18"> format_align_right </span>

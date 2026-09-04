@@ -882,7 +882,7 @@ function formatExpiry(expiresAt?: string | null): string {
           <button
             @click="handleDownloadHTML"
             type="button"
-            class="pbx-myPrimaryButton pbx-w-full sm:pbx-w-full"
+            class="pbx-editChromeButton pbx-w-full sm:pbx-w-full"
           >
             <span>
               {{ translate('Download HTML file') }}
@@ -913,7 +913,7 @@ function formatExpiry(expiresAt?: string | null): string {
           <button
             @click="handlePublishTemporaryPreview"
             type="button"
-            class="pbx-myPrimaryButton pbx-mt-3 pbx-w-full sm:pbx-w-full"
+            class="pbx-editChromeButton pbx-mt-3 pbx-w-full sm:pbx-w-full"
             :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
           >
             {{

@@ -1371,15 +1371,9 @@ onBeforeUnmount(() => {
             <div
               v-if="getIsSaving"
               class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+              aria-hidden="true"
             >
-              <span class="pbx-relative pbx-flex pbx-size-3">
-                <span
-                  class="pbx-absolute pbx-inline-flex pbx-h-full pbx-w-full pbx-animate-ping pbx-rounded-full pbx-bg-gray-400 pbx-opacity-75"
-                ></span>
-                <span
-                  class="pbx-relative pbx-inline-flex pbx-size-3 pbx-rounded-full pbx-bg-green-200"
-                ></span>
-              </span>
+              <span class="material-symbols-outlined pbx-animate-spin">refresh</span>
             </div>
             <div>{{ translate('Save') }}</div>
           </button>
@@ -1414,15 +1408,9 @@ onBeforeUnmount(() => {
               <div
                 v-if="getIsRestoring"
                 class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
+                aria-hidden="true"
               >
-                <span class="pbx-relative pbx-flex pbx-size-3">
-                  <span
-                    class="pbx-absolute pbx-inline-flex pbx-h-full pbx-w-full pbx-animate-ping pbx-rounded-full pbx-bg-gray-400 pbx-opacity-75"
-                  ></span>
-                  <span
-                    class="pbx-relative pbx-inline-flex pbx-size-3 pbx-rounded-full pbx-bg-green-200"
-                  ></span>
-                </span>
+                <span class="material-symbols-outlined pbx-animate-spin">refresh</span>
               </div>
               <div class="lg:pbx-block pbx-hidden">
                 <span> {{ translate('Reset Page') }} </span>
@@ -1585,7 +1573,7 @@ onBeforeUnmount(() => {
         <template v-if="showPublishButton">
           <div class="pbx-flex-1 pbx-ml-2">
             <button
-              class="pbx-myPrimaryButton"
+              class="pbx-editChromeButton"
               @click="
                 async () => {
                   closePublish()
@@ -1667,7 +1655,7 @@ onBeforeUnmount(() => {
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
               type="button"
-              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor hover:pbx-fill-myPrimaryButtonTextColor focus-visible:pbx-ring-0"
+              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
               :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
@@ -1888,7 +1876,7 @@ onBeforeUnmount(() => {
               v-if="!getMenuRight"
               @click="pageBuilderStateStore.setMenuRight(true)"
               type="button"
-              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
+              class="pbx-h-10 pbx-w-10 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0 pbx-text-black hover:pbx-text-white"
             >
               <span>
                 <svg

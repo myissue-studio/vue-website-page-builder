@@ -105,7 +105,7 @@ async function copyHtml() {
       <button
         v-if="!readOnly"
         type="button"
-        class="pbx-myPrimaryButton"
+        class="pbx-editChromeButton"
         :disabled="isLoading"
         @click="$emit('save')"
       >

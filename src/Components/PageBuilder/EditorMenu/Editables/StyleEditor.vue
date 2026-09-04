@@ -105,7 +105,7 @@ const handleAddStyle = async () => {
             class="pbx-myPrimaryInput"
           />
 
-          <button @click="handleAddStyle" type="button" class="pbx-myPrimaryButton">
+          <button @click="handleAddStyle" type="button" class="pbx-editChromeButton">
             {{ translate('Add') }}
           </button>
         </div>

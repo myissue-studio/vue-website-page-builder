@@ -495,7 +495,7 @@ async function insertSelectedProducts() {
                   class="pbx-group pbx-text-left pbx-relative pbx-overflow-hidden pbx-rounded-2xl pbx-border pbx-p-3 pbx-transition-all pbx-duration-150"
                   :class="
                     isSelected(product)
-                      ? 'pbx-bg-myPrimaryButtonColor/10 pbx-shadow-md'
+                      ? 'pbx-bg-myPrimaryLinkColor/10 pbx-shadow-md'
                       : 'pbx-border-gray-200 pbx-bg-white hover:pbx-border-gray-300 hover:pbx-shadow-sm'
                   "
                   :aria-pressed="isSelected(product)"
@@ -512,13 +512,13 @@ async function insertSelectedProducts() {
                     />
                     <div
                       v-if="isSelected(product)"
-                      class="pbx-absolute pbx-inset-0 pbx-bg-myPrimaryButtonColor/20 pbx-pointer-events-none"
+                      class="pbx-absolute pbx-inset-0 pbx-bg-myPrimaryLinkColor/20 pbx-pointer-events-none"
                     />
                     <div
                       class="pbx-absolute pbx-top-2 pbx-right-2 pbx-flex pbx-h-8 pbx-w-8 pbx-items-center pbx-justify-center pbx-rounded-full pbx-shadow-sm pbx-transition-colors"
                       :class="
                         isSelected(product)
-                          ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor'
+                          ? 'pbx-editChromeActive'
                           : 'pbx-bg-white/90 pbx-text-gray-400 pbx-border pbx-border-gray-200'
                       "
                     >
@@ -546,7 +546,7 @@ async function insertSelectedProducts() {
                       class="pbx-flex pbx-h-8 pbx-w-8 pbx-items-center pbx-justify-center pbx-rounded-full pbx-shadow-sm pbx-transition-colors"
                       :class="
                         isSelected(product)
-                          ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor'
+                          ? 'pbx-editChromeActive'
                           : 'pbx-bg-white/90 pbx-text-gray-400 pbx-border pbx-border-gray-200'
                       "
                     >
@@ -671,7 +671,7 @@ async function insertSelectedProducts() {
                   {{ translate('Selected') }}
                 </div>
                 <div
-                  class="pbx-h-6 pbx-w-6 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-myPrimaryButtonTextColor hover:pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-0"
+                  class="pbx-h-6 pbx-w-6 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0"
                 >
                   <span class="pbx-text-[10px]">
                     {{ selectedProducts.length }}
@@ -986,7 +986,7 @@ async function insertSelectedProducts() {
         <div class="pbx-flex pbx-justify-end pbx-mt-4 pbx-w-full">
           <button
             type="button"
-            class="pbx-myPrimaryButton md:pbx-w-auto pbx-w-full"
+            class="pbx-editChromeButton md:pbx-w-auto pbx-w-full"
             @click="insertSelectedProducts"
           >
             <span>
