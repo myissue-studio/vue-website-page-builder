@@ -143,11 +143,11 @@ const thirdButtonBuilder = function () {
 
           <button
             v-if="thirdButtonText"
-            class="pbx-myPrimaryButton pbx-w-full"
+            class="pbx-w-full"
             :class="[
               type === 'danger' || type === 'delete'
-                ? 'pbx-bg-red-600 focus-visible:pbx-ring-red-600 focus:pbx-ring-red-600 hover:pbx-bg-red-600 pbx-text-white hover:pbx-text-white'
-                : 'pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-myPrimaryButtonColor focus:pbx-ring-myPrimaryButtonColor hover:pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor hover:pbx-text-myPrimaryButtonTextColor',
+                ? 'pbx-myPrimaryDeleteButton'
+                : 'pbx-editChromeButton',
             ]"
             type="button"
             :disabled="isLoading || (disabled && disabledWhichButton === 'third')"

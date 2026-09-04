@@ -123,7 +123,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
       class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
       :class="[
         canUndo
-          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-0'
+          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'
           : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
       ]"
     >
@@ -204,7 +204,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
       class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
       :class="[
         canRedo
-          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryButtonColor focus-visible:pbx-ring-0'
+          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'
           : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
       ]"
     >

@@ -78,7 +78,7 @@ const saveMeta = async () => {
 
       <button
         type="button"
-        class="pbx-myPrimaryButton pbx-w-full"
+        class="pbx-editChromeButton pbx-w-full"
         :disabled="isSaving"
         @click="saveMeta"
       >

@@ -411,7 +411,7 @@ onMounted(async () => {
                   <button
                     v-if="getApplyImageToSelection && typeof getApplyImageToSelection === 'string'"
                     @click="applySelectedImage(getApplyImageToSelection)"
-                    class="pbx-myPrimaryButton pbx-w-full"
+                    class="pbx-editChromeButton pbx-w-full"
                     type="button"
                   >
                     {{ translate(' Select image') }}
@@ -463,7 +463,7 @@ onMounted(async () => {
             <button
               v-if="getApplyImageToSelection && typeof getApplyImageToSelection === 'string'"
               @click="applySelectedImage(getApplyImageToSelection)"
-              class="pbx-myPrimaryButton pbx-w-full"
+              class="pbx-editChromeButton pbx-w-full"
               type="button"
             >
               {{ translate(' Select image') }}

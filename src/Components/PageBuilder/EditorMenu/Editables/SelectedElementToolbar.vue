@@ -1227,7 +1227,7 @@ defineExpose({
             class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0 pbx-transition-transform pbx-duration-200"
             :class="
               isImageSettingsOpen
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor'
+                ? 'pbx-editChromeActive'
                 : 'pbx-text-myPrimaryDarkGrayColor'
             "
             :title="translate('Image Settings')"
@@ -1263,7 +1263,7 @@ defineExpose({
             class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-text-myPrimaryDarkGrayColor pbx-border pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0"
             :class="
               showProductSectionSettingsModal
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor'
+                ? 'pbx-editChromeActive'
                 : 'pbx-text-myPrimaryDarkGrayColor'
             "
             :title="translate('Product section settings')"
@@ -1400,7 +1400,7 @@ defineExpose({
                         class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
                         :class="
                           draftSliderImageCount === n
-                            ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-border-myPrimaryButtonColor'
+                            ? 'pbx-editChromeActive pbx-border-myPrimaryLinkColor'
                             : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
                         "
                       >
@@ -1422,7 +1422,7 @@ defineExpose({
                         class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
                         :class="
                           draftSliderPerView === n
-                            ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-border-myPrimaryButtonColor'
+                            ? 'pbx-editChromeActive pbx-border-myPrimaryLinkColor'
                             : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
                         "
                       >
@@ -1474,7 +1474,7 @@ defineExpose({
                         class="pbx-h-10 pbx-min-w-10 pbx-px-3 pbx-rounded-lg pbx-text-sm pbx-font-medium pbx-cursor-pointer pbx-flex pbx-items-center pbx-justify-center pbx-border pbx-border-solid pbx-transition-colors"
                         :class="
                           draftSliderSpeed === s
-                            ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-border-myPrimaryButtonColor'
+                            ? 'pbx-editChromeActive pbx-border-myPrimaryLinkColor'
                             : 'pbx-bg-white pbx-text-gray-700 pbx-border-gray-200 hover:pbx-border-gray-300 hover:pbx-bg-gray-50'
                         "
                       >
@@ -1549,7 +1549,7 @@ defineExpose({
           class="pbx-h-8 pbx-w-8 pbx-rounded-sm pbx-flex pbx-items-center pbx-justify-center pbx-aspect-square pbx-border pbx-border-solid pbx-border-gray-500 pbx-cursor-pointer pbx-transition-all pbx-duration-200 pbx-ease-in-out hover:pbx-shadow-md hover:pbx-text-yellow-500 focus-visible:pbx-ring-0"
           :class="
             props.toolbarPinned
-              ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor'
+              ? 'pbx-editChromeActive'
               : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor'
           "
           :aria-pressed="props.toolbarPinned"

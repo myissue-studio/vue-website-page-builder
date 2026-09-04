@@ -196,7 +196,7 @@ const closeHTMLSettings = async function () {
           type="button"
           @click="$emit('closeEditor')"
           :aria-label="translate('Close properties panel')"
-          class="pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryButtonColor hover:pbx-text-myPrimaryButtonTextColor focus-visible:pbx-ring-0 pbx-text-black"
+          class="pbx-h-10 pbx-w-10 pbx-shrink-0 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white focus-visible:pbx-ring-0 pbx-text-black"
         >
           <span class="material-symbols-outlined" aria-hidden="true"> close </span>
         </button>
@@ -251,7 +251,7 @@ const closeHTMLSettings = async function () {
             class="pbx-min-w-0 pbx-rounded-lg pbx-px-1 pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans pbx-truncate"
             :class="
               activeTab === 'styles'
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-shadow-sm'
+                ? 'pbx-editChromeActive pbx-shadow-sm'
                 : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
             "
             @click="setActiveTab('styles')"
@@ -266,7 +266,7 @@ const closeHTMLSettings = async function () {
             class="pbx-min-w-0 pbx-rounded-lg pbx-px-1 pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans pbx-truncate"
             :class="
               activeTab === 'settings'
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-shadow-sm'
+                ? 'pbx-editChromeActive pbx-shadow-sm'
                 : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
             "
             @click="setActiveTab('settings')"
@@ -281,7 +281,7 @@ const closeHTMLSettings = async function () {
             class="pbx-min-w-0 pbx-rounded-lg pbx-px-1 pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans pbx-truncate"
             :class="
               activeTab === 'tools'
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-shadow-sm'
+                ? 'pbx-editChromeActive pbx-shadow-sm'
                 : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
             "
             @click="setActiveTab('tools')"
@@ -297,7 +297,7 @@ const closeHTMLSettings = async function () {
             class="pbx-min-w-0 pbx-rounded-lg pbx-px-1 pbx-py-2 pbx-text-sm pbx-font-medium pbx-transition-colors pbx-border-0 pbx-cursor-pointer pbx-font-sans pbx-truncate"
             :class="
               activeTab === 'dev'
-                ? 'pbx-bg-myPrimaryButtonColor pbx-text-myPrimaryButtonTextColor pbx-shadow-sm'
+                ? 'pbx-editChromeActive pbx-shadow-sm'
                 : 'pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-gray-50'
             "
             @click="setActiveTab('dev')"
