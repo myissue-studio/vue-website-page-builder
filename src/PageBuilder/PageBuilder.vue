@@ -1504,6 +1504,8 @@ onBeforeUnmount(() => {
           <div
             v-if="previewMenuOpen"
             ref="previewMenuPopoverRef"
+            data-pbx-edit-toolbar-popover
+            data-pbx-preview-menu-popover
             role="menu"
             :style="previewMenuPopoverStyle"
             class="pbx-toolbarMoreMenu"
