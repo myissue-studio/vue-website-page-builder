@@ -184,6 +184,21 @@ export function rememberInlineTipTapHostClass(element: HTMLElement): void {
 }
 
 /**
+ * Keep the TipTap host class snapshot in sync when toolbar/sidebar mutates
+ * classes while the editor is open (e.g. text/bg color). Without this, close
+ * restores the open-time class list and drops later Tailwind utilities — while
+ * inline custom/theme `style` colors survive because they are not snapshotted.
+ */
+export function refreshInlineTipTapHostClassSnapshot(element: HTMLElement): void {
+  if (!element.hasAttribute('data-pbx-inline-original-class')) return
+
+  const classes = Array.from(element.classList).filter(
+    (className) => !(INLINE_TIPTAP_HOST_CLASSES as readonly string[]).includes(className),
+  )
+  element.setAttribute('data-pbx-inline-original-class', classes.join(' '))
+}
+
+/**
  * Restore the canvas host element after TipTap closes so open/close without edits
  * does not rewrite classes/attributes and inflate undo history.
  */
