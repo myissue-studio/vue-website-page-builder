@@ -83,7 +83,7 @@ const saveMeta = async () => {
         @click="saveMeta"
       >
         {{ translate('Save') }}
-        <span v-if="!isSaving" class="material-symbols-outlined">check</span>
+        <span v-if="!isSaving" class="material-symbols-outlined">save</span>
         <span v-if="isSaving" class="material-symbols-outlined pbx-animate-spin">refresh</span>
       </button>
     </template>
