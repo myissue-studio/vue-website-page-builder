@@ -7,6 +7,7 @@ import {
   finalizeInlineTipTapHtml,
   preserveOriginalInlineHtmlIfUnchanged,
   rememberInlineTipTapHostClass,
+  refreshInlineTipTapHostClassSnapshot,
   restoreInlineTipTapHostElement,
   sanitizeInlineTipTapHtml,
   stripInlineTipTapHostArtifacts,
@@ -121,6 +122,25 @@ describe('restoreInlineTipTapHostElement', () => {
     expect(host.hasAttribute('data-pbx-inline-tiptap')).toBe(false)
     expect(host.hasAttribute('data-pbx-inline-original-html')).toBe(false)
     expect(host.hasAttribute('data-pbx-inline-original-class')).toBe(false)
+  })
+
+  it('keeps Tailwind color classes applied while TipTap is open after restore', () => {
+    const host = document.createElement('div')
+    host.className = 'pbx-break-words pbx-text-white'
+    rememberInlineTipTapHostClass(host)
+
+    host.classList.add('tiptap', 'ProseMirror', 'pbx-inline-tiptap-editor')
+    host.setAttribute('data-pbx-inline-tiptap', '')
+    host.classList.remove('pbx-text-white')
+    host.classList.add('pbx-text-red-500')
+    refreshInlineTipTapHostClassSnapshot(host)
+
+    restoreInlineTipTapHostElement(host)
+
+    expect(host.className).toBe('pbx-break-words pbx-text-red-500')
+    expect(host.classList.contains('tiptap')).toBe(false)
+    expect(host.classList.contains('ProseMirror')).toBe(false)
+    expect(host.classList.contains('pbx-inline-tiptap-editor')).toBe(false)
   })
 
   it('strips TipTap host artifacts from cloned section html', () => {

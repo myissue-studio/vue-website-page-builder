@@ -41,6 +41,7 @@ import {
 import {
   preserveOriginalInlineHtmlIfUnchanged,
   rememberInlineTipTapHostClass,
+  refreshInlineTipTapHostClassSnapshot,
   restoreInlineTipTapHostElement,
   stripInlineTipTapHostArtifacts,
 } from '../utils/builder/sanitize-inline-tiptap-html'
@@ -1324,9 +1325,27 @@ export class PageBuilderService {
       if (currentHTMLElement === this.getBuilderCanvasElement()) {
         this.syncGlobalPageSettingsIntoRuntimeConfig()
       }
+
+      this.refreshInlineTipTapHostClassSnapshotFor(classTarget)
+      if (classTarget !== currentHTMLElement) {
+        this.refreshInlineTipTapHostClassSnapshotFor(currentHTMLElement)
+      }
     }
 
     return currentCSS
+  }
+
+  /**
+   * TipTap restores host `class` from a snapshot on close. Keep that snapshot
+   * current when classes change while the inline editor is open.
+   */
+  private refreshInlineTipTapHostClassSnapshotFor(element: HTMLElement): void {
+    const host = element.hasAttribute('data-pbx-inline-original-class')
+      ? element
+      : element.closest('[data-pbx-inline-original-class]')
+    if (host instanceof HTMLElement) {
+      refreshInlineTipTapHostClassSnapshot(host)
+    }
   }
 
   private resolveNestedButtonAnchorTarget(
@@ -3147,6 +3166,7 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setCurrentStyles(
       this.parseStyleString(colorTarget.getAttribute('style') || ''),
     )
+    this.refreshInlineTipTapHostClassSnapshotFor(colorTarget)
 
     if (element === this.getBuilderCanvasElement()) {
       this.syncGlobalPageSettingsIntoRuntimeConfig()
@@ -3202,6 +3222,7 @@ export class PageBuilderService {
     this.pageBuilderStateStore.setCurrentStyles(
       this.parseStyleString(colorTarget.getAttribute('style') || ''),
     )
+    this.refreshInlineTipTapHostClassSnapshotFor(colorTarget)
   }
 
   /**

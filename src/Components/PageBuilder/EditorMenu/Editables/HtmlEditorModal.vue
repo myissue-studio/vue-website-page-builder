@@ -110,7 +110,7 @@ async function copyHtml() {
         @click="$emit('save')"
       >
         {{ translate('Save') }}
-        <span v-if="!isLoading" class="material-symbols-outlined">check</span>
+        <span v-if="!isLoading" class="material-symbols-outlined">save</span>
         <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
       </button>
     </template>
