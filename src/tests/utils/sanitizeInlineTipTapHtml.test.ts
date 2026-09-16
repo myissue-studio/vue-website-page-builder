@@ -143,6 +143,24 @@ describe('restoreInlineTipTapHostElement', () => {
     expect(host.classList.contains('pbx-inline-tiptap-editor')).toBe(false)
   })
 
+  it('keeps font-size classes applied while TipTap is open after restore', () => {
+    const host = document.createElement('div')
+    host.className = 'pbx-break-words pbx-text-6xl lg:pbx-text-8xl pbx-font-medium pbx-text-white'
+    rememberInlineTipTapHostClass(host)
+    host.setAttribute('data-pbx-inline-tiptap', '')
+
+    host.classList.remove('pbx-text-6xl', 'lg:pbx-text-8xl')
+    host.classList.add('pbx-text-lg', 'lg:pbx-text-2xl')
+    refreshInlineTipTapHostClassSnapshot(host)
+
+    restoreInlineTipTapHostElement(host)
+
+    expect(host.className).toBe(
+      'pbx-break-words pbx-font-medium pbx-text-white pbx-text-lg lg:pbx-text-2xl',
+    )
+    expect(host.getAttribute('data-pbx-inline-original-class')).toBeNull()
+  })
+
   it('strips TipTap host artifacts from cloned section html', () => {
     const section = document.createElement('section')
     section.innerHTML = `
