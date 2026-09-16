@@ -1553,19 +1553,20 @@ export class PageBuilderService {
       } else {
         currentHTMLElement.classList.add(baseClass)
       }
+
+      this.pageBuilderStateStore.setFontDesktop(lgClass)
+      this.pageBuilderStateStore.setFontBase(baseClass)
+      this.pageBuilderStateStore.setCurrentClasses(Array.from(currentHTMLElement.classList))
+      // TipTap restores host class from a snapshot on close — keep it current.
+      this.refreshInlineTipTapHostClassSnapshotFor(currentHTMLElement)
+      return
     }
 
     const currentCSS = tailwindFontSizes.fontDesktop.find((CSS) => {
       return currentHTMLElement.classList.contains(CSS)
     })
 
-    if (!userSelectedFontSize) {
-      this.pageBuilderStateStore.setFontDesktop('none')
-    }
-
-    if (currentCSS && !userSelectedFontSize) {
-      this.pageBuilderStateStore.setFontDesktop(currentCSS)
-    }
+    this.pageBuilderStateStore.setFontDesktop(currentCSS || 'none')
   }
 
   /**
@@ -2798,6 +2799,7 @@ export class PageBuilderService {
       this.pageBuilderStateStore.setElement(element)
       this.pageBuilderStateStore.setClass(prefixedClass)
       this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+      this.refreshInlineTipTapHostClassSnapshotFor(element)
     }
   }
 
@@ -3661,6 +3663,7 @@ export class PageBuilderService {
       this.pageBuilderStateStore.setElement(element)
       this.pageBuilderStateStore.removeClass(userSelectedClass)
       this.pageBuilderStateStore.setCurrentClasses(Array.from(element.classList))
+      this.refreshInlineTipTapHostClassSnapshotFor(element)
     }
   }
 
