@@ -14,10 +14,14 @@ import {
   getTipTapHeadingLevels,
   type TipTapHeadingLevel,
 } from '../../utils/builder/tiptap-heading-levels'
+import { handleFormattedTextPaste } from '../../utils/builder/tiptap-formatted-text-paste'
+import { formatAddedBlocksMessage } from '../../utils/builder/formatted-text-to-components'
+import { useToast } from '../../composables/useToast'
 
 const pageBuilderService = getPageBuilder()
 
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 // Use shared store instance
 const pageBuilderStateStore = sharedPageBuilderStore
@@ -25,6 +29,17 @@ const pageBuilderStateStore = sharedPageBuilderStore
 const headingLevels = computed(() =>
   getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
 )
+
+const insertFormattedTextAsPageComponents = async function (source: string) {
+  const count = await pageBuilderService.insertFormattedTextAsComponents(source, {
+    replaceSelected: true,
+  })
+  if (!count) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
+  }
+  showToast(formatAddedBlocksMessage(translate, count), 'success')
+}
 
 const showModalUrl = ref(false)
 
@@ -86,6 +101,21 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class: 'prose-sm sm:prose-sm lg:prose-sm focus:outline-none',
+    },
+    handlePaste: (_view, event) => {
+      const active = editor.value
+      if (!active) return false
+      return handleFormattedTextPaste(
+        active,
+        event,
+        pageBuilderStateStore.getPageBuilderConfig,
+        {
+          onCreateComponents: (source) => {
+            void insertFormattedTextAsPageComponents(source)
+            return true
+          },
+        },
+      )
     },
   },
 })

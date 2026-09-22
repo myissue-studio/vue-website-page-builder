@@ -13,6 +13,7 @@ import { useDebounce } from '../composables/useDebounce'
 import ConfirmActionModal from '../Components/Modals/ConfirmActionModal.vue'
 import GlobalLoader from '../Components/Loaders/GlobalLoader.vue'
 import ImageSettingsModal from '../Components/PageBuilder/EditorMenu/Editables/ImageSettingsModal.vue'
+import InsertFormattedTextModal from '../Components/PageBuilder/EditorMenu/Editables/InsertFormattedTextModal.vue'
 import FloatingSidePanel from '../Components/Overlays/FloatingSidePanel.vue'
 import { useTranslations } from '../composables/useTranslations'
 import { getPageBuilder } from '../composables/usePageBuilder'
@@ -50,6 +51,7 @@ import {
   clearPageBuilderButtonTextColor,
 } from '../utils/builder/apply-brand-color'
 import ShoppingIcon from '@/Components/Icons/ShoppingIcon.vue'
+import { formatAddedBlocksMessage } from '../utils/builder/formatted-text-to-components'
 
 const pageBuilderService = getPageBuilder()
 const {
@@ -567,6 +569,39 @@ const toggleProductLibraryModal = async function () {
 
 const closeProductLibraryModal = () => {
   showProductLibraryModal.value = false
+}
+
+const showPasteTextModal = ref(false)
+
+const openPasteTextModal = function () {
+  showPasteTextModal.value = true
+}
+
+const closePasteTextModal = function () {
+  showPasteTextModal.value = false
+}
+
+const insertPastedTextOnPage = async function (
+  source: string,
+  options?: { replacePage?: boolean },
+) {
+  if (!source.trim()) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
+  }
+
+  const count = await pageBuilderService.insertFormattedTextAsComponents(source, {
+    replacePage: options?.replacePage === true,
+  })
+  if (!count) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
+  }
+
+  showToast(
+    formatAddedBlocksMessage(translate, count, { replacedPage: options?.replacePage === true }),
+    'success',
+  )
 }
 
 const handleInsertButtonClick = function (id: number) {
@@ -1229,6 +1264,12 @@ onBeforeUnmount(() => {
       @closeProductLibrary="closeProductLibraryModal"
     />
 
+    <InsertFormattedTextModal
+      :open="showPasteTextModal"
+      @close="closePasteTextModal"
+      @insert="insertPastedTextOnPage"
+    />
+
     <ConfirmActionModal
       :showDynamicModalBuilder="showModalCloseNoSave"
       :isLoading="false"
@@ -1721,8 +1762,21 @@ onBeforeUnmount(() => {
             data-pb-no-select
           >
             <div
-              class="pbx-flex pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3"
+              class="pbx-flex pbx-flex-col sm:pbx-flex-row pbx-justify-center pbx-w-full pbx-absolute pbx-items-center pbx-gap-3"
             >
+              <div
+                @click="openPasteTextModal"
+                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-900 pbx-text-white pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-800 pbx-cursor-pointer"
+              >
+                <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <span class="material-symbols-outlined">content_paste</span>
+                  <span
+                    class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
+                  >
+                    {{ translate('Paste your text') }}
+                  </span>
+                </div>
+              </div>
               <div
                 @click="handleInsertButtonClick(0)"
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"

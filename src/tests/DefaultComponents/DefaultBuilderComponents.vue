@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { getComponentHelpers } from '../../utils/html-elements/componentHelpers'
 import components from '../../utils/html-elements/component'
 import themes from '../../utils/html-elements/themes'
@@ -15,12 +15,9 @@ import ModalFilterChip from '../../Components/Modals/ModalFilterChip.vue'
 import ModalLibraryCard from '../../Components/Modals/ModalLibraryCard.vue'
 import ModalPreviewCard from '../../Components/Modals/ModalPreviewCard.vue'
 import ConfirmActionModal from '../../Components/Modals/ConfirmActionModal.vue'
-import ToggleInput from '../../Components/Inputs/ToggleInput.vue'
 import LinkStyleSettingsPanel from '../../Components/PageBuilder/EditorMenu/Editables/LinkStyleSettingsPanel.vue'
-import {
-  buildComponentsFromFormattedText,
-  previewFormattedTextItems,
-} from '../../utils/builder/formatted-text-to-components'
+import InsertFormattedTextModal from '../../Components/PageBuilder/EditorMenu/Editables/InsertFormattedTextModal.vue'
+import { formatAddedBlocksMessage } from '../../utils/builder/formatted-text-to-components'
 
 const { translate } = useTranslations()
 const { showToast } = useToast()
@@ -139,21 +136,6 @@ const hasPageContent = computed(() => (pageBuilderStateStore.getComponents?.leng
 
 const showReplaceThemeModal = ref(false)
 const showFormattedTextModal = ref(false)
-const formattedTextInput = ref('')
-const isInsertingFormattedText = ref(false)
-const replaceExistingContent = ref(true)
-
-const formattedTextPreview = computed(() => previewFormattedTextItems(formattedTextInput.value))
-const willReplacePage = computed(
-  () => replaceExistingContent.value && hasPageContent.value,
-)
-
-watch(showFormattedTextModal, async (open) => {
-  if (!open) return
-  replaceExistingContent.value = hasPageContent.value
-  await nextTick()
-  document.getElementById('pbx-formatted-text-input')?.focus()
-})
 
 const pendingThemeHtml = ref('')
 const typeModal = ref('')
@@ -246,32 +228,28 @@ const handleDropComponent = async function (componentObject: ComponentObject) {
 
 const closeFormattedTextModal = () => {
   showFormattedTextModal.value = false
-  formattedTextInput.value = ''
 }
 
-const insertFormattedText = async () => {
-  const components = buildComponentsFromFormattedText(
-    formattedTextInput.value,
-    pageBuilderStateStore.getPageBuilderConfig,
-  )
-  if (!components.length) {
+const insertFormattedText = async (
+  source: string,
+  options?: { replacePage?: boolean },
+) => {
+  if (!source.trim()) {
     showToast(translate('No formatted blocks found'), 'error')
     return
   }
 
-  isInsertingFormattedText.value = true
-  try {
-    const replace = willReplacePage.value
-    await pageBuilderService.addComponents(components, { replace })
-    closeFormattedTextModal()
-    closeAddComponentModal()
-    showToast(
-      translate(replace ? 'Page replaced with formatted text' : 'Formatted text added to page'),
-      'success',
-    )
-  } finally {
-    isInsertingFormattedText.value = false
+  const replace = options?.replacePage === true
+  const count = await pageBuilderService.insertFormattedTextAsComponents(source, {
+    replacePage: replace,
+  })
+  if (!count) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
   }
+  closeFormattedTextModal()
+  closeAddComponentModal()
+  showToast(formatAddedBlocksMessage(translate, count, { replacedPage: replace }), 'success')
 }
 
 const applyHelperButtonStyle = (componentObject: ComponentObject): ComponentObject => {
@@ -428,9 +406,9 @@ const convertToComponentObject = function (comp: {
             />
           </div>
           <ModalFilterChip
-            icon="asterisk"
-            :label="translate('Insert formatted text')"
-            :hint="translate('Paste headings and lists')"
+            icon="content_paste"
+            :label="translate('Paste your text')"
+            :hint="translate('Paste from Word, Docs, or ChatGPT')"
             @click="showFormattedTextModal = true"
           />
         </div>
@@ -666,126 +644,10 @@ const convertToComponentObject = function (comp: {
     <main></main>
   </ConfirmActionModal>
 
-  <ConfirmActionModal
-    :showDynamicModalBuilder="showFormattedTextModal"
-    type="success"
-    :gridColumnAmount="2"
-    :title="translate('Insert formatted text')"
-    :description="translate('Insert formatted text description')"
-    :isLoading="isInsertingFormattedText"
-    :firstButtonText="translate('Close')"
-    :thirdButtonText="translate(willReplacePage ? 'Replace' : 'Insert')"
-    :disabled="isInsertingFormattedText || !formattedTextPreview.length"
-    disabledWhichButton="third"
-    maxWidth="5xl"
-    @firstModalButtonFunctionDynamicModalBuilder="closeFormattedTextModal"
-    @thirdModalButtonFunctionDynamicModalBuilder="insertFormattedText"
-  >
-    <div v-if="hasPageContent" class="pbx-productSettingsToggleRow pbx-mb-4">
-      <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-        <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-          {{ translate('Replace existing content') }}
-        </p>
-        <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-          {{ translate('Remove current page blocks before inserting') }}
-        </p>
-      </div>
-      <ToggleInput v-model="replaceExistingContent" />
-    </div>
-    <div class="pbx-formattedTextModal">
-      <div class="pbx-formattedTextPaste">
-        <div class="pbx-formattedTextPasteHeader">
-          <span class="pbx-modalFilterChipIcon" aria-hidden="true">
-            <span class="material-symbols-outlined">add</span>
-          </span>
-          <label
-            class="pbx-m-0 pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor"
-            for="pbx-formatted-text-input"
-          >
-            {{ translate('Paste Markdown or HTML') }}
-          </label>
-        </div>
-        <textarea
-          id="pbx-formatted-text-input"
-          v-model="formattedTextInput"
-          :placeholder="translate('Paste headings and paragraphs here')"
-          @keydown.meta.enter.prevent="insertFormattedText"
-          @keydown.ctrl.enter.prevent="insertFormattedText"
-        />
-      </div>
-
-      <aside class="pbx-formattedTextPreview" aria-live="polite">
-        <div class="pbx-formattedTextPreviewHeader">
-          <span class="pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-            {{ translate('Page preview') }}
-          </span>
-          <span
-            v-if="formattedTextPreview.length"
-            class="pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-tracking-wide pbx-text-gray-500"
-          >
-            {{ formattedTextPreview.length }}
-            {{ translate(formattedTextPreview.length === 1 ? 'block' : 'blocks') }}
-          </span>
-        </div>
-        <div class="pbx-formattedTextPreviewBody">
-          <div v-if="formattedTextPreview.length">
-            <article
-              v-for="(item, index) in formattedTextPreview"
-              :key="`${item.title}-${index}`"
-              class="pbx-formattedTextPreviewItem"
-            >
-              <span class="pbx-formattedTextPreviewIndex">{{ index + 1 }}</span>
-              <span class="pbx-modalFilterChipIcon" aria-hidden="true">
-                <span
-                  v-if="item.kind === 'heading'"
-                  class="pbx-text-xs pbx-font-semibold"
-                >H{{ item.headingLevel }}</span>
-                <span
-                  v-else-if="item.kind === 'paragraphs'"
-                  class="pbx-text-xs pbx-font-semibold"
-                >P</span>
-                <span v-else class="material-symbols-outlined">{{ item.symbol }}</span>
-              </span>
-              <span class="pbx-min-w-0 pbx-flex-1">
-                <span class="pbx-block pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-                  {{ translate(item.title) }}
-                </span>
-                <span
-                  class="pbx-mt-0.5 pbx-block pbx-truncate pbx-text-[11px] pbx-leading-snug pbx-text-gray-500"
-                >
-                  {{ item.excerpt }}
-                </span>
-              </span>
-            </article>
-          </div>
-          <div v-else class="pbx-formattedTextEmpty">
-            <div class="pbx-formattedTextPreviewItem">
-              <span class="pbx-modalFilterChipIcon" aria-hidden="true">
-                <span class="pbx-text-xs pbx-font-semibold">H2</span>
-              </span>
-              <span class="pbx-text-xs pbx-text-gray-500">
-                {{ translate('Headings become Header blocks') }}
-              </span>
-            </div>
-            <div class="pbx-formattedTextPreviewItem">
-              <span class="pbx-modalFilterChipIcon" aria-hidden="true">
-                <span class="pbx-text-xs pbx-font-semibold">P</span>
-              </span>
-              <span class="pbx-text-xs pbx-text-gray-500">
-                {{ translate('Paragraphs become Text') }}
-              </span>
-            </div>
-            <div class="pbx-formattedTextPreviewItem">
-              <span class="pbx-modalFilterChipIcon" aria-hidden="true">
-                <span class="material-symbols-outlined">format_list_bulleted</span>
-              </span>
-              <span class="pbx-text-xs pbx-text-gray-500">
-                {{ translate('Lists stay lists') }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </ConfirmActionModal>
+  <InsertFormattedTextModal
+    :open="showFormattedTextModal"
+    :show-replace-toggle="hasPageContent"
+    @close="closeFormattedTextModal"
+    @insert="insertFormattedText"
+  />
 </template>
