@@ -32,6 +32,24 @@ function looksLikeHtml(input: string): boolean {
   return /<\/?[a-z][\s\S]*>/i.test(input)
 }
 
+/** Success toast after multi-block insert (supports `{count}`). */
+export function formatAddedBlocksMessage(
+  translate: (key: string) => string,
+  count: number,
+  options?: { replacedPage?: boolean },
+): string {
+  if (options?.replacedPage) {
+    return translate('Page replaced with {count} blocks').replace('{count}', String(count))
+  }
+  const key = count === 1 ? 'Added {count} block to the page' : 'Added {count} blocks to the page'
+  return translate(key).replace('{count}', String(count))
+}
+
+/** True when clipboard plain text itself is HTML source (tags not escaped). */
+export function looksLikeHtmlSource(input: string): boolean {
+  return /<\/?(?:h[1-6]|ul|ol|li|p|strong|em|b|i|a|div|section|br)\b/i.test(String(input || ''))
+}
+
 /** Convert ChatGPT-style Markdown emphasis and links, after HTML-escaping. */
 function inlineMarkdownToHtml(text: string): string {
   let html = escapeHtml(text)
@@ -103,7 +121,15 @@ function looksLikeHeadingLine(line: string, nextNonEmpty?: string): boolean {
   const trimmed = line.trim()
   if (!trimmed || trimmed.length > 90) return false
   if (/[.!?,:]$/.test(trimmed)) return false
-  if (nextNonEmpty && isListLine(nextNonEmpty)) return false
+  // Keep conversational list lead-ins as paragraphs ("You should", "We need").
+  // Real section titles before bullets (e.g. "Requirements") stay headings.
+  if (
+    nextNonEmpty &&
+    isListLine(nextNonEmpty) &&
+    /^(you|we|they|i|candidates?|applicants?)\b/i.test(trimmed)
+  ) {
+    return false
+  }
   if (trimmed.split(/\s+/).length > 12) return false
   return true
 }
@@ -385,4 +411,74 @@ export function previewFormattedTextItems(input: string): FormattedTextPreviewIt
       excerpt: stripTags(block.html),
     }
   })
+}
+
+/** Convert parsed blocks into TipTap-friendly HTML (same schema as the inline editor). */
+export function blocksToTipTapHtml(
+  blocks: FormattedTextBlock[],
+  config?: PageBuilderConfig | null,
+): string {
+  const disableH1 = isTipTapH1Disabled(config)
+
+  return (blocks || [])
+    .map((block) => {
+      if (block.kind === 'heading') {
+        const level = mapHeadingLevel(block.level, disableH1)
+        const inner = headingInner(block.html, block.level)
+        return `<h${level}>${inner}</h${level}>`
+      }
+      if (block.kind === 'list') {
+        const tag = block.ordered ? 'ol' : 'ul'
+        const items = block.items.map((item) => `<li><p>${item}</p></li>`).join('')
+        return `<${tag}>${items}</${tag}>`
+      }
+      return block.html
+    })
+    .join('')
+}
+
+/** Parse Markdown / HTML / plain job-ad text into TipTap HTML. */
+export function formattedTextToTipTapHtml(
+  input: string,
+  config?: PageBuilderConfig | null,
+): string {
+  return blocksToTipTapHtml(parseFormattedText(input), config)
+}
+
+/**
+ * True when clipboard content looks structured enough that TipTap's default
+ * paste would leave Markdown markers or lose heading/list structure.
+ */
+export function shouldTransformFormattedTextPaste(text: string, html = ''): boolean {
+  const plain = String(text || '').trim()
+  const rich = String(html || '').trim()
+  if (!plain && !rich) return false
+
+  if (plain) {
+    if (/\n/.test(plain)) return true
+    if (/^(#{1,6})\s+\S/.test(plain)) return true
+    if (/^\s*(?:[-*•]|\d+[.)])\s+\S/.test(plain)) return true
+    if (looksLikeHtmlSource(plain)) return true
+  }
+
+  if (/<\/?(?:h[1-6]|ul|ol|li)\b/i.test(rich)) return true
+  return false
+}
+
+/**
+ * Prefer plain text when it carries Markdown or raw HTML source.
+ * Browsers often wrap those pastes in nearly-useless / escaped text/html.
+ */
+export function resolveFormattedTextPasteSource(text: string, html = ''): string {
+  const plain = String(text || '').trim()
+  const rich = String(html || '').trim()
+  if (!plain) return rich
+  if (!rich) return plain
+
+  const plainLooksStructured =
+    /^(#{1,6})\s+\S/m.test(plain) ||
+    /^\s*(?:[-*•]|\d+[.)])\s+\S/m.test(plain) ||
+    looksLikeHtmlSource(plain)
+
+  return plainLooksStructured ? plain : rich
 }

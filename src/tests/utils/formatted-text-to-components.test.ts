@@ -3,8 +3,13 @@ import { describe, expect, it } from 'vitest'
 import type { PageBuilderConfig } from '../../types'
 import {
   buildComponentsFromFormattedText,
+  formatAddedBlocksMessage,
+  formattedTextToTipTapHtml,
   parseFormattedText,
+  resolveFormattedTextPasteSource,
+  shouldTransformFormattedTextPaste,
 } from '../../utils/builder/formatted-text-to-components'
+import { shouldCreatePageComponentsFromPaste } from '../../utils/builder/tiptap-formatted-text-paste'
 
 const JOB_AD = `Team Leadership & Development
 
@@ -128,6 +133,148 @@ You are someone who:
     ])
     expect(blocks[1].kind === 'paragraphs' && blocks[1].html).toContain('You should:')
     expect(blocks[4].kind === 'paragraphs' && blocks[4].html).toContain('You are someone who:')
+  })
+
+  it('treats section titles before bullet lists as H2', () => {
+    const blocks = parseFormattedText(`Requirements
+
+- 2+ years of marketing experience
+- Good communication skills
+
+Nice to Have
+
+Experience with Google Ads.`)
+
+    expect(blocks[0]).toMatchObject({ kind: 'heading', level: 2 })
+    expect(blocks[0].kind === 'heading' && blocks[0].html).toContain('Requirements')
+    expect(blocks[1]).toMatchObject({ kind: 'list', ordered: false })
+    expect(blocks[2]).toMatchObject({ kind: 'heading', level: 2 })
+  })
+})
+
+describe('formattedTextToTipTapHtml', () => {
+  it('converts Markdown job ads into TipTap headings and lists', () => {
+    const html = formattedTextToTipTapHtml(`# Marketing Specialist
+
+## About the Role
+
+We need a creative **Marketing Specialist**.
+
+### What You’ll Do
+
+- Create social media content
+- Manage marketing campaigns`)
+
+    expect(html).toContain('<h1>Marketing Specialist</h1>')
+    expect(html).toContain('<h2>About the Role</h2>')
+    expect(html).toContain('<strong>Marketing Specialist</strong>')
+    expect(html).toContain('<h3>What You’ll Do</h3>')
+    expect(html).toContain('<ul>')
+    expect(html).toContain('<li><p>Create social media content</p></li>')
+    expect(html).not.toContain('# Marketing')
+    expect(html).not.toContain('**Marketing')
+  })
+
+  it('maps H1 to H2 in TipTap HTML when disableH1 is true', () => {
+    const html = formattedTextToTipTapHtml('# Title\n\nBody', {
+      userSettings: { disableH1: true },
+    } as PageBuilderConfig)
+    expect(html).toContain('<h2>Title</h2>')
+    expect(html).not.toContain('<h1>')
+  })
+
+  it('keeps HTML job-ad structure for TipTap', () => {
+    const html = formattedTextToTipTapHtml(`<h1>Marketing Specialist</h1>
+<h2>About the Role</h2>
+<p>We are looking for a creative <strong>Marketing Specialist</strong>.</p>
+<ul><li>Create social media content</li><li>Manage marketing campaigns</li></ul>`)
+
+    expect(html).toContain('<h1>Marketing Specialist</h1>')
+    expect(html).toContain('<strong>Marketing Specialist</strong>')
+    expect(html).toContain('<li><p>Create social media content</p></li>')
+  })
+})
+
+describe('shouldTransformFormattedTextPaste', () => {
+  it('ignores short single-line pastes', () => {
+    expect(shouldTransformFormattedTextPaste('hello')).toBe(false)
+  })
+
+  it('intercepts Markdown and multi-line job ads', () => {
+    expect(shouldTransformFormattedTextPaste('# Title')).toBe(true)
+    expect(shouldTransformFormattedTextPaste('- item one')).toBe(true)
+    expect(shouldTransformFormattedTextPaste('Line one\n\nLine two')).toBe(true)
+    expect(shouldTransformFormattedTextPaste('', '<h2>Role</h2><p>Body</p>')).toBe(true)
+  })
+
+  it('intercepts raw HTML source pasted as plain text', () => {
+    expect(shouldTransformFormattedTextPaste('<h1>Marketing Specialist</h1>')).toBe(true)
+    expect(
+      shouldTransformFormattedTextPaste(
+        '<h2>About the Role</h2><ul><li>Create social media content</li></ul>',
+      ),
+    ).toBe(true)
+  })
+})
+
+describe('resolveFormattedTextPasteSource', () => {
+  it('prefers plain HTML source over escaped browser text/html', () => {
+    const plain = `<h1>Marketing Specialist</h1>
+
+<h2>About the Role</h2>
+
+<p>We are looking for a creative <strong>Marketing Specialist</strong>.</p>
+
+<ul>
+  <li>Create social media content</li>
+  <li>Manage marketing campaigns</li>
+</ul>`
+
+    const rich =
+      '<html><body><!--StartFragment--><span style="white-space:pre">&lt;h1&gt;Marketing Specialist&lt;/h1&gt;</span><!--EndFragment--></body></html>'
+
+    expect(resolveFormattedTextPasteSource(plain, rich)).toBe(plain.trim())
+    expect(formattedTextToTipTapHtml(resolveFormattedTextPasteSource(plain, rich))).toContain(
+      '<h1>Marketing Specialist</h1>',
+    )
+    expect(formattedTextToTipTapHtml(resolveFormattedTextPasteSource(plain, rich))).toContain(
+      '<li><p>Create social media content</p></li>',
+    )
+  })
+
+  it('prefers real rich HTML when plain text has no tags', () => {
+    const plain = 'Marketing Specialist\n\nAbout the Role'
+    const rich = '<h1>Marketing Specialist</h1><h2>About the Role</h2>'
+    expect(resolveFormattedTextPasteSource(plain, rich)).toBe(rich)
+  })
+})
+
+describe('shouldCreatePageComponentsFromPaste', () => {
+  it('uses page components for multi-block HTML job ads', () => {
+    expect(
+      shouldCreatePageComponentsFromPaste(`<h1>Marketing Specialist</h1>
+
+<h2>About the Role</h2>
+
+<p>We are looking for a creative <strong>Marketing Specialist</strong>.</p>`),
+    ).toBe(true)
+  })
+
+  it('keeps single-block paste in TipTap', () => {
+    expect(shouldCreatePageComponentsFromPaste('<p>Just one paragraph.</p>')).toBe(false)
+    expect(shouldCreatePageComponentsFromPaste('# Only a title')).toBe(false)
+  })
+})
+
+describe('formatAddedBlocksMessage', () => {
+  const translate = (key: string) => key
+
+  it('formats singular and plural toasts', () => {
+    expect(formatAddedBlocksMessage(translate, 1)).toBe('Added 1 block to the page')
+    expect(formatAddedBlocksMessage(translate, 12)).toBe('Added 12 blocks to the page')
+    expect(formatAddedBlocksMessage(translate, 12, { replacedPage: true })).toBe(
+      'Page replaced with 12 blocks',
+    )
   })
 })
 

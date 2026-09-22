@@ -32,6 +32,7 @@ import { useTranslations } from '../composables/useTranslations'
 import { isEmptyObject } from '../utils/is-empty-object'
 import { extractCleanHTMLFromPageBuilder } from '../utils/builder/extract-clean-html'
 import { migrateSliderArrowIcons } from '../utils/builder/slider-arrows'
+import { buildComponentsFromFormattedText } from '../utils/builder/formatted-text-to-components'
 import {
   captureInlineSliderViewports,
   normalizeSliderWrapClones,
@@ -5545,6 +5546,108 @@ export class PageBuilderService {
       console.error('Error adding components:', error)
     } finally {
       this.pageBuilderStateStore.setAddComponentAddIndex(null)
+    }
+  }
+
+  /**
+   * Turns Markdown / HTML (e.g. a job ad) into Header / Text / List helpers and
+   * inserts them on the page. Selects and scrolls to the first new block.
+   * @returns Number of components inserted (0 if nothing parsed).
+   */
+  public async insertFormattedTextAsComponents(
+    input: string,
+    options?: { replaceSelected?: boolean; replacePage?: boolean },
+  ): Promise<number> {
+    const built = buildComponentsFromFormattedText(
+      input,
+      this.pageBuilderStateStore.getPageBuilderConfig,
+    )
+    if (!built.length) return 0
+
+    const replaceSelected = options?.replaceSelected === true
+    const replacePage = options?.replacePage === true
+
+    try {
+      if (this.isInlineTipTapActive()) {
+        this.pageBuilderStateStore.setInlineTipTapEditor(false)
+        await nextTick()
+      }
+
+      if (replacePage) {
+        this.deleteAllComponentsFromDOM()
+        await nextTick()
+      } else {
+        await this.syncDomToStoreOnly()
+        await nextTick()
+      }
+
+      const cloned = built.map((componentObject) =>
+        this.cloneCompObjForDOMInsertion({
+          html_code: componentObject.html_code,
+          id: componentObject.id,
+          title: componentObject.title,
+        }),
+      )
+
+      const components = replacePage ? [] : this.pageBuilderStateStore.getComponents || []
+      const selected = replacePage ? null : this.getComponent.value
+      let insertAt = components.length
+      let removeCount = 0
+
+      if (selected) {
+        const selectedIndex = components.findIndex(
+          (component: ComponentObject) => component.id === selected.id,
+        )
+        if (selectedIndex >= 0) {
+          insertAt = replaceSelected ? selectedIndex : selectedIndex + 1
+          removeCount = replaceSelected ? 1 : 0
+        }
+      }
+
+      const pageSettings = this.readCurrentPageSettings() ?? this._lastKnownPageSettings
+      this.globalStylesObserver?.disconnect()
+
+      const nextComponents = [
+        ...components.slice(0, insertAt),
+        ...cloned,
+        ...components.slice(insertAt + removeCount),
+      ]
+
+      this.pageBuilderStateStore.setComponents(nextComponents)
+      await nextTick()
+      await nextTick()
+
+      if (pageSettings && (pageSettings.classes || pageSettings.style)) {
+        this.applyPageSettingsToPage(pageSettings)
+      }
+      if (this.globalStylesObserver !== null) {
+        this.reconnectGlobalStylesObserver()
+      }
+
+      const first = cloned[0]
+      this.pageBuilderStateStore.setComponent(first ?? null)
+      this.pageBuilderStateStore.setElement(null)
+
+      await this.addListenersToEditableElements()
+
+      if (first?.id) {
+        const pageBuilderWrapper = document.querySelector('#page-builder-wrapper')
+        const targetSection = document.querySelector(
+          `section[data-componentid="${first.id}"]`,
+        ) as HTMLElement | null
+        if (pageBuilderWrapper instanceof HTMLElement && targetSection) {
+          scrollContainerToCenterElement(pageBuilderWrapper, targetSection)
+        } else if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }
+
+      await this.handleAutoSave()
+
+      return cloned.length
+    } catch (error) {
+      console.error('Error inserting formatted text as components:', error)
+      return 0
     }
   }
 

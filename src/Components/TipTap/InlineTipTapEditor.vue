@@ -26,10 +26,14 @@ import {
   getTipTapHeadingLevels,
   type TipTapHeadingLevel,
 } from '../../utils/builder/tiptap-heading-levels'
+import { handleFormattedTextPaste } from '../../utils/builder/tiptap-formatted-text-paste'
+import { formatAddedBlocksMessage } from '../../utils/builder/formatted-text-to-components'
+import { useToast } from '../../composables/useToast'
 
 const pageBuilderService = getPageBuilder()
 const pageBuilderStateStore = sharedPageBuilderStore
 const { translate } = useTranslations()
+const { showToast } = useToast()
 
 const headingLevels = computed(() =>
   getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
@@ -311,6 +315,38 @@ const teardownEditor = function (html?: string): boolean {
   return changed
 }
 
+/** Close TipTap without keeping pasted HTML, then insert Header/Text/List helpers. */
+const insertFormattedTextAsPageComponents = async function (source: string) {
+  const target = inlineElement.value
+  const restoreHtml = originalHTML.value
+  removeDocumentMouseDownListener()
+
+  if (editor.value && target) {
+    editor.value.destroy()
+    target.innerHTML = restoreHtml
+    restoreInlineTipTapHostElement(target)
+    pageBuilderStateStore.setTextAreaVueModel(restoreHtml)
+  }
+
+  editor.value = null
+  inlineElement.value = null
+  originalHTML.value = ''
+  showTypography.value = false
+
+  await pageBuilderService.finishInlineTipTapEditor(target, false)
+
+  const count = await pageBuilderService.insertFormattedTextAsComponents(source, {
+    replaceSelected: true,
+  })
+
+  if (!count) {
+    showToast(translate('No formatted blocks found'), 'error')
+    return
+  }
+
+  showToast(formatAddedBlocksMessage(translate, count), 'success')
+}
+
 const startEditor = async function () {
   const target = getElement.value
 
@@ -330,7 +366,8 @@ const startEditor = async function () {
     text: originalHTML.value,
   })
 
-  const tiptapEditor = new Editor({
+  let tiptapEditor: TiptapCoreEditor
+  tiptapEditor = new Editor({
     element: target,
     content: originalHTML.value,
     extensions: [
@@ -349,6 +386,19 @@ const startEditor = async function () {
       attributes: {
         class: 'pbx-inline-tiptap-editor',
         ...(rtl ? { dir: 'rtl' } : {}),
+      },
+      handlePaste: (_view, event) => {
+        return handleFormattedTextPaste(
+          tiptapEditor,
+          event,
+          pageBuilderStateStore.getPageBuilderConfig,
+          {
+            onCreateComponents: (source) => {
+              void insertFormattedTextAsPageComponents(source)
+              return true
+            },
+          },
+        )
       },
       handleDOMEvents: {
         mousedown: (_view, event) => {
