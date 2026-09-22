@@ -1007,39 +1007,35 @@
   }
 
   .pbx-pasteTextModal {
-    @apply pbx-flex pbx-flex-col pbx-gap-3;
+    @apply pbx-flex pbx-flex-col pbx-gap-4 pbx-px-2;
   }
 
-  .pbx-pasteTextMeta {
-    @apply pbx-flex pbx-min-h-[1.25rem] pbx-items-center pbx-justify-between;
+  .pbx-pasteTextField {
+    @apply pbx-overflow-hidden pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white focus-within:pbx-border-myPrimaryLinkColor focus-within:pbx-ring-1 focus-within:pbx-ring-myPrimaryLinkColor/25;
+  }
+
+  .pbx-pasteTextArea {
+    @apply pbx-m-0 pbx-block pbx-min-h-[13rem] pbx-w-full pbx-resize-y pbx-border-0 pbx-bg-transparent pbx-px-4 pbx-py-3.5 pbx-text-sm pbx-leading-relaxed pbx-text-myPrimaryDarkGrayColor pbx-outline-none pbx-shadow-none placeholder:pbx-text-gray-400 focus:pbx-outline-none focus:pbx-ring-0;
+  }
+
+  .pbx-pasteTextFooter {
+    @apply pbx-flex pbx-items-center pbx-justify-between pbx-gap-3 pbx-border-0 pbx-border-t pbx-border-solid pbx-border-gray-100 pbx-bg-gray-50/80 pbx-px-4 pbx-py-2.5 pbx-mt-2 pbx-rounded-full;
   }
 
   .pbx-pasteTextHint {
-    @apply pbx-m-0 pbx-text-xs pbx-text-gray-500;
+    @apply pbx-min-w-0 pbx-truncate pbx-text-xs pbx-text-gray-500;
   }
 
   .pbx-pasteTextCount {
-    @apply pbx-m-0 pbx-rounded-full pbx-bg-gray-100 pbx-px-2.5 pbx-py-0.5 pbx-text-[11px] pbx-font-medium pbx-text-gray-600;
+    @apply pbx-shrink-0 pbx-text-xs pbx-font-medium pbx-text-myPrimaryDarkGrayColor;
   }
 
-  .pbx-pasteTextList {
-    @apply pbx-m-0 pbx-flex pbx-max-h-[11rem] pbx-list-none pbx-flex-col pbx-gap-1.5 pbx-overflow-y-auto pbx-p-0;
+  .pbx-pasteTextReplace {
+    @apply pbx-flex pbx-cursor-pointer pbx-items-center pbx-justify-between pbx-gap-3 pbx-px-0.5;
   }
 
-  .pbx-pasteTextListItem {
-    @apply pbx-flex pbx-min-w-0 pbx-items-center pbx-gap-2.5 pbx-rounded-lg pbx-px-1 pbx-py-0.5;
-  }
-
-  .pbx-pasteTextListIndex {
-    @apply pbx-flex pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-items-center pbx-justify-center pbx-rounded-full pbx-bg-gray-100 pbx-text-[10px] pbx-font-medium pbx-text-gray-500;
-  }
-
-  .pbx-pasteTextListExcerpt {
-    @apply pbx-min-w-0 pbx-flex-1 pbx-truncate pbx-text-xs pbx-text-myPrimaryDarkGrayColor;
-  }
-
-  .pbx-pasteTextListMore {
-    @apply pbx-px-1 pbx-text-[11px] pbx-text-gray-500;
+  .pbx-pasteTextReplaceText {
+    @apply pbx-text-sm pbx-text-myPrimaryDarkGrayColor;
   }
 
   /*
