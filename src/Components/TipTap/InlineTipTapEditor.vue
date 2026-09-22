@@ -39,7 +39,7 @@ const headingLevels = computed(() =>
   getTipTapHeadingLevels(pageBuilderStateStore.getPageBuilderConfig),
 )
 
-const editor = ref<Editor | null>(null)
+const editor = ref<TiptapCoreEditor | null>(null)
 const inlineElement = ref<HTMLElement | null>(null)
 const originalHTML = ref('')
 const showTypography = ref(false)

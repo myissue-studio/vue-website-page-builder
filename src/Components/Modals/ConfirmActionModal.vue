@@ -125,7 +125,6 @@ const thirdButtonBuilder = function () {
             <span>
               {{ firstButtonText }}
             </span>
-       
           </button>
 
           <button
@@ -138,7 +137,7 @@ const thirdButtonBuilder = function () {
             <span>
               {{ secondButtonText }}
             </span>
-            <span class="material-symbols-outlined"> keyboard_return </span>
+            <span class="material-symbols-outlined"> arrow_back_2 </span>
           </button>
 
           <button
