@@ -1355,7 +1355,11 @@ onBeforeUnmount(() => {
     <div
       id="pagebuilder-navbar"
       class="lg:pbx-min-w-full lg:pbx-max-w-full lg:pbx-w-full pbx-min-w-[64rem] pbx-max-w-[64rem] pbx-w-[64rem] pbx-flex-1 pbx-flex pbx-items-center pbx-font-sans"
-      @click.self="async () => { await pageBuilderService.clearHtmlSelection() }"
+      @click.self="
+        async () => {
+          await pageBuilderService.clearHtmlSelection()
+        }
+      "
     >
       <template
         v-if="
@@ -1595,7 +1599,11 @@ onBeforeUnmount(() => {
       </Teleport>
 
       <div
-        @click.self="async () => { await pageBuilderService.clearHtmlSelection() }"
+        @click.self="
+          async () => {
+            await pageBuilderService.clearHtmlSelection()
+          }
+        "
         class="pbx-navbarGroup pbx-navbarGroup--end pbx-flex-1 pbx-flex gap-2 pbx-items-center pbx-justify-end"
       >
         <!-- Options # Start -->
@@ -1782,6 +1790,8 @@ onBeforeUnmount(() => {
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
+                  <LayersIcon></LayersIcon>
+
                   <span
                     class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
                   >
