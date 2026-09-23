@@ -7,6 +7,7 @@ import { version } from '../../../../package.json'
 import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
 import SelectedHtmlInspector from '../EditorMenu/Editables/SelectedHtmlInspector.vue'
+import HtmlActionButton from '../EditorMenu/Editables/HtmlActionButton.vue'
 import ConfirmActionModal from '../../Modals/ConfirmActionModal.vue'
 import {
   downloadStandaloneHtml,
@@ -962,53 +963,31 @@ function formatExpiry(expiresAt?: string | null): string {
             </div>
 
             <div class="pbx-flex pbx-flex-col pbx-gap-2">
-              <button
+              <HtmlActionButton
+                icon="content_copy"
+                :label="translate('Copy link')"
+                :hint="translate('Copy the preview URL')"
                 @click="handleCopyTemporaryPreview"
-                type="button"
-                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
-              >
-                <span>{{ translate('Copy link') }}</span>
-                <span
-                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
-                  aria-hidden="true"
-                >
-                  content_copy
-                </span>
-              </button>
-              <a
+              />
+              <HtmlActionButton
+                icon="open_in_new"
+                :label="translate('Open preview')"
+                :hint="translate('Open in a new tab')"
                 :href="temporaryPreview.canonicalUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full pbx-no-underline"
-              >
-                <span>{{ translate('Open preview') }}</span>
-                <span
-                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
-                  aria-hidden="true"
-                >
-                  arrow_outward
-                </span>
-              </a>
-              <button
-                @click="openRemoveTemporaryPreviewModal"
-                type="button"
-                class="pbx-mySecondaryButton pbx-w-full sm:pbx-w-full"
+              />
+              <HtmlActionButton
+                icon="delete_forever"
+                variant="danger"
+                :label="
+                  temporaryPreviewRemoving
+                    ? translate('Removing...')
+                    : translate('Remove preview')
+                "
+                :hint="translate('Delete this temporary link')"
+                :is-loading="temporaryPreviewRemoving"
                 :disabled="temporaryPreviewLoading || temporaryPreviewRemoving"
-              >
-                <span>
-                  {{
-                    temporaryPreviewRemoving
-                      ? translate('Removing...')
-                      : translate('Remove preview')
-                  }}
-                </span>
-                <span
-                  class="material-symbols-outlined pbx-text-base pbx-leading-none"
-                  aria-hidden="true"
-                >
-                  delete_forever
-                </span>
-              </button>
+                @click="openRemoveTemporaryPreviewModal"
+              />
             </div>
           </div>
           <p v-if="temporaryPreviewError" class="pbx-mt-3 pbx-text-xs pbx-text-red-700">

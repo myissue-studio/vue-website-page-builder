@@ -567,6 +567,7 @@
   "element": "عنصر",
   "Vertical": "عمودي",
   "All sides": "جميع الجوانب",
+  "Per side": "لكل جانب",
   "Horizontal": "أفقي",
   "Layout & order": "التخطيط والترتيب",
   "Element actions": "إجراءات العنصر",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "تعذّر نشر المعاينة المؤقتة",
   "Could not remove temporary preview": "تعذّر إزالة المعاينة المؤقتة",
   "Remove this temporary preview permanently?": "إزالة هذه المعاينة المؤقتة نهائيًا؟",
+  "Copy the preview URL": "نسخ رابط المعاينة",
+  "Open in a new tab": "فتح في تبويب جديد",
+  "Delete this temporary link": "حذف هذا الرابط المؤقت",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

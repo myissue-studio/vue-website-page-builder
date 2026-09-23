@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import BaseModal from '../../../Modals/BaseModal.vue'
+import SaveIcon from '../../../Icons/SaveIcon.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { copyTextWithToast } from '../../../../utils/builder/copy-to-clipboard'
 
@@ -110,8 +111,18 @@ async function copyHtml() {
         @click="$emit('save')"
       >
         {{ translate('Save') }}
-        <span v-if="!isLoading" class="material-symbols-outlined">save</span>
-        <span v-if="isLoading" class="material-symbols-outlined pbx-animate-spin">refresh</span>
+        <span
+          class="pbx-inline-flex pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-items-center pbx-justify-center"
+          aria-hidden="true"
+        >
+          <SaveIcon v-if="!isLoading" :size="20" />
+          <span
+            v-else
+            class="material-symbols-outlined pbx-animate-spin pbx-text-[20px] pbx-leading-none"
+          >
+            refresh
+          </span>
+        </span>
       </button>
     </template>
   </BaseModal>

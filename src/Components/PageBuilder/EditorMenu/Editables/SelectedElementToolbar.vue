@@ -12,6 +12,7 @@ import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
 import SliderIcon from '../../../Icons/SliderIcon.vue'
+import ShoppingIcon from '../../../Icons/ShoppingIcon.vue'
 import ProductSectionSettingsFields from './ProductSectionSettingsFields.vue'
 import type {
   ProductButtonStyle,
@@ -1269,7 +1270,7 @@ defineExpose({
             "
             :title="translate('Product section settings')"
           >
-            <span class="material-symbols-outlined">shopping_bag</span>
+            <ShoppingIcon />
           </div>
         </template>
 

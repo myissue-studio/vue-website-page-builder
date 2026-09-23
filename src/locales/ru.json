@@ -567,6 +567,7 @@
   "element": "элемент",
   "Vertical": "Вертикаль",
   "All sides": "Все стороны",
+  "Per side": "По сторонам",
   "Horizontal": "Горизонталь",
   "Layout & order": "Макет и порядок",
   "Element actions": "Действия с элементом",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "Не удалось опубликовать временный предпросмотр",
   "Could not remove temporary preview": "Не удалось удалить временный предпросмотр",
   "Remove this temporary preview permanently?": "Удалить этот временный предпросмотр навсегда?",
+  "Copy the preview URL": "Скопировать URL предпросмотра",
+  "Open in a new tab": "Открыть в новой вкладке",
+  "Delete this temporary link": "Удалить эту временную ссылку",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

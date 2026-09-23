@@ -567,6 +567,7 @@
   "element": "element",
   "Vertical": "Lodret",
   "All sides": "Alle sider",
+  "Per side": "Pr. side",
   "Horizontal": "Vandret",
   "Layout & order": "Layout og rækkefølge",
   "Element actions": "Elementhandlinger",
@@ -717,5 +718,8 @@
   "Expires": "Udløber",
   "Could not publish temporary preview": "Kunne ikke publicere midlertidig forhåndsvisning",
   "Could not remove temporary preview": "Kunne ikke fjerne midlertidig forhåndsvisning",
-  "Remove this temporary preview permanently?": "Fjern denne midlertidige forhåndsvisning permanent?"
+  "Remove this temporary preview permanently?": "Fjern denne midlertidige forhåndsvisning permanent?",
+  "Copy the preview URL": "Kopiér forhåndsvisnings-URL",
+  "Open in a new tab": "Åbn i en ny fane",
+  "Delete this temporary link": "Slet dette midlertidige link"
 }

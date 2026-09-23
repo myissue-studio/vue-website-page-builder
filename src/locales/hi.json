@@ -567,6 +567,7 @@
   "element": "तत्व",
   "Vertical": "ऊर्ध्वाधर",
   "All sides": "सभी तरफ",
+  "Per side": "प्रति भुजा",
   "Horizontal": "क्षैतिज",
   "Layout & order": "लेआउट और क्रम",
   "Element actions": "तत्व क्रियाएँ",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "अस्थायी प्रीव्यू प्रकाशित नहीं हो सका",
   "Could not remove temporary preview": "अस्थायी प्रीव्यू हटाया नहीं जा सका",
   "Remove this temporary preview permanently?": "क्या इस अस्थायी प्रीव्यू को स्थायी रूप से हटाना है?",
+  "Copy the preview URL": "प्रीव्यू URL कॉपी करें",
+  "Open in a new tab": "नए टैब में खोलें",
+  "Delete this temporary link": "यह अस्थायी लिंक हटाएँ",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

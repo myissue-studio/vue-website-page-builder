@@ -1375,7 +1375,7 @@ onBeforeUnmount(() => {
               await pageBuilderService.clearHtmlSelection()
             }
           "
-          class="pbx-navbarGroup pbx-flex pbx-justify-start pbx-py-1 lg:pbx-ml-4 pbx-ml-2"
+          class="pbx-navbarGroup pbx-flex pbx-justify-start pbx-items-center pbx-py-1 lg:pbx-ml-2 pbx-ml-1"
         >
           <img class="pbx-h-4" :src="getPageBuilderConfig.pageBuilderLogo.src" alt="Logo" />
         </div>
@@ -1517,7 +1517,7 @@ onBeforeUnmount(() => {
             <span
               class="pbx-h-8 pbx-w-8 pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center"
             >
-              <span class="material-symbols-outlined"> <ShoppingIcon /> </span>
+              <ShoppingIcon />
             </span>
             <span class="lg:pbx-block pbx-hidden">
               {{ translate('Products') }}
@@ -1706,7 +1706,7 @@ onBeforeUnmount(() => {
           <div class="pbx-flex-1 pbx-ml-2 pbx-mr-2">
             <button
               type="button"
-              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square hover:pbx-bg-myPrimaryLinkColor hover:pbx-text-white hover:pbx-fill-white focus-visible:pbx-ring-0"
+              class="pbx-h-8 pbx-w-8 pbx-flex-end pbx-cursor-pointer pbx-rounded-lg pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-transparent pbx-aspect-square pbx-text-myPrimaryDarkGrayColor hover:pbx-bg-black/[0.06] focus-visible:pbx-ring-0"
               :aria-label="translate('Close Page Builder')"
               @click="
                 async () => {
@@ -1805,7 +1805,7 @@ onBeforeUnmount(() => {
                 class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
-                  <span class="material-symbols-outlined">shopping_bag</span>
+                  <ShoppingIcon />
                   <span
                     class="pbx-font-medium pbx-break-words lg:pbx-text-lg md:pbx-text-lg pbx-text-base pbx-font-sans"
                   >
@@ -1841,7 +1841,7 @@ onBeforeUnmount(() => {
                   class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                 >
                   <div class="pbx-flex pbx-items-center">
-                    <span class="material-symbols-outlined"> shopping_bag </span>
+                    <ShoppingIcon />
                     <span v-if="false" class="lg:pbx-block pbx-hidden">
                       {{ translate('Products') }}</span
                     >
@@ -1886,7 +1886,7 @@ onBeforeUnmount(() => {
                     class="pbx-select-none pbx-addsection-btn pbx-font-sans pbx-rounded-l-none pbx-bg-gray-100 pbx-text-gray-600 pbx-z-50 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer pbx-border-l pbx-border-gray-200"
                   >
                     <div class="pbx-flex pbx-items-center">
-                      <span class="material-symbols-outlined"> shopping_bag </span>
+                      <ShoppingIcon />
                       <span v-if="false" class="lg:pbx-block pbx-hidden">
                         {{ translate('Products') }}</span
                       >
