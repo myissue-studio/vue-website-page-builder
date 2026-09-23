@@ -117,10 +117,18 @@ function innerAllowedHtml(element: HTMLElement): string {
   return Array.from(element.childNodes).map(serializeAllowedInline).join('').trim()
 }
 
-function looksLikeHeadingLine(line: string, nextNonEmpty?: string): boolean {
-  const trimmed = line.trim()
+function isShortLineCandidate(line: string): boolean {
+  if (parseAtxHeading(line) || isListLine(line)) return false
+  const trimmed = plainTextForHeuristics(line)
   if (!trimmed || trimmed.length > 90) return false
   if (/[.!?,:]$/.test(trimmed)) return false
+  if (trimmed.split(/\s+/).length > 12) return false
+  return true
+}
+
+function looksLikeHeadingLine(line: string, nextNonEmpty?: string): boolean {
+  if (!isShortLineCandidate(line)) return false
+  const trimmed = plainTextForHeuristics(line)
   // Keep conversational list lead-ins as paragraphs ("You should", "We need").
   // Real section titles before bullets (e.g. "Requirements") stay headings.
   if (
@@ -130,7 +138,6 @@ function looksLikeHeadingLine(line: string, nextNonEmpty?: string): boolean {
   ) {
     return false
   }
-  if (trimmed.split(/\s+/).length > 12) return false
   return true
 }
 
@@ -140,6 +147,28 @@ function isListLine(line: string): boolean {
 
 function stripListPrefix(line: string): string {
   return line.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').trim()
+}
+
+/** True when a short line should stay a list item, not become an H2. */
+function isPlainListItemLine(
+  line: string,
+  nextNonEmpty: string | undefined,
+  prevNonEmpty: string | undefined,
+): boolean {
+  if (!isShortLineCandidate(line) || isListLine(line) || parseAtxHeading(line)) return false
+  // Lead-in ending with ":" → following short lines are bullets (markers often lost on paste).
+  if (prevNonEmpty && /:\s*$/.test(prevNonEmpty.trim())) return true
+  // Runs of short lines (lost bullets from web/Word) are lists, not a stack of H2s.
+  if (nextNonEmpty && isShortLineCandidate(nextNonEmpty) && !isListLine(nextNonEmpty)) return true
+  if (
+    prevNonEmpty &&
+    isShortLineCandidate(prevNonEmpty) &&
+    !isListLine(prevNonEmpty) &&
+    !parseAtxHeading(prevNonEmpty)
+  ) {
+    return true
+  }
+  return false
 }
 
 function mergeAdjacentParagraphs(blocks: FormattedTextBlock[]): FormattedTextBlock[] {
@@ -180,7 +209,20 @@ function collectHtmlBlocks(root: ParentNode): FormattedTextBlock[] {
     }
     if (tag === 'P') {
       const html = innerAllowedHtml(child)
-      if (html) blocks.push({ kind: 'paragraphs', html: `<p>${html}</p>` })
+      if (!html) return
+      // Short bold-only paragraphs (common on job boards) → heading.
+      const boldOnly = /^<(strong|b)>([\s\S]+)<\/\1>$/i.exec(html)
+      const boldText = boldOnly?.[2]?.replace(/<[^>]+>/g, '').trim() ?? ''
+      if (boldOnly && boldText && looksLikeHeadingLine(boldText)) {
+        const level = 2 as FormattedTextHeadingLevel
+        blocks.push({
+          kind: 'heading',
+          level,
+          html: `<h${level}>${boldOnly[2]}</h${level}>`,
+        })
+        return
+      }
+      blocks.push({ kind: 'paragraphs', html: `<p>${html}</p>` })
       return
     }
     if (tag === 'UL' || tag === 'OL') {
@@ -200,7 +242,11 @@ function collectHtmlBlocks(root: ParentNode): FormattedTextBlock[] {
   return mergeAdjacentParagraphs(blocks)
 }
 
-function lineToBlock(line: string, nextNonEmpty?: string): FormattedTextBlock {
+function lineToBlock(
+  line: string,
+  nextNonEmpty?: string,
+  prevNonEmpty?: string,
+): FormattedTextBlock {
   const atx = parseAtxHeading(line)
   if (atx) return atx
 
@@ -212,7 +258,15 @@ function lineToBlock(line: string, nextNonEmpty?: string): FormattedTextBlock {
     }
   }
 
-  if (looksLikeHeadingLine(plainTextForHeuristics(line), nextNonEmpty)) {
+  if (isPlainListItemLine(line, nextNonEmpty, prevNonEmpty)) {
+    return {
+      kind: 'list',
+      ordered: false,
+      items: [inlineMarkdownToHtml(unwrapWholeLineMarkdown(line))],
+    }
+  }
+
+  if (looksLikeHeadingLine(line, nextNonEmpty)) {
     return {
       kind: 'heading',
       level: 2,
@@ -231,6 +285,14 @@ function nextNonEmptyLine(lines: string[], index: number): string | undefined {
   return undefined
 }
 
+function prevNonEmptyLine(lines: string[], index: number): string | undefined {
+  for (let i = index - 1; i >= 0; i--) {
+    const prev = lines[i].trim()
+    if (prev) return prev
+  }
+  return undefined
+}
+
 function parsePlainText(input: string): FormattedTextBlock[] {
   const lines = input.replace(/\r\n/g, '\n').split('\n')
   const blocks: FormattedTextBlock[] = []
@@ -243,7 +305,11 @@ function parsePlainText(input: string): FormattedTextBlock[] {
       continue
     }
 
-    const block = lineToBlock(line, nextNonEmptyLine(lines, index))
+    const block = lineToBlock(
+      line,
+      nextNonEmptyLine(lines, index),
+      prevNonEmptyLine(lines, index),
+    )
     const prev = blocks[blocks.length - 1]
     if (
       block.kind === 'list' &&

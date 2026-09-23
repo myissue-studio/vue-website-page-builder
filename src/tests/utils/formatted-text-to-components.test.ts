@@ -150,6 +150,99 @@ Experience with Google Ads.`)
     expect(blocks[1]).toMatchObject({ kind: 'list', ordered: false })
     expect(blocks[2]).toMatchObject({ kind: 'heading', level: 2 })
   })
+
+  it('keeps website job-ad HTML lists (ul/li) instead of turning items into H2', () => {
+    const html = `<div id="job-description-container">
+      <h2>Description</h2>
+      <p>We are looking for a Paid Media Executive.</p>
+      <p><strong>About The Role</strong></p>
+      <ul>
+        <li>Manage and execute Instagram content calendars.</li>
+        <li>Lead monthly content calendar briefings and execution with Brand teams to align on:</li>
+        <li>New launch focuses</li>
+        <li>Hero products</li>
+        <li>Offers &amp; retail moments</li>
+        <li>Collaborations (including influencer and media partnerships)</li>
+        <li>Define key content pillars for upcoming launches.</li>
+      </ul>
+      <h2>Qualifications</h2>
+      <p><strong role="heading" aria-level="3">What We Are Looking For:</strong></p>
+      <ul type="disc">
+        <li>Fluency in Arabic (spoken &amp; written)</li>
+        <li>Degree (or equivalent) in Marketing, Media, Communications, or Digital</li>
+        <li>Hands-on, detail-driven, highly organized, and collaborative</li>
+      </ul>
+    </div>`
+
+    const blocks = parseFormattedText(html)
+    expect(blocks.map((block) => block.kind)).toEqual([
+      'heading',
+      'paragraphs',
+      'heading',
+      'list',
+      'heading',
+      'paragraphs',
+      'list',
+    ])
+    expect(blocks[0]).toMatchObject({ kind: 'heading', level: 2 })
+    expect(blocks[2]).toMatchObject({ kind: 'heading', level: 2 })
+    expect(blocks[2].kind === 'heading' && blocks[2].html).toContain('About The Role')
+    expect(blocks[3]).toMatchObject({ kind: 'list', ordered: false })
+    expect(blocks[3].kind === 'list' && blocks[3].items).toEqual([
+      'Manage and execute Instagram content calendars.',
+      'Lead monthly content calendar briefings and execution with Brand teams to align on:',
+      'New launch focuses',
+      'Hero products',
+      'Offers &amp; retail moments',
+      'Collaborations (including influencer and media partnerships)',
+      'Define key content pillars for upcoming launches.',
+    ])
+    expect(blocks[5].kind === 'paragraphs' && blocks[5].html).toContain('What We Are Looking For:')
+    expect(blocks[6].kind === 'list' && blocks[6].items).toHaveLength(3)
+    expect(blocks[6].kind === 'list' && blocks[6].items[0]).toContain('Fluency in Arabic')
+  })
+
+  it('treats lost-bullet short lines after a colon lead-in as a list (plain paste)', () => {
+    const blocks = parseFormattedText(`About The Role
+
+Manage and execute Instagram content calendars across multiple brands including MAC Cosmetics.
+Lead monthly content calendar briefings and execution with Brand teams to align on:
+New launch focuses
+Hero products
+Offers & retail moments
+Collaborations (including influencer and media partnerships)
+Define key content pillars for upcoming launches and translate them into social-first executions.
+
+Qualifications
+
+What We Are Looking For:
+
+Fluency in Arabic (spoken & written)
+Degree (or equivalent) in Marketing, Media, Communications, or Digital
+Hands-on, detail-driven, highly organized, and collaborative`)
+
+    expect(blocks.map((block) => block.kind)).toEqual([
+      'heading',
+      'paragraphs',
+      'list',
+      'paragraphs',
+      'heading',
+      'paragraphs',
+      'list',
+    ])
+    expect(blocks[0].kind === 'heading' && blocks[0].html).toContain('About The Role')
+    expect(blocks[2].kind === 'list' && blocks[2].items).toEqual([
+      'New launch focuses',
+      'Hero products',
+      'Offers &amp; retail moments',
+      'Collaborations (including influencer and media partnerships)',
+    ])
+    expect(blocks[6].kind === 'list' && blocks[6].items).toEqual([
+      'Fluency in Arabic (spoken &amp; written)',
+      'Degree (or equivalent) in Marketing, Media, Communications, or Digital',
+      'Hands-on, detail-driven, highly organized, and collaborative',
+    ])
+  })
 })
 
 describe('formattedTextToTipTapHtml', () => {
