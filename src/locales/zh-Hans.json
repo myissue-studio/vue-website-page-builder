@@ -567,6 +567,7 @@
   "element": "元素",
   "Vertical": "垂直",
   "All sides": "全部边",
+  "Per side": "各边",
   "Horizontal": "水平",
   "Layout & order": "布局与顺序",
   "Element actions": "元素操作",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "无法发布临时预览",
   "Could not remove temporary preview": "无法移除临时预览",
   "Remove this temporary preview permanently?": "要永久移除此临时预览吗？",
+  "Copy the preview URL": "复制预览链接",
+  "Open in a new tab": "在新标签页打开",
+  "Delete this temporary link": "删除此临时链接",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

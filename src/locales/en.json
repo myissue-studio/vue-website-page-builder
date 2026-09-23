@@ -567,6 +567,7 @@
   "element": "element",
   "Vertical": "Vertical",
   "All sides": "All sides",
+  "Per side": "Per side",
   "Horizontal": "Horizontal",
   "Layout & order": "Layout & order",
   "Element actions": "Element actions",
@@ -717,5 +718,8 @@
   "Expires": "Expires",
   "Could not publish temporary preview": "Could not publish temporary preview",
   "Could not remove temporary preview": "Could not remove temporary preview",
-  "Remove this temporary preview permanently?": "Remove this temporary preview permanently?"
+  "Remove this temporary preview permanently?": "Remove this temporary preview permanently?",
+  "Copy the preview URL": "Copy the preview URL",
+  "Open in a new tab": "Open in a new tab",
+  "Delete this temporary link": "Delete this temporary link"
 }

@@ -43,10 +43,10 @@ const canRedo = computed(() => historyIndex.value < historyLength.value - 1)
 const selectedHistoryValue = computed(() => String(historyIndex.value))
 const historyButtonClass = computed(() =>
   [
-    'pbx-history-trigger pbx-h-8 pbx-min-w-8 pbx-px-2.5 pbx-rounded-full pbx-flex pbx-items-center pbx-justify-center pbx-gap-0.5 pbx-border pbx-border-gray-200 pbx-bg-white pbx-text-gray-700 focus-visible:pbx-ring-0',
+    'pbx-history-trigger pbx-h-8 pbx-min-w-8 pbx-px-2.5 pbx-rounded-lg pbx-flex pbx-items-center pbx-justify-center pbx-gap-0.5 pbx-border-none pbx-bg-transparent pbx-text-myPrimaryDarkGrayColor focus-visible:pbx-ring-0',
     historyLength.value >= 1
-      ? 'pbx-cursor-pointer hover:pbx-bg-gray-50'
-      : 'pbx-cursor-default pbx-bg-gray-50 pbx-opacity-70',
+      ? 'pbx-cursor-pointer hover:pbx-bg-black/[0.06]'
+      : 'pbx-cursor-default pbx-opacity-40',
   ].join(' '),
 )
 
@@ -112,7 +112,7 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
 <template>
   <GlobalLoader v-if="getIsLoadingGlobal"></GlobalLoader>
   <div
-    class="pbx-navbarGroup pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-2 pbx-w-full pbx-gap-1"
+    class="pbx-navbarGroup pbx-flex-1 pbx-flex pbx-justify-center pbx-items-center pbx-py-1 pbx-w-full pbx-gap-1"
   >
     <button
       type="button"
@@ -120,11 +120,11 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
       :aria-label="translate('Undo')"
       :title="translate('Undo')"
       @click="handleUndo"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-lg pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-transparent pbx-aspect-square pbx-text-myPrimaryDarkGrayColor focus-visible:pbx-ring-0"
       :class="[
         canUndo
-          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'
-          : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
+          ? 'pbx-cursor-pointer hover:pbx-bg-black/[0.06]'
+          : 'pbx-cursor-not-allowed pbx-opacity-30',
       ]"
     >
       <span class="material-symbols-outlined" aria-hidden="true"> undo </span>
@@ -201,11 +201,11 @@ defineExpose({ handleUndo, handleRedo, canUndo, canRedo, handleHistorySelect })
       :aria-label="translate('Redo')"
       :title="translate('Redo')"
       @click="handleRedo"
-      class="pbx-h-8 pbx-w-8 pbx-rounded-full pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-gray-50 pbx-aspect-square pbx-text-black hover:pbx-text-white"
+      class="pbx-h-8 pbx-w-8 pbx-rounded-lg pbx-flex pbx-items-center pbx-border-none pbx-justify-center pbx-bg-transparent pbx-aspect-square pbx-text-myPrimaryDarkGrayColor focus-visible:pbx-ring-0"
       :class="[
         canRedo
-          ? 'pbx-cursor-pointer hover:pbx-bg-myPrimaryLinkColor focus-visible:pbx-ring-0'
-          : 'pbx-cursor-not-allowed pbx-bg-opacity-20 hover:pbx-bg-gray-200',
+          ? 'pbx-cursor-pointer hover:pbx-bg-black/[0.06]'
+          : 'pbx-cursor-not-allowed pbx-opacity-30',
       ]"
     >
       <span class="material-symbols-outlined" aria-hidden="true"> redo </span>

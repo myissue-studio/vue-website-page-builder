@@ -567,6 +567,7 @@
   "element": "Element",
   "Vertical": "Vertikal",
   "All sides": "Alle Seiten",
+  "Per side": "Pro Seite",
   "Horizontal": "Horizontal",
   "Layout & order": "Layout & Reihenfolge",
   "Element actions": "Elementaktionen",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "Temporäre Vorschau konnte nicht veröffentlicht werden",
   "Could not remove temporary preview": "Temporäre Vorschau konnte nicht entfernt werden",
   "Remove this temporary preview permanently?": "Diese temporäre Vorschau dauerhaft entfernen?",
+  "Copy the preview URL": "Vorschau-URL kopieren",
+  "Open in a new tab": "In neuem Tab öffnen",
+  "Delete this temporary link": "Diesen temporären Link löschen",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

@@ -567,6 +567,7 @@
   "element": "要素",
   "Vertical": "縦",
   "All sides": "全辺",
+  "Per side": "辺ごと",
   "Horizontal": "横",
   "Layout & order": "レイアウトと順序",
   "Element actions": "要素のアクション",
@@ -718,6 +719,9 @@
   "Could not publish temporary preview": "一時プレビューを公開できませんでした",
   "Could not remove temporary preview": "一時プレビューを削除できませんでした",
   "Remove this temporary preview permanently?": "この一時プレビューを完全に削除しますか？",
+  "Copy the preview URL": "プレビューURLをコピー",
+  "Open in a new tab": "新しいタブで開く",
+  "Delete this temporary link": "この一時リンクを削除",
   "Unsaved changes": "Unsaved changes",
   "Saving...": "Saving..."
 }

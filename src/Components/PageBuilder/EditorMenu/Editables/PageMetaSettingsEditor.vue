@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import EditorAccordion from '../EditorAccordion.vue'
+import SaveIcon from '../../../Icons/SaveIcon.vue'
 import { getPageBuilder } from '../../../../composables/usePageBuilder'
 import { useTranslations } from '../../../../composables/useTranslations'
 import { useToast } from '../../../../composables/useToast'
@@ -83,8 +84,13 @@ const saveMeta = async () => {
         @click="saveMeta"
       >
         {{ translate('Save') }}
-        <span v-if="!isSaving" class="material-symbols-outlined">save</span>
-        <span v-if="isSaving" class="material-symbols-outlined pbx-animate-spin">refresh</span>
+        <span
+          class="pbx-inline-flex pbx-h-5 pbx-w-5 pbx-shrink-0 pbx-items-center pbx-justify-center"
+          aria-hidden="true"
+        >
+          <SaveIcon v-if="!isSaving" :size="20" />
+          <span v-else class="material-symbols-outlined pbx-animate-spin"> refresh </span>
+        </span>
       </button>
     </template>
   </EditorAccordion>

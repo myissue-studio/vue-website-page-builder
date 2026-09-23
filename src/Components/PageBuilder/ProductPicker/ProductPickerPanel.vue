@@ -15,6 +15,7 @@ import { useTranslations } from '../../../composables/useTranslations'
 import { useToast } from '../../../composables/useToast'
 import ProductSectionSettingsFields from '../EditorMenu/Editables/ProductSectionSettingsFields.vue'
 import MediaLibraryModal from '../../Modals/MediaLibraryModal.vue'
+import ShoppingIcon from '../../Icons/ShoppingIcon.vue'
 import {
   PRODUCT_CARD_DESIGN_OPTIONS,
   PRODUCT_CARD_STYLE_OPTIONS,
@@ -422,8 +423,8 @@ async function insertSelectedProducts() {
         class="pbx-productSampleCatalogBanner pbx-flex pbx-items-center"
         role="status"
       >
-        <span class="pbx-productSampleCatalogBannerIcon">
-          <span class="material-symbols-outlined" aria-hidden="true"> shopping_bag </span>
+        <span class="pbx-productSampleCatalogBannerIcon" aria-hidden="true">
+          <ShoppingIcon :size="20" />
         </span>
         <div class="pbx-productSampleCatalogBannerCopy">
           <p class="pbx-productSampleCatalogBannerTitle">{{ translate('Sample catalog') }}</p>

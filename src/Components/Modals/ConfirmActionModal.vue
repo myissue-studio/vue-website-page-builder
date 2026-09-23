@@ -137,7 +137,7 @@ const thirdButtonBuilder = function () {
             <span>
               {{ secondButtonText }}
             </span>
-            <span class="material-symbols-outlined"> arrow_back_2 </span>
+            <span v-if="false" class="material-symbols-outlined"> arrow_back_2 </span>
           </button>
 
           <button

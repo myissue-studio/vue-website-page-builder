@@ -22,8 +22,7 @@ const formattedTextInput = ref('')
 const isInserting = ref(false)
 const replaceExistingContent = ref(false)
 
-const formattedTextPreview = computed(() => previewFormattedTextItems(formattedTextInput.value))
-const previewCount = computed(() => formattedTextPreview.value.length)
+const previewCount = computed(() => previewFormattedTextItems(formattedTextInput.value).length)
 const willReplacePage = computed(
   () => Boolean(props.showReplaceToggle) && replaceExistingContent.value,
 )
@@ -76,55 +75,36 @@ async function insertFormattedText(): Promise<void> {
     @firstModalButtonFunctionDynamicModalBuilder="closeModal"
     @thirdModalButtonFunctionDynamicModalBuilder="insertFormattedText"
   >
-    <div class="pbx-pasteTextModal pbx-px-2">
-      <div v-if="showReplaceToggle" class="pbx-productSettingsToggleRow">
-        <div class="pbx-flex pbx-flex-col pbx-gap-0.5">
-          <p class="pbx-m-0 pbx-text-sm pbx-font-medium pbx-text-myPrimaryDarkGrayColor">
-            {{ translate('Replace existing content') }}
-          </p>
-          <p class="pbx-m-0 pbx-text-xs pbx-text-gray-500">
-            {{ translate('Remove current page blocks before inserting') }}
-          </p>
+    <div class="pbx-pasteTextModal">
+      <div>
+        <label class="pbx-sr-only" for="pbx-paste-text-input">
+          {{ translate('Paste your job post or article here') }}
+        </label>
+        <textarea
+          id="pbx-paste-text-input"
+          v-model="formattedTextInput"
+          class="pbx-myPrimaryTextArea pbx-min-h-96"
+          :placeholder="translate('Paste your job post or article here')"
+          @keydown.meta.enter.prevent="insertFormattedText"
+          @keydown.ctrl.enter.prevent="insertFormattedText"
+        />
+        <div class="pbx-pasteTextFooter" aria-live="polite">
+          <span class="pbx-pasteTextHint">
+            {{ translate('Paste from Word, Docs, ChatGPT, or a webpage') }}
+          </span>
+          <span v-if="previewCount" class="pbx-pasteTextCount">
+            {{ previewCount }}
+            {{ translate(previewCount === 1 ? 'block' : 'blocks') }}
+          </span>
         </div>
+      </div>
+
+      <label v-if="showReplaceToggle" class="pbx-pasteTextReplace">
+        <span class="pbx-pasteTextReplaceText">
+          {{ translate('Replace existing content') }}
+        </span>
         <ToggleInput v-model="replaceExistingContent" />
-      </div>
-
-      <label class="pbx-sr-only" for="pbx-paste-text-input">
-        {{ translate('Paste your job post or article here') }}
       </label>
-      <textarea
-        id="pbx-paste-text-input"
-        v-model="formattedTextInput"
-        class="pbx-myPrimaryTextArea pbx-min-h-[14rem]"
-        :placeholder="translate('Paste your job post or article here')"
-        @keydown.meta.enter.prevent="insertFormattedText"
-        @keydown.ctrl.enter.prevent="insertFormattedText"
-      />
-
-      <div class="pbx-pasteTextMeta" aria-live="polite">
-        <p v-if="!previewCount" class="pbx-pasteTextHint">
-          {{ translate('Paste from Word, Docs, ChatGPT, or a webpage') }}
-        </p>
-        <p v-else class="pbx-pasteTextCount">
-          {{ previewCount }}
-          {{ translate(previewCount === 1 ? 'block' : 'blocks') }}
-        </p>
-      </div>
-
-      <ul v-if="previewCount" class="pbx-pasteTextList">
-        <li
-          v-for="(item, index) in formattedTextPreview.slice(0, 6)"
-          :key="`${item.title}-${index}`"
-          class="pbx-pasteTextListItem"
-        >
-          <span class="pbx-pasteTextListIndex">{{ index + 1 }}</span>
-          <span class="pbx-pasteTextListExcerpt">{{ item.excerpt || translate(item.title) }}</span>
-        </li>
-        <li v-if="previewCount > 6" class="pbx-pasteTextListMore">
-          +{{ previewCount - 6 }}
-          {{ translate('blocks') }}
-        </li>
-      </ul>
     </div>
   </ConfirmActionModal>
 </template>

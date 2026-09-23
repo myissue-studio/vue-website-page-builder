@@ -187,93 +187,81 @@ function stepLeft(dir: 1 | -1) {
   <EditorAccordion>
     <template #title>{{ translate(isPadding ? 'Padding' : 'Margin') }}</template>
     <template #content>
-      <p class="pbx-editorSectionTitle">
-        {{ translate('All sides') }}
-      </p>
-      <p class="pbx-editorSectionDesc">
-        {{ translate('Applies across all screen sizes') }}
-      </p>
-
-      <!-- Shorthand rows -->
-      <div
-        class="pbx-mb-4 pbx-space-y-2 pbx-rounded-xl pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3"
-      >
-        <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-3">
-          <span class="pbx-text-xs pbx-font-medium pbx-text-gray-500">{{
-            translate('Vertical')
-          }}</span>
-          <SpacingStepper
-            :value="displayVal(vertical)"
-            @decrement="stepVertical(-1)"
-            @increment="stepVertical(1)"
-          />
+      <div class="pbx-spacingPanel">
+        <div class="pbx-spacingHeader">
+          <p class="pbx-spacingTitle">{{ translate('All sides') }}</p>
+          <p class="pbx-spacingHint">{{ translate('Applies across all screen sizes') }}</p>
         </div>
-        <div class="pbx-h-px pbx-bg-gray-100"></div>
-        <div class="pbx-flex pbx-items-center pbx-justify-between pbx-gap-3">
-          <span class="pbx-text-xs pbx-font-medium pbx-text-gray-500">{{
-            translate('Horizontal')
-          }}</span>
-          <SpacingStepper
-            :value="displayVal(horizontal)"
-            @decrement="stepHorizontal(-1)"
-            @increment="stepHorizontal(1)"
-          />
-        </div>
-      </div>
 
-      <hr />
-      <div class="pbx-editorSectionTitle">
-        {{ translate(isPadding ? 'Padding' : 'Margin') }}
-      </div>
-
-      <div
-        class="pbx-rounded-lg pbx-border pbx-border-solid pbx-border-gray-200 pbx-bg-white pbx-p-3"
-      >
-        <div
-          class="pbx-grid pbx-items-center pbx-justify-items-center pbx-gap-y-2"
-          style="grid-template-columns: 4.75rem minmax(4.75rem, 1fr) 4.75rem"
-        >
-          <div></div>
-          <SpacingStepper
-            :value="effectiveTop()"
-            :side-label="translate('top')"
-            @decrement="stepTop(-1)"
-            @increment="stepTop(1)"
-          />
-          <div></div>
-
-          <SpacingStepper
-            :value="effectiveLeft()"
-            :side-label="translate('left')"
-            compact
-            @decrement="stepLeft(-1)"
-            @increment="stepLeft(1)"
-          />
-
-          <div
-            class="pbx-flex pbx-h-14 pbx-w-20 pbx-items-center pbx-justify-center pbx-rounded-md pbx-border pbx-border-solid pbx-border-gray-300 pbx-bg-gray-50"
-          >
-            <span class="pbx-select-none pbx-text-[10px] pbx-font-medium pbx-uppercase pbx-text-gray-500">
-              {{ translate('element') }}
-            </span>
+        <div class="pbx-spacingGroup">
+          <div class="pbx-spacingRow">
+            <span class="pbx-spacingLabel">{{ translate('Vertical') }}</span>
+            <SpacingStepper
+              :value="displayVal(vertical)"
+              @decrement="stepVertical(-1)"
+              @increment="stepVertical(1)"
+            />
           </div>
+          <div class="pbx-spacingRow">
+            <span class="pbx-spacingLabel">{{ translate('Horizontal') }}</span>
+            <SpacingStepper
+              :value="displayVal(horizontal)"
+              @decrement="stepHorizontal(-1)"
+              @increment="stepHorizontal(1)"
+            />
+          </div>
+        </div>
 
-          <SpacingStepper
-            :value="effectiveRight()"
-            :side-label="translate('right')"
-            compact
-            @decrement="stepRight(-1)"
-            @increment="stepRight(1)"
-          />
+        <div class="pbx-spacingHeader pbx-spacingHeader--spaced">
+          <p class="pbx-spacingTitle">{{ translate('Per side') }}</p>
+        </div>
 
-          <div></div>
-          <SpacingStepper
-            :value="effectiveBottom()"
-            :side-label="translate('bottom')"
-            @decrement="stepBottom(-1)"
-            @increment="stepBottom(1)"
-          />
-          <div></div>
+        <div class="pbx-spacingBox">
+          <div class="pbx-spacingBoxGrid">
+            <div class="pbx-spacingBoxCell pbx-spacingBoxCell--empty"></div>
+            <div class="pbx-spacingBoxCell">
+              <SpacingStepper
+                :value="effectiveTop()"
+                :side-label="translate('top')"
+                @decrement="stepTop(-1)"
+                @increment="stepTop(1)"
+              />
+            </div>
+            <div class="pbx-spacingBoxCell pbx-spacingBoxCell--empty"></div>
+
+            <div class="pbx-spacingBoxCell">
+              <SpacingStepper
+                :value="effectiveLeft()"
+                compact
+                @decrement="stepLeft(-1)"
+                @increment="stepLeft(1)"
+              />
+            </div>
+            <div class="pbx-spacingBoxCell">
+              <div class="pbx-spacingBoxCenter">
+                <span>{{ translate('element') }}</span>
+              </div>
+            </div>
+            <div class="pbx-spacingBoxCell">
+              <SpacingStepper
+                :value="effectiveRight()"
+                compact
+                @decrement="stepRight(-1)"
+                @increment="stepRight(1)"
+              />
+            </div>
+
+            <div class="pbx-spacingBoxCell pbx-spacingBoxCell--empty"></div>
+            <div class="pbx-spacingBoxCell">
+              <SpacingStepper
+                :value="effectiveBottom()"
+                :side-label="translate('bottom')"
+                @decrement="stepBottom(-1)"
+                @increment="stepBottom(1)"
+              />
+            </div>
+            <div class="pbx-spacingBoxCell pbx-spacingBoxCell--empty"></div>
+          </div>
         </div>
       </div>
     </template>
