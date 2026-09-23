@@ -3,7 +3,10 @@ import { computed, nextTick, ref, watch } from 'vue'
 import ConfirmActionModal from '../../../Modals/ConfirmActionModal.vue'
 import ToggleInput from '../../../Inputs/ToggleInput.vue'
 import { useTranslations } from '../../../../composables/useTranslations'
-import { previewFormattedTextItems } from '../../../../utils/builder/formatted-text-to-components'
+import {
+  previewFormattedTextItems,
+  resolveFormattedTextPasteSource,
+} from '../../../../utils/builder/formatted-text-to-components'
 
 const props = defineProps<{
   open: boolean
@@ -43,6 +46,31 @@ watch(
 
 function closeModal(): void {
   emit('close')
+}
+
+/** Prefer clipboard HTML (lists/headings) over stripped plain text from websites. */
+function onPasteTextarea(event: ClipboardEvent): void {
+  const clipboard = event.clipboardData
+  if (!clipboard) return
+
+  const text = clipboard.getData('text/plain') ?? ''
+  const html = clipboard.getData('text/html') ?? ''
+  if (!html.trim()) return
+
+  const source = resolveFormattedTextPasteSource(text, html).trim()
+  if (!source || source === text.trim()) return
+  if (!/<\/?[a-z][\s\S]*>/i.test(source)) return
+
+  event.preventDefault()
+  const textarea = event.target as HTMLTextAreaElement
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  const value = formattedTextInput.value
+  formattedTextInput.value = `${value.slice(0, start)}${source}${value.slice(end)}`
+  nextTick(() => {
+    const pos = start + source.length
+    textarea.setSelectionRange(pos, pos)
+  })
 }
 
 async function insertFormattedText(): Promise<void> {
@@ -85,6 +113,7 @@ async function insertFormattedText(): Promise<void> {
           v-model="formattedTextInput"
           class="pbx-myPrimaryTextArea pbx-min-h-96"
           :placeholder="translate('Paste your job post or article here')"
+          @paste="onPasteTextarea"
           @keydown.meta.enter.prevent="insertFormattedText"
           @keydown.ctrl.enter.prevent="insertFormattedText"
         />
