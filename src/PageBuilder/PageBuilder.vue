@@ -1774,7 +1774,7 @@ onBeforeUnmount(() => {
             >
               <div
                 @click="openPasteTextModal"
-                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-900 pbx-text-white pbx-flex pbx-items-center pbx-justify-center hover:pbx-bg-gray-800 pbx-cursor-pointer"
+                class="pbx-py-4 pbx-px-4 pbx-my-4 pbx-rounded-full pbx-bg-gray-100 pbx-text-gray-600 pbx-flex pbx-items-center pbx-justify-center hover:pbx-text-white hover:pbx-bg-gray-900 pbx-cursor-pointer"
               >
                 <div class="pbx-flex pbx-items-center pbx-gap-2">
                   <span class="material-symbols-outlined">content_paste</span>
